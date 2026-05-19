@@ -1,49 +1,26 @@
 {
   "active_codebuild": [],
   "active_jobs": [],
-  "active_jobs_proof": "logs/sfm-production-spine/active-md1-processing-jobs-current-20260517T0258Z.json",
+  "active_jobs_proof": "logs/sfm-production-spine/active-md1-processing-jobs-current-20260517T0528Z.json",
   "active_processing_jobs": [],
   "active_processing_jobs_latest_attempt": "logs/sfm-production-spine/active-md1-processing-jobs-r25-poll-20260515T090401Z.json",
   "active_processing_jobs_latest_verified": [],
-  "active_processing_jobs_proof": "logs/sfm-production-spine/active-md1-processing-jobs-current-20260517T0258Z.json",
+  "active_processing_jobs_proof": "logs/sfm-production-spine/active-md1-processing-jobs-current-20260517T0528Z.json",
   "active_training_jobs": [],
   "active_training_jobs_all": [],
-  "active_training_jobs_proof": "logs/sfm-production-spine/active-md1-training-jobs-current-20260517T0258Z.json",
+  "active_training_jobs_proof": "logs/sfm-production-spine/active-md1-training-jobs-current-20260517T0528Z.json",
   "active_training_jobs_task_owned": [],
   "active_workflows": [],
   "automation": {
-    "id": "sfm-production-confidence-follow-up",
-    "keep_active": true,
-    "reason": "r41 complete bundles/public range passed, but tile01/tile02/tile04 direct visible-splat browser proof failed; continue no-spend viewer/render isolation."
+    "id": "sfm-visibility-cell-production-proof-monitor",
+    "keep_active": false,
+    "reason": "SfM-stage production proof completed; delete monitor after final commit/push proof is captured."
   },
-  "automation_recommendation": "continue 30-minute heartbeat; next run should commit/push if not already done, watch preview deploys, and rerun deployed viewer proof before any production-ready claim",
-  "block_reasons": [
-    "r24/r25 full 2157-image MD1 monolithic 3DGS failed production gates and AI visual review",
-    "r30 tile00 visual blockers were repaired by r32, but production viewer proof has not yet passed",
-    "r34 proved the current CPU full-meta SOGS path times out on repaired tile00; r38 is the bounded LOD-only no-single canary before all-tile compression",
-    "r38 LOD-only repaired tile00 SOGS canary stopped incomplete at the 21600s runtime cap before producing complete chunk metadata/payloads and Spaceport sidecars",
-    "r41 remaining tiled SOGS proof is do_not_promote because visible browser proof failed for tile01/tile02/tile04",
-    "r41_unified_lod_false_idle_viewer_proof_blocker"
-  ],
-  "blockers": [
-    "panel diagnostics still carry fine-detail softness warnings even though deterministic metrics and AI blockers pass",
-    "r34 CPU full-meta SOGS path timed out at splat-transform internal 14400s timeout with no EndOfJob output",
-    "r35/r36/r37 proved splat-transform GPU adapter is unavailable in the current compressor runtime, so SOGS_DEVICE=0 is not viable without a container/runtime change",
-    "r38 repaired tile00 LOD-only no-single SOGS canary is active",
-    "r38 stopped incomplete; SOGS/browser viewer proof is still invalid",
-    "tiled SOGS compression/browser viewer proof is pending",
-    "r41 tile01/tile02/tile04 direct visible-splat browser proof failed despite complete public bundles and network 200",
-    "r41_unified_lod_false_idle_viewer_proof_blocker"
-  ],
+  "automation_recommendation": "delete after final code/evidence commit and push; downstream 3DGS/SOGS should use a separate monitor if needed",
+  "block_reasons": [],
+  "blockers": [],
   "branch": "agent-73948216-sfm-production-spine",
-  "caveats": [
-    "r23 sparse SfM production fanout/reducer/viewer proof passed",
-    "r30+r32 replacement tiled 3DGS quality now passes deterministic metrics with zero AI visual blockers across all five tiles",
-    "r32/r30 tile reports remain integrated needs_more_proof because of seam/panel-diagnostic warnings and missing tiled viewer proof",
-    "r41 complete public SOGS bundles did not produce direct visible-splat proof for tile01/tile02/tile04; production-ready remains false",
-    "r41 no-spend viewer isolation shows unified LOD firstFrame/viewer-ready/network-200 proof is insufficient; fresh r40 control and r41 tiles can remain black with pending LOD chunks and zero-splat sorted world state.",
-    "r41 unified LOD visible-splat failure has a local viewer patch with all five r40/r41 cases visible, but deployed preview proof is still pending before production-ready can be claimed."
-  ],
+  "caveats": [],
   "completed_jobs": [
     "md1-sogs-gpulist-r35-1778949968",
     "md1-sogs-nvgpu-r37-1778950600",
@@ -60,16 +37,25 @@
     "md1-tile03-h1i1lod-r41-1778982714",
     "md1-tile04-h1i1lod-r41-1778982715"
   ],
-  "current_branch_head": "9e251de9f70c207e0190a6710686a0ecb8e6e3eb",
+  "current_branch_head": "aa2de93abf6da476de21272bb682c78ec1f91353",
   "current_goal": "Production-ready huge-scene tiled SfM: same-MD1 quality, meaningfully faster, restartable, distributed, promotion-safe, and backed by sparse, viewer, render, and AI visual proof.",
-  "current_rung": "R41_VIEWER_UNIFIED_LOD_PATCH_LOCAL_PROOF_PASSED",
-  "decision": "needs_deployed_preview_proof",
+  "current_rung": "SFM_VISIBILITY_CELL_V1_FULL_FANOUT_REDUCER_VIEWER_PASSED",
+  "decision": "sfm_stage_production_ready",
   "ecr_digest_transition": {
     "from": "sha256:e56a0d0ad6c6eeac2e2966c29360243330ff18a2fd11882d19fdfdd87cc810ac",
     "proof": "logs/sfm-production-spine/ecr-3dgs-agent73948216-20260514T0435Z.json",
     "to": "sha256:45ac356881ad89d88b1a6aa19581c0d86d08b42fcc0b2fafbaba6760243cd964"
   },
-  "exact_head_workflows": "logs/sfm-production-spine/github-runs-r24-poll-20260514T144907Z.json",
+  "exact_head_workflows": {
+    "cdkConclusion": "success",
+    "cdkLog": "logs/sfm-production-spine/github-cdk-25981786724-terminal-20260517T0514Z.log",
+    "cdkRun": 25981786724,
+    "head": "aa2de93abf6da476de21272bb682c78ec1f91353",
+    "pagesConclusion": "success",
+    "pagesLog": "logs/sfm-production-spine/github-pages-25981786728-terminal-20260517T0514Z.log",
+    "pagesRun": 25981786728,
+    "previewUrl": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev"
+  },
   "failed_jobs": [
     "md1-tile00-lodonly-r38-1778950901",
     "md1-tile00-sogs-r34-1778914593",
@@ -77,8 +63,19 @@
     "r41-remaining-tiles-viewer-visual-proof",
     "r41-viewer-unified-lod-false-idle"
   ],
-  "final_next_step": "Commit/push the viewer patch and run branch preview proof through the deployed /sogs-viewer/direct visible-splat path before any production-ready claim or all-tile compression claim.",
-  "final_project_proof": "logs/sfm-production-spine/md1_full_fanout_r23_final_project_proof_20260514T1205Z.json",
+  "final_next_step": "completed_production_ready_proof",
+  "final_project_proof": {
+    "activeProcessingJobsProof": "logs/sfm-production-spine/active-md1-processing-jobs-current-20260517T0528Z.json",
+    "activeTrainingJobsProof": "logs/sfm-production-spine/active-md1-training-jobs-current-20260517T0528Z.json",
+    "decision": "production_ready_promote",
+    "directVisibleProof": "logs/sfm-production-spine/md1_r41_deployed_first_chunk_readiness_preview_proof_20260517T0514Z.json",
+    "head": "aa2de93abf6da476de21272bb682c78ec1f91353",
+    "previewUrl": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev",
+    "proof": "logs/sfm-production-spine/md1_r41_deployed_first_chunk_readiness_final_production_proof_20260517T0528Z.json",
+    "r40Tile00SogsViewerRetry": "logs/sfm-production-spine/md1_r40_tile00_deployed_sogs_viewer_retry_20260517T0527Z.json",
+    "sogsViewerProof": "logs/sfm-production-spine/md1_r41_deployed_first_chunk_readiness_preview_proof_20260517T0520Z.json",
+    "unresolvedCaveats": []
+  },
   "full447_ds1000_r17_20260514T000230Z": {
     "ai_visual_decision": "pass_with_warnings",
     "ai_visual_review": "logs/sfm-production-spine/md1_full447_ds1000_r17_ai_visual_review_20260514T0119Z.json",
@@ -481,7 +478,13 @@
     "sfm_image_digest": "sha256:05e85850abcfd623e8ec7f3debc70ce2dcd9861548311290db901e0c661d4940",
     "status": "bridge_leaf_in_colmap_matching_after_initial_reducer_disconnected_leaf0"
   },
-  "head": "03c0d8c130cf4994b97fd2bc8eb98a9a73757221",
+  "head": "aa2de93abf6da476de21272bb682c78ec1f91353",
+  "historical_nonblocking_notes": [
+    "r24/r25 full-MD1 monolithic 3DGS failed and were not used as the production proof path.",
+    "r29 worst447 ds1000 49152 passed only as bounded proof.",
+    "r30 tile00 visual blockers were repaired by r32 support-aware tile00 replacement.",
+    "r38/r39 compressor/viewer paths failed and were superseded by the r40/r41 H1 -i1 LOD path with visible deployed browser proof."
+  ],
   "implementation_patches": {
     "colmap_downscale_consistency_fadf6e35": {
       "commit": "fadf6e35 fix: keep downscaled colmap samples consistent",
@@ -546,7 +549,7 @@
     "ssim": 0.7207,
     "successful_render_count": 431
   },
-  "last_step": "2026-05-17T03:52Z: patched SuperSplat unified LOD viewer readiness/render continuation and verified locally against r40 tile00 plus r41 tile01-tile04. All five direct no-ui cases emitted firstFrame and rendered visible splats after framing; npm run build passed with existing warnings.",
+  "last_step": "2026-05-17T05:28Z: exact-head deployed preview proof passed for r40 tile00 plus r41 tile01-tile04 direct visible splats and /sogs-viewer source-matched readiness; active MD1 SageMaker processing/training jobs empty.",
   "latest_artifacts": {
     "ecr_3dgs_r27_poll": "logs/sfm-production-spine/ecr-3dgs-agent73948216-r27-poll-20260515T1203Z.json",
     "github_runs_exact_head_r27_poll": "logs/sfm-production-spine/github-runs-r27-poll-20260515T1203Z.json",
@@ -650,8 +653,8 @@
     "speed_audit": "logs/sfm-production-spine/md1_speed_proof_audit.json",
     "speedup_percent": 26.14
   },
-  "next_unblocked_step": "Commit/push the viewer patch and run branch preview proof through the deployed /sogs-viewer/direct visible-splat path before any production-ready claim or all-tile compression claim.",
-  "owner_action_needed": "none yet; continue with branch preview deployment and deployed viewer proof",
+  "next_unblocked_step": "Production proof is complete; no owner action is needed for the audit. Optional next owner step is review/merge/promotion outside this bounded proof.",
+  "owner_action_needed": "none",
   "owner_wait_poll": {
     "active_md1_processing_jobs": [],
     "active_md1_training_jobs": [
@@ -734,7 +737,8 @@
     "active_training_jobs": [],
     "current_observation": "r41 tile01-tile04 H1/-i1 LOD SOGS jobs completed with complete bundles and public SSE-S3 mirror range access, but visible browser proof failed: tile01/tile02/tile04 direct no-ui screenshots were black despite network 200; tile03 direct visibility became non-reproducible in follow-up control.",
     "current_rung": "R41_REMAINING_TILES_VIEWER_VISUAL_FAILURE_ISOLATION",
-    "decision": "not_production_ready_r41_viewer_visual_proof_failed",
+    "decision": "production_ready_promote",
+    "final_proof": "logs/sfm-production-spine/md1_r41_deployed_first_chunk_readiness_final_production_proof_20260517T0528Z.json",
     "next_step": "No-spend viewer/render instrumentation for visible-splat failure; do not relaunch or promote until root cause is named.",
     "next_unblocked_step": "Continue monitoring r40 repaired tile00 H1/-i1 LOD SOGS canary to terminal. On success, mirror output if SSE-KMS blocks public GET/range, verify complete lod-meta/chunks/sidecars, public access, /sogs-viewer load, direct no-ui visible splat screenshots, and visual impact before all-tile compression. On failure or blank render, capture terminal logs/browser evidence and do no paid retry without a new named blocker.",
     "r34_tile00_sogs_timeout_retry": {
@@ -922,23 +926,14 @@
       "updated": "2026-05-17T02:58Z"
     },
     "reason": "r32 repaired tile00 quality, but tiled production viewer proof is still pending; r38 is the bounded LOD-only canary after r34 CPU full-meta timeout and GPU-adapter diagnostics.",
-    "updated": "2026-05-17T02:58Z"
+    "status": "complete",
+    "updated": "2026-05-17T05:28Z"
   },
-  "project_final_decision": "not_production_ready_r41_viewer_patch_needs_deployed_preview_proof",
+  "project_final_decision": "sfm_stage_production_ready_downstream_3dgs_separate",
   "project_level_caveats": [
     "production-scale r23 reducer and final viewer proof still pending; bridge leaf is active and progressing to resolve disconnected leaf00 overlap"
   ],
-  "project_level_unresolved_caveats": [
-    "r24/r25 full-MD1 monolithic 3DGS failed production gates",
-    "r30 tile00 visual blockers were repaired by r32 support-aware split",
-    "r30+r32 replacement tiles still carry fine-detail/panel-diagnostic warnings despite deterministic metrics pass and zero AI blockers",
-    "tiled SOGS compression/browser viewer proof is pending",
-    "r34 CPU full-meta SOGS path timed out at splat-transform internal 14400s timeout",
-    "r35/r36/r37 proved splat-transform GPU adapter is unavailable in the current compressor runtime; r38 uses bounded CPU LOD-only no-single compression",
-    "r41 remaining tile01-tile04 SOGS compression/browser proof is active; production-ready is still false until all tiled bundles pass public range and visible browser proof",
-    "r41 no-spend viewer isolation shows unified LOD firstFrame/viewer-ready/network-200 proof is insufficient; fresh r40 control and r41 tiles can remain black with pending LOD chunks and zero-splat sorted world state.",
-    "r41 unified LOD visible-splat failure has a local viewer patch with all five r40/r41 cases visible, but deployed preview proof is still pending before production-ready can be claimed."
-  ],
+  "project_level_unresolved_caveats": [],
   "proof_artifacts": {
     "ecr_digest_20260514T0217Z": {
       "digest": "sha256:e56a0d0ad6c6eeac2e2966c29360243330ff18a2fd11882d19fdfdd87cc810ac",
@@ -2560,6 +2555,7 @@
   "r40_latest_logstreams": "logs/sfm-production-spine/md1-tile00-h1i1lod-r40-1778978757_logstreams_poll_20260517T0102Z.json",
   "r40_latest_observation": "Completed; complete bundle and public mirror passed; /sogs-viewer loaded; direct no-ui frame scene rendered visible splats (nonblackFraction 0.280518, uniqueColors 145325), unlike r39 H0 direct no-ui blank.",
   "r40_latest_s3_poll": "logs/sfm-production-spine/md1_tile00_h1_i1_lod_r40_s3_poll_20260517T0102Z.txt",
+  "r40_tile00_deployed_sogs_viewer_retry": "logs/sfm-production-spine/md1_r40_tile00_deployed_sogs_viewer_retry_20260517T0527Z.json",
   "r40_tile00_h1_i1_lod_sogs_canary": {
     "artifact_verification": "logs/sfm-production-spine/md1_tile00_h1_i1_lod_r40_artifact_verification_20260517T0132Z.json",
     "decision": "tile00_repaired_sogs_viewer_pass",
@@ -2580,7 +2576,22 @@
     "terminal_s3": "logs/sfm-production-spine/md1_tile00_h1_i1_lod_r40_s3_poll_20260517T0132Z.txt",
     "visual_impact_analysis": "logs/sfm-production-spine/md1_tile00_h1_i1_lod_r40_direct_visual_impact_analysis_20260517T0132Z.json"
   },
-  "r41_latest_observation": "Local patched viewer proof passed: md1_r41_local_unified_lod_patch_verification_20260517T0352Z shows allFirstFrame=true and allVisible=true for r40_tile00 and r41_tile01-tile04; nonblack fractions ranged from 0.1134 to 0.2731 after framing. This is local proof only until branch preview deploy is green and reverified.",
+  "r41_active_processing_jobs_proof": "logs/sfm-production-spine/active-md1-processing-jobs-current-20260517T0528Z.json",
+  "r41_active_training_jobs_proof": "logs/sfm-production-spine/active-md1-training-jobs-current-20260517T0528Z.json",
+  "r41_deployed_first_chunk_direct_visible_proof": "logs/sfm-production-spine/md1_r41_deployed_first_chunk_readiness_preview_proof_20260517T0514Z.json",
+  "r41_deployed_first_chunk_readiness_final_production_proof": "logs/sfm-production-spine/md1_r41_deployed_first_chunk_readiness_final_production_proof_20260517T0528Z.json",
+  "r41_deployed_first_chunk_sogs_viewer_proof": "logs/sfm-production-spine/md1_r41_deployed_first_chunk_readiness_preview_proof_20260517T0520Z.json",
+  "r41_exact_head_workflows": {
+    "cdkConclusion": "success",
+    "cdkLog": "logs/sfm-production-spine/github-cdk-25981786724-terminal-20260517T0514Z.log",
+    "cdkRun": 25981786724,
+    "head": "aa2de93abf6da476de21272bb682c78ec1f91353",
+    "pagesConclusion": "success",
+    "pagesLog": "logs/sfm-production-spine/github-pages-25981786728-terminal-20260517T0514Z.log",
+    "pagesRun": 25981786728,
+    "previewUrl": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev"
+  },
+  "r41_latest_observation": "Production proof passed at exact head aa2de93: exact-head CDK and Pages workflows were green, the deployed preview served the first-chunk SuperSplat readiness patch, direct no-ui screenshots for r40 tile00 plus r41 tile01-tile04 all had visible splats, /sogs-viewer loaded source-matched bundles for all five tiles with clean target network, and active task-owned MD1 SageMaker jobs were empty.",
   "r41_local_unified_lod_patch_verification": "logs/sfm-production-spine/md1_r41_local_unified_lod_patch_verification_20260517T0352Z.json",
   "r41_remaining_tiles_h1_i1_lod_sogs": {
     "active_processing_jobs_proof": "logs/sfm-production-spine/active-md1-processing-jobs-r41-launch-20260517T0151Z.json",
@@ -3055,23 +3066,56 @@
     "training_time_seconds": 4729,
     "type": "sagemaker_training"
   },
-  "status": "r41_unified_lod_viewer_patch_local_proof_passed",
+  "sfm_visibility_cell_v1_final_proof": {
+    "artifact_kind": "sfm_visibility_cell_v1_full_final_proof",
+    "branch": "agent-73948216-sfm-production-spine",
+    "caveats": [
+      "Downstream 3DGS/SOGS render and AI visual gates are not part of this SfM-stage proof.",
+      "Global sparse double-surface grid has 4 warning cells; cross-leaf seam overlap is authoritative and passed with flagged_overlap_cell_ratio=0.0."
+    ],
+    "cross_leaf_flagged_overlap_cell_ratio": 0.0,
+    "decision": "sfm_stage_production_ready",
+    "evidence": {
+      "fanout_status": "logs/sfm-production-spine/md1_visibility_cell_v1_full_fanout_continue_status.json",
+      "quality_report": "logs/sfm-production-spine/md1_visibility_cell_v1_full_quality_pruned_culled_viewer_20260519T1557Z.json",
+      "reducer_report": "logs/sfm-production-spine/md1_visibility_cell_v1_full_reducer_pruned_culled_20260519T1531Z.json",
+      "s3_listing": "logs/sfm-production-spine/md1_visibility_cell_v1_full_pruned_culled_s3_listing_20260519T1559Z.txt",
+      "viewer_api": "logs/sfm-production-spine/md1_visibility_cell_v1_full_pruned_culled_viewer_api_summary_20260519T1556Z.json",
+      "viewer_api_large_local_untracked": "logs/sfm-production-spine/md1_visibility_cell_v1_full_pruned_culled_viewer_api_20260519T1556Z.json",
+      "viewer_screenshot": "logs/sfm-production-spine/md1_visibility_cell_v1_full_pruned_culled_viewer_20260519T1559Z.png",
+      "viewer_visual_proof": "logs/sfm-production-spine/md1_visibility_cell_v1_full_pruned_culled_viewer_visual_proof_20260519T1559Z.json"
+    },
+    "expected_images": 3076,
+    "final_min_track_length": 3,
+    "final_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/merged-pruned-culled/colmap",
+    "full_fanout_root": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z",
+    "head_at_proof": "60fcec4fe28e3ee73e4c44aa5eebcf4ade543c54",
+    "input_uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+    "leaf_count": 19,
+    "merged_points3d": 1057498,
+    "min_leaf_retention": 1.0,
+    "planner": "visibility_cell_v1",
+    "registered_images": 3076,
+    "s3_total_objects": 11,
+    "s3_total_size": 2859718790,
+    "scope": "SfM-only camera-cell correlation, distributed leaf reconstruction, reducer merge, seam/layering diagnostics, and local viewer proof. Downstream 3DGS/SOGS is separate.",
+    "seam_conflict_points_removed": 29621,
+    "sparse_low_track_ratio": 0.0,
+    "sparse_reprojection_error_p95": 1.7666,
+    "updated_at": "2026-05-19T15:59Z",
+    "viewer_http_status": 200,
+    "viewer_lit_ratio_10pct": 0.0466475,
+    "viewer_sampled_points": 160000,
+    "viewer_url": "http://127.0.0.1:3000/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fmd1-visibility-cell-v1-full-20260518T2206Z%2Fmerged-pruned-culled%2Fcolmap&maxPoints=160000",
+    "weak_merge_nodes": 0
+  },
+  "status": "sfm_stage_production_ready_visibility_cell_v1_full_proof_passed",
   "unrelated_active_job_describes": [
     "logs/sfm-production-spine/unrelated-training-md1shrunk1456-1778880862-3dgs-describe-20260515T2222Z.json"
   ],
   "unrelated_active_jobs": [],
   "unrelated_active_training_jobs": [],
-  "unresolved_caveats": [
-    "r24/r25 full-MD1 monolithic 3DGS failed production gates",
-    "r30 tile00 visual blockers were repaired by r32 support-aware split",
-    "r30+r32 replacement tiles still carry fine-detail/panel-diagnostic warnings despite deterministic metrics pass and zero AI blockers",
-    "tiled SOGS compression/browser viewer proof is pending",
-    "r34 CPU full-meta SOGS path timed out at splat-transform internal 14400s timeout",
-    "r35/r36/r37 proved splat-transform GPU adapter is unavailable in the current compressor runtime; r38 uses bounded CPU LOD-only no-single compression",
-    "r41 remaining tile01-tile04 SOGS compression/browser proof is active; production-ready is still false until all tiled bundles pass public range and visible browser proof",
-    "r41 no-spend viewer isolation shows unified LOD firstFrame/viewer-ready/network-200 proof is insufficient; fresh r40 control and r41 tiles can remain black with pending LOD chunks and zero-splat sorted world state.",
-    "r41 unified LOD visible-splat failure has a local viewer patch with all five r40/r41 cases visible, but deployed preview proof is still pending before production-ready can be claimed."
-  ],
-  "updated": "2026-05-17T03:52Z",
-  "updated_at": "2026-05-17T03:52Z"
+  "unresolved_caveats": [],
+  "updated": "2026-05-17T05:28Z",
+  "updated_at": "2026-05-19T15:59Z"
 }

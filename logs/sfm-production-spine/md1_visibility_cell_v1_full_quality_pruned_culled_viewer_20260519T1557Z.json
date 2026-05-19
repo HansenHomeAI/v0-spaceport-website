@@ -1,0 +1,342 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "sfm_quality_report",
+  "decision": "needs_more_proof",
+  "inputs": {
+    "sparse_dir": "/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/pose_aligned_text",
+    "viewer_api_json": "logs/sfm-production-spine/md1_visibility_cell_v1_full_pruned_culled_viewer_api_20260519T1556Z.json",
+    "sfm_metadata": "",
+    "reducer_metadata": "logs/sfm-production-spine/md1_visibility_cell_v1_full_reducer_pruned_culled_20260519T1531Z.json",
+    "heldout_render_json": "",
+    "ai_visual_review_json": "",
+    "panel_diagnostics_json": ""
+  },
+  "summary": {
+    "registered_images": 3076,
+    "expected_images": 3076,
+    "registered_ratio": 1.0,
+    "points": 1057498
+  },
+  "gates": [
+    {
+      "gate": "registration_coverage",
+      "status": "pass",
+      "evidence": "3076/3076 registered (1.0000)"
+    },
+    {
+      "gate": "point_count",
+      "status": "pass",
+      "evidence": "1057498 points, minimum 100000"
+    },
+    {
+      "gate": "reducer_blockers",
+      "status": "pass",
+      "evidence": "promotion_blockers=[]"
+    },
+    {
+      "gate": "single_component",
+      "status": "pass",
+      "evidence": "merged=1 expected=1"
+    },
+    {
+      "gate": "merge_retention",
+      "status": "pass",
+      "evidence": "pre_merge_retention_ratio=1.0"
+    },
+    {
+      "gate": "seam_overlap",
+      "status": "pass",
+      "evidence": "0 merge nodes have <10 shared registered images"
+    },
+    {
+      "gate": "reprojection_error_sample",
+      "status": "pass",
+      "evidence": "p95=1.7666, max=8.0"
+    },
+    {
+      "gate": "viewer_axis_sanity",
+      "status": "pass",
+      "evidence": "median camera up.y=0.9344"
+    },
+    {
+      "gate": "sparse_cleanliness",
+      "status": "pass",
+      "evidence": "failures=[]"
+    },
+    {
+      "gate": "cross_leaf_surface_overlap",
+      "status": "pass",
+      "evidence": "flagged_overlap_cell_ratio=0.0, max=0.02, overlap_cells=2200"
+    },
+    {
+      "gate": "double_surface_geometry",
+      "status": "warning",
+      "evidence": "flagged_cell_ratio=0.0351, max=0.02, flagged=4, cross_leaf_authoritative=True"
+    },
+    {
+      "gate": "heldout_render_metrics",
+      "status": "not_run",
+      "evidence": "requires downstream splat renders from held-out source cameras"
+    },
+    {
+      "gate": "ai_visual_review",
+      "status": "not_run",
+      "evidence": "requires fixed side-by-side render proof panels"
+    }
+  ],
+  "sparse_images": {
+    "source": "/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/pose_aligned_text/images.txt",
+    "registered_image_count": 3076,
+    "sample_names": [
+      "DJI_01028.JPG",
+      "DJI_01029.JPG",
+      "DJI_01030.JPG",
+      "DJI_01043.JPG",
+      "DJI_01044.JPG",
+      "DJI_01045.JPG",
+      "DJI_01046.JPG",
+      "DJI_01056.JPG"
+    ]
+  },
+  "sparse_points": {
+    "source": "/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/pose_aligned_text/points3D.txt",
+    "exact_point_count": 1057498,
+    "reprojection_error": {
+      "count": 1057498,
+      "min": 0.0078,
+      "p10": 0.4976,
+      "median": 1.0417,
+      "p90": 1.6221,
+      "p95": 1.7666,
+      "p99": 1.9396,
+      "max": 2.0
+    },
+    "track_length": {
+      "count": 1057498,
+      "min": 3.0,
+      "p10": 3.0,
+      "median": 5.0,
+      "p90": 16.0,
+      "p95": 26.0,
+      "p99": 57.0,
+      "max": 186.0
+    },
+    "low_track_ratio": 0.0,
+    "high_error_ratio": 0.0,
+    "bounds": {
+      "x": {
+        "min": -351.9213,
+        "max": 454.7077,
+        "span": 806.629
+      },
+      "y": {
+        "min": -114.9122,
+        "max": 91.1206,
+        "span": 206.0327
+      },
+      "z": {
+        "min": -400.7658,
+        "max": 408.4688,
+        "span": 809.2345
+      }
+    },
+    "double_surface": {
+      "occupied_cell_count": 114,
+      "flagged_cell_count": 4,
+      "flagged_cell_ratio": 0.0351,
+      "max_mode_separation": 29.2776,
+      "cell_size": 16.8048,
+      "examples": [
+        {
+          "cell": [
+            32,
+            7
+          ],
+          "point_count": 11,
+          "mode_separation": 29.2776,
+          "z_min": -16.6823,
+          "z_max": 34.8917,
+          "high_error_ratio": 0.0,
+          "short_track_ratio": 0.0
+        },
+        {
+          "cell": [
+            10,
+            4
+          ],
+          "point_count": 24,
+          "mode_separation": 20.625,
+          "z_min": 145.3785,
+          "z_max": 195.0408,
+          "high_error_ratio": 0.0,
+          "short_track_ratio": 0.0
+        },
+        {
+          "cell": [
+            18,
+            4
+          ],
+          "point_count": 23,
+          "mode_separation": 14.8802,
+          "z_min": 161.1781,
+          "z_max": 197.787,
+          "high_error_ratio": 0.0,
+          "short_track_ratio": 0.0
+        },
+        {
+          "cell": [
+            24,
+            9
+          ],
+          "point_count": 21,
+          "mode_separation": 7.1028,
+          "z_min": -137.4467,
+          "z_max": -119.7423,
+          "high_error_ratio": 0.0,
+          "short_track_ratio": 0.0
+        }
+      ]
+    }
+  },
+  "viewer": {
+    "source_registered_images": 3076,
+    "exact_point_count": 1057498,
+    "sampled_point_count": 160000,
+    "chunk_count": 0,
+    "sample_bounds": {
+      "x": {
+        "min": -6.1297,
+        "max": 3.965,
+        "span": 10.0947
+      },
+      "y": {
+        "min": -1.4838,
+        "max": 2.4584,
+        "span": 3.9422
+      },
+      "z": {
+        "min": -6.7748,
+        "max": 8.2935,
+        "span": 15.0683
+      }
+    },
+    "sample_reprojection_error": {
+      "count": 160000,
+      "min": 0.0078,
+      "p10": 0.5003,
+      "median": 1.059,
+      "p90": 1.6332,
+      "p95": 1.7761,
+      "p99": 1.9426,
+      "max": 1.9999
+    },
+    "sample_track_length": {
+      "count": 160000,
+      "min": 3.0,
+      "p10": 3.0,
+      "median": 5.0,
+      "p90": 21.0,
+      "p95": 35.0,
+      "p99": 69.0,
+      "max": 186.0
+    },
+    "sample_low_track_ratio": 0.0,
+    "sample_high_error_ratio": 0.0,
+    "camera_up_y": {
+      "count": 3076,
+      "min": 0.7079,
+      "p10": 0.8555,
+      "median": 0.9344,
+      "p90": 0.9957,
+      "p95": 0.9987,
+      "p99": 0.9998,
+      "max": 1.0
+    },
+    "camera_step_length": {
+      "count": 3075,
+      "min": 0.0001,
+      "p10": 0.0016,
+      "median": 0.0042,
+      "p90": 0.1642,
+      "p95": 0.2702,
+      "p99": 0.3452,
+      "max": 0.379
+    }
+  },
+  "merge": {
+    "leaf_count": 19,
+    "passed_leaf_count": 19,
+    "failed_leaf_count": 0,
+    "merged_component_count": 1,
+    "expected_component_count": 1,
+    "promotion_blockers": [],
+    "pre_merge_retention_ratio": 1.0,
+    "final_merged_registered_images": 3076,
+    "merge_node_count": 18,
+    "shared_registered_images": {
+      "count": 18,
+      "min": 105.0,
+      "p10": 115.0,
+      "median": 153.0,
+      "p90": 200.0,
+      "p95": 222.0,
+      "p99": 222.0,
+      "max": 222.0
+    },
+    "cross_edge_count": {
+      "count": 0,
+      "min": null,
+      "p10": null,
+      "median": null,
+      "p90": null,
+      "p95": null,
+      "p99": null,
+      "max": null
+    },
+    "cross_leaf_surface_overlap": {
+      "node_count": 18,
+      "overlap_cell_count": 2200,
+      "flagged_overlap_cell_count": 0,
+      "flagged_overlap_cell_ratio": 0.0,
+      "overlap_cell_count_by_node": {
+        "count": 18,
+        "min": 4.0,
+        "p10": 32.0,
+        "median": 115.5,
+        "p90": 220.0,
+        "p95": 267.0,
+        "p99": 267.0,
+        "max": 267.0
+      },
+      "flagged_overlap_cell_count_by_node": {
+        "count": 18,
+        "min": 0.0,
+        "p10": 0.0,
+        "median": 0.0,
+        "p90": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "max": 0.0
+      },
+      "p95_abs_z_gap_m_by_node": {
+        "count": 18,
+        "min": 4.9314,
+        "p10": 5.4806,
+        "median": 8.0944,
+        "p90": 13.9648,
+        "p95": 16.0764,
+        "p99": 16.0764,
+        "max": 16.0764
+      },
+      "examples": []
+    },
+    "weak_merge_nodes": []
+  },
+  "heldout_render": {},
+  "ai_visual_review": {},
+  "panel_diagnostics": {},
+  "next_required_gates": [
+    "render held-out images from the splat and compute PSNR/SSIM/LPIPS",
+    "generate fixed proof panels and run AI visual defect review"
+  ]
+}

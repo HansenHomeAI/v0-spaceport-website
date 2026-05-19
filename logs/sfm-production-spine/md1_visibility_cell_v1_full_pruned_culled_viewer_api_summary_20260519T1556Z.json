@@ -1,0 +1,13 @@
+{
+  "artifact_kind": "sfm_preview_api_summary",
+  "source_api_json_local_untracked": "logs/sfm-production-spine/md1_visibility_cell_v1_full_pruned_culled_viewer_api_20260519T1556Z.json",
+  "http_status": "200",
+  "registeredImageCount": 3076,
+  "exactPointCount": 1057498,
+  "sampledPointCount": 160000,
+  "chunkCount": 0,
+  "camera_count": 3076,
+  "positions_values": 480000,
+  "pointErrors_count": 160000,
+  "pointTrackLengths_count": 160000
+}

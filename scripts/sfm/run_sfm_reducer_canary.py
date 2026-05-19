@@ -227,6 +227,45 @@ def point_coords(points_path: Path) -> list[tuple[float, float, float]]:
     return coords
 
 
+def track_length_from_parts(parts: list[str]) -> int:
+    return max((len(parts) - 8) // 2, 0)
+
+
+def rewrite_points_line_with_kept_ids(points_line: str, kept_point_ids: set[int]) -> str:
+    rewritten: list[str] = []
+    point_parts = points_line.split()
+    for offset in range(0, len(point_parts), 3):
+        if offset + 2 >= len(point_parts):
+            break
+        point_id = int(float(point_parts[offset + 2]))
+        rewritten.extend(
+            (
+                point_parts[offset],
+                point_parts[offset + 1],
+                str(point_id if point_id in kept_point_ids else -1),
+            )
+        )
+    return " ".join(rewritten)
+
+
+def kept_point_lines_and_coords(
+    points_path: Path,
+    *,
+    min_track_length: int,
+) -> tuple[list[str], set[int], list[tuple[float, float, float]]]:
+    point_lines: list[str] = []
+    kept_point_ids: set[int] = set()
+    coords: list[tuple[float, float, float]] = []
+    for line in non_comment_lines(points_path):
+        parts = line.split()
+        if len(parts) < 8 or track_length_from_parts(parts) < min_track_length:
+            continue
+        point_lines.append(line)
+        kept_point_ids.add(int(parts[0]))
+        coords.append((float(parts[1]), float(parts[2]), float(parts[3])))
+    return point_lines, kept_point_ids, coords
+
+
 def transformed_point_coords(points_path: Path, transform: SimilarityTransform) -> list[tuple[float, float, float]]:
     coords: list[tuple[float, float, float]] = []
     for line in non_comment_lines(points_path):
@@ -317,9 +356,23 @@ def cross_leaf_surface_overlap_stats(
         "p95_abs_z_gap_m": round(percentile(z_gaps, 0.95), 4) if z_gaps else None,
         "max_abs_z_gap_m": round(max(z_gaps), 4) if z_gaps else None,
         "cell_size_m": round(cell_size, 4),
+        "grid": {"min_x": min_x, "min_y": min_y, "cell_size_m": cell_size},
+        "flagged_cells": [item["cell"] for item in flagged],
         "min_points_per_side": min_points_per_side,
         "examples": sorted(flagged, key=lambda item: (-float(item["median_z_gap_m"]), item["cell"]))[:20],
     }
+
+
+def point_overlap_cell(point: tuple[float, float, float], grid: dict[str, object]) -> tuple[int, int] | None:
+    try:
+        min_x = float(grid["min_x"])
+        min_y = float(grid["min_y"])
+        cell_size = float(grid["cell_size_m"])
+    except (KeyError, TypeError, ValueError):
+        return None
+    if cell_size <= 0:
+        return None
+    return (int((point[0] - min_x) / cell_size), int((point[1] - min_y) / cell_size))
 
 
 def transform_image_parts(parts: list[str], transform: SimilarityTransform) -> list[str]:
@@ -345,12 +398,20 @@ def write_pose_aligned_merge(
     normalized_dirs: list[Path],
     output_dir: Path,
     min_shared_images: int,
+    min_final_track_length: int = 2,
 ) -> dict[str, object]:
     anchor = normalized_dirs[0]
     output_dir.mkdir(parents=True, exist_ok=True)
     anchor_pairs = image_record_pairs(anchor / "images.txt")
     anchor_by_name = {parts[9]: (parts, points_line) for parts, points_line in anchor_pairs}
-    merged_surface_points = point_coords(anchor / "points3D.txt")
+    anchor_point_lines, anchor_kept_point_ids, merged_surface_points = kept_point_lines_and_coords(
+        anchor / "points3D.txt",
+        min_track_length=min_final_track_length,
+    )
+    anchor_output_pairs = [
+        (parts, rewrite_points_line_with_kept_ids(points_line, anchor_kept_point_ids))
+        for parts, points_line in anchor_pairs
+    ]
     emitted_names = set(anchor_by_name)
     transforms: list[dict[str, object]] = []
     additional_image_lines: list[tuple[list[str], str, dict[int, int]]] = []
@@ -386,10 +447,10 @@ def write_pose_aligned_merge(
         source = np.array([camera_center(leaf_by_name[name][0]) for name in shared_names], dtype=float)
         target = np.array([camera_center(anchor_by_name[name][0]) for name in shared_names], dtype=float)
         transform = estimate_similarity(source, target)
-        leaf_surface_points = transformed_point_coords(leaf_dir / "points3D.txt", transform)
-        surface_overlap = cross_leaf_surface_overlap_stats(merged_surface_points, leaf_surface_points)
         residuals = sorted(transform.residuals)
         point_map: dict[int, int] = {}
+        candidate_points: list[tuple[int, int, list[str], list[str], tuple[float, float, float]]] = []
+        kept_leaf_surface_points: list[tuple[float, float, float]] = []
         leaf_image_id_to_name = image_id_to_name(leaf_dir / "images.txt")
         for line in non_comment_lines(leaf_dir / "points3D.txt"):
             parts = line.split()
@@ -401,15 +462,43 @@ def write_pose_aligned_merge(
                 image_name = leaf_image_id_to_name.get(image_id, "")
                 if image_name and image_name not in emitted_names:
                     track.extend((str(image_id), parts[offset + 1]))
-            if len(track) < 4:
+            if len(track) < min_final_track_length * 2:
                 continue
             old_point_id = int(parts[0])
             new_point_id = next_point_id
             next_point_id += 1
-            point_map[old_point_id] = new_point_id
             transformed_parts = transform_point(parts, transform)
             transformed_parts[0] = str(new_point_id)
+            coord = (float(transformed_parts[1]), float(transformed_parts[2]), float(transformed_parts[3]))
+            candidate_points.append((old_point_id, new_point_id, transformed_parts, track, coord))
+
+        pre_cull_surface_overlap = cross_leaf_surface_overlap_stats(
+            merged_surface_points,
+            [candidate[-1] for candidate in candidate_points],
+        )
+        flagged_cells = {
+            tuple(cell)
+            for cell in pre_cull_surface_overlap.get("flagged_cells", [])
+            if isinstance(cell, list) and len(cell) == 2
+        }
+        overlap_grid = (
+            pre_cull_surface_overlap.get("grid")
+            if isinstance(pre_cull_surface_overlap.get("grid"), dict)
+            else {}
+        )
+        seam_conflict_points_removed = 0
+        for old_point_id, new_point_id, transformed_parts, track, coord in candidate_points:
+            if flagged_cells and point_overlap_cell(coord, overlap_grid) in flagged_cells:
+                seam_conflict_points_removed += 1
+                continue
+            point_map[old_point_id] = new_point_id
             additional_points_lines.append(" ".join([*transformed_parts[:8], *track]) + "\n")
+            kept_leaf_surface_points.append(coord)
+
+        surface_overlap = cross_leaf_surface_overlap_stats(
+            merged_surface_points,
+            kept_leaf_surface_points,
+        )
 
         for parts, points_line in leaf_pairs:
             image_name = parts[9]
@@ -428,6 +517,7 @@ def write_pose_aligned_merge(
             emitted_names.add(image_name)
             anchor_by_name[image_name] = (transformed_parts, " ".join(rewritten_points))
 
+        surface_overlap = cross_leaf_surface_overlap_stats(merged_surface_points, kept_leaf_surface_points)
         transforms.append(
             {
                 "leaf_index": leaf_index,
@@ -440,20 +530,21 @@ def write_pose_aligned_merge(
                     "max": round(residuals[-1], 4),
                 },
                 "surface_overlap": surface_overlap,
+                "pre_cull_surface_overlap": pre_cull_surface_overlap,
+                "seam_conflict_points_removed": seam_conflict_points_removed,
                 "new_points_kept": len(point_map),
             }
         )
-        merged_surface_points.extend(leaf_surface_points)
+        merged_surface_points.extend(kept_leaf_surface_points)
 
     shutil.copy2(anchor / "cameras.txt", output_dir / "cameras.txt")
     if (anchor / "rigs.txt").exists():
         shutil.copy2(anchor / "rigs.txt", output_dir / "rigs.txt")
-    anchor_point_lines = list(non_comment_lines(anchor / "points3D.txt"))
     with (output_dir / "images.txt").open("w", encoding="utf-8") as target:
         target.write("# Image list with two lines of data per image:\n")
         target.write("#   IMAGE_ID, QW, QX, QY, QZ, TX, TY, TZ, CAMERA_ID, NAME\n")
         target.write("#   POINTS2D[] as (X, Y, POINT3D_ID)\n")
-        for parts, points_line in anchor_pairs:
+        for parts, points_line in anchor_output_pairs:
             target.write(" ".join(parts) + "\n")
             target.write(points_line + "\n")
         for parts, points_line, _ in additional_image_lines:

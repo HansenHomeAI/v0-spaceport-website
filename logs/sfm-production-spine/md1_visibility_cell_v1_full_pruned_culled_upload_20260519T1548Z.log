@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/opt/homebrew/bin/aws",
+    "s3",
+    "sync",
+    "/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/output_package",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/merged-pruned-culled/colmap",
+    "--only-show-errors"
+  ],
+  "returncode": 0,
+  "seconds": 400.0,
+  "stdout_tail": "",
+  "stderr_tail": ""
+}

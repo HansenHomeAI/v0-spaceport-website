@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import time
@@ -38,6 +39,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--min-retention-ratio", type=float, default=0.95)
     parser.add_argument("--min-shared-images", type=int, default=8)
     parser.add_argument("--expected-component-count", type=int, default=1)
+    parser.add_argument("--final-min-track-length", type=int, default=3)
     parser.add_argument("--branch", default="")
     parser.add_argument("--head", default="")
     parser.add_argument("--input-uri", default="")
@@ -79,7 +81,13 @@ def copy_sparse_dir(source: Path, target: Path) -> None:
     for file_name in SPARSE_FILES:
         source_file = source / file_name
         if source_file.exists():
-            shutil.copy2(source_file, target / file_name)
+            target_file = target / file_name
+            if target_file.exists():
+                target_file.unlink()
+            try:
+                os.link(source_file, target_file)
+            except OSError:
+                shutil.copy2(source_file, target_file)
 
 
 def download_sparse_from_s3(leaf_uri: str, target: Path) -> dict[str, object]:
@@ -141,6 +149,8 @@ def merge_leaf_models(
     work_dir: Path,
     colmap_bin: str,
     min_shared_images: int,
+    final_min_track_length: int = 3,
+    scratch_cleanup_paths: list[Path] | None = None,
 ) -> dict[str, object]:
     normalized_root = work_dir / "normalized"
     binary_root = work_dir / "binary"
@@ -157,6 +167,7 @@ def merge_leaf_models(
     convert_commands: list[dict[str, object]] = []
     normalized_dirs: list[Path] = []
     binary_dirs: list[Path] = []
+    use_stock_binary_merge = len(leaf_dirs) == 2
     for index, model_dir in enumerate(leaf_dirs):
         normalized_dir = normalized_root / f"leaf-{index:02d}"
         binary_dir = binary_root / f"leaf-{index:02d}"
@@ -168,30 +179,31 @@ def merge_leaf_models(
             global_camera_records=global_camera_records,
         )
         normalized_dirs.append(normalized_dir)
-        binary_dir.mkdir(parents=True, exist_ok=True)
-        command = run_command(
-            [
-                colmap_bin,
-                "model_converter",
-                "--input_path",
-                str(normalized_dir),
-                "--output_path",
-                str(binary_dir),
-                "--output_type",
-                "BIN",
-            ]
-        )
-        convert_commands.append(command)
-        binary_dirs.append(binary_dir)
-        if command["returncode"] != 0:
-            break
+        if use_stock_binary_merge:
+            binary_dir.mkdir(parents=True, exist_ok=True)
+            command = run_command(
+                [
+                    colmap_bin,
+                    "model_converter",
+                    "--input_path",
+                    str(normalized_dir),
+                    "--output_path",
+                    str(binary_dir),
+                    "--output_type",
+                    "BIN",
+                ]
+            )
+            convert_commands.append(command)
+            binary_dirs.append(binary_dir)
+            if command["returncode"] != 0:
+                break
 
     model_merger_command: dict[str, object] | None = None
     merged_converter_command: dict[str, object] | None = None
     pose_aligned_report: dict[str, object] | None = None
     pose_aligned_validator: dict[str, object] | None = None
     if all(command["returncode"] == 0 for command in convert_commands):
-        if len(binary_dirs) == 2:
+        if use_stock_binary_merge and len(binary_dirs) == 2:
             merged_binary.mkdir(parents=True, exist_ok=True)
             model_merger_command = run_command(
                 [
@@ -213,7 +225,7 @@ def merge_leaf_models(
                 "returncode": 64,
                 "seconds": 0.0,
                 "stdout_tail": "",
-                "stderr_tail": "stock model_merger skipped: more than two independent leaf models",
+                "stderr_tail": "stock model_merger skipped: leaf count is not exactly two",
             }
         if model_merger_command["returncode"] == 0:
             merged_text.mkdir(parents=True, exist_ok=True)
@@ -235,7 +247,13 @@ def merge_leaf_models(
                     normalized_dirs=normalized_dirs,
                     output_dir=pose_aligned_text,
                     min_shared_images=min_shared_images,
+                    min_final_track_length=final_min_track_length,
                 )
+                for cleanup_path in scratch_cleanup_paths or []:
+                    shutil.rmtree(cleanup_path, ignore_errors=True)
+                if not use_stock_binary_merge:
+                    shutil.rmtree(normalized_root, ignore_errors=True)
+                    shutil.rmtree(binary_root, ignore_errors=True)
                 pose_aligned_binary.mkdir(parents=True, exist_ok=True)
                 pose_aligned_validator = run_command(
                     [
@@ -249,6 +267,8 @@ def merge_leaf_models(
                         "BIN",
                     ]
                 )
+                if not use_stock_binary_merge:
+                    shutil.rmtree(pose_aligned_binary, ignore_errors=True)
             except Exception as exc:  # pragma: no cover - encoded in report
                 pose_aligned_report = {"strategy": "pose_aligned_text_merge", "error": str(exc)}
 
@@ -324,6 +344,8 @@ def main() -> int:
         work_dir=work_dir / "merge",
         colmap_bin=args.colmap_bin,
         min_shared_images=args.min_shared_images,
+        final_min_track_length=args.final_min_track_length,
+        scratch_cleanup_paths=[download_root],
     )
     before: list[ModelStats] = merge_report["before"]  # type: ignore[assignment]
     merged: ModelStats = merge_report["merged"]  # type: ignore[assignment]
@@ -361,6 +383,7 @@ def main() -> int:
         "leaf_retention_ratios": leaf_retention,
         "min_retention_ratio": args.min_retention_ratio,
         "min_shared_images": args.min_shared_images,
+        "final_min_track_length": args.final_min_track_length,
         "merge_strategy": "stock_colmap_or_chained_pose_aligned_text_merge",
         "merged_component_count": merged_component_count,
         "expected_component_count": args.expected_component_count,

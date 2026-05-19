@@ -1,0 +1,23 @@
+{
+  "artifact_kind": "sfm_visibility_cell_v1_full_viewer_visual_proof",
+  "decision": "pass",
+  "viewer_url": "http://127.0.0.1:3000/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fmd1-visibility-cell-v1-full-20260518T2206Z%2Fmerged-pruned-culled%2Fcolmap&maxPoints=160000",
+  "api_json": "logs/sfm-production-spine/md1_visibility_cell_v1_full_pruned_culled_viewer_api_summary_20260519T1556Z.json",
+  "quality_json": "logs/sfm-production-spine/md1_visibility_cell_v1_full_quality_pruned_culled_viewer_20260519T1557Z.json",
+  "screenshot": "logs/sfm-production-spine/md1_visibility_cell_v1_full_pruned_culled_viewer_20260519T1559Z.png",
+  "pixel_stats": {
+    "width": 1600,
+    "height": 1000,
+    "mean_gray": 0.0335782,
+    "lit_ratio_10pct": 0.0466475,
+    "bright_ratio_45pct": 0.00571125,
+    "center_lit_ratio_10pct": 0.0602664
+  },
+  "api_summary": {
+    "registeredImageCount": 3076,
+    "exactPointCount": 1057498,
+    "sampledPointCount": 160000,
+    "chunkCount": 0
+  },
+  "api_json_large_local_untracked": "logs/sfm-production-spine/md1_visibility_cell_v1_full_pruned_culled_viewer_api_20260519T1556Z.json"
+}

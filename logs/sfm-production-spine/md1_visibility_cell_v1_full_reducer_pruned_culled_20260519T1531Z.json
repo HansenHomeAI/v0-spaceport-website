@@ -1,0 +1,4284 @@
+{
+  "artifact_kind": "sfm_fanout_reducer_report",
+  "schema_version": 1,
+  "decision": "pass",
+  "branch": "agent-73948216-sfm-production-spine",
+  "head": "60fcec4fe28e3ee73e4c44aa5eebcf4ade543c54",
+  "input_uri": "logs/sfm-production-spine/md1_visibility_cell_v1_full_fanout_continue_status.json",
+  "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/merged-pruned-culled/colmap",
+  "leaf_output_uris": [
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-00/colmap",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-01/colmap",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-02/colmap",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-03/colmap",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-04/colmap",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-05/colmap",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-06-r2/colmap",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-07/colmap",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-08/colmap",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-09/colmap",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-10/colmap",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-11/colmap",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-12/colmap",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-13/colmap",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-14/colmap",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-15/colmap",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-16/colmap",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-17/colmap",
+    "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-18/colmap"
+  ],
+  "leaf_count": 19,
+  "passed_leaf_count": 19,
+  "failed_leaf_count": 0,
+  "input_registered_images": [
+    118,
+    360,
+    360,
+    196,
+    360,
+    360,
+    360,
+    360,
+    291,
+    360,
+    360,
+    360,
+    298,
+    360,
+    360,
+    137,
+    360,
+    360,
+    206
+  ],
+  "input_points3d": [
+    65831,
+    38553,
+    27435,
+    138506,
+    67833,
+    169755,
+    111796,
+    70451,
+    31428,
+    71079,
+    172083,
+    180037,
+    50308,
+    194545,
+    87609,
+    101703,
+    111811,
+    112985,
+    128887
+  ],
+  "unique_registered_images_before_merge": 3076,
+  "merged_registered_images": 3076,
+  "merged_points3d": 1057498,
+  "leaf_retention_ratios": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+  ],
+  "min_retention_ratio": 0.95,
+  "min_shared_images": 8,
+  "final_min_track_length": 3,
+  "merge_strategy": "stock_colmap_or_chained_pose_aligned_text_merge",
+  "merged_component_count": 1,
+  "expected_component_count": 1,
+  "ba_policy": "leaf_local_or_deferred_global",
+  "standard_sparse0_exists": true,
+  "promotion_blockers": [],
+  "blockers": [],
+  "materialize_reports": [
+    {
+      "leaf_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-00/colmap",
+      "sparse_dir": "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-00/sparse/0",
+      "commands": [
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-00/colmap/sparse/0/cameras.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-00/sparse/0/cameras.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 0.98,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-00/colmap/sparse/0/images.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-00/sparse/0/images.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 9.54,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-00/colmap/sparse/0/points3D.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-00/sparse/0/points3D.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 4.01,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-00/colmap/sparse/0/frames.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-00/sparse/0/frames.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 0.91,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-00/colmap/sparse/0/rigs.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-00/sparse/0/rigs.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.04,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        }
+      ]
+    },
+    {
+      "leaf_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-01/colmap",
+      "sparse_dir": "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-01/sparse/0",
+      "commands": [
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-01/colmap/sparse/0/cameras.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-01/sparse/0/cameras.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.04,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-01/colmap/sparse/0/images.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-01/sparse/0/images.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 24.98,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-01/colmap/sparse/0/points3D.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-01/sparse/0/points3D.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 3.71,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-01/colmap/sparse/0/frames.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-01/sparse/0/frames.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.08,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-01/colmap/sparse/0/rigs.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-01/sparse/0/rigs.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.01,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        }
+      ]
+    },
+    {
+      "leaf_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-02/colmap",
+      "sparse_dir": "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-02/sparse/0",
+      "commands": [
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-02/colmap/sparse/0/cameras.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-02/sparse/0/cameras.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 0.97,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-02/colmap/sparse/0/images.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-02/sparse/0/images.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 23.75,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-02/colmap/sparse/0/points3D.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-02/sparse/0/points3D.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 2.2,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-02/colmap/sparse/0/frames.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-02/sparse/0/frames.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.08,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-02/colmap/sparse/0/rigs.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-02/sparse/0/rigs.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 0.88,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        }
+      ]
+    },
+    {
+      "leaf_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-03/colmap",
+      "sparse_dir": "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-03/sparse/0",
+      "commands": [
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-03/colmap/sparse/0/cameras.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-03/sparse/0/cameras.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 0.98,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-03/colmap/sparse/0/images.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-03/sparse/0/images.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 13.45,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-03/colmap/sparse/0/points3D.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-03/sparse/0/points3D.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 6.02,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-03/colmap/sparse/0/frames.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-03/sparse/0/frames.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.17,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-03/colmap/sparse/0/rigs.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-03/sparse/0/rigs.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 0.89,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        }
+      ]
+    },
+    {
+      "leaf_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-04/colmap",
+      "sparse_dir": "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-04/sparse/0",
+      "commands": [
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-04/colmap/sparse/0/cameras.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-04/sparse/0/cameras.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.21,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-04/colmap/sparse/0/images.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-04/sparse/0/images.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 24.0,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-04/colmap/sparse/0/points3D.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-04/sparse/0/points3D.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 4.14,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-04/colmap/sparse/0/frames.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-04/sparse/0/frames.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.06,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-04/colmap/sparse/0/rigs.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-04/sparse/0/rigs.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 0.94,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        }
+      ]
+    },
+    {
+      "leaf_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-05/colmap",
+      "sparse_dir": "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-05/sparse/0",
+      "commands": [
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-05/colmap/sparse/0/cameras.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-05/sparse/0/cameras.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 0.98,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-05/colmap/sparse/0/images.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-05/sparse/0/images.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 24.18,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-05/colmap/sparse/0/points3D.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-05/sparse/0/points3D.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 6.63,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-05/colmap/sparse/0/frames.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-05/sparse/0/frames.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.03,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-05/colmap/sparse/0/rigs.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-05/sparse/0/rigs.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 0.98,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        }
+      ]
+    },
+    {
+      "leaf_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-06-r2/colmap",
+      "sparse_dir": "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-06/sparse/0",
+      "commands": [
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-06-r2/colmap/sparse/0/cameras.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-06/sparse/0/cameras.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.04,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-06-r2/colmap/sparse/0/images.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-06/sparse/0/images.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 28.98,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-06-r2/colmap/sparse/0/points3D.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-06/sparse/0/points3D.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 5.37,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-06-r2/colmap/sparse/0/frames.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-06/sparse/0/frames.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.03,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-06-r2/colmap/sparse/0/rigs.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-06/sparse/0/rigs.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.1,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        }
+      ]
+    },
+    {
+      "leaf_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-07/colmap",
+      "sparse_dir": "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-07/sparse/0",
+      "commands": [
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-07/colmap/sparse/0/cameras.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-07/sparse/0/cameras.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 0.95,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-07/colmap/sparse/0/images.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-07/sparse/0/images.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 31.21,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-07/colmap/sparse/0/points3D.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-07/sparse/0/points3D.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 5.91,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-07/colmap/sparse/0/frames.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-07/sparse/0/frames.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.21,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-07/colmap/sparse/0/rigs.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-07/sparse/0/rigs.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.07,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        }
+      ]
+    },
+    {
+      "leaf_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-08/colmap",
+      "sparse_dir": "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-08/sparse/0",
+      "commands": [
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-08/colmap/sparse/0/cameras.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-08/sparse/0/cameras.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.07,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-08/colmap/sparse/0/images.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-08/sparse/0/images.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 23.35,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-08/colmap/sparse/0/points3D.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-08/sparse/0/points3D.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 2.81,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-08/colmap/sparse/0/frames.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-08/sparse/0/frames.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.03,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-08/colmap/sparse/0/rigs.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-08/sparse/0/rigs.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.01,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        }
+      ]
+    },
+    {
+      "leaf_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-09/colmap",
+      "sparse_dir": "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-09/sparse/0",
+      "commands": [
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-09/colmap/sparse/0/cameras.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-09/sparse/0/cameras.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.04,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-09/colmap/sparse/0/images.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-09/sparse/0/images.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 27.86,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-09/colmap/sparse/0/points3D.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-09/sparse/0/points3D.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 3.49,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-09/colmap/sparse/0/frames.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-09/sparse/0/frames.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.2,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-09/colmap/sparse/0/rigs.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-09/sparse/0/rigs.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.09,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        }
+      ]
+    },
+    {
+      "leaf_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-10/colmap",
+      "sparse_dir": "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-10/sparse/0",
+      "commands": [
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-10/colmap/sparse/0/cameras.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-10/sparse/0/cameras.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.04,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-10/colmap/sparse/0/images.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-10/sparse/0/images.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 27.72,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-10/colmap/sparse/0/points3D.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-10/sparse/0/points3D.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 6.65,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-10/colmap/sparse/0/frames.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-10/sparse/0/frames.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.05,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-10/colmap/sparse/0/rigs.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-10/sparse/0/rigs.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.03,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        }
+      ]
+    },
+    {
+      "leaf_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-11/colmap",
+      "sparse_dir": "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-11/sparse/0",
+      "commands": [
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-11/colmap/sparse/0/cameras.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-11/sparse/0/cameras.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.02,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-11/colmap/sparse/0/images.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-11/sparse/0/images.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 27.86,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-11/colmap/sparse/0/points3D.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-11/sparse/0/points3D.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 8.35,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-11/colmap/sparse/0/frames.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-11/sparse/0/frames.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.2,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-11/colmap/sparse/0/rigs.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-11/sparse/0/rigs.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.06,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        }
+      ]
+    },
+    {
+      "leaf_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-12/colmap",
+      "sparse_dir": "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-12/sparse/0",
+      "commands": [
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-12/colmap/sparse/0/cameras.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-12/sparse/0/cameras.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.05,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-12/colmap/sparse/0/images.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-12/sparse/0/images.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 24.32,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-12/colmap/sparse/0/points3D.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-12/sparse/0/points3D.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 4.58,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-12/colmap/sparse/0/frames.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-12/sparse/0/frames.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.05,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-12/colmap/sparse/0/rigs.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-12/sparse/0/rigs.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.02,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        }
+      ]
+    },
+    {
+      "leaf_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-13/colmap",
+      "sparse_dir": "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-13/sparse/0",
+      "commands": [
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-13/colmap/sparse/0/cameras.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-13/sparse/0/cameras.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.14,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-13/colmap/sparse/0/images.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-13/sparse/0/images.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 29.82,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-13/colmap/sparse/0/points3D.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-13/sparse/0/points3D.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 8.17,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-13/colmap/sparse/0/frames.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-13/sparse/0/frames.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.08,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-13/colmap/sparse/0/rigs.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-13/sparse/0/rigs.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.0,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        }
+      ]
+    },
+    {
+      "leaf_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-14/colmap",
+      "sparse_dir": "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-14/sparse/0",
+      "commands": [
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-14/colmap/sparse/0/cameras.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-14/sparse/0/cameras.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.03,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-14/colmap/sparse/0/images.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-14/sparse/0/images.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 27.52,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-14/colmap/sparse/0/points3D.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-14/sparse/0/points3D.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 5.1,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-14/colmap/sparse/0/frames.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-14/sparse/0/frames.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.2,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-14/colmap/sparse/0/rigs.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-14/sparse/0/rigs.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.0,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        }
+      ]
+    },
+    {
+      "leaf_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-15/colmap",
+      "sparse_dir": "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-15/sparse/0",
+      "commands": [
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-15/colmap/sparse/0/cameras.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-15/sparse/0/cameras.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.04,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-15/colmap/sparse/0/images.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-15/sparse/0/images.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 13.11,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-15/colmap/sparse/0/points3D.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-15/sparse/0/points3D.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 5.45,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-15/colmap/sparse/0/frames.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-15/sparse/0/frames.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.03,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-15/colmap/sparse/0/rigs.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-15/sparse/0/rigs.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.03,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        }
+      ]
+    },
+    {
+      "leaf_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-16/colmap",
+      "sparse_dir": "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-16/sparse/0",
+      "commands": [
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-16/colmap/sparse/0/cameras.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-16/sparse/0/cameras.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.03,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-16/colmap/sparse/0/images.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-16/sparse/0/images.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 55.75,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-16/colmap/sparse/0/points3D.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-16/sparse/0/points3D.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 32.03,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-16/colmap/sparse/0/frames.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-16/sparse/0/frames.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.32,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-16/colmap/sparse/0/rigs.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-16/sparse/0/rigs.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.0,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        }
+      ]
+    },
+    {
+      "leaf_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-17/colmap",
+      "sparse_dir": "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-17/sparse/0",
+      "commands": [
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-17/colmap/sparse/0/cameras.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-17/sparse/0/cameras.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.07,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-17/colmap/sparse/0/images.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-17/sparse/0/images.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 54.5,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-17/colmap/sparse/0/points3D.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-17/sparse/0/points3D.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 21.97,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-17/colmap/sparse/0/frames.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-17/sparse/0/frames.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.36,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-17/colmap/sparse/0/rigs.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-17/sparse/0/rigs.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.0,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        }
+      ]
+    },
+    {
+      "leaf_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-18/colmap",
+      "sparse_dir": "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-18/sparse/0",
+      "commands": [
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-18/colmap/sparse/0/cameras.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-18/sparse/0/cameras.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 0.92,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-18/colmap/sparse/0/images.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-18/sparse/0/images.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 38.14,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-18/colmap/sparse/0/points3D.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-18/sparse/0/points3D.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 5.75,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-18/colmap/sparse/0/frames.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-18/sparse/0/frames.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.09,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        },
+        {
+          "command": [
+            "aws",
+            "s3",
+            "cp",
+            "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-18/colmap/sparse/0/rigs.txt",
+            "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/leaf_downloads/leaf-18/sparse/0/rigs.txt",
+            "--only-show-errors"
+          ],
+          "returncode": 0,
+          "seconds": 1.16,
+          "stdout_tail": "",
+          "stderr_tail": ""
+        }
+      ]
+    }
+  ],
+  "commands": {
+    "leaf_converters": [],
+    "model_merger": {
+      "command": [
+        "/opt/homebrew/bin/colmap",
+        "model_merger"
+      ],
+      "returncode": 64,
+      "seconds": 0.0,
+      "stdout_tail": "",
+      "stderr_tail": "stock model_merger skipped: leaf count is not exactly two"
+    },
+    "merged_converter": null,
+    "pose_aligned_validator": {
+      "command": [
+        "/opt/homebrew/bin/colmap",
+        "model_converter",
+        "--input_path",
+        "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/pose_aligned_text",
+        "--output_path",
+        "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/pose_aligned_binary",
+        "--output_type",
+        "BIN"
+      ],
+      "returncode": 0,
+      "seconds": 19.67,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    }
+  },
+  "fallback": {
+    "strategy": "pose_aligned_text_merge",
+    "transforms": [
+      {
+        "leaf_index": 8,
+        "shared_registered_images": 105,
+        "scale": 1.09473386,
+        "alignment_error_m": {
+          "min": 0.0009,
+          "median": 0.0046,
+          "p95": 0.0138,
+          "max": 0.0372
+        },
+        "surface_overlap": {
+          "overlap_cell_count": 107,
+          "flagged_overlap_cell_count": 0,
+          "flagged_overlap_cell_ratio": 0.0,
+          "median_abs_z_gap_m": 0.9869,
+          "p95_abs_z_gap_m": 8.1862,
+          "max_abs_z_gap_m": 10.5097,
+          "cell_size_m": 4.567,
+          "grid": {
+            "min_x": -224.57243514282823,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 4.567001497760353
+          },
+          "flagged_cells": [],
+          "min_points_per_side": 6,
+          "examples": []
+        },
+        "pre_cull_surface_overlap": {
+          "overlap_cell_count": 113,
+          "flagged_overlap_cell_count": 6,
+          "flagged_overlap_cell_ratio": 0.0531,
+          "median_abs_z_gap_m": 1.1427,
+          "p95_abs_z_gap_m": 8.1969,
+          "max_abs_z_gap_m": 10.5097,
+          "cell_size_m": 4.567,
+          "grid": {
+            "min_x": -224.57243514282823,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 4.567001497760353
+          },
+          "flagged_cells": [
+            [
+              53,
+              26
+            ],
+            [
+              54,
+              19
+            ],
+            [
+              55,
+              26
+            ],
+            [
+              58,
+              20
+            ],
+            [
+              59,
+              19
+            ],
+            [
+              66,
+              20
+            ]
+          ],
+          "min_points_per_side": 6,
+          "examples": [
+            {
+              "cell": [
+                53,
+                26
+              ],
+              "existing_count": 204,
+              "incoming_count": 165,
+              "median_z_gap_m": 9.4205,
+              "existing_z_median": 25.6111,
+              "incoming_z_median": 16.1906,
+              "tolerance_m": 9.2704
+            },
+            {
+              "cell": [
+                55,
+                26
+              ],
+              "existing_count": 31,
+              "incoming_count": 79,
+              "median_z_gap_m": 7.9932,
+              "existing_z_median": 32.9528,
+              "incoming_z_median": 24.9596,
+              "tolerance_m": 6.9513
+            },
+            {
+              "cell": [
+                58,
+                20
+              ],
+              "existing_count": 10,
+              "incoming_count": 8,
+              "median_z_gap_m": 6.6058,
+              "existing_z_median": 93.4928,
+              "incoming_z_median": 86.887,
+              "tolerance_m": 3.6089
+            },
+            {
+              "cell": [
+                66,
+                20
+              ],
+              "existing_count": 17,
+              "incoming_count": 21,
+              "median_z_gap_m": 5.9531,
+              "existing_z_median": 92.1579,
+              "incoming_z_median": 86.2048,
+              "tolerance_m": 5.5591
+            },
+            {
+              "cell": [
+                54,
+                19
+              ],
+              "existing_count": 24,
+              "incoming_count": 8,
+              "median_z_gap_m": 2.8377,
+              "existing_z_median": 101.3639,
+              "incoming_z_median": 104.2016,
+              "tolerance_m": 2.2969
+            },
+            {
+              "cell": [
+                59,
+                19
+              ],
+              "existing_count": 8,
+              "incoming_count": 10,
+              "median_z_gap_m": 1.9377,
+              "existing_z_median": 96.9621,
+              "incoming_z_median": 95.0244,
+              "tolerance_m": 1.7177
+            }
+          ]
+        },
+        "seam_conflict_points_removed": 291,
+        "new_points_kept": 22479
+      },
+      {
+        "leaf_index": 12,
+        "shared_registered_images": 153,
+        "scale": 1.11865871,
+        "alignment_error_m": {
+          "min": 0.0048,
+          "median": 0.0155,
+          "p95": 0.031,
+          "max": 0.0369
+        },
+        "surface_overlap": {
+          "overlap_cell_count": 114,
+          "flagged_overlap_cell_count": 0,
+          "flagged_overlap_cell_ratio": 0.0,
+          "median_abs_z_gap_m": 1.0795,
+          "p95_abs_z_gap_m": 8.9791,
+          "max_abs_z_gap_m": 15.4311,
+          "cell_size_m": 5.2496,
+          "grid": {
+            "min_x": -224.57243514282823,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 5.2495707142603525
+          },
+          "flagged_cells": [],
+          "min_points_per_side": 6,
+          "examples": []
+        },
+        "pre_cull_surface_overlap": {
+          "overlap_cell_count": 115,
+          "flagged_overlap_cell_count": 1,
+          "flagged_overlap_cell_ratio": 0.0087,
+          "median_abs_z_gap_m": 1.1018,
+          "p95_abs_z_gap_m": 8.9791,
+          "max_abs_z_gap_m": 15.4311,
+          "cell_size_m": 5.2496,
+          "grid": {
+            "min_x": -224.57243514282823,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 5.2495707142603525
+          },
+          "flagged_cells": [
+            [
+              50,
+              19
+            ]
+          ],
+          "min_points_per_side": 6,
+          "examples": [
+            {
+              "cell": [
+                50,
+                19
+              ],
+              "existing_count": 21,
+              "incoming_count": 13,
+              "median_z_gap_m": 7.549,
+              "existing_z_median": 69.0524,
+              "incoming_z_median": 76.6014,
+              "tolerance_m": 4.855
+            }
+          ]
+        },
+        "seam_conflict_points_removed": 13,
+        "new_points_kept": 32422
+      },
+      {
+        "leaf_index": 15,
+        "shared_registered_images": 120,
+        "scale": 1.0291347,
+        "alignment_error_m": {
+          "min": 0.0008,
+          "median": 0.0036,
+          "p95": 0.013,
+          "max": 0.0202
+        },
+        "surface_overlap": {
+          "overlap_cell_count": 86,
+          "flagged_overlap_cell_count": 0,
+          "flagged_overlap_cell_ratio": 0.0,
+          "median_abs_z_gap_m": 1.025,
+          "p95_abs_z_gap_m": 5.8249,
+          "max_abs_z_gap_m": 13.8465,
+          "cell_size_m": 5.4633,
+          "grid": {
+            "min_x": -224.57243514282823,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 5.463263187585353
+          },
+          "flagged_cells": [],
+          "min_points_per_side": 6,
+          "examples": []
+        },
+        "pre_cull_surface_overlap": {
+          "overlap_cell_count": 94,
+          "flagged_overlap_cell_count": 8,
+          "flagged_overlap_cell_ratio": 0.0851,
+          "median_abs_z_gap_m": 1.1663,
+          "p95_abs_z_gap_m": 13.8465,
+          "max_abs_z_gap_m": 32.3874,
+          "cell_size_m": 5.4633,
+          "grid": {
+            "min_x": -224.57243514282823,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 5.463263187585353
+          },
+          "flagged_cells": [
+            [
+              43,
+              21
+            ],
+            [
+              44,
+              21
+            ],
+            [
+              45,
+              21
+            ],
+            [
+              51,
+              25
+            ],
+            [
+              53,
+              24
+            ],
+            [
+              55,
+              24
+            ],
+            [
+              61,
+              23
+            ],
+            [
+              62,
+              23
+            ]
+          ],
+          "min_points_per_side": 6,
+          "examples": [
+            {
+              "cell": [
+                44,
+                21
+              ],
+              "existing_count": 1969,
+              "incoming_count": 52,
+              "median_z_gap_m": 32.3874,
+              "existing_z_median": 30.4986,
+              "incoming_z_median": -1.8889,
+              "tolerance_m": 17.9148
+            },
+            {
+              "cell": [
+                43,
+                21
+              ],
+              "existing_count": 3407,
+              "incoming_count": 293,
+              "median_z_gap_m": 31.3616,
+              "existing_z_median": 24.6371,
+              "incoming_z_median": -6.7245,
+              "tolerance_m": 20.2038
+            },
+            {
+              "cell": [
+                45,
+                21
+              ],
+              "existing_count": 1481,
+              "incoming_count": 8,
+              "median_z_gap_m": 28.5057,
+              "existing_z_median": 33.3107,
+              "incoming_z_median": 4.805,
+              "tolerance_m": 17.2022
+            },
+            {
+              "cell": [
+                51,
+                25
+              ],
+              "existing_count": 12,
+              "incoming_count": 6,
+              "median_z_gap_m": 19.0343,
+              "existing_z_median": -69.0374,
+              "incoming_z_median": -50.0031,
+              "tolerance_m": 2.9185
+            },
+            {
+              "cell": [
+                53,
+                24
+              ],
+              "existing_count": 35,
+              "incoming_count": 28,
+              "median_z_gap_m": 12.2745,
+              "existing_z_median": -42.2474,
+              "incoming_z_median": -29.9729,
+              "tolerance_m": 10.6927
+            },
+            {
+              "cell": [
+                55,
+                24
+              ],
+              "existing_count": 13,
+              "incoming_count": 9,
+              "median_z_gap_m": 12.2077,
+              "existing_z_median": -30.7428,
+              "incoming_z_median": -42.9505,
+              "tolerance_m": 8.7517
+            },
+            {
+              "cell": [
+                62,
+                23
+              ],
+              "existing_count": 7,
+              "incoming_count": 16,
+              "median_z_gap_m": 9.9804,
+              "existing_z_median": -4.7776,
+              "incoming_z_median": 5.2028,
+              "tolerance_m": 4.7016
+            },
+            {
+              "cell": [
+                61,
+                23
+              ],
+              "existing_count": 8,
+              "incoming_count": 20,
+              "median_z_gap_m": 7.5902,
+              "existing_z_median": -3.9746,
+              "incoming_z_median": 3.6156,
+              "tolerance_m": 6.6321
+            }
+          ]
+        },
+        "seam_conflict_points_removed": 432,
+        "new_points_kept": 12655
+      },
+      {
+        "leaf_index": 7,
+        "shared_registered_images": 115,
+        "scale": 1.34818432,
+        "alignment_error_m": {
+          "min": 0.0018,
+          "median": 0.0077,
+          "p95": 0.0169,
+          "max": 0.1062
+        },
+        "surface_overlap": {
+          "overlap_cell_count": 220,
+          "flagged_overlap_cell_count": 0,
+          "flagged_overlap_cell_ratio": 0.0,
+          "median_abs_z_gap_m": 0.7722,
+          "p95_abs_z_gap_m": 4.9314,
+          "max_abs_z_gap_m": 13.3911,
+          "cell_size_m": 6.0573,
+          "grid": {
+            "min_x": -272.096287167,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 6.0573113378875
+          },
+          "flagged_cells": [],
+          "min_points_per_side": 6,
+          "examples": []
+        },
+        "pre_cull_surface_overlap": {
+          "overlap_cell_count": 225,
+          "flagged_overlap_cell_count": 5,
+          "flagged_overlap_cell_ratio": 0.0222,
+          "median_abs_z_gap_m": 0.7871,
+          "p95_abs_z_gap_m": 6.2713,
+          "max_abs_z_gap_m": 18.9762,
+          "cell_size_m": 6.0573,
+          "grid": {
+            "min_x": -272.096287167,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 6.0573113378875
+          },
+          "flagged_cells": [
+            [
+              30,
+              16
+            ],
+            [
+              37,
+              15
+            ],
+            [
+              40,
+              16
+            ],
+            [
+              48,
+              19
+            ],
+            [
+              60,
+              16
+            ]
+          ],
+          "min_points_per_side": 6,
+          "examples": [
+            {
+              "cell": [
+                48,
+                19
+              ],
+              "existing_count": 1828,
+              "incoming_count": 4771,
+              "median_z_gap_m": 18.9762,
+              "existing_z_median": 32.3062,
+              "incoming_z_median": 13.33,
+              "tolerance_m": 18.8911
+            },
+            {
+              "cell": [
+                40,
+                16
+              ],
+              "existing_count": 12,
+              "incoming_count": 12,
+              "median_z_gap_m": 12.1921,
+              "existing_z_median": 90.0199,
+              "incoming_z_median": 102.212,
+              "tolerance_m": 8.7861
+            },
+            {
+              "cell": [
+                60,
+                16
+              ],
+              "existing_count": 36,
+              "incoming_count": 21,
+              "median_z_gap_m": 9.4538,
+              "existing_z_median": 77.545,
+              "incoming_z_median": 68.0911,
+              "tolerance_m": 7.4899
+            },
+            {
+              "cell": [
+                37,
+                15
+              ],
+              "existing_count": 6,
+              "incoming_count": 12,
+              "median_z_gap_m": 8.9198,
+              "existing_z_median": 115.7273,
+              "incoming_z_median": 124.6471,
+              "tolerance_m": 6.5739
+            },
+            {
+              "cell": [
+                30,
+                16
+              ],
+              "existing_count": 8,
+              "incoming_count": 8,
+              "median_z_gap_m": 6.3475,
+              "existing_z_median": 92.6578,
+              "incoming_z_median": 99.0054,
+              "tolerance_m": 5.6262
+            }
+          ]
+        },
+        "seam_conflict_points_removed": 4824,
+        "new_points_kept": 61657
+      },
+      {
+        "leaf_index": 13,
+        "shared_registered_images": 131,
+        "scale": 1.51314916,
+        "alignment_error_m": {
+          "min": 0.0014,
+          "median": 0.0096,
+          "p95": 0.0257,
+          "max": 0.0312
+        },
+        "surface_overlap": {
+          "overlap_cell_count": 215,
+          "flagged_overlap_cell_count": 0,
+          "flagged_overlap_cell_ratio": 0.0,
+          "median_abs_z_gap_m": 0.7165,
+          "p95_abs_z_gap_m": 5.7396,
+          "max_abs_z_gap_m": 17.0392,
+          "cell_size_m": 6.0573,
+          "grid": {
+            "min_x": -272.096287167,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 6.0573113378875
+          },
+          "flagged_cells": [],
+          "min_points_per_side": 6,
+          "examples": []
+        },
+        "pre_cull_surface_overlap": {
+          "overlap_cell_count": 229,
+          "flagged_overlap_cell_count": 14,
+          "flagged_overlap_cell_ratio": 0.0611,
+          "median_abs_z_gap_m": 0.7582,
+          "p95_abs_z_gap_m": 14.1443,
+          "max_abs_z_gap_m": 45.2991,
+          "cell_size_m": 6.0573,
+          "grid": {
+            "min_x": -272.096287167,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 6.0573113378875
+          },
+          "flagged_cells": [
+            [
+              32,
+              18
+            ],
+            [
+              33,
+              18
+            ],
+            [
+              34,
+              18
+            ],
+            [
+              35,
+              18
+            ],
+            [
+              35,
+              19
+            ],
+            [
+              36,
+              17
+            ],
+            [
+              36,
+              19
+            ],
+            [
+              38,
+              19
+            ],
+            [
+              39,
+              19
+            ],
+            [
+              40,
+              16
+            ],
+            [
+              40,
+              19
+            ],
+            [
+              41,
+              19
+            ],
+            [
+              48,
+              19
+            ],
+            [
+              60,
+              16
+            ]
+          ],
+          "min_points_per_side": 6,
+          "examples": [
+            {
+              "cell": [
+                36,
+                19
+              ],
+              "existing_count": 374,
+              "incoming_count": 10,
+              "median_z_gap_m": 45.2991,
+              "existing_z_median": 26.6434,
+              "incoming_z_median": -18.6557,
+              "tolerance_m": 12.2888
+            },
+            {
+              "cell": [
+                38,
+                19
+              ],
+              "existing_count": 553,
+              "incoming_count": 19,
+              "median_z_gap_m": 38.0636,
+              "existing_z_median": 27.6649,
+              "incoming_z_median": -10.3988,
+              "tolerance_m": 21.6177
+            },
+            {
+              "cell": [
+                39,
+                19
+              ],
+              "existing_count": 637,
+              "incoming_count": 90,
+              "median_z_gap_m": 36.9244,
+              "existing_z_median": 28.2703,
+              "incoming_z_median": -8.6541,
+              "tolerance_m": 22.9174
+            },
+            {
+              "cell": [
+                35,
+                19
+              ],
+              "existing_count": 235,
+              "incoming_count": 9,
+              "median_z_gap_m": 35.9916,
+              "existing_z_median": 23.2327,
+              "incoming_z_median": -12.7589,
+              "tolerance_m": 18.26
+            },
+            {
+              "cell": [
+                40,
+                19
+              ],
+              "existing_count": 1063,
+              "incoming_count": 166,
+              "median_z_gap_m": 32.9696,
+              "existing_z_median": 26.0504,
+              "incoming_z_median": -6.9192,
+              "tolerance_m": 21.2676
+            },
+            {
+              "cell": [
+                41,
+                19
+              ],
+              "existing_count": 2153,
+              "incoming_count": 730,
+              "median_z_gap_m": 24.8723,
+              "existing_z_median": 18.5992,
+              "incoming_z_median": -6.2731,
+              "tolerance_m": 22.8681
+            },
+            {
+              "cell": [
+                48,
+                19
+              ],
+              "existing_count": 1828,
+              "incoming_count": 2474,
+              "median_z_gap_m": 23.8643,
+              "existing_z_median": 32.3062,
+              "incoming_z_median": 8.4418,
+              "tolerance_m": 18.9725
+            },
+            {
+              "cell": [
+                32,
+                18
+              ],
+              "existing_count": 120,
+              "incoming_count": 15,
+              "median_z_gap_m": 16.4951,
+              "existing_z_median": 37.3851,
+              "incoming_z_median": 53.8801,
+              "tolerance_m": 9.5885
+            },
+            {
+              "cell": [
+                33,
+                18
+              ],
+              "existing_count": 127,
+              "incoming_count": 8,
+              "median_z_gap_m": 15.7329,
+              "existing_z_median": 38.6951,
+              "incoming_z_median": 54.428,
+              "tolerance_m": 9.1377
+            },
+            {
+              "cell": [
+                36,
+                17
+              ],
+              "existing_count": 72,
+              "incoming_count": 15,
+              "median_z_gap_m": 11.9809,
+              "existing_z_median": 69.4743,
+              "incoming_z_median": 81.4553,
+              "tolerance_m": 8.8019
+            },
+            {
+              "cell": [
+                34,
+                18
+              ],
+              "existing_count": 151,
+              "incoming_count": 14,
+              "median_z_gap_m": 10.7959,
+              "existing_z_median": 41.9815,
+              "incoming_z_median": 52.7775,
+              "tolerance_m": 10.2631
+            },
+            {
+              "cell": [
+                35,
+                18
+              ],
+              "existing_count": 219,
+              "incoming_count": 14,
+              "median_z_gap_m": 10.4524,
+              "existing_z_median": 45.8851,
+              "incoming_z_median": 56.3374,
+              "tolerance_m": 8.7982
+            },
+            {
+              "cell": [
+                40,
+                16
+              ],
+              "existing_count": 12,
+              "incoming_count": 7,
+              "median_z_gap_m": 10.2967,
+              "existing_z_median": 90.0199,
+              "incoming_z_median": 100.3166,
+              "tolerance_m": 8.7861
+            },
+            {
+              "cell": [
+                60,
+                16
+              ],
+              "existing_count": 36,
+              "incoming_count": 22,
+              "median_z_gap_m": 7.9,
+              "existing_z_median": 77.545,
+              "incoming_z_median": 69.645,
+              "tolerance_m": 7.4899
+            }
+          ]
+        },
+        "seam_conflict_points_removed": 3593,
+        "new_points_kept": 120983
+      },
+      {
+        "leaf_index": 16,
+        "shared_registered_images": 170,
+        "scale": 1.21291806,
+        "alignment_error_m": {
+          "min": 0.0004,
+          "median": 0.0043,
+          "p95": 0.0124,
+          "max": 0.0204
+        },
+        "surface_overlap": {
+          "overlap_cell_count": 169,
+          "flagged_overlap_cell_count": 0,
+          "flagged_overlap_cell_ratio": 0.0,
+          "median_abs_z_gap_m": 0.9032,
+          "p95_abs_z_gap_m": 6.7597,
+          "max_abs_z_gap_m": 14.4765,
+          "cell_size_m": 6.0573,
+          "grid": {
+            "min_x": -272.096287167,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 6.0573113378875
+          },
+          "flagged_cells": [],
+          "min_points_per_side": 6,
+          "examples": []
+        },
+        "pre_cull_surface_overlap": {
+          "overlap_cell_count": 174,
+          "flagged_overlap_cell_count": 5,
+          "flagged_overlap_cell_ratio": 0.0287,
+          "median_abs_z_gap_m": 0.9492,
+          "p95_abs_z_gap_m": 8.2636,
+          "max_abs_z_gap_m": 36.2423,
+          "cell_size_m": 6.0573,
+          "grid": {
+            "min_x": -272.096287167,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 6.0573113378875
+          },
+          "flagged_cells": [
+            [
+              43,
+              21
+            ],
+            [
+              48,
+              19
+            ],
+            [
+              50,
+              22
+            ],
+            [
+              51,
+              20
+            ],
+            [
+              67,
+              18
+            ]
+          ],
+          "min_points_per_side": 6,
+          "examples": [
+            {
+              "cell": [
+                51,
+                20
+              ],
+              "existing_count": 33,
+              "incoming_count": 11,
+              "median_z_gap_m": 36.2423,
+              "existing_z_median": 26.0648,
+              "incoming_z_median": -10.1775,
+              "tolerance_m": 11.207
+            },
+            {
+              "cell": [
+                48,
+                19
+              ],
+              "existing_count": 1828,
+              "incoming_count": 804,
+              "median_z_gap_m": 34.6379,
+              "existing_z_median": 32.3062,
+              "incoming_z_median": -2.3317,
+              "tolerance_m": 18.8911
+            },
+            {
+              "cell": [
+                50,
+                22
+              ],
+              "existing_count": 16,
+              "incoming_count": 15,
+              "median_z_gap_m": 10.5854,
+              "existing_z_median": -54.744,
+              "incoming_z_median": -44.1586,
+              "tolerance_m": 6.5497
+            },
+            {
+              "cell": [
+                43,
+                21
+              ],
+              "existing_count": 10,
+              "incoming_count": 7,
+              "median_z_gap_m": 7.9218,
+              "existing_z_median": -50.5046,
+              "incoming_z_median": -42.5827,
+              "tolerance_m": 6.1354
+            },
+            {
+              "cell": [
+                67,
+                18
+              ],
+              "existing_count": 19,
+              "incoming_count": 6,
+              "median_z_gap_m": 5.2137,
+              "existing_z_median": 42.15,
+              "incoming_z_median": 47.3637,
+              "tolerance_m": 3.9478
+            }
+          ]
+        },
+        "seam_conflict_points_removed": 843,
+        "new_points_kept": 72413
+      },
+      {
+        "leaf_index": 17,
+        "shared_registered_images": 141,
+        "scale": 1.49748777,
+        "alignment_error_m": {
+          "min": 0.0025,
+          "median": 0.0112,
+          "p95": 0.0159,
+          "max": 0.0238
+        },
+        "surface_overlap": {
+          "overlap_cell_count": 124,
+          "flagged_overlap_cell_count": 0,
+          "flagged_overlap_cell_ratio": 0.0,
+          "median_abs_z_gap_m": 1.0411,
+          "p95_abs_z_gap_m": 7.2551,
+          "max_abs_z_gap_m": 13.288,
+          "cell_size_m": 6.0573,
+          "grid": {
+            "min_x": -272.096287167,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 6.0573113378875
+          },
+          "flagged_cells": [],
+          "min_points_per_side": 6,
+          "examples": []
+        },
+        "pre_cull_surface_overlap": {
+          "overlap_cell_count": 134,
+          "flagged_overlap_cell_count": 10,
+          "flagged_overlap_cell_ratio": 0.0746,
+          "median_abs_z_gap_m": 1.1444,
+          "p95_abs_z_gap_m": 12.7734,
+          "max_abs_z_gap_m": 36.4539,
+          "cell_size_m": 6.0573,
+          "grid": {
+            "min_x": -272.096287167,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 6.0573113378875
+          },
+          "flagged_cells": [
+            [
+              43,
+              21
+            ],
+            [
+              48,
+              19
+            ],
+            [
+              49,
+              19
+            ],
+            [
+              51,
+              20
+            ],
+            [
+              51,
+              23
+            ],
+            [
+              52,
+              20
+            ],
+            [
+              57,
+              15
+            ],
+            [
+              60,
+              23
+            ],
+            [
+              67,
+              23
+            ],
+            [
+              70,
+              23
+            ]
+          ],
+          "min_points_per_side": 6,
+          "examples": [
+            {
+              "cell": [
+                51,
+                20
+              ],
+              "existing_count": 33,
+              "incoming_count": 79,
+              "median_z_gap_m": 36.4539,
+              "existing_z_median": 26.0648,
+              "incoming_z_median": -10.3891,
+              "tolerance_m": 12.056
+            },
+            {
+              "cell": [
+                48,
+                19
+              ],
+              "existing_count": 1828,
+              "incoming_count": 1568,
+              "median_z_gap_m": 35.7465,
+              "existing_z_median": 32.3062,
+              "incoming_z_median": -3.4404,
+              "tolerance_m": 18.8911
+            },
+            {
+              "cell": [
+                52,
+                20
+              ],
+              "existing_count": 242,
+              "incoming_count": 105,
+              "median_z_gap_m": 28.7203,
+              "existing_z_median": 26.155,
+              "incoming_z_median": -2.5653,
+              "tolerance_m": 14.2593
+            },
+            {
+              "cell": [
+                49,
+                19
+              ],
+              "existing_count": 4089,
+              "incoming_count": 52,
+              "median_z_gap_m": 22.5059,
+              "existing_z_median": 24.8266,
+              "incoming_z_median": 2.3207,
+              "tolerance_m": 18.4868
+            },
+            {
+              "cell": [
+                67,
+                23
+              ],
+              "existing_count": 12,
+              "incoming_count": 9,
+              "median_z_gap_m": 15.6288,
+              "existing_z_median": -43.4967,
+              "incoming_z_median": -59.1255,
+              "tolerance_m": 13.5359
+            },
+            {
+              "cell": [
+                51,
+                23
+              ],
+              "existing_count": 15,
+              "incoming_count": 42,
+              "median_z_gap_m": 11.4796,
+              "existing_z_median": -61.7555,
+              "incoming_z_median": -73.2351,
+              "tolerance_m": 10.9158
+            },
+            {
+              "cell": [
+                70,
+                23
+              ],
+              "existing_count": 9,
+              "incoming_count": 10,
+              "median_z_gap_m": 11.2474,
+              "existing_z_median": -33.1162,
+              "incoming_z_median": -44.3636,
+              "tolerance_m": 8.8627
+            },
+            {
+              "cell": [
+                43,
+                21
+              ],
+              "existing_count": 10,
+              "incoming_count": 42,
+              "median_z_gap_m": 9.3512,
+              "existing_z_median": -50.5046,
+              "incoming_z_median": -41.1534,
+              "tolerance_m": 7.6271
+            },
+            {
+              "cell": [
+                60,
+                23
+              ],
+              "existing_count": 13,
+              "incoming_count": 12,
+              "median_z_gap_m": 8.5411,
+              "existing_z_median": -78.704,
+              "incoming_z_median": -70.163,
+              "tolerance_m": 8.4855
+            },
+            {
+              "cell": [
+                57,
+                15
+              ],
+              "existing_count": 224,
+              "incoming_count": 7,
+              "median_z_gap_m": 7.8599,
+              "existing_z_median": 90.4926,
+              "incoming_z_median": 82.6327,
+              "tolerance_m": 6.8534
+            }
+          ]
+        },
+        "seam_conflict_points_removed": 1926,
+        "new_points_kept": 91879
+      },
+      {
+        "leaf_index": 5,
+        "shared_registered_images": 135,
+        "scale": 1.57906033,
+        "alignment_error_m": {
+          "min": 0.0017,
+          "median": 0.0063,
+          "p95": 0.0168,
+          "max": 0.023
+        },
+        "surface_overlap": {
+          "overlap_cell_count": 267,
+          "flagged_overlap_cell_count": 0,
+          "flagged_overlap_cell_ratio": 0.0,
+          "median_abs_z_gap_m": 0.869,
+          "p95_abs_z_gap_m": 5.4806,
+          "max_abs_z_gap_m": 17.9812,
+          "cell_size_m": 6.0573,
+          "grid": {
+            "min_x": -272.096287167,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 6.0573113378875
+          },
+          "flagged_cells": [],
+          "min_points_per_side": 6,
+          "examples": []
+        },
+        "pre_cull_surface_overlap": {
+          "overlap_cell_count": 279,
+          "flagged_overlap_cell_count": 12,
+          "flagged_overlap_cell_ratio": 0.043,
+          "median_abs_z_gap_m": 0.9355,
+          "p95_abs_z_gap_m": 9.3681,
+          "max_abs_z_gap_m": 41.3907,
+          "cell_size_m": 6.0573,
+          "grid": {
+            "min_x": -272.096287167,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 6.0573113378875
+          },
+          "flagged_cells": [
+            [
+              20,
+              17
+            ],
+            [
+              23,
+              17
+            ],
+            [
+              31,
+              19
+            ],
+            [
+              39,
+              19
+            ],
+            [
+              40,
+              16
+            ],
+            [
+              40,
+              19
+            ],
+            [
+              41,
+              19
+            ],
+            [
+              48,
+              19
+            ],
+            [
+              51,
+              23
+            ],
+            [
+              60,
+              16
+            ],
+            [
+              61,
+              9
+            ],
+            [
+              68,
+              17
+            ]
+          ],
+          "min_points_per_side": 6,
+          "examples": [
+            {
+              "cell": [
+                39,
+                19
+              ],
+              "existing_count": 637,
+              "incoming_count": 466,
+              "median_z_gap_m": 41.3907,
+              "existing_z_median": 28.2703,
+              "incoming_z_median": -13.1204,
+              "tolerance_m": 23.3952
+            },
+            {
+              "cell": [
+                40,
+                19
+              ],
+              "existing_count": 1063,
+              "incoming_count": 580,
+              "median_z_gap_m": 34.8959,
+              "existing_z_median": 26.0504,
+              "incoming_z_median": -8.8455,
+              "tolerance_m": 20.9965
+            },
+            {
+              "cell": [
+                41,
+                19
+              ],
+              "existing_count": 2153,
+              "incoming_count": 1769,
+              "median_z_gap_m": 25.8166,
+              "existing_z_median": 18.5992,
+              "incoming_z_median": -7.2173,
+              "tolerance_m": 24.3216
+            },
+            {
+              "cell": [
+                48,
+                19
+              ],
+              "existing_count": 1828,
+              "incoming_count": 4738,
+              "median_z_gap_m": 21.2325,
+              "existing_z_median": 32.3062,
+              "incoming_z_median": 11.0736,
+              "tolerance_m": 18.8911
+            },
+            {
+              "cell": [
+                51,
+                23
+              ],
+              "existing_count": 15,
+              "incoming_count": 9,
+              "median_z_gap_m": 19.9005,
+              "existing_z_median": -61.7555,
+              "incoming_z_median": -81.656,
+              "tolerance_m": 10.3861
+            },
+            {
+              "cell": [
+                31,
+                19
+              ],
+              "existing_count": 44,
+              "incoming_count": 32,
+              "median_z_gap_m": 18.1625,
+              "existing_z_median": 22.158,
+              "incoming_z_median": 3.9955,
+              "tolerance_m": 16.0004
+            },
+            {
+              "cell": [
+                23,
+                17
+              ],
+              "existing_count": 24,
+              "incoming_count": 11,
+              "median_z_gap_m": 11.443,
+              "existing_z_median": 65.5438,
+              "incoming_z_median": 54.1008,
+              "tolerance_m": 8.2875
+            },
+            {
+              "cell": [
+                40,
+                16
+              ],
+              "existing_count": 12,
+              "incoming_count": 10,
+              "median_z_gap_m": 10.2532,
+              "existing_z_median": 90.0199,
+              "incoming_z_median": 100.2731,
+              "tolerance_m": 8.7861
+            },
+            {
+              "cell": [
+                20,
+                17
+              ],
+              "existing_count": 15,
+              "incoming_count": 6,
+              "median_z_gap_m": 9.1753,
+              "existing_z_median": 60.1583,
+              "incoming_z_median": 50.983,
+              "tolerance_m": 8.7544
+            },
+            {
+              "cell": [
+                60,
+                16
+              ],
+              "existing_count": 64,
+              "incoming_count": 25,
+              "median_z_gap_m": 7.9841,
+              "existing_z_median": 77.1906,
+              "incoming_z_median": 69.2064,
+              "tolerance_m": 7.4966
+            },
+            {
+              "cell": [
+                68,
+                17
+              ],
+              "existing_count": 22,
+              "incoming_count": 8,
+              "median_z_gap_m": 3.7116,
+              "existing_z_median": 63.3448,
+              "incoming_z_median": 59.6333,
+              "tolerance_m": 3.5653
+            },
+            {
+              "cell": [
+                61,
+                9
+              ],
+              "existing_count": 10,
+              "incoming_count": 6,
+              "median_z_gap_m": 3.1571,
+              "existing_z_median": 203.7462,
+              "incoming_z_median": 200.5891,
+              "tolerance_m": 2.1201
+            }
+          ]
+        },
+        "seam_conflict_points_removed": 7660,
+        "new_points_kept": 113599
+      },
+      {
+        "leaf_index": 1,
+        "shared_registered_images": 161,
+        "scale": 1.17954343,
+        "alignment_error_m": {
+          "min": 0.001,
+          "median": 0.0115,
+          "p95": 0.0406,
+          "max": 0.0847
+        },
+        "surface_overlap": {
+          "overlap_cell_count": 151,
+          "flagged_overlap_cell_count": 0,
+          "flagged_overlap_cell_ratio": 0.0,
+          "median_abs_z_gap_m": 0.8545,
+          "p95_abs_z_gap_m": 7.3134,
+          "max_abs_z_gap_m": 23.6073,
+          "cell_size_m": 7.0551,
+          "grid": {
+            "min_x": -351.921291181,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 7.055123888062499
+          },
+          "flagged_cells": [],
+          "min_points_per_side": 6,
+          "examples": []
+        },
+        "pre_cull_surface_overlap": {
+          "overlap_cell_count": 153,
+          "flagged_overlap_cell_count": 2,
+          "flagged_overlap_cell_ratio": 0.0131,
+          "median_abs_z_gap_m": 0.9443,
+          "p95_abs_z_gap_m": 11.829,
+          "max_abs_z_gap_m": 27.4934,
+          "cell_size_m": 7.0551,
+          "grid": {
+            "min_x": -351.921291181,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 7.055123888062499
+          },
+          "flagged_cells": [
+            [
+              33,
+              15
+            ],
+            [
+              51,
+              16
+            ]
+          ],
+          "min_points_per_side": 6,
+          "examples": [
+            {
+              "cell": [
+                51,
+                16
+              ],
+              "existing_count": 75680,
+              "incoming_count": 2155,
+              "median_z_gap_m": 27.4934,
+              "existing_z_median": 0.1596,
+              "incoming_z_median": 27.653,
+              "tolerance_m": 23.4666
+            },
+            {
+              "cell": [
+                33,
+                15
+              ],
+              "existing_count": 77,
+              "incoming_count": 9,
+              "median_z_gap_m": 11.829,
+              "existing_z_median": 47.7871,
+              "incoming_z_median": 59.6161,
+              "tolerance_m": 9.9868
+            }
+          ]
+        },
+        "seam_conflict_points_removed": 2164,
+        "new_points_kept": 17123
+      },
+      {
+        "leaf_index": 4,
+        "shared_registered_images": 146,
+        "scale": 1.58052728,
+        "alignment_error_m": {
+          "min": 0.0058,
+          "median": 0.0161,
+          "p95": 0.0319,
+          "max": 0.1155
+        },
+        "surface_overlap": {
+          "overlap_cell_count": 184,
+          "flagged_overlap_cell_count": 0,
+          "flagged_overlap_cell_ratio": 0.0,
+          "median_abs_z_gap_m": 0.7666,
+          "p95_abs_z_gap_m": 7.5552,
+          "max_abs_z_gap_m": 22.5874,
+          "cell_size_m": 7.0551,
+          "grid": {
+            "min_x": -351.921291181,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 7.055123888062499
+          },
+          "flagged_cells": [],
+          "min_points_per_side": 6,
+          "examples": []
+        },
+        "pre_cull_surface_overlap": {
+          "overlap_cell_count": 186,
+          "flagged_overlap_cell_count": 2,
+          "flagged_overlap_cell_ratio": 0.0108,
+          "median_abs_z_gap_m": 0.789,
+          "p95_abs_z_gap_m": 7.8679,
+          "max_abs_z_gap_m": 33.526,
+          "cell_size_m": 7.0551,
+          "grid": {
+            "min_x": -351.921291181,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 7.055123888062499
+          },
+          "flagged_cells": [
+            [
+              48,
+              16
+            ],
+            [
+              52,
+              13
+            ]
+          ],
+          "min_points_per_side": 6,
+          "examples": [
+            {
+              "cell": [
+                48,
+                16
+              ],
+              "existing_count": 49479,
+              "incoming_count": 325,
+              "median_z_gap_m": 33.526,
+              "existing_z_median": -2.3065,
+              "incoming_z_median": 31.2195,
+              "tolerance_m": 31.0659
+            },
+            {
+              "cell": [
+                52,
+                13
+              ],
+              "existing_count": 350,
+              "incoming_count": 19,
+              "median_z_gap_m": 11.096,
+              "existing_z_median": 88.9876,
+              "incoming_z_median": 100.0836,
+              "tolerance_m": 6.4015
+            }
+          ]
+        },
+        "seam_conflict_points_removed": 344,
+        "new_points_kept": 24978
+      },
+      {
+        "leaf_index": 6,
+        "shared_registered_images": 144,
+        "scale": 1.47116331,
+        "alignment_error_m": {
+          "min": 0.0056,
+          "median": 0.0162,
+          "p95": 0.0595,
+          "max": 0.1027
+        },
+        "surface_overlap": {
+          "overlap_cell_count": 94,
+          "flagged_overlap_cell_count": 0,
+          "flagged_overlap_cell_ratio": 0.0,
+          "median_abs_z_gap_m": 2.0169,
+          "p95_abs_z_gap_m": 11.4526,
+          "max_abs_z_gap_m": 19.8102,
+          "cell_size_m": 7.0551,
+          "grid": {
+            "min_x": -351.921291181,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 7.055123888062499
+          },
+          "flagged_cells": [],
+          "min_points_per_side": 6,
+          "examples": []
+        },
+        "pre_cull_surface_overlap": {
+          "overlap_cell_count": 106,
+          "flagged_overlap_cell_count": 12,
+          "flagged_overlap_cell_ratio": 0.1132,
+          "median_abs_z_gap_m": 2.3703,
+          "p95_abs_z_gap_m": 42.8915,
+          "max_abs_z_gap_m": 55.4122,
+          "cell_size_m": 7.0551,
+          "grid": {
+            "min_x": -351.921291181,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 7.055123888062499
+          },
+          "flagged_cells": [
+            [
+              39,
+              16
+            ],
+            [
+              40,
+              16
+            ],
+            [
+              41,
+              16
+            ],
+            [
+              42,
+              16
+            ],
+            [
+              43,
+              16
+            ],
+            [
+              44,
+              16
+            ],
+            [
+              45,
+              16
+            ],
+            [
+              46,
+              16
+            ],
+            [
+              53,
+              16
+            ],
+            [
+              53,
+              17
+            ],
+            [
+              54,
+              17
+            ],
+            [
+              56,
+              17
+            ]
+          ],
+          "min_points_per_side": 6,
+          "examples": [
+            {
+              "cell": [
+                43,
+                16
+              ],
+              "existing_count": 1294,
+              "incoming_count": 49,
+              "median_z_gap_m": 55.4122,
+              "existing_z_median": 34.4914,
+              "incoming_z_median": -20.9208,
+              "tolerance_m": 24.9122
+            },
+            {
+              "cell": [
+                45,
+                16
+              ],
+              "existing_count": 1809,
+              "incoming_count": 289,
+              "median_z_gap_m": 48.9593,
+              "existing_z_median": 34.8905,
+              "incoming_z_median": -14.0687,
+              "tolerance_m": 28.0098
+            },
+            {
+              "cell": [
+                42,
+                16
+              ],
+              "existing_count": 1113,
+              "incoming_count": 57,
+              "median_z_gap_m": 48.344,
+              "existing_z_median": 30.1609,
+              "incoming_z_median": -18.183,
+              "tolerance_m": 24.0485
+            },
+            {
+              "cell": [
+                44,
+                16
+              ],
+              "existing_count": 1484,
+              "incoming_count": 138,
+              "median_z_gap_m": 46.0243,
+              "existing_z_median": 31.0424,
+              "incoming_z_median": -14.9819,
+              "tolerance_m": 27.4963
+            },
+            {
+              "cell": [
+                41,
+                16
+              ],
+              "existing_count": 783,
+              "incoming_count": 15,
+              "median_z_gap_m": 43.0416,
+              "existing_z_median": 27.3317,
+              "incoming_z_median": -15.7099,
+              "tolerance_m": 28.4234
+            },
+            {
+              "cell": [
+                39,
+                16
+              ],
+              "existing_count": 367,
+              "incoming_count": 11,
+              "median_z_gap_m": 42.8915,
+              "existing_z_median": 30.3637,
+              "incoming_z_median": -12.5278,
+              "tolerance_m": 21.9182
+            },
+            {
+              "cell": [
+                40,
+                16
+              ],
+              "existing_count": 745,
+              "incoming_count": 16,
+              "median_z_gap_m": 42.1923,
+              "existing_z_median": 27.1652,
+              "incoming_z_median": -15.0271,
+              "tolerance_m": 22.1596
+            },
+            {
+              "cell": [
+                46,
+                16
+              ],
+              "existing_count": 2711,
+              "incoming_count": 377,
+              "median_z_gap_m": 39.3515,
+              "existing_z_median": 28.6796,
+              "incoming_z_median": -10.6719,
+              "tolerance_m": 26.7383
+            },
+            {
+              "cell": [
+                56,
+                17
+              ],
+              "existing_count": 1131,
+              "incoming_count": 62,
+              "median_z_gap_m": 32.5628,
+              "existing_z_median": 28.4688,
+              "incoming_z_median": -4.094,
+              "tolerance_m": 15.7815
+            },
+            {
+              "cell": [
+                54,
+                17
+              ],
+              "existing_count": 1648,
+              "incoming_count": 75,
+              "median_z_gap_m": 30.2078,
+              "existing_z_median": 14.8232,
+              "incoming_z_median": -15.3846,
+              "tolerance_m": 24.2699
+            },
+            {
+              "cell": [
+                53,
+                17
+              ],
+              "existing_count": 1527,
+              "incoming_count": 76,
+              "median_z_gap_m": 27.3549,
+              "existing_z_median": 15.3975,
+              "incoming_z_median": -11.9573,
+              "tolerance_m": 23.6248
+            },
+            {
+              "cell": [
+                53,
+                16
+              ],
+              "existing_count": 7555,
+              "incoming_count": 58,
+              "median_z_gap_m": 26.4729,
+              "existing_z_median": 26.5382,
+              "incoming_z_median": 0.0654,
+              "tolerance_m": 21.3883
+            }
+          ]
+        },
+        "seam_conflict_points_removed": 1223,
+        "new_points_kept": 82636
+      },
+      {
+        "leaf_index": 2,
+        "shared_registered_images": 192,
+        "scale": 1.20590785,
+        "alignment_error_m": {
+          "min": 0.0049,
+          "median": 0.0366,
+          "p95": 0.0627,
+          "max": 0.0683
+        },
+        "surface_overlap": {
+          "overlap_cell_count": 122,
+          "flagged_overlap_cell_count": 0,
+          "flagged_overlap_cell_ratio": 0.0,
+          "median_abs_z_gap_m": 1.164,
+          "p95_abs_z_gap_m": 9.8968,
+          "max_abs_z_gap_m": 29.7226,
+          "cell_size_m": 7.0551,
+          "grid": {
+            "min_x": -351.921291181,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 7.055123888062499
+          },
+          "flagged_cells": [],
+          "min_points_per_side": 6,
+          "examples": []
+        },
+        "pre_cull_surface_overlap": {
+          "overlap_cell_count": 126,
+          "flagged_overlap_cell_count": 4,
+          "flagged_overlap_cell_ratio": 0.0317,
+          "median_abs_z_gap_m": 1.3078,
+          "p95_abs_z_gap_m": 12.0025,
+          "max_abs_z_gap_m": 29.7226,
+          "cell_size_m": 7.0551,
+          "grid": {
+            "min_x": -351.921291181,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 7.055123888062499
+          },
+          "flagged_cells": [
+            [
+              33,
+              15
+            ],
+            [
+              50,
+              16
+            ],
+            [
+              51,
+              16
+            ],
+            [
+              52,
+              13
+            ]
+          ],
+          "min_points_per_side": 6,
+          "examples": [
+            {
+              "cell": [
+                50,
+                16
+              ],
+              "existing_count": 167844,
+              "incoming_count": 1278,
+              "median_z_gap_m": 27.413,
+              "existing_z_median": -2.1073,
+              "incoming_z_median": 25.3057,
+              "tolerance_m": 25.5712
+            },
+            {
+              "cell": [
+                51,
+                16
+              ],
+              "existing_count": 100854,
+              "incoming_count": 1720,
+              "median_z_gap_m": 25.9497,
+              "existing_z_median": -0.3926,
+              "incoming_z_median": 25.5571,
+              "tolerance_m": 24.5442
+            },
+            {
+              "cell": [
+                33,
+                15
+              ],
+              "existing_count": 85,
+              "incoming_count": 8,
+              "median_z_gap_m": 10.5853,
+              "existing_z_median": 48.1297,
+              "incoming_z_median": 58.715,
+              "tolerance_m": 9.9868
+            },
+            {
+              "cell": [
+                52,
+                13
+              ],
+              "existing_count": 359,
+              "incoming_count": 35,
+              "median_z_gap_m": 7.8926,
+              "existing_z_median": 89.0347,
+              "incoming_z_median": 96.9274,
+              "tolerance_m": 6.4015
+            }
+          ]
+        },
+        "seam_conflict_points_removed": 3041,
+        "new_points_kept": 8832
+      },
+      {
+        "leaf_index": 9,
+        "shared_registered_images": 172,
+        "scale": 1.34929587,
+        "alignment_error_m": {
+          "min": 0.0018,
+          "median": 0.0079,
+          "p95": 0.0304,
+          "max": 0.0712
+        },
+        "surface_overlap": {
+          "overlap_cell_count": 42,
+          "flagged_overlap_cell_count": 0,
+          "flagged_overlap_cell_ratio": 0.0,
+          "median_abs_z_gap_m": 2.3539,
+          "p95_abs_z_gap_m": 12.9212,
+          "max_abs_z_gap_m": 23.0074,
+          "cell_size_m": 7.0551,
+          "grid": {
+            "min_x": -351.921291181,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 7.055123888062499
+          },
+          "flagged_cells": [],
+          "min_points_per_side": 6,
+          "examples": []
+        },
+        "pre_cull_surface_overlap": {
+          "overlap_cell_count": 46,
+          "flagged_overlap_cell_count": 4,
+          "flagged_overlap_cell_ratio": 0.087,
+          "median_abs_z_gap_m": 2.6429,
+          "p95_abs_z_gap_m": 30.2522,
+          "max_abs_z_gap_m": 55.5555,
+          "cell_size_m": 7.0551,
+          "grid": {
+            "min_x": -351.921291181,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 7.055123888062499
+          },
+          "flagged_cells": [
+            [
+              45,
+              16
+            ],
+            [
+              46,
+              16
+            ],
+            [
+              53,
+              17
+            ],
+            [
+              54,
+              17
+            ]
+          ],
+          "min_points_per_side": 6,
+          "examples": [
+            {
+              "cell": [
+                45,
+                16
+              ],
+              "existing_count": 1953,
+              "incoming_count": 19,
+              "median_z_gap_m": 55.5555,
+              "existing_z_median": 35.12,
+              "incoming_z_median": -20.4356,
+              "tolerance_m": 21.9023
+            },
+            {
+              "cell": [
+                46,
+                16
+              ],
+              "existing_count": 2845,
+              "incoming_count": 36,
+              "median_z_gap_m": 49.3381,
+              "existing_z_median": 29.5196,
+              "incoming_z_median": -19.8185,
+              "tolerance_m": 20.1432
+            },
+            {
+              "cell": [
+                53,
+                17
+              ],
+              "existing_count": 1600,
+              "incoming_count": 61,
+              "median_z_gap_m": 30.2522,
+              "existing_z_median": 15.7225,
+              "incoming_z_median": -14.5297,
+              "tolerance_m": 23.6248
+            },
+            {
+              "cell": [
+                54,
+                17
+              ],
+              "existing_count": 1695,
+              "incoming_count": 36,
+              "median_z_gap_m": 29.1402,
+              "existing_z_median": 14.8748,
+              "incoming_z_median": -14.2654,
+              "tolerance_m": 24.2699
+            }
+          ]
+        },
+        "seam_conflict_points_removed": 152,
+        "new_points_kept": 56848
+      },
+      {
+        "leaf_index": 14,
+        "shared_registered_images": 222,
+        "scale": 1.33607972,
+        "alignment_error_m": {
+          "min": 0.0057,
+          "median": 0.0347,
+          "p95": 0.0681,
+          "max": 0.0807
+        },
+        "surface_overlap": {
+          "overlap_cell_count": 63,
+          "flagged_overlap_cell_count": 0,
+          "flagged_overlap_cell_ratio": 0.0,
+          "median_abs_z_gap_m": 1.2924,
+          "p95_abs_z_gap_m": 8.2467,
+          "max_abs_z_gap_m": 14.0552,
+          "cell_size_m": 7.0551,
+          "grid": {
+            "min_x": -351.921291181,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 7.055123888062499
+          },
+          "flagged_cells": [],
+          "min_points_per_side": 6,
+          "examples": []
+        },
+        "pre_cull_surface_overlap": {
+          "overlap_cell_count": 69,
+          "flagged_overlap_cell_count": 6,
+          "flagged_overlap_cell_ratio": 0.087,
+          "median_abs_z_gap_m": 1.4697,
+          "p95_abs_z_gap_m": 28.1528,
+          "max_abs_z_gap_m": 37.7911,
+          "cell_size_m": 7.0551,
+          "grid": {
+            "min_x": -351.921291181,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 7.055123888062499
+          },
+          "flagged_cells": [
+            [
+              50,
+              19
+            ],
+            [
+              53,
+              17
+            ],
+            [
+              54,
+              17
+            ],
+            [
+              55,
+              17
+            ],
+            [
+              56,
+              17
+            ],
+            [
+              63,
+              19
+            ]
+          ],
+          "min_points_per_side": 6,
+          "examples": [
+            {
+              "cell": [
+                55,
+                17
+              ],
+              "existing_count": 1716,
+              "incoming_count": 68,
+              "median_z_gap_m": 37.7911,
+              "existing_z_median": 26.0873,
+              "incoming_z_median": -11.7038,
+              "tolerance_m": 17.0506
+            },
+            {
+              "cell": [
+                56,
+                17
+              ],
+              "existing_count": 1189,
+              "incoming_count": 20,
+              "median_z_gap_m": 35.7967,
+              "existing_z_median": 28.5148,
+              "incoming_z_median": -7.2818,
+              "tolerance_m": 15.7815
+            },
+            {
+              "cell": [
+                54,
+                17
+              ],
+              "existing_count": 1695,
+              "incoming_count": 350,
+              "median_z_gap_m": 29.4585,
+              "existing_z_median": 14.8748,
+              "incoming_z_median": -14.5837,
+              "tolerance_m": 24.2699
+            },
+            {
+              "cell": [
+                53,
+                17
+              ],
+              "existing_count": 1600,
+              "incoming_count": 959,
+              "median_z_gap_m": 28.1528,
+              "existing_z_median": 15.7225,
+              "incoming_z_median": -12.4303,
+              "tolerance_m": 23.6248
+            },
+            {
+              "cell": [
+                63,
+                19
+              ],
+              "existing_count": 122,
+              "incoming_count": 18,
+              "median_z_gap_m": 25.2252,
+              "existing_z_median": -30.7827,
+              "incoming_z_median": -56.0079,
+              "tolerance_m": 14.8437
+            },
+            {
+              "cell": [
+                50,
+                19
+              ],
+              "existing_count": 7,
+              "incoming_count": 6,
+              "median_z_gap_m": 11.345,
+              "existing_z_median": -65.3812,
+              "incoming_z_median": -76.7263,
+              "tolerance_m": 8.5703
+            }
+          ]
+        },
+        "seam_conflict_points_removed": 1421,
+        "new_points_kept": 45754
+      },
+      {
+        "leaf_index": 11,
+        "shared_registered_images": 200,
+        "scale": 1.52385382,
+        "alignment_error_m": {
+          "min": 0.0051,
+          "median": 0.0231,
+          "p95": 0.049,
+          "max": 0.0687
+        },
+        "surface_overlap": {
+          "overlap_cell_count": 89,
+          "flagged_overlap_cell_count": 0,
+          "flagged_overlap_cell_ratio": 0.0,
+          "median_abs_z_gap_m": 1.4348,
+          "p95_abs_z_gap_m": 10.6738,
+          "max_abs_z_gap_m": 24.0122,
+          "cell_size_m": 10.0829,
+          "grid": {
+            "min_x": -351.921291181,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 10.082862662425
+          },
+          "flagged_cells": [],
+          "min_points_per_side": 6,
+          "examples": []
+        },
+        "pre_cull_surface_overlap": {
+          "overlap_cell_count": 96,
+          "flagged_overlap_cell_count": 7,
+          "flagged_overlap_cell_ratio": 0.0729,
+          "median_abs_z_gap_m": 1.6721,
+          "p95_abs_z_gap_m": 24.0122,
+          "max_abs_z_gap_m": 61.5428,
+          "cell_size_m": 10.0829,
+          "grid": {
+            "min_x": -351.921291181,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 10.082862662425
+          },
+          "flagged_cells": [
+            [
+              31,
+              11
+            ],
+            [
+              32,
+              11
+            ],
+            [
+              37,
+              11
+            ],
+            [
+              40,
+              12
+            ],
+            [
+              46,
+              11
+            ],
+            [
+              47,
+              10
+            ],
+            [
+              50,
+              11
+            ]
+          ],
+          "min_points_per_side": 6,
+          "examples": [
+            {
+              "cell": [
+                31,
+                11
+              ],
+              "existing_count": 3026,
+              "incoming_count": 45,
+              "median_z_gap_m": 61.5428,
+              "existing_z_median": 36.7279,
+              "incoming_z_median": -24.8149,
+              "tolerance_m": 32.5694
+            },
+            {
+              "cell": [
+                32,
+                11
+              ],
+              "existing_count": 5258,
+              "incoming_count": 63,
+              "median_z_gap_m": 41.8334,
+              "existing_z_median": 34.6547,
+              "incoming_z_median": -7.1787,
+              "tolerance_m": 36.3489
+            },
+            {
+              "cell": [
+                40,
+                12
+              ],
+              "existing_count": 778,
+              "incoming_count": 8,
+              "median_z_gap_m": 38.6869,
+              "existing_z_median": 25.251,
+              "incoming_z_median": -13.4359,
+              "tolerance_m": 20.1003
+            },
+            {
+              "cell": [
+                37,
+                11
+              ],
+              "existing_count": 12782,
+              "incoming_count": 532,
+              "median_z_gap_m": 28.7018,
+              "existing_z_median": 26.1978,
+              "incoming_z_median": -2.504,
+              "tolerance_m": 23.6304
+            },
+            {
+              "cell": [
+                50,
+                11
+              ],
+              "existing_count": 83,
+              "incoming_count": 9,
+              "median_z_gap_m": 10.0192,
+              "existing_z_median": 34.758,
+              "incoming_z_median": 44.7772,
+              "tolerance_m": 7.6369
+            },
+            {
+              "cell": [
+                47,
+                10
+              ],
+              "existing_count": 102,
+              "incoming_count": 7,
+              "median_z_gap_m": 6.6869,
+              "existing_z_median": 59.0602,
+              "incoming_z_median": 65.7471,
+              "tolerance_m": 5.7684
+            },
+            {
+              "cell": [
+                46,
+                11
+              ],
+              "existing_count": 47,
+              "incoming_count": 8,
+              "median_z_gap_m": 5.8724,
+              "existing_z_median": 27.5766,
+              "incoming_z_median": 33.4491,
+              "tolerance_m": 5.8534
+            }
+          ]
+        },
+        "seam_conflict_points_removed": 672,
+        "new_points_kept": 109398
+      },
+      {
+        "leaf_index": 18,
+        "shared_registered_images": 198,
+        "scale": 1.2472922,
+        "alignment_error_m": {
+          "min": 0.0027,
+          "median": 0.0251,
+          "p95": 0.0516,
+          "max": 0.0793
+        },
+        "surface_overlap": {
+          "overlap_cell_count": 32,
+          "flagged_overlap_cell_count": 0,
+          "flagged_overlap_cell_ratio": 0.0,
+          "median_abs_z_gap_m": 2.0954,
+          "p95_abs_z_gap_m": 13.9648,
+          "max_abs_z_gap_m": 19.5915,
+          "cell_size_m": 10.0829,
+          "grid": {
+            "min_x": -351.921291181,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 10.082862662425
+          },
+          "flagged_cells": [],
+          "min_points_per_side": 6,
+          "examples": []
+        },
+        "pre_cull_surface_overlap": {
+          "overlap_cell_count": 34,
+          "flagged_overlap_cell_count": 2,
+          "flagged_overlap_cell_ratio": 0.0588,
+          "median_abs_z_gap_m": 2.569,
+          "p95_abs_z_gap_m": 24.9663,
+          "max_abs_z_gap_m": 32.505,
+          "cell_size_m": 10.0829,
+          "grid": {
+            "min_x": -351.921291181,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 10.082862662425
+          },
+          "flagged_cells": [
+            [
+              37,
+              11
+            ],
+            [
+              50,
+              13
+            ]
+          ],
+          "min_points_per_side": 6,
+          "examples": [
+            {
+              "cell": [
+                37,
+                11
+              ],
+              "existing_count": 12782,
+              "incoming_count": 13,
+              "median_z_gap_m": 32.505,
+              "existing_z_median": 26.1978,
+              "incoming_z_median": -6.3072,
+              "tolerance_m": 23.6304
+            },
+            {
+              "cell": [
+                50,
+                13
+              ],
+              "existing_count": 83,
+              "incoming_count": 13,
+              "median_z_gap_m": 24.9663,
+              "existing_z_median": -13.6785,
+              "incoming_z_median": -38.6447,
+              "tolerance_m": 20.7117
+            }
+          ]
+        },
+        "seam_conflict_points_removed": 26,
+        "new_points_kept": 2733
+      },
+      {
+        "leaf_index": 3,
+        "shared_registered_images": 192,
+        "scale": 1.25070667,
+        "alignment_error_m": {
+          "min": 0.0051,
+          "median": 0.0133,
+          "p95": 0.0331,
+          "max": 0.0428
+        },
+        "surface_overlap": {
+          "overlap_cell_count": 4,
+          "flagged_overlap_cell_count": 0,
+          "flagged_overlap_cell_ratio": 0.0,
+          "median_abs_z_gap_m": 6.2931,
+          "p95_abs_z_gap_m": 16.0764,
+          "max_abs_z_gap_m": 16.0764,
+          "cell_size_m": 10.0829,
+          "grid": {
+            "min_x": -351.921291181,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 10.082862662425
+          },
+          "flagged_cells": [],
+          "min_points_per_side": 6,
+          "examples": []
+        },
+        "pre_cull_surface_overlap": {
+          "overlap_cell_count": 8,
+          "flagged_overlap_cell_count": 4,
+          "flagged_overlap_cell_ratio": 0.5,
+          "median_abs_z_gap_m": 32.9103,
+          "p95_abs_z_gap_m": 55.3951,
+          "max_abs_z_gap_m": 55.3951,
+          "cell_size_m": 10.0829,
+          "grid": {
+            "min_x": -351.921291181,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 10.082862662425
+          },
+          "flagged_cells": [
+            [
+              29,
+              11
+            ],
+            [
+              30,
+              11
+            ],
+            [
+              31,
+              11
+            ],
+            [
+              32,
+              11
+            ]
+          ],
+          "min_points_per_side": 6,
+          "examples": [
+            {
+              "cell": [
+                30,
+                11
+              ],
+              "existing_count": 2334,
+              "incoming_count": 10,
+              "median_z_gap_m": 55.3951,
+              "existing_z_median": 35.4088,
+              "incoming_z_median": -19.9863,
+              "tolerance_m": 31.0979
+            },
+            {
+              "cell": [
+                32,
+                11
+              ],
+              "existing_count": 5258,
+              "incoming_count": 9,
+              "median_z_gap_m": 52.0845,
+              "existing_z_median": 34.6547,
+              "incoming_z_median": -17.4298,
+              "tolerance_m": 36.3489
+            },
+            {
+              "cell": [
+                31,
+                11
+              ],
+              "existing_count": 3026,
+              "incoming_count": 24,
+              "median_z_gap_m": 51.2217,
+              "existing_z_median": 36.7279,
+              "incoming_z_median": -14.4939,
+              "tolerance_m": 32.5694
+            },
+            {
+              "cell": [
+                29,
+                11
+              ],
+              "existing_count": 1854,
+              "incoming_count": 16,
+              "median_z_gap_m": 49.7442,
+              "existing_z_median": 32.5693,
+              "incoming_z_median": -17.1749,
+              "tolerance_m": 31.5546
+            }
+          ]
+        },
+        "seam_conflict_points_removed": 59,
+        "new_points_kept": 221
+      },
+      {
+        "leaf_index": 10,
+        "shared_registered_images": 153,
+        "scale": 1.77477785,
+        "alignment_error_m": {
+          "min": 0.0013,
+          "median": 0.009,
+          "p95": 0.0279,
+          "max": 0.0504
+        },
+        "surface_overlap": {
+          "overlap_cell_count": 117,
+          "flagged_overlap_cell_count": 0,
+          "flagged_overlap_cell_ratio": 0.0,
+          "median_abs_z_gap_m": 1.0244,
+          "p95_abs_z_gap_m": 8.0026,
+          "max_abs_z_gap_m": 23.3593,
+          "cell_size_m": 10.0829,
+          "grid": {
+            "min_x": -351.921291181,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 10.082862662425
+          },
+          "flagged_cells": [],
+          "min_points_per_side": 6,
+          "examples": []
+        },
+        "pre_cull_surface_overlap": {
+          "overlap_cell_count": 124,
+          "flagged_overlap_cell_count": 7,
+          "flagged_overlap_cell_ratio": 0.0565,
+          "median_abs_z_gap_m": 1.0828,
+          "p95_abs_z_gap_m": 23.3593,
+          "max_abs_z_gap_m": 56.3789,
+          "cell_size_m": 10.0829,
+          "grid": {
+            "min_x": -351.921291181,
+            "min_y": -114.91215465075241,
+            "cell_size_m": 10.082862662425
+          },
+          "flagged_cells": [
+            [
+              28,
+              11
+            ],
+            [
+              29,
+              11
+            ],
+            [
+              30,
+              11
+            ],
+            [
+              31,
+              11
+            ],
+            [
+              32,
+              11
+            ],
+            [
+              40,
+              12
+            ],
+            [
+              50,
+              11
+            ]
+          ],
+          "min_points_per_side": 6,
+          "examples": [
+            {
+              "cell": [
+                30,
+                11
+              ],
+              "existing_count": 2334,
+              "incoming_count": 24,
+              "median_z_gap_m": 56.3789,
+              "existing_z_median": 35.4088,
+              "incoming_z_median": -20.9701,
+              "tolerance_m": 31.0979
+            },
+            {
+              "cell": [
+                31,
+                11
+              ],
+              "existing_count": 3026,
+              "incoming_count": 255,
+              "median_z_gap_m": 52.0275,
+              "existing_z_median": 36.7279,
+              "incoming_z_median": -15.2996,
+              "tolerance_m": 32.5694
+            },
+            {
+              "cell": [
+                29,
+                11
+              ],
+              "existing_count": 1854,
+              "incoming_count": 44,
+              "median_z_gap_m": 50.2637,
+              "existing_z_median": 32.5693,
+              "incoming_z_median": -17.6944,
+              "tolerance_m": 31.5546
+            },
+            {
+              "cell": [
+                32,
+                11
+              ],
+              "existing_count": 5258,
+              "incoming_count": 585,
+              "median_z_gap_m": 44.3565,
+              "existing_z_median": 34.6547,
+              "incoming_z_median": -9.7019,
+              "tolerance_m": 36.3489
+            },
+            {
+              "cell": [
+                28,
+                11
+              ],
+              "existing_count": 1355,
+              "incoming_count": 7,
+              "median_z_gap_m": 43.9091,
+              "existing_z_median": 28.0537,
+              "incoming_z_median": -15.8553,
+              "tolerance_m": 29.3488
+            },
+            {
+              "cell": [
+                40,
+                12
+              ],
+              "existing_count": 783,
+              "incoming_count": 13,
+              "median_z_gap_m": 38.3795,
+              "existing_z_median": 25.2452,
+              "incoming_z_median": -13.1342,
+              "tolerance_m": 20.6422
+            },
+            {
+              "cell": [
+                50,
+                11
+              ],
+              "existing_count": 83,
+              "incoming_count": 9,
+              "median_z_gap_m": 7.8475,
+              "existing_z_median": 34.758,
+              "incoming_z_median": 42.6055,
+              "tolerance_m": 7.6369
+            }
+          ]
+        },
+        "seam_conflict_points_removed": 937,
+        "new_points_kept": 117629
+      }
+    ]
+  },
+  "merged_text_dir": "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/pose_aligned_text",
+  "normalized_text_dirs": [
+    "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/normalized/leaf-00",
+    "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/normalized/leaf-01",
+    "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/normalized/leaf-02",
+    "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/normalized/leaf-03",
+    "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/normalized/leaf-04",
+    "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/normalized/leaf-05",
+    "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/normalized/leaf-06",
+    "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/normalized/leaf-07",
+    "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/normalized/leaf-08",
+    "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/normalized/leaf-09",
+    "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/normalized/leaf-10",
+    "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/normalized/leaf-11",
+    "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/normalized/leaf-12",
+    "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/normalized/leaf-13",
+    "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/normalized/leaf-14",
+    "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/normalized/leaf-15",
+    "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/normalized/leaf-16",
+    "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/normalized/leaf-17",
+    "/private/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/merge/normalized/leaf-18"
+  ],
+  "upload": {
+    "command": [
+      "/opt/homebrew/bin/aws",
+      "s3",
+      "sync",
+      "/tmp/md1_viscell_full_reducer_pruned_culled_20260519T1531Z/output_package",
+      "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/merged-pruned-culled/colmap",
+      "--only-show-errors"
+    ],
+    "returncode": 0,
+    "seconds": 400.0,
+    "stdout_tail": "",
+    "stderr_tail": ""
+  }
+}

@@ -55,6 +55,62 @@ class SfmFanoutReducerTest(unittest.TestCase):
             self.assertTrue((output / "sparse_raw" / "0" / "points3D.txt").exists())
             self.assertIn("\"decision\": \"pass\"", (output / "reducer_metadata.json").read_text(encoding="utf-8"))
 
+    def test_more_than_two_leaf_merge_skips_per_leaf_binary_converters(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            leaf_dirs = [root / f"leaf-{index:02d}" for index in range(3)]
+            for leaf_dir in leaf_dirs:
+                leaf_dir.mkdir()
+
+            commands: list[list[str]] = []
+            original_stats_for_model = fanout_reducer.stats_for_model
+            original_global_image_ids = fanout_reducer.global_image_ids
+            original_camera_signatures = fanout_reducer.camera_signatures
+            original_rewrite_model_text = fanout_reducer.rewrite_model_text
+            original_write_pose_aligned_merge = fanout_reducer.write_pose_aligned_merge
+            original_run_command = fanout_reducer.run_command
+            try:
+                fanout_reducer.stats_for_model = lambda model_dir: fanout_reducer.ModelStats(1, 1, {str(model_dir)})
+                fanout_reducer.global_image_ids = lambda model_dirs: {}
+                fanout_reducer.camera_signatures = lambda model_dirs: ({}, {model_dir: {} for model_dir in model_dirs})
+
+                def fake_rewrite_model_text(*, output_dir, **_kwargs):
+                    output_dir.mkdir(parents=True, exist_ok=True)
+
+                def fake_write_pose_aligned_merge(*, output_dir, **_kwargs):
+                    output_dir.mkdir(parents=True, exist_ok=True)
+                    for file_name in ("cameras.txt", "images.txt", "points3D.txt"):
+                        (output_dir / file_name).write_text("# merged\n", encoding="utf-8")
+                    return {"strategy": "pose_aligned_text_merge", "transforms": []}
+
+                def fake_run_command(command):
+                    commands.append(command)
+                    return {"command": command, "returncode": 0, "seconds": 0.0, "stdout_tail": "", "stderr_tail": ""}
+
+                fanout_reducer.rewrite_model_text = fake_rewrite_model_text
+                fanout_reducer.write_pose_aligned_merge = fake_write_pose_aligned_merge
+                fanout_reducer.run_command = fake_run_command
+
+                report = fanout_reducer.merge_leaf_models(
+                    leaf_dirs=leaf_dirs,
+                    work_dir=root / "merge",
+                    colmap_bin="colmap",
+                    min_shared_images=8,
+                    scratch_cleanup_paths=[],
+                )
+            finally:
+                fanout_reducer.stats_for_model = original_stats_for_model
+                fanout_reducer.global_image_ids = original_global_image_ids
+                fanout_reducer.camera_signatures = original_camera_signatures
+                fanout_reducer.rewrite_model_text = original_rewrite_model_text
+                fanout_reducer.write_pose_aligned_merge = original_write_pose_aligned_merge
+                fanout_reducer.run_command = original_run_command
+
+            self.assertEqual(report["commands"]["leaf_converters"], [])
+            self.assertEqual(len(commands), 1)
+            self.assertTrue(any("pose_aligned_text" in part for part in commands[0]))
+            self.assertEqual(report["blockers"], [])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,14 @@
+2026-05-19 09:55:24     136918 manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/merged-pruned-culled/colmap/reducer_metadata.json
+2026-05-19 09:48:44       1606 manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/merged-pruned-culled/colmap/sparse/0/cameras.txt
+2026-05-19 09:48:44     401863 manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/merged-pruned-culled/colmap/sparse/0/frames.txt
+2026-05-19 09:48:44 1261542622 manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/merged-pruned-culled/colmap/sparse/0/images.txt
+2026-05-19 09:48:44  167844627 manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/merged-pruned-culled/colmap/sparse/0/points3D.txt
+2026-05-19 09:48:44        218 manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/merged-pruned-culled/colmap/sparse/0/rigs.txt
+2026-05-19 09:52:01       1606 manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/merged-pruned-culled/colmap/sparse_raw/0/cameras.txt
+2026-05-19 09:52:01     401863 manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/merged-pruned-culled/colmap/sparse_raw/0/frames.txt
+2026-05-19 09:52:01 1261542622 manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/merged-pruned-culled/colmap/sparse_raw/0/images.txt
+2026-05-19 09:54:54  167844627 manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/merged-pruned-culled/colmap/sparse_raw/0/points3D.txt
+2026-05-19 09:55:17        218 manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/merged-pruned-culled/colmap/sparse_raw/0/rigs.txt
+
+Total Objects: 11
+   Total Size: 2859718790

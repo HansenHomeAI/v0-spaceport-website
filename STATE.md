@@ -1,47 +1,41 @@
-reason: Continuing SfM-only visibility-cell production proof. The two-leaf MD1 canary passed filtered reducer, seam-overlap, quality, API, and browser-viewer gates, but it is not production-ready until the full 19-leaf fanout/reducer/viewer proof passes as one merged COLMAP sparse artifact.
-last_step: 2026-05-19T01:23Z: patched the proven leaf06 blocker locally. Visibility-cell sparse filtering now falls back to track-owner jurisdiction for distributed leaves when COLMAP raw XY is not GPS-aligned, and run_sfm.sh count parsing no longer emits `0\n0`. No-spend replay of the failed leaf06 raw sparse retained 106,547 filtered points instead of 0.
-next_unblocked_step: Commit/push the leaf06 filter patch, wait exact-head SfM container rebuild, relaunch only leaf06 on the patched image, and continue fanout only after leaf06 passes. Keep monitoring active leaf07 to terminal without cancelling it.
+reason: SfM-only visibility-cell production proof completed. The final MD1 artifact is one merged COLMAP sparse output produced from 19 distributed visibility-cell leaves with pruning and seam-conflict culling. Downstream 3DGS/SOGS render and AI visual gates are separate and are not part of this SfM-stage proof.
+last_step: 2026-05-19T15:59Z: uploaded and viewer-validated `merged-pruned-culled/colmap`; API returned HTTP 200 with 3076 registered images, 1057498 exact points, and 160000 sampled points; browser screenshot rendered visible points with lit_ratio_10pct=0.0466475.
+next_unblocked_step: Optional downstream handoff only: feed the single COLMAP artifact into the downstream 3DGS step, or use the local dev viewer for manual SfM inspection. No additional SfM fanout/reducer work is pending.
 owner_action_needed: none
-active_jobs: ["md1-viscell-full-l07-1779151432"]
-completed_jobs: ["md1-tile00-ds1000-r30-1778869168", "md1-tile01-ds1000-r30-1778869169", "md1-tile02-ds1000-r30-1778869170", "md1-tile03-ds1000-r30-1778869171", "md1-tile04-ds1000-r30-1778869172", "md1-tile00-split-r32-1778899939", "md1-tile00-h1i1lod-r40-1778978757", "md1-tile01-h1i1lod-r41-1778982712", "md1-tile02-h1i1lod-r41-1778982713", "md1-tile03-h1i1lod-r41-1778982714", "md1-tile04-h1i1lod-r41-1778982715"]
-failed_jobs: ["md1-tile00-split-r31-1778898254", "md1-tile00-sogs-r33-1778908626", "md1-tile00-sogs-r34-1778914593", "md1-tile00-lodonly-r38-1778950901", "md1-tile00-h0lod-r39-1778976307", "r41-remaining-tiles-viewer-visual-proof", "r41-viewer-unified-lod-false-idle"]
+active_jobs: []
+completed_jobs: ["md1-viscell-plan-v1-1779135256", "md1-viscell-full-l00-1779141981", "md1-viscell-full-l01-1779141986", "md1-viscell-full-l02-1779143476", "md1-viscell-full-l03-1779145861", "md1-viscell-full-l04-1779146968", "md1-viscell-full-l05-1779147527", "md1-viscell-full-l06r2-1779154798", "md1-viscell-full-l07-1779151432", "md1-viscell-full-l08-1779155211", "md1-viscell-full-l09-1779157902", "md1-viscell-full-l10-1779158398", "md1-viscell-full-l11-1779161085", "md1-viscell-full-l12-1779161215", "md1-viscell-full-l13-1779164027", "md1-viscell-full-l14-1779164403", "md1-viscell-full-l15-1779167214", "md1-viscell-full-l16-1779167589", "md1-viscell-full-l17-1779168816", "md1-viscell-full-l18-1779170653"]
+failed_jobs: ["md1-viscell-full-l06-1779150311"]
 held_jobs: []
 unrelated_active_jobs: []
 branch: agent-73948216-sfm-production-spine
-head: bf83051a513b0cb6b2be3380b9fc032797cc2cb1
-current_rung: SFM_VISIBILITY_CELL_V1_LEAF06_FILTER_PATCH_READY
-project_final_decision: not_production_ready_leaf06_filter_failure
-project_level_unresolved_caveats: ["SfM-only production proof still needs full 19-leaf fanout on the visibility_cell_v1 manifest", "leaf06 exposed a jurisdiction-filter failure that must be patched and reproven", "two-leaf canary is bounded evidence only", "downstream 3DGS/SOGS proof is separate from this SfM-only gate"]
-current_viewer_url: http://127.0.0.1:3000/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fmd1-visibility-cell-v1-canary-20260518T2025Z%2Fmerged-filtered-seam%2Fcolmap&maxPoints=160000
-two_leaf_filtered_reducer: logs/sfm-production-spine/md1_visibility_cell_v1_two_leaf_reducer_filtered_seam_20260518T2146Z.json
-two_leaf_quality: logs/sfm-production-spine/md1_visibility_cell_v1_two_leaf_quality_filtered_seam_viewer_20260518T2201Z.json
-two_leaf_viewer_api: logs/sfm-production-spine/md1_visibility_cell_v1_two_leaf_viewer_api_20260518T2154Z.json
-two_leaf_viewer_screenshot: logs/sfm-production-spine/md1_visibility_cell_v1_two_leaf_viewer_20260518T2200Z.png
-active_processing_jobs_proof: logs/sfm-production-spine/active-md1-processing-jobs-current-20260518T2128Z.json
-full_fanout_root: s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z
-full_fanout_launch_context: logs/sfm-production-spine/md1_visibility_cell_v1_full_run_20260518T2206Z.json
-full_fanout_manager_status: logs/sfm-production-spine/md1_visibility_cell_v1_full_fanout_manager_20260518T2206Z.json
-exact_head_cdk_run: 26063133849
-leaf06_failure_evidence:
-  job_name: md1-viscell-full-l06-1779150311
-  terminal_status: Failed
-  failure_reason: "AlgorithmError: , exit code: 1"
-  describe: logs/sfm-production-spine/md1-viscell-full-l06-1779150311_describe_poll_20260519T0118Z.json
-  cloudwatch: logs/sfm-production-spine/md1-viscell-full-l06-1779150311_cloudwatch_tail_20260519T0112Z.json
-  s3_listing: logs/sfm-production-spine/md1_visibility_cell_v1_full_leaf06_s3_poll_20260519T0114Z.txt
-  sfm_metadata: logs/sfm-production-spine/md1_visibility_cell_v1_full_leaf06_sfm_metadata_20260519T0115Z.json
-  raw_points_3d: 255656
-  filtered_points_3d: 0
-  jurisdiction_points_rejected: 255656
-leaf06_patch_evidence:
-  replay: logs/sfm-production-spine/md1_visibility_cell_v1_leaf06_filter_replay_after_patch_20260519T0121Z.json
-  replay_filtered_points_3d: 106547
-  replay_jurisdiction_track_owner_fallback_points: 123501
-  verification:
-    - python3 -m py_compile infrastructure/containers/sfm/run_colmap_sfm.py scripts/sfm/run_sfm_fanout_reducer.py scripts/sfm/evaluate_sfm_quality.py
-    - bash -n infrastructure/containers/sfm/run_sfm.sh
-    - PYTHONPATH=. python3 -m unittest tests.unit.test_colmap_gps_priors tests.unit.test_sfm_fanout_contract tests.unit.test_sfm_fanout_reducer tests.unit.test_sfm_reducer_canary tests.unit.test_sfm_quality_eval
-updated: 2026-05-19T01:23Z
+head: 60fcec4fe28e3ee73e4c44aa5eebcf4ade543c54
+current_rung: SFM_VISIBILITY_CELL_V1_FULL_FANOUT_REDUCER_VIEWER_PASSED
+project_final_decision: sfm_stage_production_ready_downstream_3dgs_separate
+project_level_unresolved_caveats: ["Downstream 3DGS/SOGS render and AI visual gates are separate from this SfM-only deliverable", "global sparse double-surface grid has 4 warning cells, but cross-leaf seam overlap is authoritative and passes with flagged_overlap_cell_ratio=0.0"]
+final_sfm_output_uri: s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/merged-pruned-culled/colmap
+current_viewer_url: http://127.0.0.1:3000/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fmd1-visibility-cell-v1-full-20260518T2206Z%2Fmerged-pruned-culled%2Fcolmap&maxPoints=160000
+final_reducer_report: logs/sfm-production-spine/md1_visibility_cell_v1_full_reducer_pruned_culled_20260519T1531Z.json
+final_quality_report: logs/sfm-production-spine/md1_visibility_cell_v1_full_quality_pruned_culled_viewer_20260519T1557Z.json
+final_viewer_api: logs/sfm-production-spine/md1_visibility_cell_v1_full_pruned_culled_viewer_api_summary_20260519T1556Z.json
+final_viewer_visual_proof: logs/sfm-production-spine/md1_visibility_cell_v1_full_pruned_culled_viewer_visual_proof_20260519T1559Z.json
+final_viewer_screenshot: logs/sfm-production-spine/md1_visibility_cell_v1_full_pruned_culled_viewer_20260519T1559Z.png
+final_s3_listing: logs/sfm-production-spine/md1_visibility_cell_v1_full_pruned_culled_s3_listing_20260519T1559Z.txt
+sfm_stage_metrics:
+  planner: visibility_cell_v1
+  leaf_count: 19
+  registered_images: 3076
+  expected_images: 3076
+  merged_points3d: 1057498
+  min_leaf_retention: 1.0
+  weak_merge_nodes: 0
+  final_min_track_length: 3
+  seam_conflict_points_removed: 29621
+  cross_leaf_flagged_overlap_cell_ratio: 0.0
+  sparse_low_track_ratio: 0.0
+  sparse_reprojection_error_p95: 1.7666
+  viewer_http_status: 200
+  viewer_lit_ratio_10pct: 0.0466475
+updated: 2026-05-19T15:59Z
 
 sfm_visibility_cell_v1_implementation:
   updated: 2026-05-18T17:41:04Z
@@ -481,3 +475,190 @@ sfm_visibility_cell_v1_md1_planner_report:
   - logs/sfm-production-spine/md1_visibility_cell_v1_two_leaf_viewer_pixel_stats_20260518T2200Z.txt
   - logs/sfm-production-spine/md1_visibility_cell_v1_two_leaf_quality_filtered_seam_viewer_20260518T2201Z.json
 - Next: commit/push the reducer/test patch, wait exact-head CI/container proof, then launch full 19-leaf visibility-cell SfM fanout with max concurrency 2.
+
+### 2026-05-19T03:08Z full 19-leaf visibility-cell fanout progress
+- Current objective: complete the SfM-only visibility-cell production proof end-to-end. Do not claim production readiness until all 19 leaves reduce into one merged COLMAP artifact and SfM-specific quality/viewer gates pass.
+- Full run root: s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z.
+- Completed and verified leaves: 00, 01, 02, 03, 04, 05, repaired 06-r2, 07, 08.
+- Active leaves:
+  - Leaf 09: `md1-viscell-full-l09-1779157902`, InProgress, no FailureReason, mapper active; CloudWatch reached `num_reg_frames=219` at 2026-05-19T03:06:59Z.
+  - Leaf 10: `md1-viscell-full-l10-1779158398`, InProgress, no FailureReason, mapper active; CloudWatch reached `num_reg_frames=136` at 2026-05-19T03:07:01Z.
+- Pending leaves: 11-18. The continuation manager is running with max concurrency 2, so no duplicate fanout jobs are needed.
+- Evidence:
+  - logs/sfm-production-spine/md1_visibility_cell_v1_full_fanout_continue_status.json
+  - logs/sfm-production-spine/md1-viscell-full-l09-1779157902_describe_poll_20260519T0307Z.json
+  - logs/sfm-production-spine/md1-viscell-full-l09-1779157902_cloudwatch_tail_20260519T0307Z.json
+  - logs/sfm-production-spine/md1-viscell-full-l10-1779158398_describe_poll_20260519T0307Z.json
+  - logs/sfm-production-spine/md1-viscell-full-l10-1779158398_cloudwatch_tail_20260519T0307Z.json
+- Next: continue monitoring the active manager to terminal; once leaves 09/10 complete, let it launch 11/12 and repeat until all 19 leaves are verified, then run the full reducer, seam/layering diagnostics, sparse quality, and browser viewer proof.
+
+### 2026-05-19T03:26Z full fanout leaf09 terminal
+- Leaf 09 completed and verified:
+  - Job: `md1-viscell-full-l09-1779157902`.
+  - ProcessingStartTime: 2026-05-18T20:32:22.005000-06:00.
+  - ProcessingEndTime: 2026-05-18T21:23:16.797000-06:00.
+  - FailureReason: empty.
+  - Registered images: 360/360.
+  - Raw model points: 228280.
+  - Filtered `sparse/0` points: 71079.
+  - S3 output: 376 objects / 2411580435 bytes, including non-empty `sparse/0/cameras.txt`, `images.txt`, and `points3D.txt`.
+- The manager launched leaf11 `md1-viscell-full-l11-1779161085`; active leaves are now leaf10 and leaf11, with leaves 12-18 pending.
+- Evidence:
+  - logs/sfm-production-spine/md1-viscell-full-l09-1779157902_describe_poll_20260519T0325Z.json
+  - logs/sfm-production-spine/md1-viscell-full-l09-1779157902_cloudwatch_tail_20260519T0325Z.json
+  - logs/sfm-production-spine/md1_visibility_cell_v1_full_leaf09_s3_poll_20260519T0325Z.txt
+- Next: continue bounded manager polling; do not run reducer until all 19 leaves have terminal, verified sparse outputs.
+
+### 2026-05-19T06:05Z full fanout leaf16 terminal
+- Leaf 16 completed and verified:
+  - Job: `md1-viscell-full-l16-1779167589`.
+  - ProcessingStartTime: 2026-05-18T23:13:55.947000-06:00.
+  - ProcessingEndTime: 2026-05-19T00:02:55.381000-06:00.
+  - FailureReason: empty.
+  - Registered images: 360/360.
+  - Raw model points: 235477.
+  - Filtered `sparse/0` points: 111811.
+  - S3 output: 376 objects / 2426705016 bytes, including non-empty `sparse/0/cameras.txt`, `images.txt`, and `points3D.txt`.
+- The manager launched the final pending leaf18 `md1-viscell-full-l18-1779170653`; active leaves are now leaf17 and leaf18, with no pending leaves.
+- Evidence:
+  - logs/sfm-production-spine/md1-viscell-full-l16-1779167589_describe_poll_20260519T0604Z.json
+  - logs/sfm-production-spine/md1-viscell-full-l16-1779167589_cloudwatch_tail_20260519T0604Z.json
+  - logs/sfm-production-spine/md1_visibility_cell_v1_full_leaf16_s3_poll_20260519T0604Z.txt
+- Next: wait for leaf17 and leaf18 terminal verification, then run the full 19-leaf reducer and SfM quality/viewer proof.
+
+### 2026-05-19T06:25Z full fanout leaf17 terminal
+- Leaf 17 completed and verified:
+  - Job: `md1-viscell-full-l17-1779168816`.
+  - ProcessingStartTime: 2026-05-18T23:34:20.276000-06:00.
+  - ProcessingEndTime: 2026-05-19T00:20:14.197000-06:00.
+  - FailureReason: empty.
+  - Registered images: 360/360.
+  - Raw model points: 204849.
+  - Filtered `sparse/0` points: 112985.
+  - S3 output: 376 objects / 2401427391 bytes, including non-empty `sparse/0/cameras.txt`, `images.txt`, and `points3D.txt`.
+- Active leaves: leaf18 only. Pending leaves: none. Completed/verified leaves: 18/19.
+- Evidence:
+  - logs/sfm-production-spine/md1-viscell-full-l17-1779168816_describe_poll_20260519T0622Z.json
+  - logs/sfm-production-spine/md1-viscell-full-l17-1779168816_cloudwatch_tail_20260519T0622Z.json
+  - logs/sfm-production-spine/md1_visibility_cell_v1_full_leaf17_s3_poll_20260519T0622Z.txt
+- Next: wait for final leaf18 terminal verification, then run the full 19-leaf reducer and SfM quality/viewer proof.
+
+### 2026-05-19T06:36Z full fanout terminal
+- Full visibility-cell fanout completed: 19/19 leaves terminal and verified by the continuation manager.
+- Final leaf 18 completed and verified:
+  - Job: `md1-viscell-full-l18-1779170653`.
+  - ProcessingStartTime: 2026-05-19T00:04:57.904000-06:00.
+  - ProcessingEndTime: 2026-05-19T00:33:34.686000-06:00.
+  - FailureReason: empty.
+  - Registered images: 206/206.
+  - Raw model points: 138269.
+  - Filtered `sparse/0` points: 128887.
+  - S3 output: 221 objects / 1430362806 bytes, including non-empty `sparse/0/cameras.txt`, `images.txt`, and `points3D.txt`.
+- Evidence:
+  - logs/sfm-production-spine/md1_visibility_cell_v1_full_fanout_continue_status.json
+  - logs/sfm-production-spine/md1-viscell-full-l18-1779170653_describe_poll_20260519T0634Z.json
+  - logs/sfm-production-spine/md1-viscell-full-l18-1779170653_cloudwatch_tail_20260519T0634Z.json
+  - logs/sfm-production-spine/md1_visibility_cell_v1_full_leaf18_s3_poll_20260519T0634Z.txt
+- Next: run the full 19-leaf reducer into one COLMAP artifact, then run seam/layering diagnostics, sparse quality gates, and browser viewer proof.
+
+### 2026-05-19T05:34Z full fanout leaf15 terminal
+- Leaf 15 completed and verified:
+  - Job: `md1-viscell-full-l15-1779167214`.
+  - ProcessingStartTime: 2026-05-18T23:07:42.741000-06:00.
+  - ProcessingEndTime: 2026-05-18T23:29:46.999000-06:00.
+  - FailureReason: empty.
+  - Registered images: 137/137.
+  - Raw model points: 110087.
+  - Filtered `sparse/0` points: 101703.
+  - S3 output: 152 objects / 980783642 bytes, including non-empty `sparse/0/cameras.txt`, `images.txt`, and `points3D.txt`.
+- The manager launched leaf17 `md1-viscell-full-l17-1779168816`; active leaves are now leaf16 and leaf17, with only leaf18 pending.
+- Evidence:
+  - logs/sfm-production-spine/md1-viscell-full-l15-1779167214_describe_poll_20260519T0532Z.json
+  - logs/sfm-production-spine/md1-viscell-full-l15-1779167214_cloudwatch_tail_20260519T0532Z.json
+  - logs/sfm-production-spine/md1_visibility_cell_v1_full_leaf15_s3_poll_20260519T0532Z.txt
+- Next: continue bounded manager polling; do not run reducer until all 19 leaves have terminal, verified sparse outputs.
+
+### 2026-05-19T05:15Z full fanout leaf14 terminal
+- Leaf 14 completed and verified:
+  - Job: `md1-viscell-full-l14-1779164403`.
+  - ProcessingStartTime: 2026-05-18T22:20:46.630000-06:00.
+  - ProcessingEndTime: 2026-05-18T23:11:00.892000-06:00.
+  - FailureReason: empty.
+  - Registered images: 360/360.
+  - Raw model points: 214250.
+  - Filtered `sparse/0` points: 87609.
+  - S3 output: 376 objects / 2391404294 bytes, including non-empty `sparse/0/cameras.txt`, `images.txt`, and `points3D.txt`.
+- The manager launched leaf16 `md1-viscell-full-l16-1779167589`; active leaves are now leaf15 and leaf16, with leaves 17-18 pending.
+- Evidence:
+  - logs/sfm-production-spine/md1-viscell-full-l14-1779164403_describe_poll_20260519T0515Z.json
+  - logs/sfm-production-spine/md1-viscell-full-l14-1779164403_cloudwatch_tail_20260519T0515Z.json
+  - logs/sfm-production-spine/md1_visibility_cell_v1_full_leaf14_s3_poll_20260519T0515Z.txt
+- Next: continue bounded manager polling; do not run reducer until all 19 leaves have terminal, verified sparse outputs.
+
+### 2026-05-19T05:08Z full fanout leaf13 terminal
+- Leaf 13 completed and verified:
+  - Job: `md1-viscell-full-l13-1779164027`.
+  - ProcessingStartTime: 2026-05-18T22:14:34.033000-06:00.
+  - ProcessingEndTime: 2026-05-18T23:04:11.952000-06:00.
+  - FailureReason: empty.
+  - Registered images: 360/360.
+  - Raw model points: 234318.
+  - Filtered `sparse/0` points: 194545.
+  - S3 output: 376 objects / 2454357919 bytes, including non-empty `sparse/0/cameras.txt`, `images.txt`, and `points3D.txt`.
+- The manager launched leaf15 `md1-viscell-full-l15-1779167214`; active leaves are now leaf14 and leaf15, with leaves 16-18 pending.
+- Evidence:
+  - logs/sfm-production-spine/md1-viscell-full-l13-1779164027_describe_poll_20260519T0507Z.json
+  - logs/sfm-production-spine/md1-viscell-full-l13-1779164027_cloudwatch_tail_20260519T0507Z.json
+  - logs/sfm-production-spine/md1_visibility_cell_v1_full_leaf13_s3_poll_20260519T0507Z.txt
+- Next: continue bounded manager polling; do not run reducer until all 19 leaves have terminal, verified sparse outputs.
+
+### 2026-05-19T04:22Z full fanout leaf11 terminal
+- Leaf 11 completed and verified:
+  - Job: `md1-viscell-full-l11-1779161085`.
+  - ProcessingStartTime: 2026-05-18T21:25:26.086000-06:00.
+  - ProcessingEndTime: 2026-05-18T22:17:31.171000-06:00.
+  - FailureReason: empty.
+  - Registered images: 360/360.
+  - Raw model points: 252467.
+  - Filtered `sparse/0` points: 180037.
+  - S3 output: 376 objects / 2422472957 bytes, including non-empty `sparse/0/cameras.txt`, `images.txt`, and `points3D.txt`.
+- The manager launched leaf14 `md1-viscell-full-l14-1779164403`; active leaves are now leaf13 and leaf14, with leaves 15-18 pending.
+- Evidence:
+  - logs/sfm-production-spine/md1-viscell-full-l11-1779161085_describe_poll_20260519T0422Z.json
+  - logs/sfm-production-spine/md1-viscell-full-l11-1779161085_cloudwatch_tail_20260519T0422Z.json
+  - logs/sfm-production-spine/md1_visibility_cell_v1_full_leaf11_s3_poll_20260519T0422Z.txt
+- Next: continue bounded manager polling; do not run reducer until all 19 leaves have terminal, verified sparse outputs.
+
+### 2026-05-19T04:15Z full fanout leaf12 terminal
+- Leaf 12 completed and verified:
+  - Job: `md1-viscell-full-l12-1779161215`.
+  - ProcessingStartTime: 2026-05-18T21:27:33.747000-06:00.
+  - ProcessingEndTime: 2026-05-18T22:09:45.328000-06:00.
+  - FailureReason: empty.
+  - Registered images: 298/298.
+  - Raw model points: 181192.
+  - Filtered `sparse/0` points: 50308.
+  - S3 output: 314 objects / 2015457016 bytes, including non-empty `sparse/0/cameras.txt`, `images.txt`, and `points3D.txt`.
+- The manager launched leaf13 `md1-viscell-full-l13-1779164027`; active leaves are now leaf11 and leaf13, with leaves 14-18 pending.
+- Evidence:
+  - logs/sfm-production-spine/md1-viscell-full-l12-1779161215_describe_poll_20260519T0414Z.json
+  - logs/sfm-production-spine/md1-viscell-full-l12-1779161215_cloudwatch_tail_20260519T0414Z.json
+  - logs/sfm-production-spine/md1_visibility_cell_v1_full_leaf12_s3_poll_20260519T0414Z.txt
+- Next: continue bounded manager polling; do not run reducer until all 19 leaves have terminal, verified sparse outputs.
+
+### 2026-05-19T03:30Z full fanout leaf10 terminal
+- Leaf 10 completed and verified:
+  - Job: `md1-viscell-full-l10-1779158398`.
+  - ProcessingStartTime: 2026-05-18T20:40:39.530000-06:00.
+  - ProcessingEndTime: 2026-05-18T21:24:37.124000-06:00.
+  - FailureReason: empty.
+  - Registered images: 360/360.
+  - Raw model points: 235213.
+  - Filtered `sparse/0` points: 172083.
+  - S3 output: 376 objects / 2428169050 bytes, including non-empty `sparse/0/cameras.txt`, `images.txt`, and `points3D.txt`.
+- The manager launched leaf12 `md1-viscell-full-l12-1779161215`; active leaves are now leaf11 and leaf12, with leaves 13-18 pending.
+- Evidence:
+  - logs/sfm-production-spine/md1-viscell-full-l10-1779158398_describe_poll_20260519T0330Z.json
+  - logs/sfm-production-spine/md1-viscell-full-l10-1779158398_cloudwatch_tail_20260519T0330Z.json
+  - logs/sfm-production-spine/md1_visibility_cell_v1_full_leaf10_s3_poll_20260519T0330Z.txt
+- Next: continue bounded manager polling; do not run reducer until all 19 leaves have terminal, verified sparse outputs.
