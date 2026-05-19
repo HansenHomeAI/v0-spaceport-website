@@ -1,0 +1,84 @@
+timestamp_utc=20260519T213925Z
+
+## git
+## agent-113647-md1-baseline-e2e...origin/agent-113647-md1-baseline-e2e
+?? logs/md1-shrunk/polls/20260519T213925Z-camera-suite/
+?? logs/md1-shrunk/polls/20260519T213925Z-edge-publish-report/
+?? logs/md1-shrunk/polls/20260519T213925Z-preflight/
+HEAD=b4b5ee33d67ff150cd1ead125f316ab476d3c0e6
+b4b5ee33 (HEAD -> agent-113647-md1-baseline-e2e, origin/agent-113647-md1-baseline-e2e) chore: refresh md1-shrunk heartbeat ci proof [skip ci]
+
+## aws sts
+{
+    "UserId": "975050048887",
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root"
+}
+
+## stepfunctions running
+SpaceportMLPipeline-staging:
+{
+  "count": 0
+}
+SpaceportMLPipeline-br-8abcbd5662:
+{
+  "count": 0
+}
+
+## sagemaker InProgress
+processing:
+cvhr-viscell-full-l06-1779225051	2026-05-19T15:10:52.625000-06:00
+cvhr-viscell-full-l05-1779224497	2026-05-19T15:01:38.690000-06:00
+training:
+md1-r0v5full14-f2923-1779209514-tile-10	2026-05-19T14:28:58.057000-06:00
+cvhr-secondary-20260518t2113z-3dgs	2026-05-19T13:58:33.853000-06:00
+cvhr-mtc-secondary-20260518t2113z-3dgs	2026-05-19T13:28:06.767000-06:00
+
+## local dev server
+node      99831 gabrielhansen   13u  IPv4 0xec6636ec1a5ad700      0t0  TCP 127.0.0.1:3000 (LISTEN)
+  PID  ELAPSED COMMAND
+99831 03:33:12 next-server (v14.2.31) 
+
+## public bundle headers
+s3 meta.json:
+HTTP/1.1 200 OK
+x-amz-id-2: aVHc3Iv8xW0wl4eUyl4UzczCKqj/fi7YdQ//KGQvUERkuRjic6TioEcydX8+Wa69DQUbvzU7i0VqcgCQjCfq5m9soyC03M7q
+x-amz-request-id: 5ZHNF5ECV5VQZ72W
+Date: Tue, 19 May 2026 21:42:34 GMT
+Last-Modified: Tue, 19 May 2026 03:14:11 GMT
+ETag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: lwCX4ptdSjx.9.5LMjn4a8Ervrln8HMA
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1421
+Server: AmazonS3
+
+cloudfront meta.json:
+HTTP/2 200 
+content-type: application/json
+content-length: 1421
+date: Tue, 19 May 2026 14:24:08 GMT
+last-modified: Tue, 19 May 2026 06:37:13 GMT
+etag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+cache-control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: vUW1wpcXNiVbn3gf6_kSkXCXdN6e83vX
+accept-ranges: bytes
+server: AmazonS3
+x-cache: Hit from cloudfront
+via: 1.1 85e660bc5e54e6020597f85d8b86f362.cloudfront.net (CloudFront)
+x-amz-cf-pop: LAX53-P6
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: l4nbK-dCtkBd-zd31pC79MBpANuq_QbwKbvO_54KA2bsaRZyx7T7ow==
+age: 26306
+vary: Origin
+
+
+## github actions (branch recent)
+2026-05-19T16:38:50Z	CDK Deploy	completed	success	c3f52d2e8d8a3a7afa8dfa0d1c747b62479a392e	26111270602	https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26111270602
+2026-05-19T16:38:50Z	Deploy Next.js to Cloudflare Pages	completed	success	c3f52d2e8d8a3a7afa8dfa0d1c747b62479a392e	26111270702	https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26111270702
+2026-05-19T16:09:14Z	Deploy Next.js to Cloudflare Pages	completed	success	a73a4adb30fb75a7fb1149156d0d48ab5ccfd443	26109660239	https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26109660239
+2026-05-19T16:09:14Z	CDK Deploy	completed	success	a73a4adb30fb75a7fb1149156d0d48ab5ccfd443	26109660240	https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26109660240
+2026-05-19T16:04:19Z	CDK Deploy	completed	success	e16881d0867f00195efb1c30c188a5eabf736831	26109384090	https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26109384090
+2026-05-19T15:32:55Z	CDK Deploy	completed	success	e20276397b444e4ea38f3735f1222856cb046a7a	26107587599	https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26107587599
