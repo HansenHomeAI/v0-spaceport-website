@@ -8430,6 +8430,7 @@ skybox, compression, artifact handoff, and visual gates.
   - Local dev server listeners: `port 3000 LISTEN` (`logs/md1-shrunk/polls/20260519T210907Z-preflight/port-3000.lsof.txt`)
   - GitHub Actions (exact-head): no new runs (current head is logs-only; `[skip ci]`); last green remains `c3f52d2e...` (Pages `26111270702`, CDK `26111270602`):
     - `logs/md1-shrunk/polls/20260519T210907Z-ci/summary.txt`
+    - `logs/md1-shrunk/polls/20260519T210907Z-ci/postpush-final.txt`
 - Multi-camera input-vs-render checks (deployed preview; strict; baseline pose verification):
   - command: `logs/md1-shrunk/polls/20260519T210907Z-camera-suite/run.cmd.txt`
   - result: `logs/md1-shrunk/polls/20260519T210907Z-camera-suite/suite-summary.json` -> `decision=pass`
