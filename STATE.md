@@ -479,3 +479,14 @@ Montana time capsule run, without touching or advancing the existing
 - Existing `cvhr-mtc-20260518T1729Z-sfm` remains `Stopped` and was left untouched.
 - External CV-HR processing and MD1 training jobs were observed and left untouched.
 - Details and evidence are recorded in `logs/cvhr-parallel/STATE.md`.
+
+## 2026-05-19T19:33Z Heartbeat Poll
+
+- Secondary SfM job `cvhr-secondary-20260518t2113z-sfm` still reports `InProgress` by direct SageMaker describe, so no secondary 3DGS launch was attempted from this state file.
+- The EndOfJob S3 handoff has begun/landed: `s3://spaceport-ml-processing-staging/manual-validations/cvhr-secondary-20260518t2113z/colmap` now lists `1717` objects totaling `10379523417` bytes.
+- Sparse COLMAP output is present under `sparse/0`: `cameras.txt`, `frames.txt`, `images.txt`, `points3D.txt`, and `rigs.txt`, totaling `877326466` bytes.
+- CloudWatch still has no newer event after `chunk_bundle_adjuster` global bundle adjustment at `2026-05-19T17:57:00Z`.
+- No duplicate secondary CV-HR jobs were launched by this branch/state.
+- Existing `cvhr-mtc-20260518T1729Z-sfm` remains `Stopped` and was left untouched.
+- An external CV-HR training job `cvhr-mtc-secondary-20260518t2113z-3dgs` is `InProgress`; it does not match this branch state run id and was left untouched.
+- Details and evidence are recorded in `logs/cvhr-parallel/STATE.md`.

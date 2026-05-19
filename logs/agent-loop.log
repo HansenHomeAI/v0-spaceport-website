@@ -40,3 +40,4 @@
 [2026-05-19T18:31:00Z] heartbeat poll -> SfM direct describe InProgress, latest CloudWatch still chunk_bundle_adjuster 2026-05-19T17:57:00Z after chunk_10 kept successful reconstruction, S3 empty as expected -> continue monitoring
 [2026-05-19T18:51:00Z] heartbeat poll -> SfM direct describe InProgress, latest CloudWatch still chunk_bundle_adjuster 2026-05-19T17:57:00Z, S3 empty as expected -> continue monitoring
 [2026-05-19T19:11:00Z] heartbeat poll -> SfM direct describe InProgress, latest CloudWatch still chunk_bundle_adjuster 2026-05-19T17:57:00Z, S3 empty as expected -> continue monitoring
+[2026-05-19T19:33:00Z] heartbeat poll -> SfM direct describe still InProgress but colmap S3 handoff has landed with 1717 objects / 10379523417 bytes and sparse/0 present; no state-file 3DGS launch -> wait for Completed before advancing
