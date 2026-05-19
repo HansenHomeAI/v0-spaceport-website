@@ -1,6 +1,6 @@
 timestamp_utc=20260519T204013Z
 branch=agent-113647-md1-baseline-e2e
-head=e06d272998bb4b6784884e2b4a4bc93ea0140b7c
+head=02083b5e556e1f048619db3260caa2bdc79e8cba
 
 ## gh run list (recent)
 completed	success	feat: harden md1-shrunk camera suite baselines	CDK Deploy	agent-113647-md1-baseline-e2e	push	26111270602	3m56s	2026-05-19T16:38:50Z
@@ -18,6 +18,11 @@ completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages
 completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26104135709	4m5s	2026-05-19T14:34:20Z
 completed	success	fix: harden edge bundle browser delivery checks	CDK Deploy	agent-113647-md1-baseline-e2e	push	26103861417	4m4s	2026-05-19T14:29:38Z
 completed	success	chore: record md1-shrunk ci proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	26081063367	3m38s	2026-05-19T06:46:13Z
+completed	success	chore: record md1-shrunk horizon gate repro	CDK Deploy	agent-113647-md1-baseline-e2e	push	26080845481	3m53s	2026-05-19T06:40:47Z
+completed	success	chore: record md1-shrunk horizon gate CI	CDK Deploy	agent-113647-md1-baseline-e2e	push	26080505088	3m36s	2026-05-19T06:32:09Z
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26080154676	3m55s	2026-05-19T06:23:16Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26080154687	7m42s	2026-05-19T06:23:16Z
+completed	cancelled	fix: harden md1-shrunk horizon camera gates	CDK Deploy	agent-113647-md1-baseline-e2e	push	26080036182	3m22s	2026-05-19T06:20:11Z
 
 ## gh run list (exact head count)
 count 0
