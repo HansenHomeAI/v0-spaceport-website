@@ -1,0 +1,13 @@
+{
+    "TrainingJobSummaries": [
+        {
+            "TrainingJobName": "md1-r0v5full14-f2923-1779209514-tile-05",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-r0v5full14-f2923-1779209514-tile-05",
+            "CreationTime": "2026-05-19T12:23:45.160000-06:00",
+            "LastModifiedTime": "2026-05-19T13:00:09.350000-06:00",
+            "TrainingJobStatus": "InProgress",
+            "SecondaryStatus": "Uploading"
+        }
+    ],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTRGYhXdvVWj3dbcxWzdU2seUW9sgTAabpezr1qhjwVo0Zfl3e6MaLGBaXzBDVbWizc0m/zErRW4pYBXpPWHssQFU+TtYvoqDHu2Bpflm11CEVgGEOt6c7Zt1MGhjpVvjXRajvZKKBx78OwAi+WDGDgikfclxFxcIHG0T27PYd4yQJtOWVwW/jL1F4Id3RdULVbeEH/NQBZrX+q/lRT7wEdaqR6VNHqO0uOlEgxxNdUeF9fG4v7MhZN+nQGmOV5NtFwsqitftnZoe/r1lFjGpRE+rPREtGJwvwK0p3SPZdJeGDyjsna+rz3oAXllIDgg7xj+pBr55MuH6Am+eFf9VMHNlYJA3d4+c5oJnpNjl2x+BPO2MGhVhqPtCLZvan+rMifpZyehmpVYxwicEHvUGWksetKESax9wkoFhf+AABTUIpSB1HD1RpBSoIUew7MnyYcfkGiPeaNY9B2iSAj6z1QkdNCHEWO0i5cWOhpY+8rrEGN8LVWm1bE3ZStO6iH5zC/naI9JEzDx8="
+}
