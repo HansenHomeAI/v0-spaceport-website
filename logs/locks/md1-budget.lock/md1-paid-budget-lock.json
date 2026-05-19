@@ -132,7 +132,7 @@
         {
             "stage": "full14_training",
             "cap_usd": 10.5,
-            "status": "submitted_waiting_manual_control",
+            "status": "post_leaf_preflight_passed_pending_tile10_final_billable",
             "lock_dir": "logs/locks/full14_training-md1-r0v5full14-f2923ef0-20260519T1645Z-f2923ef0.lock",
             "experiment_id": "md1-r0v5full14-f2923ef0-20260519T1645Z",
             "job_prefix": "md1-r0v5full14-f2923",
@@ -180,7 +180,20 @@
             "tile_13_status": "Submitted",
             "tile_13_job_name": "md1-r0v5full14-f2923-1779209514-tile-13",
             "tile_13_create_request_json": "logs/md1-r0v5full14-f2923ef0-20260519T2145Z-manual-tile_13-create-training-job.json",
-            "tile_10_status": "InProgress/Uploading; model.tar.gz present in S3 but SageMaker output field not terminal yet"
+            "tile_10_status": "Stopping/Uploading after stop request; artifact preflight passed; final billable time pending AWS terminal status",
+            "post_leaf_preflight_summary_json": "logs/md1-r0v5full14-f2923ef0-20260519T232800Z-leaf-preflight/aggregate-summary.json",
+            "post_leaf_gate_summary_json": "logs/md1-r0v5full14-f2923ef0-20260519T232800Z-leaf-preflight/aggregate-gate-summary.json",
+            "leaf_describe_rollup_json": "logs/md1-r0v5full14-f2923ef0-20260519T234100Z-leaf-describe-rollup.json",
+            "no_training_merge_reuse_plan": "logs/md1-r0v5full14-f2923ef0-20260519T232800Z-no-training-merge-reuse-plan.json",
+            "remote_merge_plan_json": "logs/md1-r0v5full14-f2923ef0-20260519T232800Z-remote-merge-plan.json",
+            "remote_merge_payload_json": "logs/md1-r0v5full14-f2923ef0-20260519T232800Z-remote-merge-payload.json",
+            "remote_merge_plan_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/merge-ready/merge-plan/merge_plan.json",
+            "completed_sagemaker_job_count": 13,
+            "stopping_sagemaker_job_count": 1,
+            "known_billable_seconds_excluding_tile10_null": 31356,
+            "known_billable_usd_excluding_tile10_null": 8.71,
+            "conservative_training_seconds_including_tile10_stopping": 42846,
+            "conservative_training_usd_including_tile10_stopping": 11.901667
         }
     ],
     "debits": [
@@ -232,7 +245,7 @@
         "ml.g4dn.xlarge_usd_per_hour": 1.0,
         "source": "conservative fallback until current AWS pricing is fetched"
     },
-    "last_updated_utc": "20260519T223500Z",
-    "latest_live_state_evidence": "tile_12 completed; exact-name tile_13 submitted; tile_10 still Uploading with S3 artifact present",
-    "notes": "full14 leaf training fanout is running with max_tile_concurrency=2; no merge/review/LOD/viewer/promotion authorized."
+    "last_updated_utc": "20260519T234100Z",
+    "latest_live_state_evidence": "all 14 full14 leaf artifacts/gates passed; tile_10 control plane Stopping/Uploading; no-spend merge plan/payload ready, not submitted",
+    "notes": "full14 leaf artifacts and gates passed; full14 debit pending tile_10 final AWS billable time; no merge/review/LOD/viewer/promotion authorized."
 }

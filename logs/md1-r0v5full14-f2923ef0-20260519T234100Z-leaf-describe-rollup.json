@@ -1,0 +1,167 @@
+{
+  "checked_at_utc": "20260519T234100Z",
+  "completed_count": 13,
+  "event": "md1-r0v5full14-final-leaf-describe-rollup",
+  "jobs": [
+    {
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_00/md1-r0v5full14-f2923-1779209514-tile-00/output/model.tar.gz",
+      "billable_time_seconds": 2634,
+      "failure_reason": null,
+      "job_name": "md1-r0v5full14-f2923-1779209514-tile-00",
+      "last_modified_time": "2026-05-19T11:39:30.126000-06:00",
+      "secondary_status": "Completed",
+      "status": "Completed",
+      "tile_id": "tile_00",
+      "training_time_seconds": 2634
+    },
+    {
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_01/md1-r0v5full14-f2923-1779209514-tile-01/output/model.tar.gz",
+      "billable_time_seconds": 2393,
+      "failure_reason": null,
+      "job_name": "md1-r0v5full14-f2923-1779209514-tile-01",
+      "last_modified_time": "2026-05-19T11:35:31.136000-06:00",
+      "secondary_status": "Completed",
+      "status": "Completed",
+      "tile_id": "tile_01",
+      "training_time_seconds": 2393
+    },
+    {
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_02/md1-r0v5full14-f2923-1779209514-tile-02/output/model.tar.gz",
+      "billable_time_seconds": 2488,
+      "failure_reason": null,
+      "job_name": "md1-r0v5full14-f2923-1779209514-tile-02",
+      "last_modified_time": "2026-05-19T12:23:37.036000-06:00",
+      "secondary_status": "Completed",
+      "status": "Completed",
+      "tile_id": "tile_02",
+      "training_time_seconds": 2488
+    },
+    {
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_03/md1-r0v5full14-f2923-1779209514-tile-03/output/model.tar.gz",
+      "billable_time_seconds": 2413,
+      "failure_reason": null,
+      "job_name": "md1-r0v5full14-f2923-1779209514-tile-03",
+      "last_modified_time": "2026-05-19T12:22:13.326000-06:00",
+      "secondary_status": "Completed",
+      "status": "Completed",
+      "tile_id": "tile_03",
+      "training_time_seconds": 2413
+    },
+    {
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_04/md1-r0v5full14-f2923-1779209514-tile-04/output/model.tar.gz",
+      "billable_time_seconds": 2328,
+      "failure_reason": null,
+      "job_name": "md1-r0v5full14-f2923-1779209514-tile-04",
+      "last_modified_time": "2026-05-19T13:03:22.060000-06:00",
+      "secondary_status": "Completed",
+      "status": "Completed",
+      "tile_id": "tile_04",
+      "training_time_seconds": 2328
+    },
+    {
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_05/md1-r0v5full14-f2923-1779209514-tile-05/output/model.tar.gz",
+      "billable_time_seconds": 2383,
+      "failure_reason": null,
+      "job_name": "md1-r0v5full14-f2923-1779209514-tile-05",
+      "last_modified_time": "2026-05-19T13:04:13.593000-06:00",
+      "secondary_status": "Completed",
+      "status": "Completed",
+      "tile_id": "tile_05",
+      "training_time_seconds": 2383
+    },
+    {
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_06/md1-r0v5full14-f2923-1779209514-tile-06/output/model.tar.gz",
+      "billable_time_seconds": 2338,
+      "failure_reason": null,
+      "job_name": "md1-r0v5full14-f2923-1779209514-tile-06",
+      "last_modified_time": "2026-05-19T13:45:56.700000-06:00",
+      "secondary_status": "Completed",
+      "status": "Completed",
+      "tile_id": "tile_06",
+      "training_time_seconds": 2338
+    },
+    {
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_07/md1-r0v5full14-f2923-1779209514-tile-07/output/model.tar.gz",
+      "billable_time_seconds": 2333,
+      "failure_reason": null,
+      "job_name": "md1-r0v5full14-f2923-1779209514-tile-07",
+      "last_modified_time": "2026-05-19T13:45:48.692000-06:00",
+      "secondary_status": "Completed",
+      "status": "Completed",
+      "tile_id": "tile_07",
+      "training_time_seconds": 2333
+    },
+    {
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_08/md1-r0v5full14-f2923-1779209514-tile-08/output/model.tar.gz",
+      "billable_time_seconds": 2358,
+      "failure_reason": null,
+      "job_name": "md1-r0v5full14-f2923-1779209514-tile-08",
+      "last_modified_time": "2026-05-19T14:26:34.708000-06:00",
+      "secondary_status": "Completed",
+      "status": "Completed",
+      "tile_id": "tile_08",
+      "training_time_seconds": 2358
+    },
+    {
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_09/md1-r0v5full14-f2923-1779209514-tile-09/output/model.tar.gz",
+      "billable_time_seconds": 2408,
+      "failure_reason": null,
+      "job_name": "md1-r0v5full14-f2923-1779209514-tile-09",
+      "last_modified_time": "2026-05-19T14:27:39.136000-06:00",
+      "secondary_status": "Completed",
+      "status": "Completed",
+      "tile_id": "tile_09",
+      "training_time_seconds": 2408
+    },
+    {
+      "artifact_s3_uri": null,
+      "billable_time_seconds": null,
+      "failure_reason": null,
+      "job_name": "md1-r0v5full14-f2923-1779209514-tile-10",
+      "last_modified_time": "2026-05-19T17:17:16.317000-06:00",
+      "secondary_status": "Uploading",
+      "status": "Stopping",
+      "tile_id": "tile_10",
+      "training_time_seconds": 11490
+    },
+    {
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_11/md1-r0v5full14-f2923-1779209514-tile-11/output/model.tar.gz",
+      "billable_time_seconds": 2458,
+      "failure_reason": null,
+      "job_name": "md1-r0v5full14-f2923-1779209514-tile-11",
+      "last_modified_time": "2026-05-19T15:10:42.556000-06:00",
+      "secondary_status": "Completed",
+      "status": "Completed",
+      "tile_id": "tile_11",
+      "training_time_seconds": 2458
+    },
+    {
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_12/md1-r0v5full14-f2923-1779209514-tile-12/output/model.tar.gz",
+      "billable_time_seconds": 2439,
+      "failure_reason": null,
+      "job_name": "md1-r0v5full14-f2923-1779209514-tile-12",
+      "last_modified_time": "2026-05-19T16:33:25.327000-06:00",
+      "secondary_status": "Completed",
+      "status": "Completed",
+      "tile_id": "tile_12",
+      "training_time_seconds": 2439
+    },
+    {
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_13/md1-r0v5full14-f2923-1779209514-tile-13/output/model.tar.gz",
+      "billable_time_seconds": 2383,
+      "failure_reason": null,
+      "job_name": "md1-r0v5full14-f2923-1779209514-tile-13",
+      "last_modified_time": "2026-05-19T17:14:38.304000-06:00",
+      "secondary_status": "Completed",
+      "status": "Completed",
+      "tile_id": "tile_13",
+      "training_time_seconds": 2383
+    }
+  ],
+  "known_billable_seconds_excluding_nulls": 31356,
+  "known_billable_usd_at_1usd_per_hour": 8.71,
+  "stopping_count": 1,
+  "tile_10_note": "tile_10 had successful CloudWatch/export/artifact/preflight evidence but SageMaker remained Uploading; stop requested at 2026-05-19T23:17Z and status is still Stopping/Uploading here.",
+  "training_time_seconds_including_tile10_stopping": 42846,
+  "training_time_usd_conservative_if_all_billed_at_1usd_per_hour": 11.901667
+}

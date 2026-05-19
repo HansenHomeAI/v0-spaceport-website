@@ -1,0 +1,29 @@
+{
+  "checked_at": "2026-05-19T23:39:18.041418+00:00",
+  "preflight_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_00/md1-r0v5full14-f2923-1779209514-tile-00/output/model.tar.gz",
+  "preflight_job_name": "md1-r0v5full14-f2923-1779209514-tile-00",
+  "tile_id": "tile_00",
+  "expected_tile_id": "tile_00",
+  "decision": "merge_review_allowed",
+  "block_reasons": [],
+  "warnings": [],
+  "leaf_preflight_decision": "leaf_preflight_passed_cache_candidate",
+  "expected_leaf_preflight_decision": "leaf_preflight_passed_cache_candidate",
+  "splat_vertex_count": 1706968,
+  "hard_max_splat_count": null,
+  "hard_min_splat_count": null,
+  "splat_reference_guard": {
+    "enabled": false,
+    "status": "not_configured",
+    "reference_splat_count": 0,
+    "max_reference_splat_ratio": 0.0,
+    "min_reference_splat_ratio": 0.0,
+    "splat_vertex_count": 1706968,
+    "observed_reference_ratio": null,
+    "block_reason": null
+  },
+  "selected_image_count": 188,
+  "expected_selected_image_count": 188,
+  "filtered_scaffold_required": true,
+  "filtered_scaffold_ok": true
+}

@@ -29314,6 +29314,12 @@
             "event": "md1-r0v5full14-manual-control-tile12-complete-tile13-launched",
             "summary": "tile_12 completed, tile_13 submitted exact-name under reserved full14 leaf-only budget; tile_10 remains Uploading with S3 artifact present.",
             "next": "Monitor tile_13 terminal state; no merge/review/LOD/viewer/promotion."
+        },
+        {
+            "timestamp_utc": "2026-05-19T23:41:00Z",
+            "event": "md1-r0v5full14-post-leaf-preflight-passed-merge-ready-no-spend",
+            "summary": "All 14 leaf artifacts and merge-readiness gates passed; no-spend remote merge plan/payload materialized; tile_10 SageMaker control plane remains Stopping/Uploading after successful artifact validation.",
+            "next": "Wait for tile_10 terminal/control-plane resolution or explicit next gate before merge/review/LOD/viewer."
         }
     ],
     "latest_full14_leaf_training_manual_control_20260519": {
@@ -29345,5 +29351,31 @@
         },
         "evidence_summary": "logs/md1-r0v5full14-f2923ef0-20260519T223500Z-manual-control-summary.json",
         "next": "monitor tile_13 to terminal state and continue tile_10 Uploading/artifact evidence; then debit full14 budget and run post-leaf gates only"
+    },
+    "latest_full14_post_leaf_preflight_20260519": {
+        "status": "post_leaf_preflight_passed_merge_ready_no_spend",
+        "timestamp_utc": "20260519T234100Z",
+        "head": "2fdbc3c021f7b862de17da5ddf95212be63d33df",
+        "last_meaningful_code_head": "f2923ef00417750f4efdfdc904c328645c168509",
+        "last_meaningful_exact_head_cdk": "26107107781 green",
+        "scope": [
+            "full14 leaf artifact validation",
+            "merge-readiness planning only",
+            "no merge/review/LOD/viewer/promotion launched"
+        ],
+        "leaf_describe_rollup": "logs/md1-r0v5full14-f2923ef0-20260519T234100Z-leaf-describe-rollup.json",
+        "aggregate_preflight_summary": "logs/md1-r0v5full14-f2923ef0-20260519T232800Z-leaf-preflight/aggregate-summary.json",
+        "aggregate_gate_summary": "logs/md1-r0v5full14-f2923ef0-20260519T232800Z-leaf-preflight/aggregate-gate-summary.json",
+        "no_training_merge_reuse_plan": "logs/md1-r0v5full14-f2923ef0-20260519T232800Z-no-training-merge-reuse-plan.json",
+        "remote_merge_plan_json": "logs/md1-r0v5full14-f2923ef0-20260519T232800Z-remote-merge-plan.json",
+        "remote_merge_payload_json": "logs/md1-r0v5full14-f2923ef0-20260519T232800Z-remote-merge-payload.json",
+        "remote_merge_plan_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/merge-ready/merge-plan/merge_plan.json",
+        "preflight_decision": "post_leaf_preflight_passed",
+        "preflight_passed_tile_count": 14,
+        "gate_decision": "merge_readiness_gates_passed",
+        "gate_passed_tile_count": 14,
+        "tile_10_control_plane_status": "SageMaker Stopping/Uploading after stop request; artifact and CloudWatch pipeline success evidence passed artifact preflight",
+        "cost_status": "full14 final debit pending tile_10 final AWS billable time; known billable for 13 Completed jobs is $8.710000 at $1/hr, conservative training-time including tile_10 is $11.901667",
+        "next_required_gate": "Explicit allowed gate required before submitting md1-r0v5full14-merge-f2923-20260519t2328 or any review/LOD/viewer/promotion."
     }
 }

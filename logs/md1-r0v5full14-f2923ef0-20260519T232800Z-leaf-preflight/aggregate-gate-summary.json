@@ -1,0 +1,106 @@
+{
+  "blocked_tile_count": 0,
+  "blocked_tiles": [],
+  "decision": "merge_readiness_gates_passed",
+  "tile_count": 14,
+  "tiles": [
+    {
+      "block_reasons": [],
+      "decision": "merge_review_allowed",
+      "filtered_scaffold_ok": true,
+      "selected_image_count": 188,
+      "tile_id": "tile_00"
+    },
+    {
+      "block_reasons": [],
+      "decision": "merge_review_allowed",
+      "filtered_scaffold_ok": true,
+      "selected_image_count": 188,
+      "tile_id": "tile_01"
+    },
+    {
+      "block_reasons": [],
+      "decision": "merge_review_allowed",
+      "filtered_scaffold_ok": true,
+      "selected_image_count": 188,
+      "tile_id": "tile_02"
+    },
+    {
+      "block_reasons": [],
+      "decision": "merge_review_allowed",
+      "filtered_scaffold_ok": true,
+      "selected_image_count": 188,
+      "tile_id": "tile_03"
+    },
+    {
+      "block_reasons": [],
+      "decision": "merge_review_allowed",
+      "filtered_scaffold_ok": true,
+      "selected_image_count": 188,
+      "tile_id": "tile_04"
+    },
+    {
+      "block_reasons": [],
+      "decision": "merge_review_allowed",
+      "filtered_scaffold_ok": true,
+      "selected_image_count": 188,
+      "tile_id": "tile_05"
+    },
+    {
+      "block_reasons": [],
+      "decision": "merge_review_allowed",
+      "filtered_scaffold_ok": true,
+      "selected_image_count": 188,
+      "tile_id": "tile_06"
+    },
+    {
+      "block_reasons": [],
+      "decision": "merge_review_allowed",
+      "filtered_scaffold_ok": true,
+      "selected_image_count": 188,
+      "tile_id": "tile_07"
+    },
+    {
+      "block_reasons": [],
+      "decision": "merge_review_allowed",
+      "filtered_scaffold_ok": true,
+      "selected_image_count": 188,
+      "tile_id": "tile_08"
+    },
+    {
+      "block_reasons": [],
+      "decision": "merge_review_allowed",
+      "filtered_scaffold_ok": true,
+      "selected_image_count": 188,
+      "tile_id": "tile_09"
+    },
+    {
+      "block_reasons": [],
+      "decision": "merge_review_allowed",
+      "filtered_scaffold_ok": true,
+      "selected_image_count": 188,
+      "tile_id": "tile_10"
+    },
+    {
+      "block_reasons": [],
+      "decision": "merge_review_allowed",
+      "filtered_scaffold_ok": true,
+      "selected_image_count": 188,
+      "tile_id": "tile_11"
+    },
+    {
+      "block_reasons": [],
+      "decision": "merge_review_allowed",
+      "filtered_scaffold_ok": true,
+      "selected_image_count": 188,
+      "tile_id": "tile_12"
+    },
+    {
+      "block_reasons": [],
+      "decision": "merge_review_allowed",
+      "filtered_scaffold_ok": true,
+      "selected_image_count": 188,
+      "tile_id": "tile_13"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+    "logStreams": [
+        {
+            "logStreamName": "md1-r0v5full14-f2923-1779209514-tile-10/algo-1-1779222578",
+            "creationTime": 1779222783733,
+            "firstEventTimestamp": 1779222777535,
+            "lastEventTimestamp": 1779224739276,
+            "lastIngestionTime": 1779224743060,
+            "uploadSequenceToken": "49039859672703782736042812872489461714337313931424475083",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/TrainingJobs:log-stream:md1-r0v5full14-f2923-1779209514-tile-10/algo-1-1779222578",
+            "storedBytes": 0
+        }
+    ]
+}

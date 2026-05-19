@@ -1,0 +1,6 @@
+{
+  "gate_policy": "Full14 post-leaf artifact gate: required sidecars/training metadata/splat header already checked by preflight; exact tile id, 188 selected images, and filtered scaffold enforced here.",
+  "required_leaf_preflight_gate": {
+    "pass_decision": "leaf_preflight_passed_cache_candidate"
+  }
+}

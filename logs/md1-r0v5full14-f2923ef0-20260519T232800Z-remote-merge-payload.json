@@ -1,0 +1,209 @@
+{
+  "AppSpecification": {
+    "ContainerEntrypoint": [
+      "python3",
+      "/opt/ml/code/run_tiled_merge_packaging.py"
+    ],
+    "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent90742618md1geometryconsistency"
+  },
+  "Environment": {
+    "BACKGROUND_SOURCE_TILE_ID": "tile_10",
+    "MERGE_MODE": "strict_core",
+    "MERGE_PLAN_PATH": "/opt/ml/processing/input/merge-plan/merge_plan.json",
+    "OUTPUT_DIR": "/opt/ml/processing/output/artifact",
+    "TILE_MANIFEST_PATH": "/opt/ml/processing/input/tile-selection/3dgs_tile_manifest.json",
+    "VIEW_BUCKET_MANIFEST_PATH": "/opt/ml/processing/input/tile-selection/3dgs_view_buckets.json"
+  },
+  "ProcessingInputs": [
+    {
+      "InputName": "merge-plan",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/merge-plan",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/merge-ready/merge-plan"
+      }
+    },
+    {
+      "InputName": "tile-selection",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/tile-selection",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/inputs/tile-selection"
+      }
+    },
+    {
+      "InputName": "artifact-00",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/artifacts/artifact-00",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_00/md1-r0v5full14-f2923-1779209514-tile-00/output/model.tar.gz"
+      }
+    },
+    {
+      "InputName": "artifact-01",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/artifacts/artifact-01",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_01/md1-r0v5full14-f2923-1779209514-tile-01/output/model.tar.gz"
+      }
+    },
+    {
+      "InputName": "artifact-02",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/artifacts/artifact-02",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_02/md1-r0v5full14-f2923-1779209514-tile-02/output/model.tar.gz"
+      }
+    },
+    {
+      "InputName": "artifact-03",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/artifacts/artifact-03",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_03/md1-r0v5full14-f2923-1779209514-tile-03/output/model.tar.gz"
+      }
+    },
+    {
+      "InputName": "artifact-04",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/artifacts/artifact-04",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_04/md1-r0v5full14-f2923-1779209514-tile-04/output/model.tar.gz"
+      }
+    },
+    {
+      "InputName": "artifact-05",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/artifacts/artifact-05",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_05/md1-r0v5full14-f2923-1779209514-tile-05/output/model.tar.gz"
+      }
+    },
+    {
+      "InputName": "artifact-06",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/artifacts/artifact-06",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_06/md1-r0v5full14-f2923-1779209514-tile-06/output/model.tar.gz"
+      }
+    },
+    {
+      "InputName": "artifact-07",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/artifacts/artifact-07",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_07/md1-r0v5full14-f2923-1779209514-tile-07/output/model.tar.gz"
+      }
+    },
+    {
+      "InputName": "artifact-08",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/artifacts/artifact-08",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_08/md1-r0v5full14-f2923-1779209514-tile-08/output/model.tar.gz"
+      }
+    },
+    {
+      "InputName": "artifact-09",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/artifacts/artifact-09",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_09/md1-r0v5full14-f2923-1779209514-tile-09/output/model.tar.gz"
+      }
+    },
+    {
+      "InputName": "artifact-10",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/artifacts/artifact-10",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_10/md1-r0v5full14-f2923-1779209514-tile-10/output/model.tar.gz"
+      }
+    },
+    {
+      "InputName": "artifact-11",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/artifacts/artifact-11",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_11/md1-r0v5full14-f2923-1779209514-tile-11/output/model.tar.gz"
+      }
+    },
+    {
+      "InputName": "artifact-12",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/artifacts/artifact-12",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_12/md1-r0v5full14-f2923-1779209514-tile-12/output/model.tar.gz"
+      }
+    },
+    {
+      "InputName": "artifact-13",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/artifacts/artifact-13",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_13/md1-r0v5full14-f2923-1779209514-tile-13/output/model.tar.gz"
+      }
+    }
+  ],
+  "ProcessingJobName": "md1-r0v5full14-merge-f2923-20260519t2328",
+  "ProcessingOutputConfig": {
+    "Outputs": [
+      {
+        "OutputName": "artifact",
+        "S3Output": {
+          "LocalPath": "/opt/ml/processing/output/artifact",
+          "S3UploadMode": "EndOfJob",
+          "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/merge-ready/output"
+        }
+      }
+    ]
+  },
+  "ProcessingResources": {
+    "ClusterConfig": {
+      "InstanceCount": 1,
+      "InstanceType": "ml.g4dn.xlarge",
+      "VolumeSizeInGB": 100
+    }
+  },
+  "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+  "StoppingCondition": {
+    "MaxRuntimeInSeconds": 3600
+  },
+  "Tags": [
+    {
+      "Key": "Project",
+      "Value": "Spaceport"
+    },
+    {
+      "Key": "Component",
+      "Value": "3DGS"
+    },
+    {
+      "Key": "Benchmark",
+      "Value": "true"
+    },
+    {
+      "Key": "Branch",
+      "Value": "agent-90742618-md1-geometry-consistency"
+    },
+    {
+      "Key": "Stage",
+      "Value": "remote-tiled-merge"
+    }
+  ]
+}

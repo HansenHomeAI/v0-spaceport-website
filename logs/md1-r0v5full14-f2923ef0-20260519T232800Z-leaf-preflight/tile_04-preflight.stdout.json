@@ -1,0 +1,226 @@
+{
+  "checked_at": "2026-05-19T23:32:22.610550+00:00",
+  "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_04/md1-r0v5full14-f2923-1779209514-tile-04/output/model.tar.gz",
+  "artifact_head_object": {
+    "AcceptRanges": "bytes",
+    "LastModified": "2026-05-19T18:59:51+00:00",
+    "ContentLength": 93183251,
+    "ETag": "\"3826f082b3c6db3f99d7a82337f64f7d-12\"",
+    "VersionId": "s0XiHl947j2zUMuFOiV9QsYTPRMD_VWD",
+    "ContentType": "application/gzip",
+    "ServerSideEncryption": "aws:kms",
+    "Metadata": {},
+    "SSEKMSKeyId": "arn:aws:kms:us-west-2:975050048887:key/e498a88e-6b23-44e3-90bd-f35b25d6e420"
+  },
+  "local_size_bytes": 93183251,
+  "sha256": "dc4b142c92f0f6363a3b958aa31139403c8b5323bc277ae60eba23fb1e12c7a0",
+  "job_name": "md1-r0v5full14-f2923-1779209514-tile-04",
+  "tile_id": "tile_04",
+  "preflight_type": "leaf_tile_artifact",
+  "inventory": [
+    {
+      "name": "splat.ply",
+      "size": 113136721,
+      "type": "file"
+    },
+    {
+      "name": "training_selection.json",
+      "size": 7219,
+      "type": "file"
+    },
+    {
+      "name": "training_metadata.json",
+      "size": 13591,
+      "type": "file"
+    },
+    {
+      "name": "floater_pruning_summary.json",
+      "size": 463,
+      "type": "file"
+    },
+    {
+      "name": "ns_train.log",
+      "size": 110907,
+      "type": "file"
+    },
+    {
+      "name": "export_manifest.json",
+      "size": 3182,
+      "type": "file"
+    },
+    {
+      "name": "ns_export.log",
+      "size": 461,
+      "type": "file"
+    },
+    {
+      "name": "background_skybox.webp",
+      "size": 36726,
+      "type": "file"
+    },
+    {
+      "name": "background_manifest.json",
+      "size": 1116,
+      "type": "file"
+    }
+  ],
+  "required_paths": {
+    "present": [
+      "background_manifest.json",
+      "background_skybox.webp",
+      "export_manifest.json",
+      "floater_pruning_summary.json",
+      "splat.ply",
+      "training_metadata.json",
+      "training_selection.json"
+    ],
+    "missing": []
+  },
+  "training_metadata": {
+    "training_completed": true,
+    "training_mode": "leaf_tile",
+    "model_variant": "splatfacto-w-light",
+    "max_iterations": 6000,
+    "sh_degree": 1,
+    "downscale_factor": 1,
+    "enable_bg_model": true,
+    "enable_alpha_loss": true,
+    "enable_robust_mask": true
+  },
+  "training_selection": {
+    "tile_id": "tile_04",
+    "selected_image_count": 188,
+    "max_selected_images": 188,
+    "view_bucket_counts": {
+      "near_detail": 0,
+      "boundary": 176,
+      "horizon": 52
+    },
+    "scaffold_initialization": {
+      "scaffold_source_artifact": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply",
+      "filtered_point_cloud": "/tmp/nerfstudio_training/converted_data/scaffold_init.ply",
+      "scaffold_filter_bounds": {
+        "min_x": -439.3362,
+        "max_x": 1072.7022,
+        "min_y": -184.16830000000002,
+        "max_y": 225.8993,
+        "min_z": -614.5843,
+        "max_z": 435.5393
+      },
+      "source_gaussian_count": 1554116,
+      "source_filtered_gaussian_count": 1554116,
+      "inherited_gaussian_count": 1554116,
+      "inherited_gaussian_cap": null,
+      "inherited_attributes": [
+        "positions",
+        "rgb_from_gaussian_dc"
+      ],
+      "reinitialized_attributes": [
+        "scale",
+        "opacity",
+        "rotation",
+        "sh_rest",
+        "appearance_embeddings"
+      ],
+      "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+      "scaffold_init_downsample_strategy": null,
+      "fallback_used": false,
+      "external_scaffold": {
+        "stage_name": "scaffold",
+        "training_mode": "global_scaffold",
+        "status": "reused_external_scaffold",
+        "source_dir": "/opt/ml/input/data/scaffold",
+        "source_kind": "directory_tar_artifact",
+        "source_artifact": "/opt/ml/input/data/scaffold/model.tar.gz",
+        "output_dir": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00",
+        "splat_ply": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/tiles/tile_00/splat.ply"
+      }
+    }
+  },
+  "export_manifest": {
+    "ply": "splat.ply",
+    "planner_transform_applied": null,
+    "foreground_coordinate_frame": "planner"
+  },
+  "floater_pruning_summary": {
+    "enabled": true,
+    "evaluated_gaussians": 1091888,
+    "candidate_gaussians": 788000,
+    "removed_gaussians": 4041,
+    "remaining_gaussians": 1087847,
+    "sampled_views": 24,
+    "min_views": 6,
+    "top_region_ratio": 0.55,
+    "top_view_fraction": 0.45,
+    "min_sky_views": 2,
+    "sky_min_luminance": 0.3,
+    "sky_min_saturation": 0.08,
+    "sky_blue_dominance_margin": 0.02,
+    "max_opacity": 0.75,
+    "max_color_distance": 0.18,
+    "min_edge_support": 2,
+    "patch_size": 9
+  },
+  "density_cap_summary": {},
+  "background_manifest_keys": [
+    "appearance_camera_clamped",
+    "appearance_camera_idx",
+    "appearance_mode",
+    "appearance_num_embeddings",
+    "asset",
+    "bg_sh_degree",
+    "camera_idx",
+    "floater_pruning",
+    "height",
+    "requested_camera_idx",
+    "selection",
+    "version",
+    "width"
+  ],
+  "splat_reference_guard": {
+    "enabled": true,
+    "status": "ok",
+    "reference_splat_count": 956277,
+    "max_reference_splat_ratio": 1.35,
+    "min_reference_splat_ratio": 0.8,
+    "splat_vertex_count": 1087847,
+    "observed_reference_ratio": 1.1375856577121484,
+    "block_reason": null
+  },
+  "splat_ply_size_bytes": 113136721,
+  "splat_ply_header": [
+    "ply",
+    "format binary_little_endian 1.0",
+    "element vertex 1087847",
+    "property float x",
+    "property float y",
+    "property float z",
+    "property float nx",
+    "property float ny",
+    "property float nz",
+    "property float f_dc_0",
+    "property float f_dc_1",
+    "property float f_dc_2",
+    "property float f_rest_0",
+    "property float f_rest_1",
+    "property float f_rest_2",
+    "property float f_rest_3",
+    "property float f_rest_4",
+    "property float f_rest_5",
+    "property float f_rest_6",
+    "property float f_rest_7",
+    "property float f_rest_8",
+    "property float opacity",
+    "property float scale_0",
+    "property float scale_1",
+    "property float scale_2",
+    "property float rot_0",
+    "property float rot_1",
+    "property float rot_2",
+    "property float rot_3",
+    "end_header"
+  ],
+  "splat_vertex_count": 1087847,
+  "block_reasons": [],
+  "decision": "leaf_preflight_passed_cache_candidate"
+}
