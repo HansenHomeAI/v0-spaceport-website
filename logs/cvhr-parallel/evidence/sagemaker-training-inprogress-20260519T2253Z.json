@@ -1,0 +1,29 @@
+{
+    "TrainingJobSummaries": [
+        {
+            "TrainingJobName": "md1-r0v5full14-f2923-1779209514-tile-13",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-r0v5full14-f2923-1779209514-tile-13",
+            "CreationTime": "2026-05-19T16:34:07.398000-06:00",
+            "LastModifiedTime": "2026-05-19T16:40:03.102000-06:00",
+            "TrainingJobStatus": "InProgress",
+            "SecondaryStatus": "Training"
+        },
+        {
+            "TrainingJobName": "md1-r0v5full14-f2923-1779209514-tile-10",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-r0v5full14-f2923-1779209514-tile-10",
+            "CreationTime": "2026-05-19T14:28:58.057000-06:00",
+            "LastModifiedTime": "2026-05-19T15:05:48.101000-06:00",
+            "TrainingJobStatus": "InProgress",
+            "SecondaryStatus": "Uploading"
+        },
+        {
+            "TrainingJobName": "cvhr-secondary-20260518t2113z-3dgs",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/cvhr-secondary-20260518t2113z-3dgs",
+            "CreationTime": "2026-05-19T13:58:33.853000-06:00",
+            "LastModifiedTime": "2026-05-19T14:03:34.810000-06:00",
+            "TrainingJobStatus": "InProgress",
+            "SecondaryStatus": "Training"
+        }
+    ],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTRGYhXdvVWj3dbcxWzdU2seUW9sgTAabpezr1qhjwVo0Zfl3e6MaLGBaXzBDVbWizc0m/zErRW4pYBXpPWHssQFU+TtYvoqDHu2Bpflm11CEVgGEOt6c7Zt1MGhjpVvjXRajvZKKBx78OwAi+WDGDgikfclxFxcIHG0T27PYd4yQJtOWVwW/jL1F4Id3RdULVbeEH/NQBZrX+q/lRT7wEdaqR6VNHqO0uOlEgxxNdUeF9fG4v7MhZN+nQGmOV5NtFwsqitftnZoe/r1lFjGpRE+rPREtGJwvwK0p3SPZdJeGDyjsna+rz3oAXllIDgg7xj+pBr55MuH6Am+eFf9VMEAHSx/axyaiQ46Ds/f7vP5vzAgZdioIsNRizpLGoxgn9aJTfOWnOvq5VpZRUiH+ebGtn4KenVlFUVGJAc0tG/8S92Evkr9PcLR5BHsihcY+8NWsPwXKqd51Y1UdrJXpx8PZbGCkuRtpxObGLlmLJnFYf43iUfJB9uAhcB4kWyjn2DEs="
+}
