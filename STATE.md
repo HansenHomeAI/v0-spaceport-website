@@ -279,3 +279,14 @@ Montana time capsule run, without touching or advancing the existing
 - No duplicate secondary CV-HR jobs were launched.
 - Existing `cvhr-mtc-20260518T1729Z-sfm` and other external jobs were left untouched.
 - Details and evidence are recorded in `logs/cvhr-parallel/STATE.md`.
+
+## 2026-05-19T04:45Z Heartbeat Poll
+
+- Secondary SfM job `cvhr-secondary-20260518t2113z-sfm` remains `InProgress`.
+- Latest CloudWatch event timestamp remains `2026-05-18T23:31:39Z`.
+- Latest observed stage remains `chunk_03_spatial_matcher_recovery` / `vocab_tree_builder`.
+- Latest observed log line: loaded `1893703` descriptors and started building the visual-word index.
+- S3 output remains empty, expected before `S3UploadMode=EndOfJob`.
+- No duplicate secondary CV-HR jobs were launched.
+- Existing `cvhr-mtc-20260518T1729Z-sfm` and other external jobs were left untouched.
+- Details and evidence are recorded in `logs/cvhr-parallel/STATE.md`.
