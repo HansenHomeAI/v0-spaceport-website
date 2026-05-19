@@ -1,5 +1,5 @@
 branch=agent-113647-md1-baseline-e2e
-head=269f9c11194c40f3886b1ab498233048119d404c
+head=45c3afe2787630af1914622ec548d2479aacd597
 
 ## gh run list (recent)
 completed	success	feat: harden md1-shrunk camera suite baselines	CDK Deploy	agent-113647-md1-baseline-e2e	push	26111270602	3m56s	2026-05-19T16:38:50Z
