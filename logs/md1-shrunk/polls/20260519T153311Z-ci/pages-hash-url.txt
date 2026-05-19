@@ -1,0 +1,1 @@
+1885:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-19T15:40:23.5126306Z ^[[36;1mHASH_URL=$(echo "$JSON" | jq -r '.result[0].url')^[[0m

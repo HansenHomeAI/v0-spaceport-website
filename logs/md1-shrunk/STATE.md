@@ -8089,6 +8089,36 @@ skybox, compression, artifact handoff, and visual gates.
   - suite summary: `logs/md1-shrunk/polls/20260519T150556Z-camera-suite/suite-summary.json`
   - browser report: `logs/md1-shrunk/polls/20260519T150556Z-camera-suite/report.html`
 
+## 2026-05-19T15:48Z no-sky horizon gate stabilized (preview redeploy + multi-camera proof)
+
+- Branch/head:
+  - branch: `agent-113647-md1-baseline-e2e`
+  - HEAD: `e20276397b444e4ea38f3735f1222856cb046a7a` (`fix: lighten md1 nosky background for camera gates`)
+- Preflight verification (read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260519T152610Z-preflight/preflight.txt`
+  - `logs/md1-shrunk/polls/20260519T152736Z-aws-gh/aws-gh.txt`
+  - Step Functions RUNNING: `0` across `SpaceportMLPipeline-staging` + branch pipelines.
+  - SageMaker InProgress: only external CVHR processing jobs (left untouched).
+  - Public S3 bundle meta.json HEAD -> `200`:
+    - `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+  - Local dev server (3033): not running (expected; checks use deployed preview).
+- Viewer no-sky background adjustment (fixes false-negative/false-positive horizon band gating):
+  - `web/public/supersplat-lod-viewer/settings-nosky.json` background color updated to a bright sky-tinted neutral to prevent no-sky comparisons from collapsing into a black top band.
+- Exact-head workflows (non-[skip ci] head `e2027639...`):
+  - `Deploy Next.js to Cloudflare Pages` run `26107587902` -> success
+  - `CDK Deploy` run `26107587599` -> success
+  - PREVIEW_URL extract (same Pages run):
+    - `logs/md1-shrunk/polls/20260519T153311Z-ci/pages-preview-url.txt`
+    - `PREVIEW_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+- Camera-suite horizon gate rerun (smallest failing check; deployed preview):
+  - oneshot DJI_02500 no-sky repro now `decision=pass` (no horizon_black_band):
+    - `logs/md1-shrunk/polls/20260519T154123Z-camera-suite/suite-summary.json`
+    - `logs/md1-shrunk/polls/20260519T154123Z-camera-suite/report.html`
+    - `logs/md1-shrunk/polls/20260519T154123Z-camera-suite/panels/nosky/panel-nosky-DJI_02500.png`
+  - multi-camera (6 poses, skybox + no-sky) no longer flags horizon_black_band:
+    - `logs/md1-shrunk/polls/20260519T154247Z-camera-suite/suite-summary.json` -> `decision=warning` (fine_detail_softness only)
+    - `logs/md1-shrunk/polls/20260519T154247Z-camera-suite/diagnostics-nosky.json` -> `top_dark_on_bright_fraction median=0.0034`
+
 ## 2026-05-19T15:23Z exact-head CI proof (Pages + CDK)
 
 - Commit/push:

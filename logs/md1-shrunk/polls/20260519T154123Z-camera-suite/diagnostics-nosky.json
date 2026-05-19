@@ -1,0 +1,120 @@
+{
+  "artifact_kind": "heldout_panel_diagnostics",
+  "schema_version": 1,
+  "decision": "pass",
+  "panel_dir": "/Users/gabrielhansen/MD1-Baseline/logs/md1-shrunk/polls/20260519T154123Z-camera-suite/panels/nosky",
+  "panel_count": 1,
+  "panel_columns": 2,
+  "thresholds": {
+    "max_panel_rmse_median": 0.35,
+    "min_panel_psnr_median": 10.0,
+    "min_edge_retention": 0.25,
+    "max_top_band_rmse": 0.35,
+    "max_top_brightness_delta": 0.25,
+    "max_top_dark_on_bright_fraction": 0.03,
+    "max_bottom_band_rmse_p90": 0.28
+  },
+  "metrics": {
+    "rmse": {
+      "count": 1,
+      "min": 0.1751,
+      "p10": 0.1751,
+      "median": 0.1751,
+      "p90": 0.1751,
+      "p95": 0.1751,
+      "max": 0.1751
+    },
+    "mae": {
+      "count": 1,
+      "min": 0.144,
+      "p10": 0.144,
+      "median": 0.144,
+      "p90": 0.144,
+      "p95": 0.144,
+      "max": 0.144
+    },
+    "psnr": {
+      "count": 1,
+      "min": 15.1327,
+      "p10": 15.1327,
+      "median": 15.1327,
+      "p90": 15.1327,
+      "p95": 15.1327,
+      "max": 15.1327
+    },
+    "edge_retention_ratio": {
+      "count": 1,
+      "min": 0.3076,
+      "p10": 0.3076,
+      "median": 0.3076,
+      "p90": 0.3076,
+      "p95": 0.3076,
+      "max": 0.3076
+    },
+    "top_band_rmse": {
+      "count": 1,
+      "min": 0.1148,
+      "p10": 0.1148,
+      "median": 0.1148,
+      "p90": 0.1148,
+      "p95": 0.1148,
+      "max": 0.1148
+    },
+    "top_band_brightness_delta": {
+      "count": 1,
+      "min": -0.0491,
+      "p10": -0.0491,
+      "median": -0.0491,
+      "p90": -0.0491,
+      "p95": -0.0491,
+      "max": -0.0491
+    },
+    "top_dark_on_bright_fraction": {
+      "count": 1,
+      "min": 0.0034,
+      "p10": 0.0034,
+      "median": 0.0034,
+      "p90": 0.0034,
+      "p95": 0.0034,
+      "max": 0.0034
+    },
+    "bottom_band_rmse": {
+      "count": 1,
+      "min": 0.1975,
+      "p10": 0.1975,
+      "median": 0.1975,
+      "p90": 0.1975,
+      "p95": 0.1975,
+      "max": 0.1975
+    },
+    "bottom_band_brightness_delta": {
+      "count": 1,
+      "min": -0.1473,
+      "p10": -0.1473,
+      "median": -0.1473,
+      "p90": -0.1473,
+      "p95": -0.1473,
+      "max": -0.1473
+    }
+  },
+  "findings": [],
+  "comparison": null,
+  "per_panel": [
+    {
+      "panel": "/Users/gabrielhansen/MD1-Baseline/logs/md1-shrunk/polls/20260519T154123Z-camera-suite/panels/nosky/panel-nosky-DJI_02500.png",
+      "width": 1440,
+      "height": 960,
+      "rmse": 0.1751,
+      "mae": 0.144,
+      "psnr": 15.1327,
+      "source_edge_energy": 0.082797,
+      "render_edge_energy": 0.02547,
+      "edge_retention_ratio": 0.3076,
+      "top_band_rmse": 0.1148,
+      "top_band_brightness_delta": -0.0491,
+      "top_dark_on_bright_fraction": 0.003418,
+      "bottom_band_rmse": 0.1975,
+      "bottom_band_brightness_delta": -0.1473
+    }
+  ]
+}

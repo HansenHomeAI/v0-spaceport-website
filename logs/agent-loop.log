@@ -43,3 +43,6 @@
 [2026-05-19T14:43:16Z] md1-shrunk: pushed 0ac17e86 (edge CORS+asset validation) + 67e00242 (Pages trigger); exact-head Pages 26104135660 + CDK 26104135709 green; PREVIEW_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev
 [2026-05-19T15:08Z] md1-shrunk: added camera_pose_mismatch gate + HTML report for camera-suite; unit tests pass; oneshot DJI_02500 decision=warning (nosky horizon_black_band) -> next: commit/push + watch CI
 [2026-05-19T15:23Z] md1-shrunk: pushed 56498cf3 + d0020517; exact-head Pages 26106566140 + CDK 26106566149 green; PREVIEW_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev -> next: commit CI proof logs
+[2026-05-19T15:47Z] md1-shrunk: lightened settings-nosky background; pushed e2027639; Pages 26107587902 + CDK 26107587599 green; PREVIEW_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev -> next: rerun camera-suite
+[2026-05-19T15:47Z] md1-shrunk: camera-suite oneshot DJI_02500 decision=pass (no horizon_black_band) -> next: rerun 6-pose suite
+[2026-05-19T15:47Z] md1-shrunk: camera-suite 6-pose decision=warning (fine_detail_softness only; top_dark_on_bright median 0.0034) -> next: record STATE.md + commit evidence
