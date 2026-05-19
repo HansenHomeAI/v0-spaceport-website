@@ -8454,7 +8454,10 @@ skybox, compression, artifact handoff, and visual gates.
     - `https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
   - SageMaker InProgress: external jobs present (processing + training); left untouched
   - Local dev server listeners: `port 3000 LISTEN` (`logs/md1-shrunk/polls/20260519T213925Z-preflight/port-3000.lsof.txt`)
-  - GitHub Actions (branch recent): last green remains `c3f52d2e...` (Pages `26111270702`, CDK `26111270602`); no new runs for logs-only `[skip ci]` head (see preflight snapshot)
+  - GitHub Actions (postpush):
+    - `logs/md1-shrunk/polls/20260519T213925Z-ci/summary.txt`
+    - CDK Deploy `26127221994` succeeded for `4df1a40c...`
+    - Pages workflow not triggered for the follow-up logs-only `[skip ci]` head; last Pages green remains `c3f52d2e...` (Pages `26111270702`)
 - Multi-camera input-vs-render checks (deployed preview; strict; baseline pose verification):
   - command: `logs/md1-shrunk/polls/20260519T213925Z-camera-suite/run.cmd.txt`
   - result: `logs/md1-shrunk/polls/20260519T213925Z-camera-suite/suite-summary.json` -> `decision=pass`
