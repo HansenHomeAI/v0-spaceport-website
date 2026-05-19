@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-19T19:10:17Z
+updated: 2026-05-19T19:11:30Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -8320,6 +8320,7 @@ skybox, compression, artifact handoff, and visual gates.
   - Local dev server listeners: `port 3000 LISTEN` (local only; suite renders use deployed preview)
   - GitHub Actions (exact-head): no new runs (current head is logs-only; `[skip ci]`); last green remains `c3f52d2e...`:
     - `logs/md1-shrunk/polls/20260519T190234Z-ci/summary.txt`
+    - post-push snapshot: `logs/md1-shrunk/polls/20260519T190234Z-ci/postpush-final.txt`
 - Multi-camera input-vs-render checks (deployed preview; strict; baseline pose verification):
   - command: `logs/md1-shrunk/polls/20260519T190234Z-camera-suite/run.cmd.txt`
   - result: `logs/md1-shrunk/polls/20260519T190234Z-camera-suite/suite-summary.json` -> `decision=pass`
