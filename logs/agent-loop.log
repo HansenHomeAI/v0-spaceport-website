@@ -28,3 +28,4 @@
 [2026-05-19T00:49Z] md1-shrunk: 3DGS training heartbeat healthy (InProgress/Training, 1238s, failure=null) -> next: continue low-churn status poll
 [2026-05-19T01:29Z] md1-shrunk: 3DGS training heartbeat healthy through 3642s (InProgress/Training, failure=null) -> next: continue low-churn status poll
 [2026-05-19T02:40Z] md1-shrunk: 3DGS training heartbeat healthy through 7905s (InProgress/Training, failure=null) -> next: continue low-churn status poll
+[2026-05-19T02:58Z] md1-shrunk: 3DGS completed (8390s, 226.8MB PLY, 958669 gaussians, skybox emitted, 205.5MiB model artifact); compression job started and entered sogs-compress -> next: monitor compression

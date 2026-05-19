@@ -7720,3 +7720,51 @@ skybox, compression, artifact handoff, and visual gates.
   - `logs/md1-shrunk/sagemaker-describe-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0210Z.json`
   - `logs/md1-shrunk/sagemaker-describe-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0225Z.json`
   - `logs/md1-shrunk/sagemaker-describe-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0240Z.json`
+
+## 2026-05-19T02:58Z in-chat 3DGS complete, compression started
+
+- 3DGS training terminal status:
+  - training job: `md1-shrunk-prodspine-wlight-202605190027-3dgs`
+  - final status at `20260519T0255Z`: `TrainingJobStatus=Completed`, `SecondaryStatus=Completed`, `TrainingTimeInSeconds=8390`, `FailureReason=null`.
+  - model artifact: `s3://spaceport-ml-processing-staging/3dgs/md1-shrunk-prodspine-wlight-202605190027/md1-shrunk-prodspine-wlight-202605190027-3dgs/output/model.tar.gz`
+  - S3 3DGS prefix: `Total Objects: 1`, `Total Size: 205.5 MiB`.
+- 3DGS export proof from CloudWatch:
+  - NerfStudio completed 30k iterations.
+  - export completed successfully.
+  - PLY file: `splat.ply` (`226.8 MB`).
+  - SOGS-compatible PLY format ready for compression.
+  - background skybox emitted: `background_skybox.webp` (`0.05 MB`).
+  - background camera selection: requested `auto_camera`, resolved `camera`, camera index `30`, source image `frame_01426.JPG`, sampled candidates `32`, score `0.6149`.
+  - floater pruning evaluated `958778` gaussians, removed `109`, remaining `958669`.
+  - metadata confirms `model_variant=splatfacto-w-light`, `enable_bg_model=True`, `enable_alpha_loss=True`, `enable_robust_mask=True`, `training_completed=True`, `playcanvas_ready=True`.
+- Step Functions state:
+  - execution remains `RUNNING`.
+  - compression job was launched automatically by the state machine.
+- Compression status:
+  - processing job: `md1-shrunk-prodspine-wlight-202605190027-compression`
+  - image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab`
+  - status at `20260519T0257Z`: `ProcessingJobStatus=InProgress`, `FailureReason=null`
+  - instance: `ml.g4dn.xlarge`, volume `50 GiB`, max runtime `86400s`
+  - input: `s3://spaceport-ml-processing-staging/3dgs/md1-shrunk-prodspine-wlight-202605190027/`
+  - output: `s3://spaceport-ml-processing-staging/compressed/md1-shrunk-prodspine-wlight-202605190027/`
+  - log stream: `md1-shrunk-prodspine-wlight-202605190027-compression/algo-1-1779159073`
+- Compression startup proof from CloudWatch:
+  - GPU available for SOGS compression.
+  - SOGS CLI tool available.
+  - GPU: `Tesla T4`.
+  - extracted archive: `/opt/ml/processing/input/md1-shrunk-prodspine-wlight-202605190027-3dgs/output/model.tar.gz`.
+  - found and validated one PLY file: `/opt/ml/processing/input/extracted/splat.ply`.
+  - started command: `sogs-compress --ply /opt/ml/processing/input/extracted/splat.ply --output-dir /opt/ml/processing/output/compressed_splat`.
+  - compressed S3 output remained empty at `20260519T0257Z`, expected until EndOfJob upload.
+- Next:
+  - Monitor compression to terminal status, validate S3 compressed bundle, public reachability, then deployed viewer smoke and visual quality gates.
+- Evidence:
+  - `logs/md1-shrunk/sagemaker-describe-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0255Z.json`
+  - `logs/md1-shrunk/cloudwatch-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0256Z.json`
+  - `logs/md1-shrunk/s3-3dgs-md1-shrunk-prodspine-wlight-202605190027-20260519T0256Z.txt`
+  - `logs/md1-shrunk/stepfunctions-describe-execution-md1-shrunk-prodspine-wlight-202605190027-20260519T0256Z.json`
+  - `logs/md1-shrunk/stepfunctions-history-reverse-tail-md1-shrunk-prodspine-wlight-202605190027-20260519T0256Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-processing-md1-shrunk-prodspine-wlight-202605190027-compression-20260519T0257Z.json`
+  - `logs/md1-shrunk/cloudwatch-stream-compression-md1-shrunk-prodspine-wlight-202605190027-20260519T0257Z.json`
+  - `logs/md1-shrunk/s3-compressed-md1-shrunk-prodspine-wlight-202605190027-20260519T0257Z.txt`
+  - `logs/md1-shrunk/cloudwatch-compression-md1-shrunk-prodspine-wlight-202605190027-20260519T0258Z.json`

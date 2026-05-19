@@ -1,0 +1,371 @@
+{
+    "events": [
+        {
+            "timestamp": 1779158793672,
+            "message": "2026-05-19 02:46:32,716 - INFO - ✅ NerfStudio training completed successfully",
+            "ingestionTime": 1779158799324
+        },
+        {
+            "timestamp": 1779158793672,
+            "message": "2026-05-19 02:46:32,716 - INFO - 📊 Training output:",
+            "ingestionTime": 1779158799324
+        },
+        {
+            "timestamp": 1779158793672,
+            "message": "2026-05-19 02:46:32,717 - INFO -    29500 (98.33%)      133.655 ms           1 m, 6 s             4.36 M               4.83 M                #033[0m",
+            "ingestionTime": 1779158799324
+        },
+        {
+            "timestamp": 1779158793672,
+            "message": "2026-05-19 02:46:32,717 - INFO -    29600 (98.67%)      133.323 ms           53 s, 329.005 ms     4.29 M               4.85 M                #033[0m",
+            "ingestionTime": 1779158799324
+        },
+        {
+            "timestamp": 1779158793672,
+            "message": "2026-05-19 02:46:32,717 - INFO -    29700 (99.00%)      129.729 ms           38 s, 918.763 ms     4.39 M               4.84 M                #033[0m",
+            "ingestionTime": 1779158799324
+        },
+        {
+            "timestamp": 1779158793672,
+            "message": "2026-05-19 02:46:32,717 - INFO -    29800 (99.33%)      122.766 ms           24 s, 553.297 ms     4.59 M               4.82 M                #033[0m",
+            "ingestionTime": 1779158799324
+        },
+        {
+            "timestamp": 1779158793672,
+            "message": "2026-05-19 02:46:32,717 - INFO -    29900 (99.67%)      133.581 ms           13 s, 358.109 ms     4.30 M               4.87 M                #033[0m",
+            "ingestionTime": 1779158799324
+        },
+        {
+            "timestamp": 1779158793672,
+            "message": "2026-05-19 02:46:32,717 - INFO -    29999 (100.00%)                                                                                          #033[0m",
+            "ingestionTime": 1779158799324
+        },
+        {
+            "timestamp": 1779158793672,
+            "message": "2026-05-19 02:46:32,717 - INFO -    ╭────────────────────────────────────────────── 🎉 Training Finished 🎉 ───────────────────────────────────────────────╮",
+            "ingestionTime": 1779158799324
+        },
+        {
+            "timestamp": 1779158793672,
+            "message": "2026-05-19 02:46:32,717 - INFO -    │                        ╷                                                                                             │",
+            "ingestionTime": 1779158799324
+        },
+        {
+            "timestamp": 1779158793672,
+            "message": "2026-05-19 02:46:32,718 - INFO -    │   Config File          │ /tmp/nerfstudio_training/converted_data/splatfacto-w-light/2026-05-19_003629/config.yml     │",
+            "ingestionTime": 1779158799324
+        },
+        {
+            "timestamp": 1779158793672,
+            "message": "2026-05-19 02:46:32,718 - INFO -    │   Checkpoint Directory │ /tmp/nerfstudio_training/converted_data/splatfacto-w-light/2026-05-19_003629/nerfstudio_…   │",
+            "ingestionTime": 1779158799324
+        },
+        {
+            "timestamp": 1779158793672,
+            "message": "2026-05-19 02:46:32,718 - INFO -    │                        ╵                                                                                             │",
+            "ingestionTime": 1779158799324
+        },
+        {
+            "timestamp": 1779158793672,
+            "message": "2026-05-19 02:46:32,718 - INFO -    ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯",
+            "ingestionTime": 1779158799324
+        },
+        {
+            "timestamp": 1779158793672,
+            "message": "2026-05-19 02:46:32,718 - INFO -    Printing profiling stats, from longest to shortest duration in seconds",
+            "ingestionTime": 1779158799324
+        },
+        {
+            "timestamp": 1779158793673,
+            "message": "2026-05-19 02:46:32,718 - INFO -    VanillaPipeline.get_average_eval_image_metrics: 14.1406             ",
+            "ingestionTime": 1779158799324
+        },
+        {
+            "timestamp": 1779158793673,
+            "message": "2026-05-19 02:46:32,718 - INFO -    VanillaPipeline.get_average_image_metrics: 13.6797             ",
+            "ingestionTime": 1779158799324
+        },
+        {
+            "timestamp": 1779158793673,
+            "message": "2026-05-19 02:46:32,718 - INFO -    Trainer.train_iteration: 0.2187              ",
+            "ingestionTime": 1779158799324
+        },
+        {
+            "timestamp": 1779158793673,
+            "message": "2026-05-19 02:46:32,718 - INFO -    VanillaPipeline.get_train_loss_dict: 0.2091              ",
+            "ingestionTime": 1779158799324
+        },
+        {
+            "timestamp": 1779158793673,
+            "message": "2026-05-19 02:46:32,718 - INFO -    VanillaPipeline.get_eval_image_metrics_and_images: 0.1305              ",
+            "ingestionTime": 1779158799324
+        },
+        {
+            "timestamp": 1779158793673,
+            "message": "2026-05-19 02:46:32,718 - INFO -    Trainer.eval_iteration: 0.0150              ",
+            "ingestionTime": 1779158799324
+        },
+        {
+            "timestamp": 1779158793673,
+            "message": "2026-05-19 02:46:32,718 - INFO - 📦 Exporting trained model artifacts...",
+            "ingestionTime": 1779158799324
+        },
+        {
+            "timestamp": 1779158793673,
+            "message": "2026-05-19 02:46:32,725 - INFO - 📄 Using config: /tmp/nerfstudio_training/converted_data/splatfacto-w-light/2026-05-19_003629/config.yml",
+            "ingestionTime": 1779158799324
+        },
+        {
+            "timestamp": 1779158804682,
+            "message": "2026-05-19 02:46:44,134 - INFO - 🌤️ Background camera selection:",
+            "ingestionTime": 1779158810523
+        },
+        {
+            "timestamp": 1779158804682,
+            "message": "2026-05-19 02:46:44,134 - INFO -    Requested mode: auto_camera",
+            "ingestionTime": 1779158810523
+        },
+        {
+            "timestamp": 1779158804682,
+            "message": "2026-05-19 02:46:44,134 - INFO -    Resolved mode: camera",
+            "ingestionTime": 1779158810523
+        },
+        {
+            "timestamp": 1779158804682,
+            "message": "2026-05-19 02:46:44,134 - INFO -    Camera index: 30",
+            "ingestionTime": 1779158810523
+        },
+        {
+            "timestamp": 1779158804683,
+            "message": "2026-05-19 02:46:44,134 - INFO -    Sampled candidates: 32",
+            "ingestionTime": 1779158810523
+        },
+        {
+            "timestamp": 1779158804683,
+            "message": "2026-05-19 02:46:44,134 - INFO -    Source image: /tmp/nerfstudio_training/converted_data/images/frame_01426.JPG",
+            "ingestionTime": 1779158810523
+        },
+        {
+            "timestamp": 1779158804683,
+            "message": "2026-05-19 02:46:44,134 - INFO -    Selection score: 0.6149",
+            "ingestionTime": 1779158810523
+        },
+        {
+            "timestamp": 1779158804683,
+            "message": "2026-05-19 02:46:44,134 - INFO - 🔄 Executing export command:",
+            "ingestionTime": 1779158810523
+        },
+        {
+            "timestamp": 1779158804683,
+            "message": "2026-05-19 02:46:44,134 - INFO -    python /opt/ml/code/export_splatfacto_w_assets.py --load-config /tmp/nerfstudio_training/converted_data/splatfacto-w-light/2026-05-19_003629/config.yml --output-dir /opt/ml/model --camera-idx 30 --background-width 2048 --background-height 1024 --background-quality 95 --background-appearance-mode camera",
+            "ingestionTime": 1779158810523
+        },
+        {
+            "timestamp": 1779158908446,
+            "message": "2026-05-19 02:48:28,429 - INFO - ✅ Model export completed successfully",
+            "ingestionTime": 1779158914398
+        },
+        {
+            "timestamp": 1779158908446,
+            "message": "2026-05-19 02:48:28,429 - INFO - 📄 PLY file: splat.ply (226.8 MB)",
+            "ingestionTime": 1779158914398
+        },
+        {
+            "timestamp": 1779158908446,
+            "message": "2026-05-19 02:48:28,429 - INFO - ✅ SOGS-compatible PLY format ready for compression",
+            "ingestionTime": 1779158914398
+        },
+        {
+            "timestamp": 1779158908446,
+            "message": "2026-05-19 02:48:28,429 - INFO - 🌤️ Background skybox: background_skybox.webp (0.05 MB)",
+            "ingestionTime": 1779158914398
+        },
+        {
+            "timestamp": 1779158918646,
+            "message": "2026-05-19 02:48:37,907 - INFO - 🧹 Floater pruning summary:",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918646,
+            "message": "2026-05-19 02:48:37,907 - INFO -    Evaluated gaussians: 958778",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918646,
+            "message": "2026-05-19 02:48:37,907 - INFO -    Low-opacity candidates: 499187",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918646,
+            "message": "2026-05-19 02:48:37,907 - INFO -    Removed gaussians: 109",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918646,
+            "message": "2026-05-19 02:48:37,907 - INFO -    Remaining gaussians: 958669",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918646,
+            "message": "2026-05-19 02:48:37,909 - INFO - 📋 Training metadata generated:",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918647,
+            "message": "2026-05-19 02:48:37,909 - INFO -    training_methodology: Spaceport splatfacto-w-light skybox export",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918647,
+            "message": "2026-05-19 02:48:37,909 - INFO -    framework: NerfStudio",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918647,
+            "message": "2026-05-19 02:48:37,909 - INFO -    model_variant: splatfacto-w-light",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918647,
+            "message": "2026-05-19 02:48:37,909 - INFO -    bilateral_guided_processing: False",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918647,
+            "message": "2026-05-19 02:48:37,909 - INFO -    sh_degree: 3",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918647,
+            "message": "2026-05-19 02:48:37,909 - INFO -    enable_bg_model: True",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918647,
+            "message": "2026-05-19 02:48:37,909 - INFO -    enable_alpha_loss: True",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918647,
+            "message": "2026-05-19 02:48:37,909 - INFO -    enable_robust_mask: True",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918647,
+            "message": "2026-05-19 02:48:37,909 - INFO -    max_iterations: 30000",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918647,
+            "message": "2026-05-19 02:48:37,909 - INFO -    commercial_license: Apache 2.0",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918647,
+            "message": "2026-05-19 02:48:37,909 - INFO -    sogs_compatible: True",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918647,
+            "message": "2026-05-19 02:48:37,910 - INFO -    playcanvas_ready: True",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918647,
+            "message": "2026-05-19 02:48:37,910 - INFO -    training_completed: True",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918647,
+            "message": "2026-05-19 02:48:37,910 - INFO -    timestamp: 1779158917.9086134",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918647,
+            "message": "2026-05-19 02:48:37,910 - INFO -    version: 1.0.0",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918647,
+            "message": "2026-05-19 02:48:37,910 - INFO -    output_file: splat.ply",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918647,
+            "message": "2026-05-19 02:48:37,910 - INFO -    file_size_mb: 226.7374448776245",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918647,
+            "message": "2026-05-19 02:48:37,910 - INFO -    background_skybox: background_skybox.webp",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918647,
+            "message": "2026-05-19 02:48:37,910 - INFO -    background_skybox_size_mb: 0.04630470275878906",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918647,
+            "message": "2026-05-19 02:48:37,910 - INFO -    background_selection: {'requested_mode': 'auto_camera', 'resolved_mode': 'camera', 'camera_idx': 30, 'image_path': '/tmp/nerfstudio_training/converted_data/images/frame_01426.JPG', 'score': 0.6148859597718186, 'stride': 5, 'max_frames': 32, 'sampled_candidates': 32}",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158918647,
+            "message": "2026-05-19 02:48:37,910 - INFO -    floater_pruning: {'enabled': True, 'evaluated_gaussians': 958778, 'candidate_gaussians': 499187, 'removed_gaussians': 109, 'remaining_gaussians': 958669, 'sampled_views': 24, 'min_views': 6, 'top_region_ratio': 0.35, 'top_view_fraction': 0.9, 'min_sky_views': 2, 'sky_min_luminance': 0.3, 'sky_min_saturation': 0.08, 'sky_blue_dominance_margin': 0.02, 'max_opacity': 0.75, 'max_color_distance': 0.18, 'min_edge_support': 1, 'patch_size': 9}",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158920654,
+            "message": "2026-05-19 02:48:40,445 - INFO - 🧹 Temporary files cleaned up",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158920654,
+            "message": "2026-05-19 02:48:40,445 - INFO - ================================================================================",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158920654,
+            "message": "2026-05-19 02:48:40,445 - INFO - 🎉 NERFSTUDIO TRAINING PIPELINE COMPLETED SUCCESSFULLY!",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158920654,
+            "message": "2026-05-19 02:48:40,445 - INFO - ✅ splatfacto-w-light foreground training completed",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158920654,
+            "message": "2026-05-19 02:48:40,445 - INFO - ✅ SOGS-compatible PLY output generated",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158920714,
+            "message": "2026-05-19 02:48:40,445 - INFO - ✅ Background skybox baked for the viewer",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158920714,
+            "message": "2026-05-19 02:48:40,445 - INFO - ✅ Production-ready for PlayCanvas deployment",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158920714,
+            "message": "2026-05-19 02:48:40,445 - INFO - 📁 Output directory: /opt/ml/model",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158920714,
+            "message": "2026-05-19 02:48:40,445 - INFO - ================================================================================",
+            "ingestionTime": 1779158923893
+        },
+        {
+            "timestamp": 1779158920714,
+            "message": "2026-05-19 02:48:40,445 - INFO - ✅ Training pipeline completed successfully",
+            "ingestionTime": 1779158923893
+        }
+    ],
+    "nextForwardToken": "f/39676569758535661129323431746738162458521238253839581220/s",
+    "nextBackwardToken": "b/39676566925404389617596006449162688067895645842418630656/s"
+}

@@ -1,0 +1,4 @@
+2026-05-18 20:48:51  205.5 MiB 3dgs/md1-shrunk-prodspine-wlight-202605190027/md1-shrunk-prodspine-wlight-202605190027-3dgs/output/model.tar.gz
+
+Total Objects: 1
+   Total Size: 205.5 MiB
