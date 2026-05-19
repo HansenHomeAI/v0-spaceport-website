@@ -7700,3 +7700,23 @@ skybox, compression, artifact handoff, and visual gates.
   - `logs/md1-shrunk/sagemaker-describe-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0109Z.json`
   - `logs/md1-shrunk/sagemaker-describe-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0119Z.json`
   - `logs/md1-shrunk/sagemaker-describe-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0129Z.json`
+
+## 2026-05-19T02:40Z in-chat 3DGS heartbeat
+
+- Current canonical downstream execution:
+  - Step Functions execution: `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-br-8abcbd5662:execution-md1-shrunk-prodspine-wlight-202605190027`
+  - training job: `md1-shrunk-prodspine-wlight-202605190027-3dgs`
+- SageMaker status:
+  - `20260519T0140Z`: `TrainingJobStatus=InProgress`, `SecondaryStatus=Training`, `TrainingTimeInSeconds=4301`, `FailureReason=null`.
+  - `20260519T0155Z`: `TrainingJobStatus=InProgress`, `SecondaryStatus=Training`, `TrainingTimeInSeconds=5202`, `FailureReason=null`.
+  - `20260519T0210Z`: `TrainingJobStatus=InProgress`, `SecondaryStatus=Training`, `TrainingTimeInSeconds=6103`, `FailureReason=null`.
+  - `20260519T0225Z`: `TrainingJobStatus=InProgress`, `SecondaryStatus=Training`, `TrainingTimeInSeconds=7004`, `FailureReason=null`.
+  - `20260519T0240Z`: `TrainingJobStatus=InProgress`, `SecondaryStatus=Training`, `TrainingTimeInSeconds=7905`, `FailureReason=null`.
+- Decision:
+  - Continue low-churn polling. No failure, OOM, timeout, or duplicate job is visible.
+- Evidence:
+  - `logs/md1-shrunk/sagemaker-describe-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0140Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0155Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0210Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0225Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0240Z.json`

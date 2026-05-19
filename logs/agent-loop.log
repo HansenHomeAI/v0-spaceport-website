@@ -27,3 +27,4 @@
 [2026-05-19T00:37Z] md1-shrunk: 3DGS startup gate passed (COLMAP 1456/1456, ns-process-data matched 1456, transforms 1456 frames, ns-train splatfacto-w-light accepted with bg/alpha/robust mask) -> next: long poll training status
 [2026-05-19T00:49Z] md1-shrunk: 3DGS training heartbeat healthy (InProgress/Training, 1238s, failure=null) -> next: continue low-churn status poll
 [2026-05-19T01:29Z] md1-shrunk: 3DGS training heartbeat healthy through 3642s (InProgress/Training, failure=null) -> next: continue low-churn status poll
+[2026-05-19T02:40Z] md1-shrunk: 3DGS training heartbeat healthy through 7905s (InProgress/Training, failure=null) -> next: continue low-churn status poll
