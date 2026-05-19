@@ -1,0 +1,210 @@
+# bundle snapshot 20260519T231348Z
+
+## s3 list
+2026-05-18 21:14:10  977 Bytes compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/background_manifest.json
+2026-05-18 21:14:10   47.4 KiB compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/background_skybox.webp
+2026-05-18 21:14:10  950 Bytes compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/export_manifest.json
+2026-05-18 21:14:10    2.7 MiB compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/means_l.webp
+2026-05-18 21:14:11    1.8 MiB compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/means_u.webp
+2026-05-18 21:14:11    1.4 KiB compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json
+2026-05-18 21:14:11    2.9 MiB compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/quats.webp
+2026-05-18 21:14:11    1.6 MiB compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/scales.webp
+2026-05-18 21:14:11  242 Bytes compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/settings.json
+2026-05-18 21:14:11    2.2 MiB compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/sh0.webp
+2026-05-18 21:14:11  716.6 KiB compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/shN_centroids.webp
+2026-05-18 21:14:11    1.8 MiB compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/shN_labels.webp
+2026-05-18 21:14:11    1.5 KiB compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/training_metadata.json
+
+Total Objects: 13
+   Total Size: 13.9 MiB
+
+## meta.json (s3 public)
+{
+  "means": {
+    "shape": [
+      958441,
+      3
+    ],
+    "dtype": "float32",
+    "mins": [
+      -2.7639293670654297,
+      -3.421955108642578,
+      -1.3135327100753784
+    ],
+    "maxs": [
+      3.2117793560028076,
+      3.177353858947754,
+      1.2151538133621216
+    ],
+    "files": [
+      "means_l.webp",
+      "means_u.webp"
+    ]
+  },
+  "scales": {
+    "shape": [
+      958441,
+      3
+    ],
+    "dtype": "float32",
+    "mins": [
+      -10.839973449707031,
+      -11.859415054321289,
+      -12.366044044494629
+    ],
+    "maxs": [
+      -1.0288095474243164,
+      -0.9054827094078064,
+      -0.9931324124336243
+    ],
+    "files": [
+      "scales.webp"
+    ]
+  },
+  "quats": {
+    "shape": [
+      958441,
+      4
+    ],
+    "dtype": "uint8",
+    "encoding": "quaternion_packed",
+    "files": [
+      "quats.webp"
+    ]
+  },
+  "sh0": {
+    "shape": [
+      958441,
+      1,
+      4
+    ],
+    "dtype": "float32",
+    "mins": [
+      -2.748272657394409,
+      -2.2157208919525146,
+      -2.3459017276763916,
+      -2.033320665359497
+    ],
+    "maxs": [
+      3.0,
+      3.0,
+      3.0,
+      16.776018142700195
+    ],
+    "files": [
+      "sh0.webp"
+    ]
+  },
+  "shN": {
+    "shape": [
+      958441,
+      45
+    ],
+    "dtype": "float32",
+    "mins": -3.2095227241516113,
+    "maxs": 5.191509246826172,
+    "quantization": 8,
+    "files": [
+      "shN_centroids.webp",
+      "shN_labels.webp"
+    ]
+  }
+}
+
+## meta.json (edge)
+{
+  "means": {
+    "shape": [
+      958441,
+      3
+    ],
+    "dtype": "float32",
+    "mins": [
+      -2.7639293670654297,
+      -3.421955108642578,
+      -1.3135327100753784
+    ],
+    "maxs": [
+      3.2117793560028076,
+      3.177353858947754,
+      1.2151538133621216
+    ],
+    "files": [
+      "means_l.webp",
+      "means_u.webp"
+    ]
+  },
+  "scales": {
+    "shape": [
+      958441,
+      3
+    ],
+    "dtype": "float32",
+    "mins": [
+      -10.839973449707031,
+      -11.859415054321289,
+      -12.366044044494629
+    ],
+    "maxs": [
+      -1.0288095474243164,
+      -0.9054827094078064,
+      -0.9931324124336243
+    ],
+    "files": [
+      "scales.webp"
+    ]
+  },
+  "quats": {
+    "shape": [
+      958441,
+      4
+    ],
+    "dtype": "uint8",
+    "encoding": "quaternion_packed",
+    "files": [
+      "quats.webp"
+    ]
+  },
+  "sh0": {
+    "shape": [
+      958441,
+      1,
+      4
+    ],
+    "dtype": "float32",
+    "mins": [
+      -2.748272657394409,
+      -2.2157208919525146,
+      -2.3459017276763916,
+      -2.033320665359497
+    ],
+    "maxs": [
+      3.0,
+      3.0,
+      3.0,
+      16.776018142700195
+    ],
+    "files": [
+      "sh0.webp"
+    ]
+  },
+  "shN": {
+    "shape": [
+      958441,
+      45
+    ],
+    "dtype": "float32",
+    "mins": -3.2095227241516113,
+    "maxs": 5.191509246826172,
+    "quantization": 8,
+    "files": [
+      "shN_centroids.webp",
+      "shN_labels.webp"
+    ]
+  }
+}
+
+## parity
+sha256_s3 f3ec9c95a0a6208f3ef9cae6a181e3cbc529ee20701252b91022efe1af02b02e
+sha256_edge f3ec9c95a0a6208f3ef9cae6a181e3cbc529ee20701252b91022efe1af02b02e
+equal True
