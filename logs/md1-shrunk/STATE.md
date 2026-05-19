@@ -8398,7 +8398,9 @@ skybox, compression, artifact handoff, and visual gates.
     - `https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
   - SageMaker InProgress: external jobs present (processing + training); left untouched
   - Local dev server listeners: `port 3000 LISTEN` (local only; suite renders use deployed preview)
-  - GitHub Actions (exact-head): no new runs (logs-only; `[skip ci]`); last green remains `c3f52d2e...` (Pages `26111270702`, CDK `26111270602`).
+  - Commit/push: `chore: record md1-shrunk heartbeat verification [skip ci]` -> `e06d2729`
+  - GitHub Actions (exact-head): no new runs (head is logs-only; `[skip ci]`); last green remains `c3f52d2e...` (Pages `26111270702`, CDK `26111270602`):
+    - `logs/md1-shrunk/polls/20260519T204013Z-ci/summary.txt`
 - Multi-camera input-vs-render checks (deployed preview; strict; baseline pose verification):
   - command: `logs/md1-shrunk/polls/20260519T204013Z-camera-suite/run.cmd.txt`
   - result: `logs/md1-shrunk/polls/20260519T204013Z-camera-suite/suite-summary.json` -> `decision=pass`
