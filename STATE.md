@@ -490,3 +490,31 @@ Montana time capsule run, without touching or advancing the existing
 - Existing `cvhr-mtc-20260518T1729Z-sfm` remains `Stopped` and was left untouched.
 - An external CV-HR training job `cvhr-mtc-secondary-20260518t2113z-3dgs` is `InProgress`; it does not match this branch state run id and was left untouched.
 - Details and evidence are recorded in `logs/cvhr-parallel/STATE.md`.
+
+## 2026-05-19T19:53Z SfM Complete And 3DGS Launch
+
+- Secondary SfM job `cvhr-secondary-20260518t2113z-sfm` now reports `Completed`.
+- CloudWatch terminal summary reports:
+  - cameras registered: `1`
+  - images registered: `1693`
+  - images copied for 3DGS: `1710`
+  - 3D points: `1329830`
+  - processing time: `78924.24` seconds
+  - completion time: `2026-05-19T19:19:06Z`
+- S3 validation:
+  - COLMAP handoff: `1717` objects, `10379523417` bytes
+  - image objects: `1710`, `6930827064` bytes
+  - sparse model: `sparse/0/cameras.txt`, `frames.txt`, `images.txt`, `points3D.txt`, `rigs.txt`
+  - registered images counted from `sparse/0/images.txt`: `1693`
+  - 3D points counted from `sparse/0/points3D.txt`: `1329830`
+- Guarded launch command run exactly once after validation:
+  - `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip --run-id cvhr-secondary-20260518t2113z --state-file logs/cvhr-parallel/cv-hr-state.json --launch`
+- Branch-owned 3DGS job:
+  - name: `cvhr-secondary-20260518t2113z-3dgs`
+  - status after launch: `InProgress`
+  - secondary status: `Pending`
+  - input: `s3://spaceport-ml-processing-staging/manual-validations/cvhr-secondary-20260518t2113z/colmap`
+  - output: `s3://spaceport-ml-processing-staging/3dgs/cvhr-secondary-20260518t2113z/`
+  - image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db`
+- Separate external job `cvhr-mtc-secondary-20260518t2113z-3dgs` remains `InProgress` and was not modified.
+- Details and evidence are recorded in `logs/cvhr-parallel/STATE.md`.

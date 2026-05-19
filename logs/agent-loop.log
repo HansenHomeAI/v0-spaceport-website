@@ -41,3 +41,4 @@
 [2026-05-19T18:51:00Z] heartbeat poll -> SfM direct describe InProgress, latest CloudWatch still chunk_bundle_adjuster 2026-05-19T17:57:00Z, S3 empty as expected -> continue monitoring
 [2026-05-19T19:11:00Z] heartbeat poll -> SfM direct describe InProgress, latest CloudWatch still chunk_bundle_adjuster 2026-05-19T17:57:00Z, S3 empty as expected -> continue monitoring
 [2026-05-19T19:33:00Z] heartbeat poll -> SfM direct describe still InProgress but colmap S3 handoff has landed with 1717 objects / 10379523417 bytes and sparse/0 present; no state-file 3DGS launch -> wait for Completed before advancing
+[2026-05-19T19:53:00Z] heartbeat poll -> SfM Completed; validated 1710 image objects, 1693 registered images, 1329830 points3D, sparse/0 integrity, then launched branch-owned 3DGS cvhr-secondary-20260518t2113z-3dgs -> monitor 3DGS

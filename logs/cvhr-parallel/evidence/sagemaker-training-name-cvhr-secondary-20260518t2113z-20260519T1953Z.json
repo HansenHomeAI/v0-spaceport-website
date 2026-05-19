@@ -1,0 +1,13 @@
+{
+    "TrainingJobSummaries": [
+        {
+            "TrainingJobName": "cvhr-secondary-20260518t2113z-3dgs",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/cvhr-secondary-20260518t2113z-3dgs",
+            "CreationTime": "2026-05-19T13:58:33.853000-06:00",
+            "LastModifiedTime": "2026-05-19T13:58:40.824000-06:00",
+            "TrainingJobStatus": "InProgress",
+            "SecondaryStatus": "Pending"
+        }
+    ],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTRGYhXdvVWj3dbcxWzdU2seUW9sgTAabpezr1qhjwVo0Zfl3e6MaLGBaXzBDVbWizc0m/zErRW4pYBXpPWHssQFU+TtYvoqDHu2Bpflm11CEVgGEOt6c7Zt1MGhjpVvjXRajvZKKBx78OwAi+WDGDgikfclxFxcIHG1k44QfgGSQLuNQTX0AxUkRJpFlHL4B2KUT2GwNBzbxCN1GAbdJcKBcQ1D25dIxNsLKHUKxIw5HdxZQ8G2A4jeFgAF5dpY+HRNZw3KZSVHNaGqbQLRB27q0YwaQzHSsmin9LKNHSAHutLwVxhjEJZ5jo475QzBxDN3W6t99BvzzJfkZYHHPeuP/o1GgrpXKLjDmfvdm9/rBLxzOktucWTvUVAuIBDTe2tRldtP8PmwOBTp+4PpnLihdIknfXaylGo3OTgNxU1LXQfMiVmbUNKo49VbJjsjy5hlIYOsBYwWcmzxLj7V2R2RcmxxqOOsvn9OzAe2vUxoniOgifolnPQfuOPkOCo/Wk+KqkDFE+qz4C/OZzBuqzL/acfcLJpwLv"
+}

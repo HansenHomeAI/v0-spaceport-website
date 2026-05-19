@@ -1,0 +1,9 @@
+# CV-HR secondary COLMAP S3 count validation 2026-05-19T19:53Z
+image_object_count:
+1710
+image_total_size:
+6930827064
+registered_images_from_sparse_images_txt:
+1693
+points3D_count_from_sparse_points3D_txt:
+1329830

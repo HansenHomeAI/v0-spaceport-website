@@ -1,0 +1,8 @@
+2026-05-19 13:20:18        196 manual-validations/cvhr-secondary-20260518t2113z/colmap/sparse/0/cameras.txt
+2026-05-19 13:20:18     277471 manual-validations/cvhr-secondary-20260518t2113z/colmap/sparse/0/frames.txt
+2026-05-19 13:20:18  672986589 manual-validations/cvhr-secondary-20260518t2113z/colmap/sparse/0/images.txt
+2026-05-19 13:20:18  204061992 manual-validations/cvhr-secondary-20260518t2113z/colmap/sparse/0/points3D.txt
+2026-05-19 13:20:18        218 manual-validations/cvhr-secondary-20260518t2113z/colmap/sparse/0/rigs.txt
+
+Total Objects: 5
+   Total Size: 877326466

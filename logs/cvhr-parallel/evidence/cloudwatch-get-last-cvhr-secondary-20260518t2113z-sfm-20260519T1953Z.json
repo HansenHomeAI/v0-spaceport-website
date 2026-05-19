@@ -1,0 +1,256 @@
+{
+    "events": [
+        {
+            "timestamp": 1779218247712,
+            "message": "COLMAP[chunk_bundle_adjuster] I20260519 19:17:27.001066 19281 bundle_adjustment_ceres.cc:1137] Bundle adjustment report",
+            "ingestionTime": 1779218252852
+        },
+        {
+            "timestamp": 1779218247712,
+            "message": "COLMAP[chunk_bundle_adjuster]     Residuals : 16450146",
+            "ingestionTime": 1779218252852
+        },
+        {
+            "timestamp": 1779218247712,
+            "message": "COLMAP[chunk_bundle_adjuster]    Parameters : 3999643",
+            "ingestionTime": 1779218252852
+        },
+        {
+            "timestamp": 1779218247712,
+            "message": "COLMAP[chunk_bundle_adjuster]    Iterations : 101",
+            "ingestionTime": 1779218252852
+        },
+        {
+            "timestamp": 1779218247712,
+            "message": "COLMAP[chunk_bundle_adjuster]          Time : 4809.29 [s]",
+            "ingestionTime": 1779218252852
+        },
+        {
+            "timestamp": 1779218247712,
+            "message": "COLMAP[chunk_bundle_adjuster]  Initial cost : 2.40275 [px]",
+            "ingestionTime": 1779218252852
+        },
+        {
+            "timestamp": 1779218247712,
+            "message": "COLMAP[chunk_bundle_adjuster]    Final cost : 0.75368 [px]",
+            "ingestionTime": 1779218252852
+        },
+        {
+            "timestamp": 1779218247712,
+            "message": "COLMAP[chunk_bundle_adjuster]   Termination : NO_CONVERGENCE",
+            "ingestionTime": 1779218252852
+        },
+        {
+            "timestamp": 1779218247712,
+            "message": "COLMAP[chunk_bundle_adjuster] ",
+            "ingestionTime": 1779218252852
+        },
+        {
+            "timestamp": 1779218248713,
+            "message": "COLMAP[chunk_bundle_adjuster] I20260519 19:17:28.161787 19281 timer.cc:90] Elapsed time: 80.459 [minutes]",
+            "ingestionTime": 1779218252852
+        },
+        {
+            "timestamp": 1779218256715,
+            "message": "2026-05-19 19:17:35,925 - INFO - [chunk_bundle_adjuster_model_converter_chunk_bundle_adjuster] colmap model_converter --input_path /tmp/colmap_sfm_gefg0_n4/chunk_bundle_adjuster --output_path /tmp/colmap_sfm_gefg0_n4/text_models/chunk_bundle_adjuster/chunk_bundle_adjuster --output_type TXT",
+            "ingestionTime": 1779218261895
+        },
+        {
+            "timestamp": 1779218345736,
+            "message": "MEMORY_PROBE [after_python]:",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218345737,
+            "message": "MemTotal:       16081288 kB",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218345737,
+            "message": "MemFree:         7899752 kB",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218345737,
+            "message": "MemAvailable:   14950532 kB\n               total        used        free      shared  buff/cache   available",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218345737,
+            "message": "Mem:            15Gi       1.1Gi       7.5Gi       1.0Mi       7.1Gi        14Gi",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218345737,
+            "message": "Swap:             0B          0B          0B",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218345737,
+            "message": "============================================================",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218345737,
+            "message": "🔍 VALIDATING OUTPUT",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218345737,
+            "message": "============================================================",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218345737,
+            "message": "✅ /opt/ml/processing/output/sparse/0/cameras.txt (196 bytes)",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218345737,
+            "message": "✅ /opt/ml/processing/output/sparse/0/images.txt (672986589 bytes)",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218345737,
+            "message": "✅ /opt/ml/processing/output/sparse/0/points3D.txt (204061992 bytes)",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218345737,
+            "message": "✅ /opt/ml/processing/output/images (1710 files)",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218345738,
+            "message": "✅ /opt/ml/processing/output/database.db (2571362304 bytes)",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218345738,
+            "message": "✅ /opt/ml/processing/output/sfm_metadata.json (7583 bytes)",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "✅ COLMAP format validation passed",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "============================================================",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "📊 PROCESSING STATISTICS",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "============================================================",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "📷 Cameras registered: 1",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "🖼️ Images registered: 1693",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "🖼️ Images copied for 3DGS: 1710",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "🎯 3D points: 1329830",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "⏱️ Processing time: 78924.24 seconds",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "🛰️ GPS priors detected: 1710",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "🔗 Matchers: chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_vocab_tree_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_vocab_tree_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_vocab_tree_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_vocab_tree_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "🧭 Match profile: P1",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "➡️ Sequential matcher enabled: True",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "↩️ Fallback reason: not_needed",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "🎯 Vocab tree candidates: 40",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "📌 SIFT max features: 8192",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "============================================================",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "🎉 SPACEPORT COLMAP GPU SfM COMPLETED SUCCESSFULLY!",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "============================================================",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "✅ GPU-accelerated COLMAP SfM completed",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "📁 Output files ready for 3D Gaussian Splatting training",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "🔗 COLMAP TXT handoff maintained",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "📅 Completed at: Tue May 19 19:19:06 UTC 2026",
+            "ingestionTime": 1779218351251
+        },
+        {
+            "timestamp": 1779218346738,
+            "message": "============================================================",
+            "ingestionTime": 1779218351251
+        }
+    ],
+    "nextForwardToken": "f/39677895003155046894899047446996259901290792135106428966/s",
+    "nextBackwardToken": "b/39677892794801452865205560114323681360700043966549262336/s"
+}

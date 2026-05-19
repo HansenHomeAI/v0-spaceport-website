@@ -1,0 +1,51 @@
+2026-05-19T19:17:27.712000Z COLMAP[chunk_bundle_adjuster] I20260519 19:17:27.001066 19281 bundle_adjustment_ceres.cc:1137] Bundle adjustment report
+2026-05-19T19:17:27.712000Z COLMAP[chunk_bundle_adjuster]     Residuals : 16450146
+2026-05-19T19:17:27.712000Z COLMAP[chunk_bundle_adjuster]    Parameters : 3999643
+2026-05-19T19:17:27.712000Z COLMAP[chunk_bundle_adjuster]    Iterations : 101
+2026-05-19T19:17:27.712000Z COLMAP[chunk_bundle_adjuster]          Time : 4809.29 [s]
+2026-05-19T19:17:27.712000Z COLMAP[chunk_bundle_adjuster]  Initial cost : 2.40275 [px]
+2026-05-19T19:17:27.712000Z COLMAP[chunk_bundle_adjuster]    Final cost : 0.75368 [px]
+2026-05-19T19:17:27.712000Z COLMAP[chunk_bundle_adjuster]   Termination : NO_CONVERGENCE
+2026-05-19T19:17:27.712000Z COLMAP[chunk_bundle_adjuster]
+2026-05-19T19:17:28.713000Z COLMAP[chunk_bundle_adjuster] I20260519 19:17:28.161787 19281 timer.cc:90] Elapsed time: 80.459 [minutes]
+2026-05-19T19:17:36.715000Z 2026-05-19 19:17:35,925 - INFO - [chunk_bundle_adjuster_model_converter_chunk_bundle_adjuster] colmap model_converter --input_path /tmp/colmap_sfm_gefg0_n4/chunk_bundle_adjuster --output_path /tmp/colmap_sfm_gefg0_n4/text_models/chunk_bundle_adjuster/chunk_bundle_adjuster --output_type TXT
+2026-05-19T19:19:05.736000Z MEMORY_PROBE [after_python]:
+2026-05-19T19:19:05.737000Z MemTotal:       16081288 kB
+2026-05-19T19:19:05.737000Z MemFree:         7899752 kB
+2026-05-19T19:19:05.737000Z MemAvailable:   14950532 kB
+               total        used        free      shared  buff/cache   available
+2026-05-19T19:19:05.737000Z Mem:            15Gi       1.1Gi       7.5Gi       1.0Mi       7.1Gi        14Gi
+2026-05-19T19:19:05.737000Z Swap:             0B          0B          0B
+2026-05-19T19:19:05.737000Z ============================================================
+2026-05-19T19:19:05.737000Z 🔍 VALIDATING OUTPUT
+2026-05-19T19:19:05.737000Z ============================================================
+2026-05-19T19:19:05.737000Z ✅ /opt/ml/processing/output/sparse/0/cameras.txt (196 bytes)
+2026-05-19T19:19:05.737000Z ✅ /opt/ml/processing/output/sparse/0/images.txt (672986589 bytes)
+2026-05-19T19:19:05.737000Z ✅ /opt/ml/processing/output/sparse/0/points3D.txt (204061992 bytes)
+2026-05-19T19:19:05.737000Z ✅ /opt/ml/processing/output/images (1710 files)
+2026-05-19T19:19:05.738000Z ✅ /opt/ml/processing/output/database.db (2571362304 bytes)
+2026-05-19T19:19:05.738000Z ✅ /opt/ml/processing/output/sfm_metadata.json (7583 bytes)
+2026-05-19T19:19:06.738000Z ✅ COLMAP format validation passed
+2026-05-19T19:19:06.738000Z ============================================================
+2026-05-19T19:19:06.738000Z 📊 PROCESSING STATISTICS
+2026-05-19T19:19:06.738000Z ============================================================
+2026-05-19T19:19:06.738000Z 📷 Cameras registered: 1
+2026-05-19T19:19:06.738000Z 🖼️ Images registered: 1693
+2026-05-19T19:19:06.738000Z 🖼️ Images copied for 3DGS: 1710
+2026-05-19T19:19:06.738000Z 🎯 3D points: 1329830
+2026-05-19T19:19:06.738000Z ⏱️ Processing time: 78924.24 seconds
+2026-05-19T19:19:06.738000Z 🛰️ GPS priors detected: 1710
+2026-05-19T19:19:06.738000Z 🔗 Matchers: chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_vocab_tree_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_vocab_tree_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_vocab_tree_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_vocab_tree_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher
+2026-05-19T19:19:06.738000Z 🧭 Match profile: P1
+2026-05-19T19:19:06.738000Z ➡️ Sequential matcher enabled: True
+2026-05-19T19:19:06.738000Z ↩️ Fallback reason: not_needed
+2026-05-19T19:19:06.738000Z 🎯 Vocab tree candidates: 40
+2026-05-19T19:19:06.738000Z 📌 SIFT max features: 8192
+2026-05-19T19:19:06.738000Z ============================================================
+2026-05-19T19:19:06.738000Z 🎉 SPACEPORT COLMAP GPU SfM COMPLETED SUCCESSFULLY!
+2026-05-19T19:19:06.738000Z ============================================================
+2026-05-19T19:19:06.738000Z ✅ GPU-accelerated COLMAP SfM completed
+2026-05-19T19:19:06.738000Z 📁 Output files ready for 3D Gaussian Splatting training
+2026-05-19T19:19:06.738000Z 🔗 COLMAP TXT handoff maintained
+2026-05-19T19:19:06.738000Z 📅 Completed at: Tue May 19 19:19:06 UTC 2026
+2026-05-19T19:19:06.738000Z ============================================================

@@ -1661,3 +1661,82 @@ as read-only context.
   - `logs/cvhr-parallel/evidence/cloudwatch-get-last-cvhr-secondary-20260518t2113z-sfm-20260519T1933Z.json`
   - `logs/cvhr-parallel/evidence/cloudwatch-get-last-cvhr-secondary-20260518t2113z-sfm-20260519T1933Z.log`
   - `logs/cvhr-parallel/evidence/runner-status-20260519T1933Z.json`
+
+## 2026-05-19T19:53Z SfM Complete And 3DGS Launch
+
+- Branch/head/status:
+  - branch: `agent-73910482-cvhr-parallel-splat`
+  - head: `dc2fa401333cdbe4ad57f3e9cebc12b7f888d888` (`[skip ci]` ledger commit)
+  - status before this poll: clean
+  - last meaningful exact-head workflow remains `CDK Deploy` run `26060892234` for code head `0b60d8bf9e7e4355bd46001dcd61387b327a8e5a`, conclusion `success`
+- AWS identity:
+  - account: `975050048887`
+  - ARN: `arn:aws:iam::975050048887:root`
+- SfM terminal state:
+  - secondary SfM direct describe: `cvhr-secondary-20260518t2113z-sfm` -> `Completed`
+  - start: `2026-05-18T15:20:32.428000-06:00`
+  - end: `2026-05-19T13:21:07.265000-06:00`
+  - failure reason: none
+  - separate `cvhr-mtc-20260518T1729Z-sfm` direct describe: `Stopped`, left untouched
+- COLMAP terminal CloudWatch summary:
+  - latest observed CloudWatch event timestamp from `get-log-events`: `2026-05-19T19:19:06Z`
+  - cameras registered: `1`
+  - images registered: `1693`
+  - images copied for 3DGS: `1710`
+  - 3D points: `1329830`
+  - GPS priors detected: `1710`
+  - fallback reason: `not_needed`
+  - success line: `SPACEPORT COLMAP GPU SfM COMPLETED SUCCESSFULLY!`
+- S3 handoff validation:
+  - COLMAP prefix: `s3://spaceport-ml-processing-staging/manual-validations/cvhr-secondary-20260518t2113z/colmap`
+  - total objects: `1717`
+  - total size: `10379523417`
+  - image objects: `1710`
+  - image total size: `6930827064`
+  - sparse files present: `sparse/0/cameras.txt`, `sparse/0/frames.txt`, `sparse/0/images.txt`, `sparse/0/points3D.txt`, `sparse/0/rigs.txt`
+  - sparse objects: `5`
+  - sparse total size: `877326466`
+  - registered images counted from `sparse/0/images.txt`: `1693`
+  - 3D points counted from `sparse/0/points3D.txt`: `1329830`
+- 3DGS launch:
+  - guard state before launch: no `3dgs_job_name` existed in `logs/cvhr-parallel/cv-hr-state.json`
+  - command: `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip --run-id cvhr-secondary-20260518t2113z --state-file logs/cvhr-parallel/cv-hr-state.json --launch`
+  - launched job: `cvhr-secondary-20260518t2113z-3dgs`
+  - status after launch: `InProgress`
+  - secondary status after launch: `Pending`
+  - training image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db`
+  - instance: `ml.g5.2xlarge`
+  - input: `s3://spaceport-ml-processing-staging/manual-validations/cvhr-secondary-20260518t2113z/colmap`
+  - output: `s3://spaceport-ml-processing-staging/3dgs/cvhr-secondary-20260518t2113z/`
+  - model artifact target: `s3://spaceport-ml-processing-staging/3dgs/cvhr-secondary-20260518t2113z/cvhr-secondary-20260518t2113z-3dgs/output/model.tar.gz`
+  - training log stream: not created yet at first poll
+  - 3DGS output prefix is still empty at first poll, expected before training emits artifacts
+- Other active jobs:
+  - external `cvhr-mtc-secondary-20260518t2113z-3dgs` is still `InProgress` and was not modified
+  - external processing jobs observed: `cvhr-viscell-full-l01-1779219573`, `cvhr-viscell-full-l00-1779219568`
+  - external MD1 training jobs observed: `md1-r0v5full14-f2923-1779209514-tile-09`, `md1-r0v5full14-f2923-1779209514-tile-08`
+  - running `SpaceportMLPipeline-staging` Step Functions executions: `0`
+- State update:
+  - `logs/cvhr-parallel/cv-hr-state.json` now reports `status=3dgs_started`, `sfm_status=Completed`, `last_action=launched_3dgs`, `3dgs_job_name=cvhr-secondary-20260518t2113z-3dgs`, `updated_at=2026-05-19T19:58:34Z`
+- Evidence:
+  - `logs/cvhr-parallel/evidence/aws-sts-20260519T1953Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-describe-cvhr-secondary-20260518t2113z-sfm-20260519T1953Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-describe-cvhr-mtc-20260518T1729Z-sfm-20260519T1953Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-describe-cvhr-mtc-secondary-20260518t2113z-3dgs-20260519T1953Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-processing-inprogress-20260519T1953Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-training-inprogress-20260519T1953Z.json`
+  - `logs/cvhr-parallel/evidence/stepfunctions-running-20260519T1953Z.json`
+  - `logs/cvhr-parallel/evidence/s3-colmap-cvhr-secondary-20260518t2113z-20260519T1953Z.txt`
+  - `logs/cvhr-parallel/evidence/s3-colmap-sparse-cvhr-secondary-20260518t2113z-20260519T1953Z.txt`
+  - `logs/cvhr-parallel/evidence/s3-colmap-images-cvhr-secondary-20260518t2113z-20260519T1953Z.txt`
+  - `logs/cvhr-parallel/evidence/colmap-counts-cvhr-secondary-20260518t2113z-20260519T1953Z.txt`
+  - `logs/cvhr-parallel/evidence/gh-runs-agent-73910482-20260519T1953Z.json`
+  - `logs/cvhr-parallel/evidence/logstreams-cvhr-secondary-20260518t2113z-sfm-20260519T1953Z.json`
+  - `logs/cvhr-parallel/evidence/cloudwatch-get-last-cvhr-secondary-20260518t2113z-sfm-20260519T1953Z.json`
+  - `logs/cvhr-parallel/evidence/cloudwatch-get-last-cvhr-secondary-20260518t2113z-sfm-20260519T1953Z.log`
+  - `logs/cvhr-parallel/evidence/runner-status-20260519T1953Z.json`
+  - `logs/cvhr-parallel/evidence/runner-launch-3dgs-cvhr-secondary-20260518t2113z-20260519T1953Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-describe-cvhr-secondary-20260518t2113z-3dgs-20260519T1953Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-training-name-cvhr-secondary-20260518t2113z-20260519T1953Z.json`
+  - `logs/cvhr-parallel/evidence/logstreams-cvhr-secondary-20260518t2113z-3dgs-20260519T1953Z.json`
+  - `logs/cvhr-parallel/evidence/s3-3dgs-cvhr-secondary-20260518t2113z-20260519T1953Z.txt`
