@@ -37,3 +37,4 @@
 [2026-05-19T17:29:00Z] heartbeat poll -> SfM direct describe InProgress, advanced to chunk_09_sequential_matcher Processing image 115/179, S3 empty as expected -> continue monitoring
 [2026-05-19T17:49:00Z] heartbeat poll -> SfM direct describe InProgress, advanced to chunk_10_mapper_initial with num_reg_frames=126, S3 empty as expected -> continue monitoring
 [2026-05-19T18:11:00Z] heartbeat poll -> SfM direct describe InProgress, chunk_10 kept successful reconstruction then entered global bundle adjustment, S3 empty as expected -> continue monitoring
+[2026-05-19T18:31:00Z] heartbeat poll -> SfM direct describe InProgress, latest CloudWatch still chunk_bundle_adjuster 2026-05-19T17:57:00Z after chunk_10 kept successful reconstruction, S3 empty as expected -> continue monitoring
