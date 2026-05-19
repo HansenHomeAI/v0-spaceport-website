@@ -1,0 +1,20 @@
+{
+    "TrainingJobSummaries": [
+        {
+            "TrainingJobName": "md1-r0v5full14-f2923-1779209514-tile-03",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-r0v5full14-f2923-1779209514-tile-03",
+            "CreationTime": "2026-05-19T11:41:17.791000-06:00",
+            "LastModifiedTime": "2026-05-19T11:47:13.271000-06:00",
+            "TrainingJobStatus": "InProgress",
+            "SecondaryStatus": "Training"
+        },
+        {
+            "TrainingJobName": "md1-r0v5full14-f2923-1779209514-tile-02",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-r0v5full14-f2923-1779209514-tile-02",
+            "CreationTime": "2026-05-19T11:41:16.590000-06:00",
+            "LastModifiedTime": "2026-05-19T11:47:11.596000-06:00",
+            "TrainingJobStatus": "InProgress",
+            "SecondaryStatus": "Training"
+        }
+    ]
+}
