@@ -73,6 +73,12 @@ tests/pipeline/*.log
 logs/*.png
 logs/*.jpg
 logs/*.jpeg
+
+# MD1-Shrunk camera-suite artifacts (large, reproducible)
+logs/md1-shrunk/polls/*camera-suite*/inputs/
+logs/md1-shrunk/polls/*camera-suite*/renders/
+logs/md1-shrunk/polls/*camera-suite*/panels/
+logs/md1-shrunk/polls/*camera-suite*/**/*.png
 .next/
 .vercel/
 web/.next/

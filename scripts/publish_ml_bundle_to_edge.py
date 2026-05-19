@@ -23,6 +23,16 @@ from pathlib import Path
 
 HOMEBREW_AWS = Path("/opt/homebrew/bin/aws")
 
+def escape_html(text: str) -> str:
+    return (
+        str(text)
+        .replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
+        .replace("'", "&#39;")
+    )
+
 
 def resolve_aws() -> str:
     return str(HOMEBREW_AWS) if HOMEBREW_AWS.exists() else "aws"
@@ -44,6 +54,11 @@ def parse_args() -> argparse.Namespace:
         "--origin",
         default="https://example.com",
         help="Origin header value used for CORS validation when --require-browser-headers is set.",
+    )
+    parser.add_argument(
+        "--html-report",
+        default="",
+        help="Optional path to write a browser-readable HTML summary of the published bundle and asset URLs.",
     )
     return parser.parse_args()
 
@@ -133,6 +148,67 @@ def build_asset_url(meta_url: str, filename: str) -> str:
         raise ValueError(f"expected meta.json url, got: {meta_url}")
     return f"{meta_url[:-len('meta.json')]}{filename.lstrip('/')}"
 
+def write_html_report(
+    *,
+    path: Path,
+    edge_url: str,
+    origin: str,
+    meta: dict[str, object] | None,
+    asset_urls: list[str],
+    assets_heads: dict[str, str],
+) -> None:
+    rows: list[str] = []
+    for url in asset_urls:
+        head_raw = assets_heads.get(url, "")
+        status_line = parse_http_headers(head_raw).get("__status_line__", "") if head_raw else ""
+        rows.append(
+            "<tr>"
+            f"<td><a href=\"{escape_html(url)}\">{escape_html(url.split('/')[-1])}</a></td>"
+            f"<td><code>{escape_html(status_line or '<missing>')}</code></td>"
+            "</tr>"
+        )
+
+    meta_section = "<p>meta.json not captured (run with <code>--require-browser-headers</code> to download it)</p>"
+    if meta is not None:
+        keys = ", ".join(escape_html(key) for key in sorted(str(k) for k in meta.keys()))
+        meta_section = f"<p><strong>meta keys</strong>: <code>{keys}</code></p>"
+
+    html = f"""<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Edge bundle delivery report</title>
+    <style>
+      body {{ font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif; margin: 24px; }}
+      code {{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }}
+      table {{ border-collapse: collapse; width: 100%; }}
+      th, td {{ border: 1px solid #ddd; padding: 8px; vertical-align: top; }}
+      th {{ background: #f6f6f6; text-align: left; }}
+    </style>
+  </head>
+  <body>
+    <h1>Edge bundle delivery report</h1>
+    <p><strong>edge meta.json</strong>: <a href="{escape_html(edge_url)}">{escape_html(edge_url)}</a></p>
+    <p><strong>origin probe</strong>: <code>{escape_html(origin)}</code></p>
+    {meta_section}
+    <h2>Assets</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>file</th>
+          <th>status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {''.join(rows) if rows else '<tr><td colspan=\"2\">none</td></tr>'}
+      </tbody>
+    </table>
+  </body>
+</html>
+"""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(html, encoding="utf-8")
 
 def main() -> int:
     args = parse_args()
@@ -169,6 +245,9 @@ def main() -> int:
 
     print(f"OK edgeBundleUrl={edge_url}")
 
+    meta: dict[str, object] | None = None
+    asset_urls: list[str] = []
+    assets_out: dict[str, dict[str, str]] = {}
     if args.validate_http or args.require_browser_headers:
         head_path = output_path.with_suffix(".curl-head.txt")
         head = curl_head(edge_url)
@@ -201,7 +280,6 @@ def main() -> int:
             print(f"OK metaJson={meta_path}")
 
             asset_urls = [build_asset_url(edge_url, filename) for filename in iter_meta_files(meta)]
-            assets_out: dict[str, dict[str, str]] = {}
             for url in asset_urls:
                 asset_head = curl_head(url, origin=args.origin)
                 assets_out[url] = {"head": asset_head}
@@ -214,6 +292,21 @@ def main() -> int:
             assets_path = output_path.with_suffix(".assets.json")
             assets_path.write_text(json.dumps(assets_out, indent=2) + "\n", encoding="utf-8")
             print(f"OK assetsHead={assets_path}")
+
+    if args.html_report:
+        report_path = Path(args.html_report)
+        assets_heads = {url: item.get("head", "") for url, item in assets_out.items()}
+        if meta is not None and not asset_urls:
+            asset_urls = [build_asset_url(edge_url, filename) for filename in iter_meta_files(meta)]
+        write_html_report(
+            path=report_path,
+            edge_url=edge_url,
+            origin=args.origin,
+            meta=meta,
+            asset_urls=asset_urls,
+            assets_heads=assets_heads,
+        )
+        print(f"OK htmlReport={report_path}")
 
     return 0
 

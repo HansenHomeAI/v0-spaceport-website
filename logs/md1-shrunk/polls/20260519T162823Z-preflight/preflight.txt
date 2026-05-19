@@ -1,0 +1,97 @@
+timestamp_utc=20260519T162823Z
+
+## git
+agent-113647-md1-baseline-e2e
+7f8827f2c38d08751284767edf8c69ad8f158efd
+?? logs/md1-shrunk/polls/20260519T162823Z-preflight/
+
+## gh runs (branch)
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26109660240	4m12s	2026-05-19T16:09:14Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26109660239	7m48s	2026-05-19T16:09:14Z
+completed	success	fix: calibrate md1-shrunk camera-suite edge retention gate	CDK Deploy	agent-113647-md1-baseline-e2e	push	26109384090	4m13s	2026-05-19T16:04:19Z
+completed	success	fix: lighten md1 nosky background for camera gates	CDK Deploy	agent-113647-md1-baseline-e2e	push	26107587599	3m54s	2026-05-19T15:32:55Z
+completed	success	fix: lighten md1 nosky background for camera gates	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26107587902	7m35s	2026-05-19T15:32:55Z
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26106566149	3m32s	2026-05-19T15:15:28Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26106566140	7m23s	2026-05-19T15:15:28Z
+completed	success	feat: add md1-shrunk camera suite html report	CDK Deploy	agent-113647-md1-baseline-e2e	push	26106278926	4m9s	2026-05-19T15:10:35Z
+completed	success	chore: record md1-shrunk CI proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	26104689980	3m52s	2026-05-19T14:43:59Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26104135660	7m58s	2026-05-19T14:34:20Z
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26104135709	4m5s	2026-05-19T14:34:20Z
+completed	success	fix: harden edge bundle browser delivery checks	CDK Deploy	agent-113647-md1-baseline-e2e	push	26103861417	4m4s	2026-05-19T14:29:38Z
+
+## aws sts
+{
+    "UserId": "975050048887",
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root"
+}
+
+## stepfunctions running (staging)
+{
+    "executions": []
+}
+
+## sagemaker processing InProgress
+{
+    "ProcessingJobSummaries": [
+        {
+            "ProcessingJobName": "cvhr-secondary-20260518t2113z-sfm",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/cvhr-secondary-20260518t2113z-sfm",
+            "CreationTime": "2026-05-18T15:19:51.886000-06:00",
+            "LastModifiedTime": "2026-05-18T15:22:23.268000-06:00",
+            "ProcessingJobStatus": "InProgress"
+        },
+        {
+            "ProcessingJobName": "cvhr-mtc-20260518T1729Z-sfm",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/cvhr-mtc-20260518T1729Z-sfm",
+            "CreationTime": "2026-05-18T11:29:49.660000-06:00",
+            "LastModifiedTime": "2026-05-18T11:32:20.712000-06:00",
+            "ProcessingJobStatus": "InProgress"
+        }
+    ],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTRGYhXdvVWj3dbcxWzdU2seUW9sgTAabpezr1qhjwVo0Zfl3e6MaLGBaXzBDVbWizc0m/zErRW4pYBXpPWHssQFU+TtYvoqDHu2Bpflm11CEVgGEOt6c7Zt1MGhjpVvjXRajvZKKBx78OwAi+WDGDgikfclxFxcIHG0T27PYd4yQJtOWVwW/jL1F4Id3RdULVbeEH/NQBZrX+q/lRT7wEdaqR6VNHqO0uOlEgxxNdUeF9fG4v7MhZN+nQGmOV5NtFwsqitftnZoe/r1lFjGpRE+rPREtGJwvwK0p3SPZdJeGDyjsna+rz3oAXllIDgg7xj+pBr55MuH6Am+eFf9VMHQQ1ixJqlyWI7nEYKr/BReZodXCD+rDWQ5vYJlmyCPXC61b1xh4my1nO400NNphFycRDmRMFKIELh8Erx5NQuzS1k60EpDRqTnoSB/MnXsbAOfgmyFEtZNlwawj6R4uaVMZCMd3+LSoUl136XNppm5wVtavat5vgBJLebDYYyYjpmR5RVzgPIZ6uynBmPJTw0uXIVcWT"
+}
+
+## sagemaker training InProgress
+{
+    "TrainingJobSummaries": [],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTRGYhXdvVWj3dbcxWzdU2seUW9sgTAabpezr1qhjwVo0Zfl3e6MaLGBaXzBDVbWizc0m/zErRW4pYBXpPWHssQFU+TtYvoqDHu2Bpflm11CEVgGEOt6c7Zt1MGhjpVvjXRajvZKKBx78OwAi+WDGDgikfclxFxcIHG0T27PYd4yQJtOWVwW/jL1F4Id3RdULVbeEH/NQBZrX+q/lRT7wEdaqR6VNHqO0uOlEgxxNdUeF9fG4v7MhZN+nQGmOV5NtFwsqitftnZoe/r1lFjGpRE+rPREtGJwvwK0p3SPZdJeGDyjsna+rz3oAXllIDgg7xj+pBr55MuH6Am+eFf9VMGy34vtCNp1dVrS4fznkgUVesGR9/My/HIwTI7zcQMmZfn/uoODytprFkf4pQ1xeoeTzzylK3YSJdb46GdNrptAIjCMhW+9OxSuBBZChU8e9WrPagLEzgDKVBjiiOKPHfCqlHrYVSK89ISTuW0v7qBDaJ/Td//bx6B1QmoN2b57B2Zl0gV483MdX+8Q=="
+}
+
+## public meta.json headers (s3)
+HTTP/1.1 200 OK
+x-amz-id-2: dGh8jDwTXDUEJJUES+vJ/49qjmkP4k3LAIdffGeZIfrrYuBffd/e2VO7lPIPoL2Fz1Jc6KFZ+OnUfiW96k/YiXiTS7NosjGj
+x-amz-request-id: WYQ6Z70WQN180KFT
+Date: Tue, 19 May 2026 16:28:30 GMT
+Last-Modified: Tue, 19 May 2026 03:14:11 GMT
+ETag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: lwCX4ptdSjx.9.5LMjn4a8Ervrln8HMA
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1421
+Server: AmazonS3
+
+
+## public meta.json headers (edge)
+HTTP/2 200 
+content-type: application/json
+content-length: 1421
+date: Tue, 19 May 2026 14:24:08 GMT
+last-modified: Tue, 19 May 2026 06:37:13 GMT
+etag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+cache-control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: vUW1wpcXNiVbn3gf6_kSkXCXdN6e83vX
+accept-ranges: bytes
+server: AmazonS3
+x-cache: Hit from cloudfront
+via: 1.1 fb5da0c779ff438ab8efc00e493ffc06.cloudfront.net (CloudFront)
+x-amz-cf-pop: LAX53-P6
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: 3fPPuE3wBgmzVuPaIt3RWKs73qJHvg5EPcOw-Yw35Sz-StHEGmsisA==
+age: 7462
+vary: Origin
+
+
+## local listen ports

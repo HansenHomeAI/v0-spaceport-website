@@ -49,6 +49,13 @@ def parse_vector(value: object) -> tuple[float, float, float] | None:
         return None
     return numbers  # type: ignore[return-value]
 
+def vector_delta(left: str, right: str) -> float | None:
+    a = parse_vector(left)
+    b = parse_vector(right)
+    if a is None or b is None:
+        return None
+    return float(((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2) ** 0.5)
+
 def escape_html(text: str) -> str:
     return (
         text.replace("&", "&amp;")
@@ -84,9 +91,34 @@ def write_html_report(
     diagnostics: dict[str, Any],
     failures: list[dict[str, Any]],
     decision: str,
+    baseline_suite_dir: str,
+    pose_verification: dict[str, Any] | None,
 ) -> Path:
     def rel(path: Path) -> str:
         return path.relative_to(out_dir).as_posix()
+
+    baseline_html = "<p><strong>baseline suite</strong>: <code>none</code></p>"
+    if baseline_suite_dir:
+        baseline_html = f"<p><strong>baseline suite</strong>: <code>{escape_html(baseline_suite_dir)}</code></p>"
+
+    pose_verify_html = "<p><strong>pose verification</strong>: <code>none</code></p>"
+    if pose_verification:
+        max_delta = pose_verification.get("max_delta")
+        max_field = pose_verification.get("max_delta_field")
+        max_name = pose_verification.get("max_delta_name")
+        tol = pose_verification.get("tolerance")
+        missing_current = len(pose_verification.get("missing_in_current") or [])
+        missing_baseline = len(pose_verification.get("missing_in_baseline") or [])
+        pose_verify_html = (
+            "<p><strong>pose verification</strong>: "
+            f"tolerance=<code>{escape_html(str(tol))}</code> "
+            f"max_delta=<code>{escape_html(str(max_delta))}</code> "
+            f"field=<code>{escape_html(str(max_field))}</code> "
+            f"name=<code>{escape_html(str(max_name))}</code> "
+            f"missing_current=<code>{missing_current}</code> "
+            f"missing_baseline=<code>{missing_baseline}</code>"
+            "</p>"
+        )
 
     rows: list[str] = []
     for pose in poses:
@@ -137,6 +169,13 @@ def write_html_report(
                 findings_html.append(f"<li><code>{escape_html(category)}</code>: {escape_html(evidence)}</li>")
             findings_html.append("</ul>")
 
+        comparison = report.get("comparison") or {}
+        if comparison:
+            findings_html.append("<details><summary>baseline comparison</summary><ul>")
+            for key, entry in comparison.items():
+                findings_html.append(f"<li><code>{escape_html(str(key))}</code>: {escape_html(json.dumps(entry))}</li>")
+            findings_html.append("</ul></details>")
+
     failures_html = "<p>none</p>"
     if failures:
         failures_html = "<ul>" + "".join(f"<li>{escape_html(json.dumps(item))}</li>" for item in failures) + "</ul>"
@@ -160,6 +199,8 @@ def write_html_report(
     <p><strong>decision</strong>: <code>{escape_html(decision)}</code></p>
     <p><strong>viewer</strong>: <a href="{escape_html(viewer_url)}">{escape_html(viewer_url)}</a></p>
     <p><strong>bundle</strong>: <a href="{escape_html(bundle_url)}">{escape_html(bundle_url)}</a></p>
+    {baseline_html}
+    {pose_verify_html}
     <h2>Poses</h2>
     <table>
       <thead>
@@ -212,7 +253,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--compressed-output-s3-uri", required=True, help="s3://.../compressed/<job-id>/")
     parser.add_argument(
         "--colmap-images-txt",
-        required=True,
+        default="",
         help="Path or S3 URI to COLMAP sparse/0/images.txt for the job",
     )
     parser.add_argument(
@@ -220,10 +261,22 @@ def parse_args() -> argparse.Namespace:
         required=True,
         help="S3 prefix to COLMAP images/ directory (s3://bucket/.../images)",
     )
+    parser.add_argument("--poses-json", default="", help="Optional precomputed camera poses JSON (skips COLMAP derive).")
     parser.add_argument(
         "--include-names",
         default="",
         help="Comma-separated list of image base names (e.g. DJI_01029.JPG) to render (overrides sampling)",
+    )
+    parser.add_argument(
+        "--baseline-suite-dir",
+        default="",
+        help="Optional prior suite output dir used for baseline diagnostics + camera-pose verification.",
+    )
+    parser.add_argument(
+        "--pose-diff-tolerance",
+        type=float,
+        default=0.01,
+        help="Warn when baseline pose vectors drift more than this L2 distance (normalized viewer coordinates).",
     )
     parser.add_argument("--out-dir", default="", help="Defaults to logs/md1-shrunk/polls/<timestamp>/suite")
     parser.add_argument("--sample-count", type=int, default=6)
@@ -260,6 +313,8 @@ def main() -> int:
             "--output",
             str(publish_out),
             "--require-browser-headers",
+            "--html-report",
+            str(out_dir / "publish-edge.report.html"),
         ]
         publish_log = out_dir / "publish-edge.log.txt"
         publish_log.write_text(run(publish_cmd), encoding="utf-8")
@@ -269,24 +324,32 @@ def main() -> int:
 
     poses_out = out_dir / "camera-poses.json"
     python = resolve_python()
-    derive_cmd = [
-        python,
-        str(REPO_ROOT / "scripts" / "sfm" / "derive_viewer_camera_poses_from_colmap.py"),
-        "--images-txt",
-        args.colmap_images_txt,
-        "--output",
-        str(poses_out),
-        "--distance-to-target",
-        str(args.distance_to_target),
-        "--sample-count",
-        str(args.sample_count),
-    ]
-    if args.colmap_images_txt.rstrip().endswith("frames.txt"):
-        derive_cmd += ["--image-names-s3-prefix", args.colmap_images_s3_prefix]
-    if args.include_names.strip():
-        derive_cmd += ["--include-names", args.include_names.strip()]
-    derive_log = out_dir / "derive-camera-poses.log.txt"
-    derive_log.write_text(run(derive_cmd), encoding="utf-8")
+    if args.poses_json.strip():
+        poses_src = Path(args.poses_json)
+        if not poses_src.is_absolute():
+            poses_src = (REPO_ROOT / poses_src).resolve()
+        poses_out.write_text(poses_src.read_text(encoding="utf-8"), encoding="utf-8")
+    else:
+        if not args.colmap_images_txt.strip():
+            raise RuntimeError("--colmap-images-txt is required when --poses-json is not set")
+        derive_cmd = [
+            python,
+            str(REPO_ROOT / "scripts" / "sfm" / "derive_viewer_camera_poses_from_colmap.py"),
+            "--images-txt",
+            args.colmap_images_txt,
+            "--output",
+            str(poses_out),
+            "--distance-to-target",
+            str(args.distance_to_target),
+            "--sample-count",
+            str(args.sample_count),
+        ]
+        if args.colmap_images_txt.rstrip().endswith("frames.txt"):
+            derive_cmd += ["--image-names-s3-prefix", args.colmap_images_s3_prefix]
+        if args.include_names.strip():
+            derive_cmd += ["--include-names", args.include_names.strip()]
+        derive_log = out_dir / "derive-camera-poses.log.txt"
+        derive_log.write_text(run(derive_cmd), encoding="utf-8")
 
     pose_payload = load_json(poses_out)
     poses = pose_payload.get("poses") or []
@@ -324,6 +387,64 @@ def main() -> int:
             failures.append({"name": name, "error": "pose has invalid camUp"})
             continue
         validated_poses.append(pose)
+
+    baseline_suite_dir = args.baseline_suite_dir.strip()
+    baseline_pose_verification: dict[str, Any] | None = None
+    baseline_sky_report: Path | None = None
+    baseline_no_report: Path | None = None
+    baseline_pose_path: Path | None = None
+    if baseline_suite_dir:
+        baseline_dir = Path(baseline_suite_dir)
+        if not baseline_dir.is_absolute():
+            baseline_dir = (REPO_ROOT / baseline_dir).resolve()
+        baseline_suite_dir = str(baseline_dir)
+        maybe_sky = baseline_dir / "diagnostics-skybox.json"
+        maybe_no = baseline_dir / "diagnostics-nosky.json"
+        if maybe_sky.exists():
+            baseline_sky_report = maybe_sky
+        if maybe_no.exists():
+            baseline_no_report = maybe_no
+        maybe_pose = baseline_dir / "camera-poses.json"
+        if maybe_pose.exists():
+            baseline_pose_path = maybe_pose
+
+    if baseline_pose_path is not None:
+        baseline_payload = load_json(baseline_pose_path)
+        baseline_poses = baseline_payload.get("poses") or []
+        base_map = {str(item.get("name") or ""): item for item in baseline_poses if isinstance(item, dict) and item.get("name")}
+        curr_map = {str(item.get("name") or ""): item for item in validated_poses if item.get("name")}
+        missing_in_current = sorted([name for name in base_map.keys() if name not in curr_map])
+        missing_in_baseline = sorted([name for name in curr_map.keys() if name not in base_map])
+        max_delta: float = 0.0
+        max_delta_name = ""
+        max_delta_field = ""
+        per_pose: list[dict[str, Any]] = []
+        for name in sorted(set(base_map.keys()) & set(curr_map.keys())):
+            base = base_map[name]
+            curr = curr_map[name]
+            for field in ["camPos", "camTarget", "camUp"]:
+                base_value = str(base.get(field) or "")
+                curr_value = str(curr.get(field) or "")
+                if not base_value or not curr_value:
+                    continue
+                delta = vector_delta(base_value, curr_value)
+                if delta is None:
+                    continue
+                per_pose.append({"name": name, "field": field, "delta": round(delta, 6)})
+                if delta > max_delta:
+                    max_delta = delta
+                    max_delta_name = name
+                    max_delta_field = field
+        baseline_pose_verification = {
+            "baseline_camera_poses": str(baseline_pose_path),
+            "tolerance": args.pose_diff_tolerance,
+            "max_delta": round(max_delta, 6),
+            "max_delta_name": max_delta_name,
+            "max_delta_field": max_delta_field,
+            "missing_in_current": missing_in_current,
+            "missing_in_baseline": missing_in_baseline,
+            "per_pose_deltas": per_pose,
+        }
 
     for pose in validated_poses:
         name = str(pose.get("name") or "")
@@ -422,12 +543,22 @@ def main() -> int:
             "--max-bottom-band-rmse-p90",
             thresholds["max_bottom_band_rmse_p90"],
         ]
+        baseline_report = baseline_sky_report if variant == "skybox" else baseline_no_report
+        if baseline_report is not None:
+            diag_cmd += ["--baseline-report", str(baseline_report)]
         diag_log_path = out_dir / f"diagnostics-{variant}.log.txt"
         diag_log_path.write_text(run(diag_cmd), encoding="utf-8")
         report = load_json(report_path)
         diagnostics[variant] = report
         if report.get("decision") != "pass":
             decision = "warning"
+
+    if baseline_pose_verification and baseline_pose_verification["max_delta"] > args.pose_diff_tolerance:
+        decision = "warning"
+    if baseline_pose_verification and (
+        baseline_pose_verification["missing_in_current"] or baseline_pose_verification["missing_in_baseline"]
+    ):
+        decision = "warning"
 
     summary_path = out_dir / "suite-summary.json"
     panel_count = len(list(panels_dir.rglob("panel-*.png")))
@@ -439,6 +570,8 @@ def main() -> int:
             "names": [str(pose.get("name") or "") for pose in validated_poses if pose.get("name")],
         },
         "failures": failures,
+        "baseline_suite_dir": baseline_suite_dir,
+        "pose_verification": baseline_pose_verification,
         **diagnostics,
     }
     summary_path.write_text(json.dumps(summary_payload, indent=2) + "\n", encoding="utf-8")
@@ -450,6 +583,8 @@ def main() -> int:
         diagnostics=diagnostics,
         failures=failures,
         decision=str(summary_payload["decision"]),
+        baseline_suite_dir=baseline_suite_dir,
+        pose_verification=baseline_pose_verification,
     )
     final_decision = summary_payload["decision"]
     print(f"OK {summary_path} decision={final_decision} panels={panel_count} failures={len(failures)} report={report_path}")
