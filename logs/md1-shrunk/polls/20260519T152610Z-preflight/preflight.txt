@@ -1,0 +1,129 @@
+timestamp_utc=20260519T152610Z
+branch=agent-113647-md1-baseline-e2e
+head=0f38eda2d83468fd15a87cd32209e58e3159eb26
+0f38eda2 chore: record md1-shrunk CI proof [skip ci]
+status_porcelain:
+?? logs/md1-shrunk/polls/20260519T152610Z-preflight/
+
+aws_sts:
+{
+    "UserId": "975050048887",
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root"
+}
+
+stepfunctions_running_summary:
+SpaceportMLPipeline-staging	RUNNING=0
+SpaceportMLPipeline-br-8abcbd5662	RUNNING=0
+SpaceportMLPipeline	RUNNING=0
+SpaceportMLPipeline-agent90547182phase5densifyintervabfc2a7	RUNNING=0
+SpaceportMLPipeline-br-0468116023	RUNNING=0
+SpaceportMLPipeline-br-0d01e63d2e	RUNNING=0
+SpaceportMLPipeline-br-18df3f5daa	RUNNING=0
+SpaceportMLPipeline-br-1fcc870ee1	RUNNING=0
+SpaceportMLPipeline-br-2efbf47a4f	RUNNING=0
+SpaceportMLPipeline-br-3a0b78b344	RUNNING=0
+SpaceportMLPipeline-br-3a5b3005d7	RUNNING=0
+SpaceportMLPipeline-br-421b38da81	RUNNING=0
+SpaceportMLPipeline-br-45ee130fef	RUNNING=0
+SpaceportMLPipeline-br-487517c20a	RUNNING=0
+SpaceportMLPipeline-br-52804b744d	RUNNING=0
+SpaceportMLPipeline-br-590bef09e3	RUNNING=0
+SpaceportMLPipeline-br-5ddffedc6c	RUNNING=0
+SpaceportMLPipeline-br-5ff44d7162	RUNNING=0
+SpaceportMLPipeline-br-6134770281	RUNNING=0
+SpaceportMLPipeline-br-647952f8ea	RUNNING=0
+SpaceportMLPipeline-br-64f4abe549	RUNNING=0
+SpaceportMLPipeline-br-679d519c73	RUNNING=0
+SpaceportMLPipeline-br-688d73ccbc	RUNNING=0
+SpaceportMLPipeline-br-6cd5762fc5	RUNNING=0
+SpaceportMLPipeline-br-85a239485f	RUNNING=0
+SpaceportMLPipeline-br-8989f2959f	RUNNING=0
+SpaceportMLPipeline-br-91c590205a	RUNNING=0
+SpaceportMLPipeline-br-985396b507	RUNNING=0
+SpaceportMLPipeline-br-98efe3a22f	RUNNING=0
+SpaceportMLPipeline-br-9f3bbb8f70	RUNNING=0
+SpaceportMLPipeline-br-a2a0178e1a	RUNNING=0
+SpaceportMLPipeline-br-aa5ee4af80	RUNNING=0
+SpaceportMLPipeline-br-ad3ac98348	RUNNING=0
+SpaceportMLPipeline-br-ada4c6fc3f	RUNNING=0
+SpaceportMLPipeline-br-af4b90ccd2	RUNNING=0
+SpaceportMLPipeline-br-bbb91ce9a5	RUNNING=0
+SpaceportMLPipeline-br-bd4bf3a400	RUNNING=0
+SpaceportMLPipeline-br-c55e953e52	RUNNING=0
+SpaceportMLPipeline-br-c908ce627c	RUNNING=0
+SpaceportMLPipeline-br-d659db0a49	RUNNING=0
+SpaceportMLPipeline-br-dda7bdad32	RUNNING=0
+SpaceportMLPipeline-br-e043d7b48d	RUNNING=0
+SpaceportMLPipeline-br-e2b491c69d	RUNNING=0
+SpaceportMLPipeline-br-e7de77d9fd	RUNNING=0
+SpaceportMLPipeline-br-e85ad62606	RUNNING=0
+SpaceportMLPipeline-br-f9a9943d3b	RUNNING=0
+SpaceportMLPipeline-br-fb273c6c47	RUNNING=0
+SpaceportMLPipeline-br-fb928a4f1c	RUNNING=0
+
+sagemaker_processing_inprogress_count:
+Traceback (most recent call last):
+  File "<stdin>", line 21, in <module>
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/__init__.py", line 298, in load
+    return loads(fp.read(),
+        cls=cls, object_hook=object_hook,
+        parse_float=parse_float, parse_int=parse_int,
+        parse_constant=parse_constant, object_pairs_hook=object_pairs_hook, **kw)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/__init__.py", line 352, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+sagemaker_training_inprogress_count:
+Traceback (most recent call last):
+  File "<stdin>", line 6, in <module>
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/__init__.py", line 298, in load
+    return loads(fp.read(),
+        cls=cls, object_hook=object_hook,
+        parse_float=parse_float, parse_int=parse_int,
+        parse_constant=parse_constant, object_pairs_hook=object_pairs_hook, **kw)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/__init__.py", line 352, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+public_bundle_http_head:
+HTTP/1.1 200 OK
+x-amz-id-2: y6u1ubrMGZlmmgrC4ZgTQe4fPy1K6MwnS2zR6+uphbNoRIxxMSSfjAxSOxAZ7Xnujrpo4K142f7GQPBSB+oLabwd7Tt9knJNma7vEjKGlzs=
+x-amz-request-id: CVKTEFQRTNVN0B2F
+Date: Tue, 19 May 2026 15:26:56 GMT
+Last-Modified: Tue, 19 May 2026 03:14:11 GMT
+ETag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: lwCX4ptdSjx.9.5LMjn4a8Ervrln8HMA
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1421
+Server: AmazonS3
+
+
+local_devserver_check_3033:
+curl: (7) Failed to connect to 127.0.0.1 port 3033 after 0 ms: Couldn't connect to server
+
+gh_runs_branch:
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26106566149	3m32s	2026-05-19T15:15:28Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26106566140	7m23s	2026-05-19T15:15:28Z
+completed	success	feat: add md1-shrunk camera suite html report	CDK Deploy	agent-113647-md1-baseline-e2e	push	26106278926	4m9s	2026-05-19T15:10:35Z
+completed	success	chore: record md1-shrunk CI proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	26104689980	3m52s	2026-05-19T14:43:59Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26104135660	7m58s	2026-05-19T14:34:20Z
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26104135709	4m5s	2026-05-19T14:34:20Z
+completed	success	fix: harden edge bundle browser delivery checks	CDK Deploy	agent-113647-md1-baseline-e2e	push	26103861417	4m4s	2026-05-19T14:29:38Z
+completed	success	chore: record md1-shrunk ci proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	26081063367	3m38s	2026-05-19T06:46:13Z
+completed	success	chore: record md1-shrunk horizon gate repro	CDK Deploy	agent-113647-md1-baseline-e2e	push	26080845481	3m53s	2026-05-19T06:40:47Z
+completed	success	chore: record md1-shrunk horizon gate CI	CDK Deploy	agent-113647-md1-baseline-e2e	push	26080505088	3m36s	2026-05-19T06:32:09Z
