@@ -660,7 +660,10 @@ def advance_pipeline(args: argparse.Namespace, state: dict[str, Any], profile: S
             return "launched_sfm"
         return "ready_to_launch_sfm"
 
-    sfm_status = processing_status(sm, state["sfm_job_name"])
+    if state.get("sfm_output_verified"):
+        sfm_status = "Completed"
+    else:
+        sfm_status = processing_status(sm, state["sfm_job_name"])
     state["sfm_status"] = sfm_status
     if sfm_status in {"Failed", "Stopped"}:
         state["status"] = "sfm_failed"

@@ -1,0 +1,56 @@
+{
+    "Contents": [
+        {
+            "Key": "manual-validations/cvhr-secondary-20260518t2113z/colmap/sparse/0/cameras.txt",
+            "LastModified": "2026-05-19T19:20:18+00:00",
+            "ETag": "\"80d863bb4198713204292dde5606fd75\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 196,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "manual-validations/cvhr-secondary-20260518t2113z/colmap/sparse/0/frames.txt",
+            "LastModified": "2026-05-19T19:20:18+00:00",
+            "ETag": "\"14ec45e167797004f0d7afcb42889f2b\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 277471,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "manual-validations/cvhr-secondary-20260518t2113z/colmap/sparse/0/images.txt",
+            "LastModified": "2026-05-19T19:20:18+00:00",
+            "ETag": "\"1550a1f38873d297ae8f7eae1339e709-129\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 672986589,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "manual-validations/cvhr-secondary-20260518t2113z/colmap/sparse/0/points3D.txt",
+            "LastModified": "2026-05-19T19:20:18+00:00",
+            "ETag": "\"9a062b15535221240f993b18428d3d4d-39\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 204061992,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "manual-validations/cvhr-secondary-20260518t2113z/colmap/sparse/0/rigs.txt",
+            "LastModified": "2026-05-19T19:20:18+00:00",
+            "ETag": "\"54c92ad9fa4817df82bfc512add63b38\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 218,
+            "StorageClass": "STANDARD"
+        }
+    ],
+    "RequestCharged": null,
+    "Prefix": "manual-validations/cvhr-secondary-20260518t2113z/colmap/sparse/0/"
+}
