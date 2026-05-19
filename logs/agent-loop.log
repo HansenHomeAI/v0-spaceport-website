@@ -30,3 +30,4 @@
 [2026-05-19T15:07:00Z] heartbeat poll -> SfM direct describe InProgress, chunk_04_vocab_tree_matcher_recovery Processing image 117/187, S3 empty as expected -> continue monitoring
 [2026-05-19T15:28:00Z] heartbeat poll -> SfM direct describe InProgress, chunk_05_spatial_matcher Processing image 67/177, S3 empty as expected -> continue monitoring
 [2026-05-19T15:48:00Z] heartbeat poll -> SfM direct describe InProgress, chunk_05_mapper_recovery reached num_reg_frames=70 with nonfatal BA warnings, S3 empty as expected -> continue monitoring
+[2026-05-19T16:08:00Z] heartbeat poll -> SfM direct describe InProgress, chunk_05_mapper_recovery reached num_reg_frames=171 then global bundle adjustment, S3 empty as expected -> continue monitoring
