@@ -1,0 +1,9 @@
+{
+  "last_action": "sfm_running",
+  "run_id": "cvhr-secondary-20260518t2113z",
+  "sfm_job_name": "cvhr-secondary-20260518t2113z-sfm",
+  "sfm_output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-secondary-20260518t2113z/colmap",
+  "sfm_status": "InProgress",
+  "status": "sfm_running",
+  "updated_at": "2026-05-19T03:05:00Z"
+}
