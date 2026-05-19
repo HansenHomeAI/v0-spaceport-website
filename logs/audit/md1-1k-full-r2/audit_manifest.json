@@ -19039,14 +19039,14 @@
     "source_model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-geometry-consistency-r5-teacher-context-v12-sky-v18-20260429110309/output/artifact/model.tar.gz"
   },
   "root_cause_classification": "hard_output_cap_visual_fidelity_bg10_quality_regression_requires_color_geometry_perceptual_repair_and_early_visual_smoke_abort_before_more_paid_leaf_compute",
-  "rung": "MD1_cost_reduction_retry1_presubmit_blocked_by_processing_596",
+  "rung": "MD1_cost_reduction_retry1_presubmit_blocked_by_processing_2939",
   "support_statistics": {
     "candidate_pair_count": 5,
     "eligible_candidate_pair_count": 4,
     "shared_assigned_fallback_pair_count": 2
   },
-  "updated": "2026-05-19T03:58:47Z",
-  "updated_at": "2026-05-19T03:58:47Z",
+  "updated": "2026-05-19T04:29:16Z",
+  "updated_at": "2026-05-19T04:29:16Z",
   "version": "1.0.0",
   "md1_r0_visual_sentinel_readiness_blocked_active_jobs_20260513": {
     "recorded_at": "2026-05-13T18:33:49Z",
@@ -28980,5 +28980,53 @@
     "corrected_payload_has_BACKGROUND_SOURCE_TILE_ID": false,
     "evidence_summary": "logs/md1-r0v5relax-retry1-processing-hold-596c2e9c-20260519T035847Z-summary.json",
     "note": "Training, Step Functions, and CodeBuild are idle, but the same four processing jobs still block retry1. No quota increase requested and no paid retry launched."
+  },
+  "md1_r0v5relax_retry1_processing_hold_29390855_20260519": {
+    "status": "processing_hold_changed_no_paid_compute",
+    "timestamp_utc": "20260519T042916Z",
+    "head": "29390855a347a392b650065338a169326b583d72",
+    "paid_compute_launched": false,
+    "exact_head_runs": [],
+    "last_meaningful_exact_head_runs": [
+      {
+        "conclusion": "success",
+        "createdAt": "2026-05-18T20:44:57Z",
+        "databaseId": 26059422703,
+        "event": "push",
+        "headSha": "00541502a6e5f246cca11f05f53f78f1ca80559d",
+        "status": "completed",
+        "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26059422703",
+        "workflowName": "CDK Deploy"
+      }
+    ],
+    "training_blockers": [],
+    "training_inprogress_count": 0,
+    "processing_blockers": [
+      "md1-viscell-full-l14-1779164403",
+      "md1-viscell-full-l13-1779164027",
+      "cvhr-secondary-20260518t2113z-sfm",
+      "cvhr-mtc-20260518T1729Z-sfm"
+    ],
+    "processing_inprogress_count": 4,
+    "stepfunctions_running_count": 0,
+    "stepfunctions_running": [],
+    "codebuild_active_count": 0,
+    "codebuild_active": [],
+    "quotas": {
+      "ml_g4dn_xlarge_processing_quota_code": "L-2F1EB012",
+      "ml_g4dn_xlarge_processing_quota_value": 6.0,
+      "ml_g4dn_xlarge_processing_active_instances": 4,
+      "ml_g4dn_xlarge_processing_headroom_instances": 2,
+      "all_processing_instances_quota_code": "L-F311B08F",
+      "all_processing_instances_quota_value": 75.0,
+      "all_processing_instances_active_instances": 4,
+      "quota_is_primary_blocker": false,
+      "quota_increase_requested": false
+    },
+    "corrected_retry_job_name": "md1-r0v5relax-merge-retry1-8fdaa86f-20260518T170629Z",
+    "corrected_payload_json": "logs/md1-r0v5relax-merge-corrected-payload-8fdaa86f-20260518T170629Z.json",
+    "corrected_payload_has_BACKGROUND_SOURCE_TILE_ID": false,
+    "evidence_summary": "logs/md1-r0v5relax-retry1-processing-hold-29390855-20260519T042916Z-summary.json",
+    "note": "Training, Step Functions, and CodeBuild are idle, but four processing jobs still block retry1. Prior md1-viscell-full-l11/l12 cleared while l13/l14 became active. No quota increase requested and no paid retry launched."
   }
 }
