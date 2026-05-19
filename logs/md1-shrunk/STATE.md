@@ -8275,6 +8275,6 @@ skybox, compression, artifact handoff, and visual gates.
   - `logs/md1-shrunk/polls/20260519T180332Z-unit/unittest.txt`
 - GitHub Actions (exact-head): no new runs (this heartbeat is logs-only; `[skip ci]`); last green remains `c3f52d2e...`:
   - `logs/md1-shrunk/polls/20260519T180332Z-ci/summary.txt`
-  - post-push snapshot (exact head `ccfa0ee0...`): `logs/md1-shrunk/polls/20260519T180332Z-ci/postpush.txt`
+  - post-push snapshot: `logs/md1-shrunk/polls/20260519T180332Z-ci/postpush-final.txt`
 - Commit/push:
   - `chore: record md1-shrunk heartbeat verification [skip ci]` -> `acbc99a2`
