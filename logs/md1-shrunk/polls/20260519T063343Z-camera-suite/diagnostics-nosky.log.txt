@@ -1,0 +1,1 @@
+{"decision": "warning", "panel_count": 1, "findings": [{"severity": "warning", "category": "horizon_black_band", "evidence": "median top_dark_on_bright_fraction 0.1084 > 0.03"}]}

@@ -1,0 +1,12 @@
+branch agent-113647-md1-baseline-e2e
+head_sha d419d79688265ce24aedfb7df04cf2ba3b364676
+aws_identity arn:aws:iam::975050048887:root
+sfn_running SpaceportMLPipeline-staging 0
+sfn_running SpaceportMLPipeline-br-8abcbd5662 0
+sfn_execution_status SUCCEEDED
+s3_meta {'ContentLength': 1421, 'LastModified': '2026-05-19 03:14:11+00:00', 'SSE': 'AES256', 'ContentType': 'application/octet-stream'}
+head https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json 200
+head https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev 200
+head https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/md1-viewer 200
+github_runs_on_head 1
+ - CDK Deploy completed success https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26079242637

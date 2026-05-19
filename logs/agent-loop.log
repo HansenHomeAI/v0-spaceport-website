@@ -37,3 +37,4 @@
 [2026-05-19T05:56Z] md1-shrunk: multi-camera suite PASS (skybox+nosky) -> logs/md1-shrunk/polls/20260519T054523Z-camera-suite
 [2026-05-19T05:56Z] md1-shrunk: exact-head 090cd434 CDK+Pages green; PREVIEW_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev -> next: update STATE.md
 [2026-05-19T05:58Z] md1-shrunk: hardened multi-camera suite (frames.txt + header validation); ran 6-pose suite decision=warning; pushed 090cd434; CDK 26078897888 + Pages 26078897872 green (PREVIEW_URL recorded) -> next: decide strict thresholds + horizon cleanup
+[2026-05-19T06:39Z] md1-shrunk: preflight+public bundle ok; exact-head 365aeaa0 CDK 26080154676 + Pages 26080154687 green (PREVIEW_URL confirmed); camera-suite DJI_02500 decision=warning (horizon gate) -> logs/md1-shrunk/polls/20260519T063618Z-preflight + 20260519T063343Z-camera-suite

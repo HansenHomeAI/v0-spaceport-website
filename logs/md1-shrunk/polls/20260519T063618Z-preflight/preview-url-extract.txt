@@ -1,0 +1,4 @@
+1868:deploy	Deploy to Cloudflare Pages	2026-05-19T06:30:54.6897348Z ✨ Deployment complete! Take a peek over at https://f96fbc0e.v0-spaceport-website-preview2.pages.dev
+1869:deploy	Deploy to Cloudflare Pages	2026-05-19T06:30:54.6899878Z ✨ Deployment alias URL: https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev
+1884:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-19T06:30:54.7526130Z [36;1mecho "Resolved: HASH=$HASH_URL ALIAS=${ALIAS:-<none>}"[0m
+1926:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-19T06:30:55.2595222Z Resolved: HASH=https://f96fbc0e.v0-spaceport-website-preview2.pages.dev ALIAS=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev

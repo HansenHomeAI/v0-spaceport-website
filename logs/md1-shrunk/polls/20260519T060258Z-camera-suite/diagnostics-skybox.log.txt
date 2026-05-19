@@ -1,0 +1,1 @@
+{"decision": "warning", "panel_count": 6, "findings": [{"severity": "warning", "category": "fine_detail_softness", "evidence": "median edge retention 0.2341 < 0.25"}]}

@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-19T05:58:21Z
+updated: 2026-05-19T06:39:01Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -8000,3 +8000,22 @@ skybox, compression, artifact handoff, and visual gates.
     - `chore: trigger pages deploy` -> `365aeaa0d03bff83d1d1f8c2e8f5c2d2dcf0d78d`
   - exact-head CI proof (CDK + Pages both success):
     - `logs/md1-shrunk/polls/20260519T062328Z-ci/ci-watch.txt`
+
+## 2026-05-19T06:39Z exact-head deploy proof + horizon gate repro
+
+- Preflight + CI proof (read-only; no new jobs launched):
+  - `logs/md1-shrunk/polls/20260519T063618Z-preflight/preflight.txt`
+  - `CDK Deploy` run `26080154676` -> success:
+    - `logs/md1-shrunk/polls/20260519T063618Z-preflight/gh-run-watch-cdk-26080154676.txt`
+  - `Deploy Next.js to Cloudflare Pages` run `26080154687` -> success:
+    - `logs/md1-shrunk/polls/20260519T063618Z-preflight/gh-run-watch-pages-26080154687.txt`
+  - preview URL extract:
+    - `logs/md1-shrunk/polls/20260519T063618Z-preflight/preview-url-extract.txt`
+- Browser-readable public delivery automation (edge headers validated):
+  - `logs/md1-shrunk/polls/20260519T063618Z-preflight/publish-edge.json`
+  - `logs/md1-shrunk/polls/20260519T063618Z-preflight/publish-edge.curl-head.txt`
+- Multi-camera input-vs-render checks + explicit horizon gate repro (deployed preview URL):
+  - `logs/md1-shrunk/polls/20260519T063343Z-camera-suite/suite-summary.json` -> `decision=warning` (no-sky `horizon_black_band` finding)
+  - panels:
+    - `logs/md1-shrunk/polls/20260519T063343Z-camera-suite/panels/skybox/panel-skybox-DJI_02500.png`
+    - `logs/md1-shrunk/polls/20260519T063343Z-camera-suite/panels/nosky/panel-nosky-DJI_02500.png`
