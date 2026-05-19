@@ -132,7 +132,7 @@
         {
             "stage": "full14_training",
             "cap_usd": 10.5,
-            "status": "post_leaf_preflight_passed_pending_tile10_final_billable",
+            "status": "post_leaf_preflight_passed_tile10_stopping_pending_final_billable",
             "lock_dir": "logs/locks/full14_training-md1-r0v5full14-f2923ef0-20260519T1645Z-f2923ef0.lock",
             "experiment_id": "md1-r0v5full14-f2923ef0-20260519T1645Z",
             "job_prefix": "md1-r0v5full14-f2923",
@@ -192,8 +192,12 @@
             "stopping_sagemaker_job_count": 1,
             "known_billable_seconds_excluding_tile10_null": 31356,
             "known_billable_usd_excluding_tile10_null": 8.71,
-            "conservative_training_seconds_including_tile10_stopping": 42846,
-            "conservative_training_usd_including_tile10_stopping": 11.901667
+            "conservative_training_seconds_including_tile10_stopping": 43302,
+            "conservative_training_usd_including_tile10_stopping": 12.028333,
+            "post_leaf_live_summary_json": "logs/md1-r0v5full14-f2923ef0-20260519T234728Z-postleaf-live-summary.json",
+            "tile_10_latest_training_time_seconds": 11946,
+            "tile_10_latest_billable_seconds": null,
+            "last_checked_utc": "20260519T234728Z"
         }
     ],
     "debits": [
@@ -245,7 +249,7 @@
         "ml.g4dn.xlarge_usd_per_hour": 1.0,
         "source": "conservative fallback until current AWS pricing is fetched"
     },
-    "last_updated_utc": "20260519T234100Z",
-    "latest_live_state_evidence": "all 14 full14 leaf artifacts/gates passed; tile_10 control plane Stopping/Uploading; no-spend merge plan/payload ready, not submitted",
+    "last_updated_utc": "20260519T234728Z",
+    "latest_live_state_evidence": "tile_10 remains Stopping/Uploading with null billable/output; training InProgress empty; MD1 processing empty; Step Functions and spaceport-ml-containers CodeBuild idle; CV-HR processing non-blocking only; no merge/review/LOD/viewer/promotion launched",
     "notes": "full14 leaf artifacts and gates passed; full14 debit pending tile_10 final AWS billable time; no merge/review/LOD/viewer/promotion authorized."
 }

@@ -1,0 +1,13 @@
+{
+    "Name": "md1-r0v5full14-f2923-1779209514-tile-10",
+    "Status": "Stopping",
+    "Secondary": "Uploading",
+    "TrainingTime": 11946,
+    "Billable": null,
+    "Failure": null,
+    "Output": null,
+    "CreationTime": "2026-05-19T14:28:58.057000-06:00",
+    "TrainingStartTime": "2026-05-19T14:29:39.360000-06:00",
+    "TrainingEndTime": null,
+    "LastModifiedTime": "2026-05-19T17:17:16.317000-06:00"
+}

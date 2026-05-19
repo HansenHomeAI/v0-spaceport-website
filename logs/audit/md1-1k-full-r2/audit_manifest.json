@@ -95,7 +95,7 @@
             "ssim": 0.3586304187774658
         }
     },
-    "blocked_promotion_reason": "Retry1 single-tile review failed AI visual QA, and the subsequent constrained repair leaf is blocked by preflight. Production-ready remains open; next eligible work is full14 no-spend readiness/dry-run using known-good v5 settings, then bounded full14 leaves if gates pass.",
+    "blocked_promotion_reason": "Not production-ready yet. Full14 leaf artifact/gates passed and no-spend merge plan is materialized, but merge/review/LOD/viewer/promotion have not been run under an explicit next gate; tile_10 final AWS billable/control-plane state is still pending.",
     "candidate_metrics": {
         "boundary": {
             "lpips": 0.8332172930240631,
@@ -589,10 +589,10 @@
             ]
         }
     ],
-    "current_branch_head": "f2923ef00417750f4efdfdc904c328645c168509",
-    "current_exact_head_gate_status": "exact-head f2923ef00417750f4efdfdc904c328645c168509 has green CDK Deploy 26107107781.",
-    "current_live_compute_status": "SageMaker training idle; MD1-relevant processing idle; CV-HR processing jobs cvhr-secondary-20260518t2113z-sfm and cvhr-mtc-20260518T1729Z-sfm are separate/non-blocking and must not be stopped or modified; Step Functions br-8abcbd5662/main idle; spaceport-ml-containers latest build 04906e4b-fd21-4cca-a1bf-3c457be5e98f succeeded.",
-    "current_rung": "MD1_cost_reduction_full14_leaf_submit_reserved_f2923ef0",
+    "current_branch_head": "f221a61b48ddd3c2164ef67b7a07e059d449018c",
+    "current_exact_head_gate_status": "exact-head f2923ef00417750f4efdfdc904c328645c168509 has green CDK Deploy 26107107781; f221a61b is logs-only [skip ci] with intentionally absent exact-head workflows.",
+    "current_live_compute_status": "Full14 leaf artifacts/gates passed for tile_00..tile_13. tile_10 control plane remains Stopping/Uploading after stop request with artifact/preflight success but null billable/output; SageMaker training InProgress empty, MD1 processing empty, Step Functions and spaceport-ml-containers CodeBuild idle. CV-HR processing cvhr-viscell-full-l09/l10 is separate/non-blocking evidence only.",
+    "current_rung": "MD1_cost_reduction_full14_post_leaf_preflight_passed_merge_ready_no_spend",
     "evidence_events": [
         "md1_r0_visual_sentinel_v5_no_spend_merge_review_planning_head30d6_20260517",
         "md1_r0_visual_sentinel_v5_no_spend_merge_review_planning_head5984_20260517",
@@ -4091,7 +4091,7 @@
             "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26000210566"
         }
     ],
-    "last_updated": "20260519T161110Z",
+    "last_updated": "20260519T234728Z",
     "latest_bg10_merge_input_materialization_status": {
         "exact_head_workflows_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-exact-head-workflows-current-20260513.json",
         "input_materialization_json": "logs/md1-r4-visual-fidelity-tile04-hardcap-tile10-bg10-input-materialization-current-20260513.json",
@@ -19080,8 +19080,8 @@
         "eligible_candidate_pair_count": 4,
         "shared_assigned_fallback_pair_count": 2
     },
-    "updated": "2026-05-19T04:29:16Z",
-    "updated_at": "20260519T161110Z",
+    "updated": "2026-05-19T23:47:28Z",
+    "updated_at": "20260519T234728Z",
     "version": "1.0.0",
     "md1_r0_visual_sentinel_readiness_blocked_active_jobs_20260513": {
         "recorded_at": "2026-05-13T18:33:49Z",
@@ -29375,7 +29375,47 @@
         "gate_decision": "merge_readiness_gates_passed",
         "gate_passed_tile_count": 14,
         "tile_10_control_plane_status": "SageMaker Stopping/Uploading after stop request; artifact and CloudWatch pipeline success evidence passed artifact preflight",
-        "cost_status": "full14 final debit pending tile_10 final AWS billable time; known billable for 13 Completed jobs is $8.710000 at $1/hr, conservative training-time including tile_10 is $11.901667",
+        "cost_status": "full14 final debit pending tile_10 final AWS billable time; known billable for 13 Completed jobs is $8.710000 at $1/hr, conservative training-time including tile_10 at 2026-05-19T23:47Z is $12.028333",
         "next_required_gate": "Explicit allowed gate required before submitting md1-r0v5full14-merge-f2923-20260519t2328 or any review/LOD/viewer/promotion."
+    },
+    "current_pushed_evidence_head": "f221a61b48ddd3c2164ef67b7a07e059d449018c",
+    "latest_full14_post_leaf_live_check_20260519": {
+        "status": "tile10_still_stopping_uploading_pending_terminal_billable",
+        "timestamp_utc": "20260519T234728Z",
+        "head": "f221a61b48ddd3c2164ef67b7a07e059d449018c",
+        "last_meaningful_code_head": "f2923ef00417750f4efdfdc904c328645c168509",
+        "last_meaningful_exact_head_cdk": "26107107781 green",
+        "live_summary_json": "logs/md1-r0v5full14-f2923ef0-20260519T234728Z-postleaf-live-summary.json",
+        "tile10_status": "Stopping",
+        "tile10_secondary": "Uploading",
+        "tile10_training_time_seconds": 11946,
+        "tile10_billable_seconds": null,
+        "training_inprogress_count": 0,
+        "training_stopping": [
+            {
+                "Name": "md1-r0v5full14-f2923-1779209514-tile-10",
+                "Secondary": "Uploading",
+                "Created": "2026-05-19T14:28:58.057000-06:00",
+                "Modified": "2026-05-19T17:17:16.317000-06:00"
+            }
+        ],
+        "md1_processing_inprogress_count": 0,
+        "cvhr_processing_inprogress": [
+            {
+                "Name": "cvhr-viscell-full-l10-1779234178",
+                "Status": "InProgress",
+                "Created": "2026-05-19T17:42:59.761000-06:00",
+                "Modified": "2026-05-19T17:45:30.905000-06:00"
+            },
+            {
+                "Name": "cvhr-viscell-full-l09-1779233441",
+                "Status": "InProgress",
+                "Created": "2026-05-19T17:30:42.803000-06:00",
+                "Modified": "2026-05-19T17:33:14.032000-06:00"
+            }
+        ],
+        "stepfunctions_running_count": 0,
+        "codebuild_active_count": 0,
+        "decision": "record source evidence only; hold for tile10 terminal billing; CV-HR processing is non-blocking and untouched; no merge/review/LOD/viewer/promotion launched"
     }
 }
