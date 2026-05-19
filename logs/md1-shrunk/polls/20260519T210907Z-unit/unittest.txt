@@ -1,0 +1,8 @@
+test_baseline_comparison_populates_deltas (tests.unit.test_sfm_heldout_panel_diagnostics.HeldoutPanelDiagnosticsTest.test_baseline_comparison_populates_deltas) ... ok
+test_exact_side_by_side_panel_passes (tests.unit.test_sfm_heldout_panel_diagnostics.HeldoutPanelDiagnosticsTest.test_exact_side_by_side_panel_passes) ... ok
+test_soft_render_warns_on_detail_loss (tests.unit.test_sfm_heldout_panel_diagnostics.HeldoutPanelDiagnosticsTest.test_soft_render_warns_on_detail_loss) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.007s
+
+OK

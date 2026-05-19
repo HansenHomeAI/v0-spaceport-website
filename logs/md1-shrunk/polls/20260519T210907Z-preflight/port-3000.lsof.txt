@@ -1,0 +1,2 @@
+COMMAND   PID          USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+node    99831 gabrielhansen   13u  IPv4 0xec6636ec1a5ad700      0t0  TCP 127.0.0.1:3000 (LISTEN)
