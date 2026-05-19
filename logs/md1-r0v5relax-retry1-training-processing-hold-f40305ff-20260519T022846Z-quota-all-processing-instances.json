@@ -1,0 +1,29 @@
+{
+    "Quota": {
+        "ServiceCode": "sagemaker",
+        "ServiceName": "Amazon SageMaker",
+        "QuotaArn": "arn:aws:servicequotas:us-west-2:975050048887:sagemaker/L-F311B08F",
+        "QuotaCode": "L-F311B08F",
+        "QuotaName": "Number of instances across all processing jobs",
+        "Value": 75.0,
+        "Unit": "None",
+        "Adjustable": true,
+        "GlobalQuota": false,
+        "UsageMetric": {
+            "MetricNamespace": "AWS/Usage",
+            "MetricName": "ResourceCount",
+            "MetricDimensions": {
+                "Class": "None",
+                "Resource": "processing-job/total_instance_count",
+                "Service": "SageMaker",
+                "Type": "Resource"
+            },
+            "MetricStatisticRecommendation": "Maximum"
+        },
+        "Period": {
+            "PeriodValue": 1,
+            "PeriodUnit": "HOUR"
+        },
+        "QuotaAppliedAtLevel": "ACCOUNT"
+    }
+}

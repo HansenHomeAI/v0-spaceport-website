@@ -1,0 +1,84 @@
+{
+    "ProcessingInputs": [
+        {
+            "InputName": "sfm-input",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+                "LocalPath": "/opt/ml/processing/input",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated",
+                "S3CompressionType": "None"
+            }
+        }
+    ],
+    "ProcessingOutputConfig": {
+        "Outputs": [
+            {
+                "OutputName": "colmap-output",
+                "S3Output": {
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-08/colmap",
+                    "LocalPath": "/opt/ml/processing/output",
+                    "S3UploadMode": "EndOfJob"
+                },
+                "AppManaged": false
+            }
+        ]
+    },
+    "ProcessingJobName": "md1-viscell-full-l08-1779155211",
+    "ProcessingResources": {
+        "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 120
+        }
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 86400
+    },
+    "AppSpecification": {
+        "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine",
+        "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+        ]
+    },
+    "Environment": {
+        "AWS_DEFAULT_REGION": "us-west-2",
+        "COLMAP_BRIDGE_MAPPER_TIMEOUT_SECONDS": "7200",
+        "COLMAP_CHUNK_HARD_MAX_IMAGES": "360",
+        "COLMAP_CHUNK_MAPPER_TIMEOUT_SECONDS": "7200",
+        "COLMAP_CHUNK_MIN_IMAGES": "120",
+        "COLMAP_CHUNK_OVERLAP_ANCHOR_COUNT": "20",
+        "COLMAP_CHUNK_PLANNER": "visibility_cell_v1",
+        "COLMAP_CHUNK_TARGET_IMAGES": "220",
+        "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+        "COLMAP_GRAPH_XY_NEIGHBOR_LIMIT": "80",
+        "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-planner-20260518T2014Z/colmap/chunk_planner_manifest.json",
+        "COLMAP_LEAF_HARD_CAP": "360",
+        "COLMAP_LEAF_TARGET_IMAGES": "220",
+        "COLMAP_MATCH_PROFILE": "P3",
+        "COLMAP_ONLY_CHUNK_INDEXES": "8",
+        "COLMAP_PAIR_CAP_LOCAL": "28",
+        "COLMAP_PAIR_CAP_REVISIT": "12",
+        "COLMAP_PAIR_CAP_SEAM": "14",
+        "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+        "COLMAP_VISIBILITY_CELL_MAX_OVERLAP_CELLS": "4",
+        "COLMAP_VISIBILITY_CELL_MIN_SCORE": "0.08",
+        "COLMAP_VISIBILITY_CELL_OVERLAP_RATIO": "0.15",
+        "COLMAP_VISIBILITY_TRACK_OWNER_FALLBACK": "1",
+        "PYTHONUNBUFFERED": "1",
+        "SFM_BENCHMARK_SUBSET_STRATEGY": "md1_visibility_cell_v1_full_leaf_08",
+        "SFM_BRANCH_NAME": "agent-73948216-sfm-production-spine",
+        "SFM_GIT_HEAD": "60fcec4fe28e3ee73e4c44aa5eebcf4ade543c54",
+        "SFM_INPUT_URI": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+        "SFM_JOB_NAME": "md1-viscell-full-l08-1779155211",
+        "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/leaves/leaf-08/colmap"
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/md1-viscell-full-l08-1779155211",
+    "ProcessingJobStatus": "InProgress",
+    "ProcessingStartTime": "2026-05-18T19:47:30.261000-06:00",
+    "LastModifiedTime": "2026-05-18T19:49:23.231000-06:00",
+    "CreationTime": "2026-05-18T19:46:52.248000-06:00"
+}
