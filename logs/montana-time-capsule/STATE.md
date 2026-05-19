@@ -658,6 +658,47 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/gh-run-list-exact-head-20260519T1803Z.json`
 - Next unblocked step: do not launch 3DGS from the stopped canonical run. To keep cost bounded, continue monitoring the active secondary exact-Brass SfM job instead of starting another duplicate Brass job. If the secondary job completes, verify its image/input/env/output and adopt the COLMAP output for the pinned Montana 3DGS handoff. If the secondary job also stops or fails, launch exactly one full-SfM fallback retry using the pinned `horsetail-gps` profile (`sha256:a7e2553455ad8ca7988256f4b0d38395e1770b2522532c41c6f535fc8a49f157`) in a new state/run id, then continue stage-by-stage.
 
+## 2026-05-19T18:23Z Heartbeat Monitor Pass
+
+- Branch/head/status command:
+  - `git branch --show-current && git rev-parse HEAD && git status --short --branch`
+  - Result: branch `agent-40136728-montana-time-capsule`, head `4252ef79d053e69dc97da39bd1f3b48988804c2f`, clean before this heartbeat pass.
+- AWS identity command:
+  - `AWS_PAGER= aws sts get-caller-identity --output json`
+  - Result: account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+- Canonical CV-HR SfM status command:
+  - `AWS_PAGER= aws sagemaker describe-processing-job --processing-job-name cvhr-mtc-20260518T1729Z-sfm --output json`
+  - Result: still terminal `ProcessingJobStatus=Stopped`, `ProcessingEndTime=2026-05-19T11:36:11.271000-0600`, no `FailureReason`, no `ExitMessage`; canonical S3 COLMAP prefix remains empty (`Total Objects: 0`, `Total Size: 0`).
+- Active CV-HR job guard:
+  - `AWS_PAGER= aws sagemaker list-processing-jobs --status-equals InProgress --max-results 50 --output json`
+  - Result after recheck: one active CV-HR processing job remains, `cvhr-secondary-20260518t2113z-sfm` (`InProgress`). The earlier planner/report-only job `cvhr-viscell-plan-v1-1779214624` is `Completed` and belongs to branch env `agent-73948216-sfm-production-spine`.
+- Non-canonical secondary observation:
+  - Job: `cvhr-secondary-20260518t2113z-sfm`
+  - Owner branch env: `agent-73910482-cvhr-parallel-splat`; input `s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip`; output `s3://spaceport-ml-processing-staging/manual-validations/cvhr-secondary-20260518t2113z/colmap`; image `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811`; `MaxRuntimeInSeconds=86400`.
+  - Status: `InProgress`, no `FailureReason` or `ExitMessage`; S3 output remains empty (`Total Objects: 0`, `Total Size: 0`).
+  - CloudWatch: latest sampled log still shows it crossed all chunk merges, `chunk_model_merger_10` merged to `Images: 1693`, `Points: 1329830`, then `chunk_bundle_adjuster` entered global bundle adjustment at `2026-05-19T17:57:00Z`. No OOM, timeout, terminal error, or EndOfJob upload is visible.
+  - Action taken: none. It is not owned by this automation, but it is the only active exact-Brass CV-HR SfM attempt, so this automation is monitoring it instead of launching a duplicate.
+- Other CV-HR processing observation:
+  - `cvhr-viscell-plan-v1-1779214624` describes as `Completed`, report-only planner env `SFM_PLANNER_REPORT_ONLY=1`, output `s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-planner-20260519T1749Z/colmap`; action taken: none because it is not the Montana time-capsule stack and is not this automation's job.
+- GitHub exact-head workflow command:
+  - `gh run list --branch agent-40136728-montana-time-capsule --limit 20 --json databaseId,workflowName,headSha,status,conclusion,createdAt,updatedAt,url`
+  - Result: `[]` for exact logs-only `[skip ci]` head `4252ef79d053e69dc97da39bd1f3b48988804c2f`; last meaningful non-skip `CDK Deploy` remains green on head `1b264bc2ac6be3bf34ca06582895f7f750e9a442`, run `26049509375`.
+- Evidence files:
+  - `logs/montana-time-capsule/aws-sts-20260519T1823Z.json`
+  - `logs/montana-time-capsule/sagemaker-describe-cvhr-mtc-20260518T1729Z-sfm-20260519T1823Z.json`
+  - `logs/montana-time-capsule/sagemaker-describe-cvhr-secondary-20260518t2113z-sfm-20260519T1823Z.json`
+  - `logs/montana-time-capsule/sagemaker-describe-cvhr-viscell-plan-v1-1779214624-20260519T1823Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-all-inprogress-20260519T1823Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-all-inprogress-20260519T1828Z.json`
+  - `logs/montana-time-capsule/s3-colmap-cvhr-mtc-20260518T1729Z-20260519T1823Z.txt`
+  - `logs/montana-time-capsule/s3-colmap-cvhr-secondary-20260518t2113z-20260519T1823Z.txt`
+  - `logs/montana-time-capsule/s3api-colmap-cvhr-mtc-20260518T1729Z-20260519T1823Z.json`
+  - `logs/montana-time-capsule/s3api-colmap-cvhr-secondary-20260518t2113z-20260519T1823Z.json`
+  - `logs/montana-time-capsule/cloudwatch-tail-cvhr-secondary-20260518t2113z-sfm-20260519T1823Z.log`
+  - `logs/montana-time-capsule/logstreams-cvhr-secondary-20260518t2113z-sfm-20260519T1823Z.json`
+  - `logs/montana-time-capsule/gh-run-list-agent-40136728-20260519T1823Z.json`
+- Next unblocked step: continue monitoring `cvhr-secondary-20260518t2113z-sfm` without launching a duplicate. If it completes, verify the pinned image/input/env/S3 output and adopt its COLMAP output for the pinned Montana 3DGS handoff. If it also stops or fails, capture describe/log/S3 proof and launch exactly one fallback SfM run using the pinned `horsetail-gps` profile in a separate state file/run id.
+
 ## 2026-05-19T17:43Z Heartbeat Monitor Pass
 
 - Branch/head/status command:
