@@ -1,0 +1,47 @@
+{
+  "timestamp_utc": "20260519T032846Z",
+  "head": "5eeb81fd68d32457bd87304f6fa6d4b0da2e43f7",
+  "decision": "merge_retry_blocked_training_processing_stepfunctions_codebuild",
+  "paid_compute_launched": false,
+  "training_inprogress_count": 0,
+  "training_blockers": [],
+  "processing_inprogress_count": 4,
+  "processing_blockers": [
+    "md1-viscell-full-l12-1779161215",
+    "md1-viscell-full-l11-1779161085",
+    "cvhr-secondary-20260518t2113z-sfm",
+    "cvhr-mtc-20260518T1729Z-sfm"
+  ],
+  "stepfunctions_running_count": 0,
+  "stepfunctions_running": [],
+  "codebuild_active_count": 0,
+  "codebuild_active": [],
+  "exact_head_runs": [],
+  "last_meaningful_exact_head_runs": [
+    {
+      "conclusion": "success",
+      "createdAt": "2026-05-18T20:44:57Z",
+      "databaseId": 26059422703,
+      "event": "push",
+      "headSha": "00541502a6e5f246cca11f05f53f78f1ca80559d",
+      "status": "completed",
+      "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26059422703",
+      "workflowName": "CDK Deploy"
+    }
+  ],
+  "quota_check": {
+    "ml_g4dn_xlarge_processing_quota_code": "L-2F1EB012",
+    "ml_g4dn_xlarge_processing_quota_value": 6.0,
+    "ml_g4dn_xlarge_processing_active_instances": 4,
+    "ml_g4dn_xlarge_processing_headroom_instances": 2,
+    "all_processing_instances_quota_code": "L-F311B08F",
+    "all_processing_instances_quota_value": 75.0,
+    "all_processing_instances_active_instances": 4,
+    "quota_is_primary_blocker": false,
+    "quota_increase_requested": false
+  },
+  "corrected_retry_job_name": "md1-r0v5relax-merge-retry1-8fdaa86f-20260518T170629Z",
+  "corrected_payload_json": "logs/md1-r0v5relax-merge-corrected-payload-8fdaa86f-20260518T170629Z.json",
+  "corrected_payload_has_BACKGROUND_SOURCE_TILE_ID": false,
+  "next_required_action": "wait for all training, processing, relevant Step Functions, and relevant CodeBuild idle before paid retry; no quota increase needed"
+}
