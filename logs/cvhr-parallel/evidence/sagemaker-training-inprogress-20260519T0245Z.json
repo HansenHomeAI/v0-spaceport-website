@@ -1,0 +1,12 @@
+{
+    "TrainingJobSummaries": [
+        {
+            "TrainingJobName": "md1-shrunk-prodspine-wlight-202605190027-3dgs",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/md1-shrunk-prodspine-wlight-202605190027-3dgs",
+            "CreationTime": "2026-05-18T18:28:13.860000-06:00",
+            "LastModifiedTime": "2026-05-18T18:33:12.496000-06:00",
+            "TrainingJobStatus": "InProgress",
+            "SecondaryStatus": "Training"
+        }
+    ]
+}
