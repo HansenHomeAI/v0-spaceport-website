@@ -1,0 +1,69 @@
+timestamp_utc=20260519T180332Z
+branch=agent-113647-md1-baseline-e2e
+head=7eadf35651e4590516d5e729db411ac41e5879c7
+
+## git status
+## agent-113647-md1-baseline-e2e...origin/agent-113647-md1-baseline-e2e
+?? logs/md1-shrunk/polls/20260519T180332Z-preflight/
+
+## aws sts get-caller-identity
+{
+    "UserId": "975050048887",
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root"
+}
+
+## stepfunctions execution status (known)
+{
+  "status": "SUCCEEDED",
+  "startDate": "2026-05-18T18:28:13.202000-06:00",
+  "stopDate": "2026-05-18T21:03:39.663000-06:00",
+  "name": "execution-md1-shrunk-prodspine-wlight-202605190027",
+  "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-br-8abcbd5662:execution-md1-shrunk-prodspine-wlight-202605190027",
+  "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-8abcbd5662"
+}
+
+## stepfunctions RUNNING executions (br-8abcbd5662)
+RUNNING 0
+
+## stepfunctions RUNNING executions (staging)
+RUNNING 0
+
+## sagemaker InProgress (processing)
+count 1
+cvhr-secondary-20260518t2113z-sfm
+
+## sagemaker InProgress (training)
+count 2
+md1-r0v5full14-f2923-1779209514-tile-03 InProgress 2026-05-19T11:41:17.791000-06:00
+md1-r0v5full14-f2923-1779209514-tile-02 InProgress 2026-05-19T11:41:16.590000-06:00
+
+## public bundle meta.json HEAD
+https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json status 200 cache-control None etag "948345d6cf5eca623bfe32fe46aa4f99"
+https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json status 200 cache-control public, max-age=31536000, s-maxage=31536000, immutable etag "948345d6cf5eca623bfe32fe46aa4f99"
+
+## local dev ports
+port 3000 closed
+port 4173 closed
+port 5173 closed
+port 8787 closed
+port 8788 closed
+port 8080 closed
+port 8000 closed
+
+## gh runs (recent)
+completed	success	feat: harden md1-shrunk camera suite baselines	CDK Deploy	agent-113647-md1-baseline-e2e	push	26111270602	2026-05-19T16:38:50Z
+completed	success	feat: harden md1-shrunk camera suite baselines	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26111270702	2026-05-19T16:38:50Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26109660239	2026-05-19T16:09:14Z
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26109660240	2026-05-19T16:09:14Z
+completed	success	fix: calibrate md1-shrunk camera-suite edge retention gate	CDK Deploy	agent-113647-md1-baseline-e2e	push	26109384090	2026-05-19T16:04:19Z
+completed	success	fix: lighten md1 nosky background for camera gates	CDK Deploy	agent-113647-md1-baseline-e2e	push	26107587599	2026-05-19T15:32:55Z
+completed	success	fix: lighten md1 nosky background for camera gates	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26107587902	2026-05-19T15:32:55Z
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26106566149	2026-05-19T15:15:28Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26106566140	2026-05-19T15:15:28Z
+completed	success	feat: add md1-shrunk camera suite html report	CDK Deploy	agent-113647-md1-baseline-e2e	push	26106278926	2026-05-19T15:10:35Z
+completed	success	chore: record md1-shrunk CI proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	26104689980	2026-05-19T14:43:59Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26104135660	2026-05-19T14:34:20Z
+
+## gh runs (exact head count)
+count 0

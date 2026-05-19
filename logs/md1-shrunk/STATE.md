@@ -8251,3 +8251,27 @@ skybox, compression, artifact handoff, and visual gates.
   - `logs/md1-shrunk/polls/20260519T173532Z-ci/summary.txt`
 - Commit/push:
   - `chore: record md1-shrunk heartbeat verification [skip ci]` -> `6d9ff6ae`
+
+## 2026-05-19T18:03Z heartbeat verify (strict gates still PASS; no new jobs)
+
+- Preflight snapshot (read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260519T180332Z-preflight/preflight.txt`
+  - Step Functions (staging + `SpaceportMLPipeline-br-8abcbd5662`) RUNNING: `0`
+  - Known execution `execution-md1-shrunk-prodspine-wlight-202605190027` status: `SUCCEEDED`
+  - SageMaker InProgress: processing `0`; training external `md1-r0v5full14-f2923-1779209514-tile-02` + `md1-r0v5full14-f2923-1779209514-tile-03` (left untouched)
+  - Local dev server listeners: none on ports `3000/4173/5173/8787/8788/8080/8000`
+  - Public S3 meta.json HEAD -> `200` (no browser headers expected)
+  - Edge meta.json HEAD -> `200` with browser-cache headers
+- Multi-camera input-vs-render checks (deployed preview; strict; baseline pose verification):
+  - command: `logs/md1-shrunk/polls/20260519T180332Z-camera-suite/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260519T180332Z-camera-suite/suite-summary.json` -> `decision=pass`
+  - report: `logs/md1-shrunk/polls/20260519T180332Z-camera-suite/report.html`
+  - reusable camera-pose verification: `pose_verification.max_delta=0.0` (baseline: `logs/md1-shrunk/polls/20260519T163352Z-camera-suite`)
+- Browser-readable public delivery automation (Lambda publish + strict browser header validation + HTML report):
+  - command: `logs/md1-shrunk/polls/20260519T180332Z-edge-publish-report/run.cmd.txt`
+  - report: `logs/md1-shrunk/polls/20260519T180332Z-edge-publish-report/publish-edge.report.html`
+  - edge meta.json: `https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+- Unit proof:
+  - `logs/md1-shrunk/polls/20260519T180332Z-unit/unittest.txt`
+- GitHub Actions (exact-head): no new runs (this heartbeat is logs-only; `[skip ci]`); last green remains `c3f52d2e...`:
+  - `logs/md1-shrunk/polls/20260519T180332Z-ci/summary.txt`
