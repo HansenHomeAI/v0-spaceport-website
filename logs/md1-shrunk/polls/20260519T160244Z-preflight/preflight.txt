@@ -1,0 +1,77 @@
+# md1-shrunk preflight 20260519T160244Z
+
+## git
+branch=agent-113647-md1-baseline-e2e
+head=1575334bbb3f7c9908461bc111de2dfeeed2a39d
+subject=chore: record md1-shrunk horizon gate stabilization [skip ci]
+status_porcelain=3 files
+
+## aws identity
+{
+    "UserId": "975050048887",
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root"
+}
+
+## stepfunctions running executions
+SpaceportMLPipeline-staging: 0 RUNNING
+SpaceportMLPipeline-br-8abcbd5662: 0 RUNNING
+
+## sagemaker inprogress (names only)
+processing:
+cvhr-secondary-20260518t2113z-sfm
+training:
+md1-r0v5repair-f2923-1779205460-1779205616-tile-04
+
+## public bundle headers
+-- s3 meta.json
+HTTP/1.1 200 OK
+x-amz-id-2: mzZS7BVhRBNlx915qByTk5jMyfCGN7Ts/v446iNPkKETqwB1tOKWKDl7nmcy8VprI8SHS3Ye11c=
+x-amz-request-id: 1Q6B7RJX4DWMVKHY
+Date: Tue, 19 May 2026 16:02:51 GMT
+Last-Modified: Tue, 19 May 2026 03:14:11 GMT
+ETag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: lwCX4ptdSjx.9.5LMjn4a8Ervrln8HMA
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1421
+Server: AmazonS3
+
+
+-- edge meta.json
+HTTP/2 200 
+content-type: application/json
+content-length: 1421
+date: Tue, 19 May 2026 14:24:08 GMT
+last-modified: Tue, 19 May 2026 06:37:13 GMT
+etag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+cache-control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: vUW1wpcXNiVbn3gf6_kSkXCXdN6e83vX
+accept-ranges: bytes
+server: AmazonS3
+x-cache: Hit from cloudfront
+via: 1.1 dfd304f8a9d0311c835e78943f8ff050.cloudfront.net (CloudFront)
+x-amz-cf-pop: LAX53-P6
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: xw-Bn_tfAHOsHOkmdwo7AEo7V3bg73K-0BSOktnA9yBAYUgX59RyFw==
+age: 5923
+vary: Origin
+
+
+## local dev server listeners
+COMMAND   PID          USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+node    46788 gabrielhansen   13u  IPv4 0x3598a9251f7ee2f5      0t0  TCP 127.0.0.1:3000 (LISTEN)
+
+## github runs (branch)
+completed	success	fix: lighten md1 nosky background for camera gates	CDK Deploy	agent-113647-md1-baseline-e2e	push	26107587599	3m54s	2026-05-19T15:32:55Z
+completed	success	fix: lighten md1 nosky background for camera gates	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26107587902	7m35s	2026-05-19T15:32:55Z
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26106566149	3m32s	2026-05-19T15:15:28Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26106566140	7m23s	2026-05-19T15:15:28Z
+completed	success	feat: add md1-shrunk camera suite html report	CDK Deploy	agent-113647-md1-baseline-e2e	push	26106278926	4m9s	2026-05-19T15:10:35Z
+completed	success	chore: record md1-shrunk CI proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	26104689980	3m52s	2026-05-19T14:43:59Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26104135660	7m58s	2026-05-19T14:34:20Z
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26104135709	4m5s	2026-05-19T14:34:20Z
+completed	success	fix: harden edge bundle browser delivery checks	CDK Deploy	agent-113647-md1-baseline-e2e	push	26103861417	4m4s	2026-05-19T14:29:38Z
+completed	success	chore: record md1-shrunk ci proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	26081063367	3m38s	2026-05-19T06:46:13Z

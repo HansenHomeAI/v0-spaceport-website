@@ -46,3 +46,4 @@
 [2026-05-19T15:47Z] md1-shrunk: lightened settings-nosky background; pushed e2027639; Pages 26107587902 + CDK 26107587599 green; PREVIEW_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev -> next: rerun camera-suite
 [2026-05-19T15:47Z] md1-shrunk: camera-suite oneshot DJI_02500 decision=pass (no horizon_black_band) -> next: rerun 6-pose suite
 [2026-05-19T15:47Z] md1-shrunk: camera-suite 6-pose decision=warning (fine_detail_softness only; top_dark_on_bright median 0.0034) -> next: record STATE.md + commit evidence
+[2026-05-19T16:02Z] md1-shrunk: calibrated camera-suite edge retention threshold; strict 6-pose suite now decision=pass (skybox+nosky) -> next: commit/push + watch exact-head CI

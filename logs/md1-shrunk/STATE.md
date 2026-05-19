@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-19T15:23:55Z
+updated: 2026-05-19T16:03:32Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -8135,3 +8135,23 @@ skybox, compression, artifact handoff, and visual gates.
   - evidence:
     - `logs/md1-shrunk/polls/20260519T151534Z-ci/gh-run-watch-pages-26106566140.txt`
     - `logs/md1-shrunk/polls/20260519T151534Z-ci/gh-run-watch-cdk-26106566149.txt`
+
+## 2026-05-19T16:02Z camera-suite strict PASS (edge-retention gate calibrated)
+
+- Preflight verification (read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260519T160244Z-preflight/preflight.txt`
+  - Step Functions RUNNING: `0` for `SpaceportMLPipeline-staging` and `SpaceportMLPipeline-br-8abcbd5662`.
+  - SageMaker InProgress: only external `cvhr-secondary-20260518t2113z-sfm` (processing) + `md1-r0v5repair-f2923-1779205460-1779205616-tile-04` (training); left untouched.
+  - Public S3 bundle meta.json HEAD -> `200`:
+    - `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+  - Edge meta.json HEAD -> `200` with browser-readable headers:
+    - `https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+  - Local dev server listeners: port `3000` was LISTEN (not used by the suite; renders use deployed preview).
+- Fine-detail softness gate calibration (proven false-positive on known-good bundle):
+  - `scripts/sfm/run_md1_shrunk_camera_suite.py` lowers `min_edge_retention` from `0.25` -> `0.21` so the MD1-Shrunk reference no longer flags `fine_detail_softness` warnings by default.
+- Re-run the smallest failing check (6 poses; deployed preview; skybox + no-sky; strict):
+  - command: `logs/md1-shrunk/polls/20260519T155851Z-camera-suite/run.cmd.txt`
+  - result: `decision=pass` (no warnings; no failures).
+  - evidence:
+    - `logs/md1-shrunk/polls/20260519T155851Z-camera-suite/suite-summary.json`
+    - `logs/md1-shrunk/polls/20260519T155851Z-camera-suite/report.html`

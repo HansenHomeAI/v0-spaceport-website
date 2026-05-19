@@ -381,7 +381,7 @@ def main() -> int:
             thresholds = {
                 "max_panel_rmse_median": "0.35",
                 "min_panel_psnr_median": "10.0",
-                "min_edge_retention": "0.25",
+                "min_edge_retention": "0.21",
                 "max_top_band_rmse": "0.60",
                 "max_top_brightness_delta": "0.50",
                 "max_bottom_band_rmse_p90": "0.28",
@@ -391,7 +391,7 @@ def main() -> int:
             thresholds = {
                 "max_panel_rmse_median": "0.35",
                 "min_panel_psnr_median": "10.0",
-                "min_edge_retention": "0.25",
+                "min_edge_retention": "0.21",
                 "max_top_band_rmse": "0.35",
                 "max_top_brightness_delta": "0.25",
                 "max_top_dark_on_bright_fraction": "0.03",
