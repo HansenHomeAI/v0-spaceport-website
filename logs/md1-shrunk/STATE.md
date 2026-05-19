@@ -8494,3 +8494,5 @@ skybox, compression, artifact handoff, and visual gates.
   - edge meta.json: `https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
 - Unit proof:
   - `logs/md1-shrunk/polls/20260519T220745Z-unit/unittest.txt`
+- Commit/push:
+  - `chore: record md1-shrunk heartbeat verification [skip ci]` -> `b3dface9`
