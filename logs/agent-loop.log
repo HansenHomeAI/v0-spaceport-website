@@ -40,3 +40,4 @@
 [2026-05-19T06:39Z] md1-shrunk: preflight+public bundle ok; exact-head 365aeaa0 CDK 26080154676 + Pages 26080154687 green (PREVIEW_URL confirmed); camera-suite DJI_02500 decision=warning (horizon gate) -> logs/md1-shrunk/polls/20260519T063618Z-preflight + 20260519T063343Z-camera-suite
 [2026-05-19T06:44Z] md1-shrunk: pushed f5125521; exact-head CDK 26080845481 success; Pages workflow not triggered (logs-only change); last Pages success remains 26080154687 (365aeaa0)
 [2026-05-19T14:29:06Z] md1-shrunk: hardened edge publish validation (Origin CORS + all meta.json assets) and verified bundle headers/coverage -> next: commit/push + watch exact-head CI
+[2026-05-19T14:43:16Z] md1-shrunk: pushed 0ac17e86 (edge CORS+asset validation) + 67e00242 (Pages trigger); exact-head Pages 26104135660 + CDK 26104135709 green; PREVIEW_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev

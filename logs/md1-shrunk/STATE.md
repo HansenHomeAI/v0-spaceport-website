@@ -8052,5 +8052,21 @@ skybox, compression, artifact handoff, and visual gates.
     - meta + asset coverage: `logs/md1-shrunk/polls/20260519T142803Z-edge-validate/publish-edge.meta.json`
     - asset HEADs: `logs/md1-shrunk/polls/20260519T142803Z-edge-validate/publish-edge.assets.json`
     - CORS+cache headers:
-      - `logs/md1-shrunk/polls/20260519T142803Z-edge-validate/publish-edge.curl-head.txt`
-      - `logs/md1-shrunk/polls/20260519T142803Z-edge-validate/publish-edge.curl-head-origin.txt`
+    - `logs/md1-shrunk/polls/20260519T142803Z-edge-validate/publish-edge.curl-head.txt`
+    - `logs/md1-shrunk/polls/20260519T142803Z-edge-validate/publish-edge.curl-head-origin.txt`
+
+## 2026-05-19T14:44Z exact-head CI proof (trigger Pages deploy)
+
+- Commit/push:
+  - `fix: harden edge bundle browser delivery checks` -> `0ac17e8638270df27dbe4f3a25e993ad1e2c7e54`
+    - CDK-only CI (Pages not triggered): run `26103861417` -> success
+  - `chore: trigger pages deploy` -> `67e0024250f590368cf4ff13a295560ff869d846`
+- GitHub workflows (exact-head `67e00242...`):
+  - `Deploy Next.js to Cloudflare Pages` run `26104135660` -> success
+  - `CDK Deploy` run `26104135709` -> success
+  - PREVIEW_URL extract:
+    - `logs/md1-shrunk/polls/20260519T143536Z-ci/pages-preview-url.txt`
+    - `PREVIEW_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260519T143536Z-ci/gh-run-watch-pages-26104135660.txt`
+    - `logs/md1-shrunk/polls/20260519T143536Z-ci/gh-run-watch-cdk-26104135709.txt`
