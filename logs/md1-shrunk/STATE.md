@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-19T06:44:00Z
+updated: 2026-05-19T15:08:20Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -8070,3 +8070,21 @@ skybox, compression, artifact handoff, and visual gates.
   - evidence:
     - `logs/md1-shrunk/polls/20260519T143536Z-ci/gh-run-watch-pages-26104135660.txt`
     - `logs/md1-shrunk/polls/20260519T143536Z-ci/gh-run-watch-cdk-26104135709.txt`
+
+## 2026-05-19T15:08Z camera-suite browser report + pose mismatch gate
+
+- Hardened multi-camera input-vs-render checks:
+  - `scripts/sfm/diagnose_heldout_panels.py` adds a `camera_pose_mismatch` warning when median RMSE/PSNR imply the rendered view is unrelated to the source input.
+  - `scripts/sfm/run_md1_shrunk_camera_suite.py` now validates pose vectors before rendering and writes a browser-readable report:
+    - `logs/.../report.html` (viewer links + panel links + findings)
+- Preflight (read-only; no new jobs launched/stopped):
+  - `logs/md1-shrunk/polls/20260519T145420Z-preflight/preflight.txt`
+  - local dev/GitHub run list snapshot: `logs/md1-shrunk/polls/20260519T145441Z-dev-gh/dev-gh.txt`
+- Unit proof:
+  - `python3 -m unittest tests.unit.test_sfm_heldout_panel_diagnostics`
+  - evidence: `logs/md1-shrunk/polls/20260519T150159Z-verify/unit.txt`
+- Deployed preview camera-suite (single pose, deterministic repro):
+  - command: `logs/md1-shrunk/polls/20260519T150556Z-camera-suite/run.log.txt`
+  - decision: `warning` (no-sky `horizon_black_band`)
+  - suite summary: `logs/md1-shrunk/polls/20260519T150556Z-camera-suite/suite-summary.json`
+  - browser report: `logs/md1-shrunk/polls/20260519T150556Z-camera-suite/report.html`

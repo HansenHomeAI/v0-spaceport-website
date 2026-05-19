@@ -49,9 +49,12 @@ class HeldoutPanelDiagnosticsTest(unittest.TestCase):
                     glob="eval_img_*.png",
                     panel_columns=2,
                     baseline_report="",
+                    max_panel_rmse_median=1.0,
+                    min_panel_psnr_median=0.0,
                     min_edge_retention=0.92,
                     max_top_band_rmse=0.20,
                     max_top_brightness_delta=0.12,
+                    max_top_dark_on_bright_fraction=0.02,
                     max_bottom_band_rmse_p90=0.22,
                 )
             )
@@ -77,9 +80,12 @@ class HeldoutPanelDiagnosticsTest(unittest.TestCase):
                     glob="eval_img_*.png",
                     panel_columns=2,
                     baseline_report="",
+                    max_panel_rmse_median=1.0,
+                    min_panel_psnr_median=0.0,
                     min_edge_retention=0.92,
                     max_top_band_rmse=0.20,
                     max_top_brightness_delta=0.12,
+                    max_top_dark_on_bright_fraction=0.02,
                     max_bottom_band_rmse_p90=0.22,
                 )
             )

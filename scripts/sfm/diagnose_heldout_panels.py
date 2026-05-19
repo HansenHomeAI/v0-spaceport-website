@@ -243,6 +243,24 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
         ]
     }
     findings: list[dict[str, Any]] = []
+    rmse_median = metrics["rmse"]["median"]
+    if rmse_median is not None and rmse_median > args.max_panel_rmse_median:
+        findings.append(
+            {
+                "severity": "warning",
+                "category": "camera_pose_mismatch",
+                "evidence": f"median RMSE {rmse_median} > {args.max_panel_rmse_median}",
+            }
+        )
+    psnr_median = metrics["psnr"]["median"]
+    if psnr_median is not None and psnr_median < args.min_panel_psnr_median:
+        findings.append(
+            {
+                "severity": "warning",
+                "category": "camera_pose_mismatch",
+                "evidence": f"median PSNR {psnr_median} < {args.min_panel_psnr_median}",
+            }
+        )
     edge_median = metrics["edge_retention_ratio"]["median"]
     if edge_median is not None and edge_median < args.min_edge_retention:
         findings.append(
@@ -312,6 +330,8 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
         "panel_count": len(per_panel),
         "panel_columns": args.panel_columns,
         "thresholds": {
+            "max_panel_rmse_median": args.max_panel_rmse_median,
+            "min_panel_psnr_median": args.min_panel_psnr_median,
             "min_edge_retention": args.min_edge_retention,
             "max_top_band_rmse": args.max_top_band_rmse,
             "max_top_brightness_delta": args.max_top_brightness_delta,
@@ -337,6 +357,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--glob", default="eval_img_*.png")
     parser.add_argument("--panel-columns", type=int, default=2)
     parser.add_argument("--baseline-report", default="")
+    parser.add_argument(
+        "--max-panel-rmse-median",
+        type=float,
+        default=1.0,
+        help="Warn if median RMSE between source/render exceeds this threshold (proxy for camera pose mismatch).",
+    )
+    parser.add_argument(
+        "--min-panel-psnr-median",
+        type=float,
+        default=0.0,
+        help="Warn if median PSNR between source/render drops below this threshold (proxy for camera pose mismatch).",
+    )
     parser.add_argument("--min-edge-retention", type=float, default=0.92)
     parser.add_argument("--max-top-band-rmse", type=float, default=0.20)
     parser.add_argument("--max-top-brightness-delta", type=float, default=0.12)

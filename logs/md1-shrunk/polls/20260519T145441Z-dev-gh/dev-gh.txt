@@ -1,0 +1,61 @@
+timestamp_utc=20260519T145441Z
+## dev server listeners
+
+## node/python processes (filtered)
+gabrielhansen    17108   0.7  0.2 442387456  35920   ??  S     8:52AM   0:01.16 ./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient mcp
+gabrielhansen    98876   0.7  0.1 442312448  16016   ??  S     8:33AM   0:12.46 ./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient mcp
+gabrielhansen    97808   0.7  0.1 442307952  16016   ??  S     8:33AM   0:12.75 ./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient mcp
+gabrielhansen    83488   0.6  0.1 442304496  15792   ??  S     8:22AM   0:19.28 ./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient mcp
+gabrielhansen    85764   0.6  0.1 442311920  15840   ??  S     8:23AM   0:18.74 ./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient mcp
+gabrielhansen     6538   0.6  0.2 442312160  32240   ??  S     8:42AM   0:07.43 ./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient mcp
+gabrielhansen    85173   0.6  0.1 442313376  15920   ??  S     8:23AM   0:19.17 ./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient mcp
+gabrielhansen    99053   0.0  0.0 453246064   7840   ??  S     8:33AM   0:00.53 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+gabrielhansen    98886   0.0  0.0 442276752   4160   ??  S     8:33AM   0:00.71 /opt/homebrew/Cellar/python@3.13/3.13.11_1/Frameworks/Python.framework/Versions/3.13/Resources/Python.app/Contents/MacOS/Python /Users/gabrielhansen/.codex/mcp-venv/bin/mcp-server-git --repository /Users/gabrielhansen/v0-spaceport-website
+gabrielhansen    98885   0.0  0.1 442815504  12512   ??  S     8:33AM   0:01.37 npm exec @playwright/mcp@latest --headless    
+gabrielhansen    98887   0.0  0.0 442243984   3936   ??  S     8:33AM   0:00.01 /Applications/Codex.app/Contents/Resources/node_repl
+gabrielhansen    97904   0.0  0.0 453241040   7840   ??  S     8:33AM   0:00.49 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+gabrielhansen    97810   0.0  0.1 442819120  12512   ??  S     8:33AM   0:01.19 npm exec @playwright/mcp@latest --headless    
+gabrielhansen    97806   0.0  0.0 442280800   4160   ??  S     8:33AM   0:00.61 /opt/homebrew/Cellar/python@3.13/3.13.11_1/Frameworks/Python.framework/Versions/3.13/Resources/Python.app/Contents/MacOS/Python /Users/gabrielhansen/.codex/mcp-venv/bin/mcp-server-git --repository /Users/gabrielhansen/v0-spaceport-website
+gabrielhansen    97807   0.0  0.0 442244704   3936   ??  S     8:33AM   0:00.01 /Applications/Codex.app/Contents/Resources/node_repl
+gabrielhansen    85912   0.0  0.0 453250560   7488   ??  S     8:23AM   0:00.76 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+gabrielhansen    85762   0.0  0.0 442276864   3936   ??  S     8:23AM   0:00.80 /opt/homebrew/Cellar/python@3.13/3.13.11_1/Frameworks/Python.framework/Versions/3.13/Resources/Python.app/Contents/MacOS/Python /Users/gabrielhansen/.codex/mcp-venv/bin/mcp-server-git --repository /Users/gabrielhansen/v0-spaceport-website
+gabrielhansen    85761   0.0  0.1 442815568  10704   ??  S     8:23AM   0:01.61 npm exec @playwright/mcp@latest --headless    
+gabrielhansen    85763   0.0  0.0 442244480   3936   ??  S     8:23AM   0:00.01 /Applications/Codex.app/Contents/Resources/node_repl
+gabrielhansen    85397   0.0  0.0 453254208   7488   ??  S     8:23AM   0:00.60 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+gabrielhansen    85171   0.0  0.1 442816176  10704   ??  S     8:23AM   0:01.41 npm exec @playwright/mcp@latest --headless    
+gabrielhansen    85170   0.0  0.0 442276784   3936   ??  S     8:23AM   0:00.69 /opt/homebrew/Cellar/python@3.13/3.13.11_1/Frameworks/Python.framework/Versions/3.13/Resources/Python.app/Contents/MacOS/Python /Users/gabrielhansen/.codex/mcp-venv/bin/mcp-server-git --repository /Users/gabrielhansen/v0-spaceport-website
+gabrielhansen    85169   0.0  0.0 442244368   3936   ??  S     8:23AM   0:00.02 /Applications/Codex.app/Contents/Resources/node_repl
+gabrielhansen    84147   0.0  0.0 453249152   7344   ??  S     8:23AM   0:00.70 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+gabrielhansen    83487   0.0  0.1 442819600  10560   ??  S     8:22AM   0:01.74 npm exec @playwright/mcp@latest --headless    
+gabrielhansen    83486   0.0  0.0 442276320   3936   ??  S     8:22AM   0:00.96 /opt/homebrew/Cellar/python@3.13/3.13.11_1/Frameworks/Python.framework/Versions/3.13/Resources/Python.app/Contents/MacOS/Python /Users/gabrielhansen/.codex/mcp-venv/bin/mcp-server-git --repository /Users/gabrielhansen/v0-spaceport-website
+gabrielhansen    17422   0.0  0.5 453255760  93552   ??  S     8:52AM   0:00.53 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+gabrielhansen    17106   0.0  0.4 442815168  80656   ??  S     8:52AM   0:01.19 npm exec @playwright/mcp@latest --headless    
+gabrielhansen    17105   0.0  0.3 442280864  55024   ??  S     8:52AM   0:00.60 /opt/homebrew/Cellar/python@3.13/3.13.11_1/Frameworks/Python.framework/Versions/3.13/Resources/Python.app/Contents/MacOS/Python /Users/gabrielhansen/.codex/mcp-venv/bin/mcp-server-git --repository /Users/gabrielhansen/v0-spaceport-website
+gabrielhansen    17104   0.0  0.1 442244000   9456   ??  S     8:52AM   0:00.01 /Applications/Codex.app/Contents/Resources/node_repl
+gabrielhansen    15188   0.0  0.0 442208928   1216   ??  Ss    8:48AM   0:00.02 /bin/zsh -lc stamp=$(date -u +%Y%m%dT%H%MZ)\012log="logs/sfm-production-spine/md1_visibility_cell_v1_full_reducer_run_${stamp}.log"\012report="logs/sfm-production-spine/md1_visibility_cell_v1_full_reducer_${stamp}.json"\012work="/tmp/md1_viscell_full_reducer_${stamp}"\012/opt/homebrew/bin/python3 - "$stamp" "$report" "$work" <<'PY' 2>&1 | tee "$log"\012import json\012import subprocess\012import sys\012from pathlib import Path\012stamp, report, work = sys.argv[1:4]\012status_path = Path('logs/sfm-production-spine/md1_visibility_cell_v1_full_fanout_continue_status.json')\012status = json.loads(status_path.read_text())\012leaves = sorted(status['leaves'], key=lambda item: item['leaf_index'])\012uris = [leaf['output_uri'] for leaf in leaves]\012output_uri = 's3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/merged/colmap'\012cmd = [\012    sys.executable,\012    'scripts/sfm/run_sfm_fanout_reducer.py',\012]\012for uri in uris:\012    cmd.extend(['--leaf-output-uri', uri])\012cmd.extend([\012    '--output-uri', output_uri,\012    '--work-dir', work,\012    '--report-json-output', report,\012    '--min-retention-ratio', '0.95',\012    '--min-shared-images', '8',\012    '--expected-component-count', '1',\012    '--branch', 'agent-73948216-sfm-production-spine',\012    '--head', '60fcec4fe28e3ee73e4c44aa5eebcf4ade543c54',\012    '--input-uri', status_path.as_posix(),\012    '--colmap-bin', '/opt/homebrew/bin/colmap',\012])\012print(json.dumps({'stamp': stamp, 'report': report, 'work_dir': work, 'leaf_count': len(uris), 'output_uri': output_uri}, indent=2), flush=True)\012raise SystemExit(subprocess.call(cmd))\012PY\012printf '%s\n' "$report"
+gabrielhansen     6706   0.0  0.2 453252208  31232   ??  S     8:42AM   0:00.54 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+gabrielhansen     6543   0.0  0.1 442276416  14384   ??  S     8:42AM   0:00.70 /opt/homebrew/Cellar/python@3.13/3.13.11_1/Frameworks/Python.framework/Versions/3.13/Resources/Python.app/Contents/MacOS/Python /Users/gabrielhansen/.codex/mcp-venv/bin/mcp-server-git --repository /Users/gabrielhansen/v0-spaceport-website
+gabrielhansen     6544   0.0  0.0 442244016   8416   ??  S     8:42AM   0:00.02 /Applications/Codex.app/Contents/Resources/node_repl
+gabrielhansen     6533   0.0  0.2 442819776  38160   ??  S     8:42AM   0:01.41 npm exec @playwright/mcp@latest --headless    
+
+## gh runs (branch)
+completed	success	chore: record md1-shrunk CI proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	26104689980	3m52s	2026-05-19T14:43:59Z
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26104135709	4m5s	2026-05-19T14:34:20Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26104135660	7m58s	2026-05-19T14:34:20Z
+completed	success	fix: harden edge bundle browser delivery checks	CDK Deploy	agent-113647-md1-baseline-e2e	push	26103861417	4m4s	2026-05-19T14:29:38Z
+completed	success	chore: record md1-shrunk ci proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	26081063367	3m38s	2026-05-19T06:46:13Z
+completed	success	chore: record md1-shrunk horizon gate repro	CDK Deploy	agent-113647-md1-baseline-e2e	push	26080845481	3m53s	2026-05-19T06:40:47Z
+completed	success	chore: record md1-shrunk horizon gate CI	CDK Deploy	agent-113647-md1-baseline-e2e	push	26080505088	3m36s	2026-05-19T06:32:09Z
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26080154676	3m55s	2026-05-19T06:23:16Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26080154687	7m42s	2026-05-19T06:23:16Z
+completed	cancelled	fix: harden md1-shrunk horizon camera gates	CDK Deploy	agent-113647-md1-baseline-e2e	push	26080036182	3m22s	2026-05-19T06:20:11Z
+completed	success	chore: record md1-shrunk camera-suite pass	CDK Deploy	agent-113647-md1-baseline-e2e	push	26079242637	3m45s	2026-05-19T05:58:45Z
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26078897888	3m49s	2026-05-19T05:49:02Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26078897872	7m28s	2026-05-19T05:49:02Z
+completed	success	fix: harden md1-shrunk multi-camera suite	CDK Deploy	agent-113647-md1-baseline-e2e	push	26078729691	4m14s	2026-05-19T05:44:12Z
+completed	success	fix: tune nosky background for camera checks	CDK Deploy	agent-113647-md1-baseline-e2e	push	26078491195	3m47s	2026-05-19T05:37:18Z
+completed	success	fix: tune nosky background for camera checks	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26078491191	7m28s	2026-05-19T05:37:18Z
+completed	success	feat: add md1-shrunk multi-camera readiness gate	CDK Deploy	agent-113647-md1-baseline-e2e	push	26078095786	4m6s	2026-05-19T05:25:53Z
+completed	success	feat: add md1-shrunk multi-camera readiness gate	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26078095765	7m51s	2026-05-19T05:25:53Z
+completed	success	fix: keep md1 viewer metrics while collapsed	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26075531894	7m19s	2026-05-19T04:06:10Z
+completed	success	fix: keep md1 viewer metrics while collapsed	CDK Deploy	agent-113647-md1-baseline-e2e	push	26075531870	3m40s	2026-05-19T04:06:10Z

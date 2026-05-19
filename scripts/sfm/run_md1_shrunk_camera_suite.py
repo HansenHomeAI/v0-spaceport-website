@@ -20,6 +20,7 @@ import subprocess
 import time
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlencode
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -34,6 +35,155 @@ def resolve_python() -> str:
 
 def resolve_aws() -> str:
     return str(HOMEBREW_AWS) if HOMEBREW_AWS.exists() else "aws"
+
+def parse_vector(value: object) -> tuple[float, float, float] | None:
+    raw = str(value or "").strip()
+    parts = [part.strip() for part in raw.split(",") if part.strip()]
+    if len(parts) != 3:
+        return None
+    try:
+        numbers = tuple(float(part) for part in parts)
+    except ValueError:
+        return None
+    if not all(number == number for number in numbers):
+        return None
+    return numbers  # type: ignore[return-value]
+
+def escape_html(text: str) -> str:
+    return (
+        text.replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
+        .replace("'", "&#39;")
+    )
+
+def build_viewer_url(
+    base_url: str,
+    *,
+    bundle_url: str,
+    cam_pos: str,
+    cam_target: str,
+    cam_up: str,
+    skybox: str,
+) -> str:
+    params: dict[str, str] = {"url": bundle_url, "camPos": cam_pos, "camTarget": cam_target, "panel": "collapsed"}
+    if cam_up:
+        params["camUp"] = cam_up
+    if skybox:
+        params["skybox"] = skybox
+    query = urlencode(params, safe=",:/")  # keep comma-separated vectors readable
+    return f"{base_url.rstrip('/')}/md1-viewer?{query}"
+
+def write_html_report(
+    *,
+    out_dir: Path,
+    viewer_url: str,
+    bundle_url: str,
+    poses: list[dict[str, Any]],
+    diagnostics: dict[str, Any],
+    failures: list[dict[str, Any]],
+    decision: str,
+) -> Path:
+    def rel(path: Path) -> str:
+        return path.relative_to(out_dir).as_posix()
+
+    rows: list[str] = []
+    for pose in poses:
+        name = str(pose.get("name") or "")
+        stem = Path(name).stem
+        cam_pos = str(pose.get("camPos") or "")
+        cam_target = str(pose.get("camTarget") or "")
+        cam_up = str(pose.get("camUp") or "")
+        panel_sky = out_dir / "panels" / "skybox" / f"panel-skybox-{stem}.png"
+        panel_no = out_dir / "panels" / "nosky" / f"panel-nosky-{stem}.png"
+        url_sky = build_viewer_url(
+            viewer_url,
+            bundle_url=bundle_url,
+            cam_pos=cam_pos,
+            cam_target=cam_target,
+            cam_up=cam_up,
+            skybox="background_skybox.webp",
+        )
+        url_no = build_viewer_url(
+            viewer_url,
+            bundle_url=bundle_url,
+            cam_pos=cam_pos,
+            cam_target=cam_target,
+            cam_up=cam_up,
+            skybox="none",
+        )
+        rows.append(
+            "<tr>"
+            f"<td>{escape_html(name)}</td>"
+            f"<td><a href=\"{escape_html(url_sky)}\">viewer(skybox)</a> · <a href=\"{escape_html(url_no)}\">viewer(nosky)</a></td>"
+            f"<td><a href=\"{escape_html(rel(panel_sky))}\">panel</a></td>"
+            f"<td><a href=\"{escape_html(rel(panel_no))}\">panel</a></td>"
+            "</tr>"
+        )
+
+    findings_html: list[str] = []
+    for variant in ["skybox", "nosky"]:
+        report = diagnostics.get(variant) or {}
+        findings = report.get("findings") or []
+        findings_html.append(f"<h3>{escape_html(variant)} findings</h3>")
+        if not findings:
+            findings_html.append("<p>none</p>")
+        else:
+            findings_html.append("<ul>")
+            for item in findings:
+                category = str(item.get("category") or "")
+                evidence = str(item.get("evidence") or "")
+                findings_html.append(f"<li><code>{escape_html(category)}</code>: {escape_html(evidence)}</li>")
+            findings_html.append("</ul>")
+
+    failures_html = "<p>none</p>"
+    if failures:
+        failures_html = "<ul>" + "".join(f"<li>{escape_html(json.dumps(item))}</li>" for item in failures) + "</ul>"
+
+    html = f"""<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MD1-Shrunk camera suite</title>
+    <style>
+      body {{ font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif; margin: 24px; }}
+      code {{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }}
+      table {{ border-collapse: collapse; width: 100%; }}
+      th, td {{ border: 1px solid #ddd; padding: 8px; vertical-align: top; }}
+      th {{ background: #f6f6f6; text-align: left; }}
+    </style>
+  </head>
+  <body>
+    <h1>MD1-Shrunk camera suite</h1>
+    <p><strong>decision</strong>: <code>{escape_html(decision)}</code></p>
+    <p><strong>viewer</strong>: <a href="{escape_html(viewer_url)}">{escape_html(viewer_url)}</a></p>
+    <p><strong>bundle</strong>: <a href="{escape_html(bundle_url)}">{escape_html(bundle_url)}</a></p>
+    <h2>Poses</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>name</th>
+          <th>viewer links</th>
+          <th>skybox panel</th>
+          <th>nosky panel</th>
+        </tr>
+      </thead>
+      <tbody>
+        {''.join(rows)}
+      </tbody>
+    </table>
+    <h2>Diagnostics</h2>
+    {''.join(findings_html)}
+    <h2>Failures</h2>
+    {failures_html}
+  </body>
+</html>
+"""
+    report_path = out_dir / "report.html"
+    report_path.write_text(html, encoding="utf-8")
+    return report_path
 
 def run(cmd: list[str], *, cwd: Path | None = None, env: dict[str, str] | None = None) -> str:
     result = subprocess.run(
@@ -155,10 +305,28 @@ def main() -> int:
 
     failures: list[dict[str, Any]] = []
 
+    validated_poses: list[dict[str, Any]] = []
     for pose in poses:
+        if not isinstance(pose, dict):
+            failures.append({"error": "pose payload is not an object"})
+            continue
         name = str(pose.get("name") or "")
         if not name:
+            failures.append({"name": name, "error": "pose missing image name"})
             continue
+        cam_pos = str(pose.get("camPos") or "")
+        cam_target = str(pose.get("camTarget") or "")
+        cam_up = str(pose.get("camUp") or "")
+        if parse_vector(cam_pos) is None or parse_vector(cam_target) is None:
+            failures.append({"name": name, "error": "pose missing/invalid camPos/camTarget"})
+            continue
+        if cam_up and parse_vector(cam_up) is None:
+            failures.append({"name": name, "error": "pose has invalid camUp"})
+            continue
+        validated_poses.append(pose)
+
+    for pose in validated_poses:
+        name = str(pose.get("name") or "")
         try:
             input_uri = f"{args.colmap_images_s3_prefix.rstrip('/')}/{name}"
             input_path = inputs_dir / f"input-{name}"
@@ -211,6 +379,8 @@ def main() -> int:
         if variant == "skybox":
             # Skybox replaces most of the top band; keep thresholds loose and focus on reachability.
             thresholds = {
+                "max_panel_rmse_median": "0.35",
+                "min_panel_psnr_median": "10.0",
                 "min_edge_retention": "0.25",
                 "max_top_band_rmse": "0.60",
                 "max_top_brightness_delta": "0.50",
@@ -219,6 +389,8 @@ def main() -> int:
         else:
             # No-sky should stay stable at the horizon. Gate on top-band instability.
             thresholds = {
+                "max_panel_rmse_median": "0.35",
+                "min_panel_psnr_median": "10.0",
                 "min_edge_retention": "0.25",
                 "max_top_band_rmse": "0.35",
                 "max_top_brightness_delta": "0.25",
@@ -235,6 +407,10 @@ def main() -> int:
             "panel-*.png",
             "--output",
             str(report_path),
+            "--max-panel-rmse-median",
+            thresholds["max_panel_rmse_median"],
+            "--min-panel-psnr-median",
+            thresholds["min_panel_psnr_median"],
             "--min-edge-retention",
             thresholds["min_edge_retention"],
             "--max-top-band-rmse",
@@ -259,15 +435,24 @@ def main() -> int:
         "decision": "fail" if failures else decision,
         "camera_poses": {
             "path": str(poses_out),
-            "selected_count": len(poses),
-            "names": [str(pose.get("name") or "") for pose in poses if pose.get("name")],
+            "selected_count": len(validated_poses),
+            "names": [str(pose.get("name") or "") for pose in validated_poses if pose.get("name")],
         },
         "failures": failures,
         **diagnostics,
     }
     summary_path.write_text(json.dumps(summary_payload, indent=2) + "\n", encoding="utf-8")
+    report_path = write_html_report(
+        out_dir=out_dir,
+        viewer_url=args.viewer_url.rstrip("/"),
+        bundle_url=bundle_url,
+        poses=validated_poses,
+        diagnostics=diagnostics,
+        failures=failures,
+        decision=str(summary_payload["decision"]),
+    )
     final_decision = summary_payload["decision"]
-    print(f"OK {summary_path} decision={final_decision} panels={panel_count} failures={len(failures)}")
+    print(f"OK {summary_path} decision={final_decision} panels={panel_count} failures={len(failures)} report={report_path}")
     if args.strict and final_decision != "pass":
         raise SystemExit(2)
     return 0

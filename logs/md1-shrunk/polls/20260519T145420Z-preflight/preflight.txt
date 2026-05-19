@@ -1,0 +1,42 @@
+timestamp_utc=20260519T145420Z
+branch=agent-113647-md1-baseline-e2e
+head=1ff22a50c9906f731b356b815e84686f462fb818
+
+## aws sts
+{
+    "UserId": "975050048887",
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root"
+}
+
+## stepfunctions running (SpaceportMLPipeline-staging)
+stateMachineArn=arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging
+{
+    "executions": []
+}
+
+## sagemaker InProgress
+{
+    "ProcessingJobSummaries": [],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTRGYhXdvVWj3dbcxWzdU2seUW9sgTAabpezr1qhjwVo0Zfl3e6MaLGBaXzBDVbWizc0m/zErRW4pYBXpPWHssQFU+TtYvoqDHu2Bpflm11CEVgGEOt6c7Zt1MGhjpVvjXRajvZKKBx78OwAi+WDGDgikfclxFxcIHG0T27PYd4yQJtOWVwW/jL1F4Id3RdULVbeEH/NQBZrX+q/lRT7wEdaqR6VNHqO0uOlEgxxNdUeF9fG4v7MhZN+nQGmOV5NtFwsqitftnZoe/r1lFjGpRE+rPREtGJwvwK0p3SPZdJeGDyjsna+rz3oAXllIDgg7xj+pBr55MuH6Am+eFf9VMEAHQWCfZYCis3XWzPXCeB5MNh/bftrazWUbjwsvS8g8uyYfn0TqwavaBx/SSxUJT0PUN2emFeFtNL149lBB6gijPBdHcAKaNybaDlFPtDeIz1VLJTKwVNGswl5liXN305ZA7PolDu3kAe2nZ/L6KM1fhryFpohC/bc+l9tDY4gQ="
+}
+{
+    "TrainingJobSummaries": [],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTRGYhXdvVWj3dbcxWzdU2seUW9sgTAabpezr1qhjwVo0Zfl3e6MaLGBaXzBDVbWizc0m/zErRW4pYBXpPWHssQFU+TtYvoqDHu2Bpflm11CEVgGEOt6c7Zt1MGhjpVvjXRajvZKKBx78OwAi+WDGDgikfclxFxcIHG0T27PYd4yQJtOWVwW/jL1F4Id3RdULVbeEH/NQBZrX+q/lRT7wEdaqR6VNHqO0uOlEgxxNdUeF9fG4v7MhZN+nQGmOV5NtFwsqitftnZoe/r1lFjGpRE+rPREtGJwvwK0p3SPZdJeGDyjsna+rz3oAXllIDgg7xj+pBr55MuH6Am+eFf9VMHNlbul1HWQjXFGdok2CORBMyfpLKL5ub9COKar/iMAMawvPejRmYPxyncm50fOEJAM2FWxPCidEAKo+jLm96R5Cakb9s3SAUiTMUFWItAt3wP8Y1dPaE+Fk0YjdIn8oZkFHjrCGgRjDDZ/jhnbuRFN2b16IE84MT6Ca5DcePg7c="
+}
+
+## public bundle head
+https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json
+HTTP/1.1 200 OK
+x-amz-id-2: Fc8hzhwaINPaRlly7oIP3yydIexei7Nk+uSMqk/T96rznlUmKgIyMKWi7TmU5P/ka6pJgRwlUkQ=
+x-amz-request-id: 80DH4JPVWQ609KXG
+Date: Tue, 19 May 2026 14:54:25 GMT
+Last-Modified: Tue, 19 May 2026 03:14:11 GMT
+ETag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: lwCX4ptdSjx.9.5LMjn4a8Ervrln8HMA
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1421
+Server: AmazonS3
+
