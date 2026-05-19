@@ -11,7 +11,7 @@
         "lodLevels": null,
         "chunkFiles": 0,
         "chunkMetaRequests": 0,
-        "firstFrameMs": 6183.599999904633,
+        "firstFrameMs": 4929.599999904633,
         "lodMin": 0,
         "lodMax": 3
       },
@@ -20,11 +20,11 @@
         "height": 960,
         "sampled": 38400,
         "visibleRatio": 1,
-        "brightRatio": 0.8645052083333333,
+        "brightRatio": 0.8644791666666667,
         "darkRatio": 0,
-        "meanLuma": 172.38957991666618,
-        "lumaStdDev": 68.0807551336414,
-        "meanColorSpread": 27.380208333333332
+        "meanLuma": 172.38448737499948,
+        "lumaStdDev": 68.08224240510893,
+        "meanColorSpread": 27.379791666666666
       },
       "modelVisualStats": {
         "width": 920,
@@ -51,7 +51,7 @@
         "lodLevels": null,
         "chunkFiles": 0,
         "chunkMetaRequests": 0,
-        "firstFrameMs": 6586.300000071526,
+        "firstFrameMs": 2764.7999999523163,
         "lodMin": 2,
         "lodMax": 3
       },
@@ -60,11 +60,11 @@
         "height": 896,
         "sampled": 92736,
         "visibleRatio": 1,
-        "brightRatio": 0.6310278640441684,
+        "brightRatio": 0.6310062974465148,
         "darkRatio": 0,
-        "meanLuma": 124.35612680296649,
-        "lumaStdDev": 66.89681082131514,
-        "meanColorSpread": 21.99159981021394
+        "meanLuma": 124.35301984126873,
+        "lumaStdDev": 66.89503767176447,
+        "meanColorSpread": 21.991491977225675
       },
       "modelVisualStats": {
         "width": 1,
@@ -91,7 +91,7 @@
         "lodLevels": null,
         "chunkFiles": 0,
         "chunkMetaRequests": 0,
-        "firstFrameMs": 2458.600000023842,
+        "firstFrameMs": 6274.199999928474,
         "lodMin": 0,
         "lodMax": 3
       },
@@ -100,11 +100,11 @@
         "height": 960,
         "sampled": 38400,
         "visibleRatio": 0.7819010416666666,
-        "brightRatio": 0.3793229166666667,
+        "brightRatio": 0.379375,
         "darkRatio": 0.20270833333333332,
-        "meanLuma": 72.1905723697919,
-        "lumaStdDev": 62.87532846218897,
-        "meanColorSpread": 21.499244791666666
+        "meanLuma": 72.2005378072919,
+        "lumaStdDev": 62.88492371335414,
+        "meanColorSpread": 21.499661458333332
       },
       "modelVisualStats": {
         "width": 920,
@@ -117,7 +117,7 @@
         "lumaStdDev": 66.57658157226747,
         "meanColorSpread": 17.283571105072465
       },
-      "chunkMetaResponses": 2,
+      "chunkMetaResponses": 3,
       "screenshotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-production-viewer-desktop-nosky.png",
       "modelScreenshotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-production-viewer-desktop-nosky-model.png"
     }

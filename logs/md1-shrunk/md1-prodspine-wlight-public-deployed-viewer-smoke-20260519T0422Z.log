@@ -1,0 +1,9 @@
+MD1 production viewer smoke: desktop
+MD1 production viewer smoke: desktop waiting 5s metrics={"bundleKind":"single","rootFile":"meta.json","sourceUrl":"https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json","viewerUrl":"/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json","lodLevels":null,"chunkFiles":0,"chunkMetaRequests":0,"firstFrameMs":null,"lodMin":0,"lodMax":3} frame={"readyState":"complete","rootManifestType":"meta.json","chunkMetaRequests":0,"firstFrameMs":null,"hasContext":true,"hasGsplat":false}
+MD1 production viewer smoke: desktop ready firstFrame=4929.6ms chunks=0
+MD1 production viewer smoke: mobile
+MD1 production viewer smoke: mobile ready firstFrame=2764.8ms chunks=0
+MD1 production viewer smoke: desktop-nosky
+MD1 production viewer smoke: desktop-nosky waiting 5s metrics={"bundleKind":"single","rootFile":"meta.json","sourceUrl":"https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json","viewerUrl":"/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json","lodLevels":null,"chunkFiles":0,"chunkMetaRequests":0,"firstFrameMs":null,"lodMin":0,"lodMax":3} frame={"readyState":"complete","rootManifestType":"meta.json","chunkMetaRequests":0,"firstFrameMs":null,"hasContext":true,"hasGsplat":false}
+MD1 production viewer smoke: desktop-nosky ready firstFrame=6274.2ms chunks=0
+MD1 production viewer smoke passed: /Users/gabrielhansen/MD1-Baseline/logs/md1-production-viewer-results.json

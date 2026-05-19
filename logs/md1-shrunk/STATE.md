@@ -7859,3 +7859,48 @@ skybox, compression, artifact handoff, and visual gates.
   - Commit/push the telemetry fix.
   - Watch exact-head `CDK Deploy` and Pages workflows for the new head.
   - Re-run deployed preview public-bundle smoke and deployed side-by-side camera render with `panel=collapsed`, skybox, and no-sky.
+
+## 2026-05-19T04:22Z deployed visual gates after collapsed telemetry fix
+
+- Pushed collapsed-telemetry fix:
+  - branch/head: `agent-113647-md1-baseline-e2e` / `4d3b489fb6e793c38a540ea9aa2ca57fad8ce7bb`
+  - commit: `fix: keep md1 viewer metrics while collapsed`
+- Exact-head workflows:
+  - `CDK Deploy` run `26075531870` for `4d3b489fb6e793c38a540ea9aa2ca57fad8ce7bb` succeeded.
+  - `Deploy Next.js to Cloudflare Pages` run `26075531894` for `4d3b489fb6e793c38a540ea9aa2ca57fad8ce7bb` succeeded.
+  - resolved preview alias: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+  - resolved hash URL: `https://6117ee0b.v0-spaceport-website-preview2.pages.dev`
+  - evidence: `logs/md1-shrunk/gh-run-log-pages-26075531894-20260519T0419Z.txt`
+- Deployed public-bundle smoke after telemetry fix:
+  - command:
+    - `cd web && MD1_VIEWER_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev MD1_LOD_URL=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json MD1_EXPECT_ROOT_FILE=meta.json MD1_RUN_NO_SKY=1 node scripts/test-md1-production-viewer.mjs`
+  - result: passed desktop, mobile, and no-sky.
+  - first-frame times: desktop `4929.6ms`, mobile `2764.8ms`, desktop no-sky `6274.2ms`.
+  - evidence: `logs/md1-shrunk/md1-prodspine-wlight-public-deployed-viewer-smoke-20260519T0422Z.log`, `logs/md1-production-viewer-results.json`, `logs/md1-production-viewer-desktop.png`, `logs/md1-production-viewer-mobile.png`.
+- Deployed camera-pose render after telemetry fix:
+  - skybox command:
+    - `cd web && MD1_VIEWER_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev MD1_BUNDLE_URL=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json MD1_SKYBOX=background_skybox.webp MD1_CAM_POS=0.550350,0.535033,-0.032677 MD1_CAM_TARGET=0.810371,0.661083,-0.113302 MD1_CAM_UP=0.228003,0.145459,0.962734 MD1_COLLAPSE_PANEL=1 node scripts/render-md1-camera-check.mjs`
+  - no-sky command was identical with `MD1_SKYBOX=none`.
+  - result: both skybox and no-sky deployed renders passed with collapsed controls and `hasGsplat=true`.
+  - skybox first-frame: `7734.4ms`.
+  - no-sky first-frame: `8621.6ms`.
+  - evidence:
+    - `logs/md1-shrunk/render-deployed-prodspine-nscoord-camup-skybox-DJI_01029-20260519T0422Z.log`
+    - `logs/md1-shrunk/render-deployed-prodspine-nscoord-camup-skybox-DJI_01029-20260519T0422Z.png`
+    - `logs/md1-shrunk/render-deployed-prodspine-nscoord-camup-nosky-DJI_01029-20260519T0422Z.log`
+    - `logs/md1-shrunk/render-deployed-prodspine-nscoord-camup-nosky-DJI_01029-20260519T0422Z.png`
+    - `logs/md1-shrunk/side-by-side-deployed-prodspine-nscoord-camup-DJI_01029-20260519T0422Z.jpg`
+- Visual assessment:
+  - The deployed skybox render is upright and recognizable from the source-camera viewpoint.
+  - Terrain shape, valley roads, road junctions, neighborhood cluster, mountain ridges, and foreground hills align with `DJI_01029.JPG`.
+  - The no-sky mode confirms the splat itself is visible without relying on the skybox, but it still exposes black/white horizon artifacts in the sky/background region.
+  - Current result is usable and much improved versus prior rejected full-MD1 and foreground-only runs; remaining production hardening is sky/horizon cleanup and more automated multi-camera perceptual checks, not another blind full-size MD1 relaunch.
+- Current local dev server:
+  - running at `http://127.0.0.1:3033`
+  - current interactive URL:
+    - `http://127.0.0.1:3033/md1-viewer?url=https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fmd1-shrunk-prodspine-wlight-202605190027%2Fsupersplat_bundle%2Fmeta.json&skybox=background_skybox.webp`
+- Next production-readiness work:
+  - Add automated multi-camera input-vs-render checks across several representative MD1-Shrunk frames, not just `DJI_01029.JPG`.
+  - Add explicit sky/horizon acceptance criteria so no-sky artifacts cannot hide behind a skybox.
+  - Wire the public-delivery copy step so compressed artifacts are delivered browser-readable without manual AES256 sync.
+  - Convert the derived camera-pose transform into a reusable verifier rather than a one-off notebook-style derivation.
