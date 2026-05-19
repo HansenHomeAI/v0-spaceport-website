@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Derive stable viewer camera poses from a COLMAP sparse model (images.txt).
+"""Derive stable viewer camera poses from a COLMAP sparse model.
 
 This produces camera poses that match our MD1 viewer query params:
   - camPos (viewer position)
@@ -12,8 +12,15 @@ NerfStudio viewer:
   2) orient so average up points +Z
   3) scale by max-abs (fits in [-1, 1])
 
-Inputs can be a local file path or an S3 URI (s3://bucket/key). S3 downloads
-use the AWS CLI so the script stays dependency-light.
+Inputs can be a local file path or an S3 URI (s3://bucket/key).
+
+Supported inputs:
+  - COLMAP `images.txt` (includes image names, but can be very large because it
+    embeds points2D data).
+  - COLMAP `frames.txt` (compact, but requires `--image-names-s3-prefix` so we
+    can map frame/data ids onto the corresponding image names).
+
+S3 downloads and listings use the AWS CLI so the script stays dependency-light.
 """
 
 from __future__ import annotations
@@ -198,7 +205,11 @@ def download_s3_uri(uri: str, destination: Path) -> None:
 def resolve_images_txt(path_or_s3: str) -> Path:
     if path_or_s3.startswith("s3://"):
         temp_dir = Path(tempfile.mkdtemp(prefix="colmap-images-txt-"))
-        destination = temp_dir / "images.txt"
+        # Preserve the original leaf name so we can detect frames.txt vs images.txt.
+        _, rest = path_or_s3.split("s3://", 1)
+        _bucket, _, key = rest.partition("/")
+        leaf = Path(key).name or "images.txt"
+        destination = temp_dir / leaf
         download_s3_uri(path_or_s3, destination)
         return destination
     return Path(path_or_s3)
@@ -236,6 +247,70 @@ def parse_colmap_images_txt(path: Path) -> list[ParsedImage]:
         if index < len(lines):
             index += 1
     return images
+
+
+def parse_colmap_frames_txt(path: Path, image_names: list[str]) -> list[ParsedImage]:
+    images: list[ParsedImage] = []
+    lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    for raw in lines:
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = line.split()
+        if len(parts) < 13:
+            continue
+        try:
+            frame_id = int(parts[0])
+            # layout: frame_id rig_id qw qx qy qz tx ty tz num_data_ids SENSOR_TYPE SENSOR_ID DATA_ID
+            q = tuple(float(value) for value in parts[2:6])
+            t = (float(parts[6]), float(parts[7]), float(parts[8]))
+        except ValueError:
+            continue
+        if frame_id <= 0 or frame_id > len(image_names):
+            continue
+        name = image_names[frame_id - 1]
+        images.append(ParsedImage(image_id=frame_id, name=name, qvec=q, tvec=t))
+    return images
+
+
+def list_s3_image_names(prefix: str) -> list[str]:
+    """List object base names under an S3 prefix, sorted lexicographically."""
+    if not prefix.startswith("s3://"):
+        raise ValueError("image-names-s3-prefix must be an s3:// URI")
+    _, rest = prefix.split("s3://", 1)
+    bucket, _, key_prefix = rest.partition("/")
+    key_prefix = key_prefix.rstrip("/") + "/"
+
+    aws = resolve_aws()
+    token: str | None = None
+    keys: list[str] = []
+    while True:
+        cmd = [
+            aws,
+            "s3api",
+            "list-objects-v2",
+            "--bucket",
+            bucket,
+            "--prefix",
+            key_prefix,
+            "--output",
+            "json",
+        ]
+        if token:
+            cmd += ["--continuation-token", token]
+        result = subprocess.run(cmd, check=True, stdout=subprocess.PIPE, text=True).stdout
+        payload = json.loads(result)
+        for item in payload.get("Contents") or []:
+            key = item.get("Key") or ""
+            if not key or key.endswith("/"):
+                continue
+            keys.append(key.rsplit("/", 1)[-1])
+        if not payload.get("IsTruncated"):
+            break
+        token = payload.get("NextContinuationToken")
+        if not token:
+            break
+    return sorted(set(keys))
 
 
 def mean_vector(values: Iterable[Vector3]) -> Vector3:
@@ -342,7 +417,16 @@ def reshape_orient_row_major(values: list[float]) -> Matrix3:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--images-txt", required=True, help="Path or S3 URI to COLMAP sparse/0/images.txt")
+    parser.add_argument(
+        "--images-txt",
+        required=True,
+        help="Path or S3 URI to COLMAP sparse/0/images.txt (or sparse/0/frames.txt)",
+    )
+    parser.add_argument(
+        "--image-names-s3-prefix",
+        default="",
+        help="When --images-txt is frames.txt, list image names from this S3 prefix (s3://bucket/.../images)",
+    )
     parser.add_argument("--output", required=True, help="Output JSON path")
     parser.add_argument(
         "--distance-to-target",
@@ -388,7 +472,16 @@ def choose_samples(images: list[ParsedImage], sample_count: int) -> list[ParsedI
 def main() -> int:
     args = parse_args()
     images_path = resolve_images_txt(args.images_txt)
-    images = parse_colmap_images_txt(images_path)
+    # Frames.txt is compact but does not carry image names; map them from S3.
+    if str(images_path).endswith("frames.txt"):
+        if not args.image_names_s3_prefix.strip():
+            raise RuntimeError("--image-names-s3-prefix is required when parsing frames.txt")
+        image_names = list_s3_image_names(args.image_names_s3_prefix.strip())
+        if not image_names:
+            raise RuntimeError(f"no image names listed under {args.image_names_s3_prefix}")
+        images = parse_colmap_frames_txt(images_path, image_names)
+    else:
+        images = parse_colmap_images_txt(images_path)
     if not images:
         raise RuntimeError(f"No images parsed from {images_path}")
 

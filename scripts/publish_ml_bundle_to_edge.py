@@ -30,7 +30,45 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--compressed-output-s3-uri", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--validate-http", action="store_true")
+    parser.add_argument(
+        "--require-browser-headers",
+        action="store_true",
+        help="Fail if the published meta.json is not browser-readable (HTTP 200, Content-Type JSON, CORS, caching).",
+    )
     return parser.parse_args()
+
+def parse_http_headers(raw: str) -> dict[str, str]:
+    headers: dict[str, str] = {}
+    for line in raw.splitlines():
+        if not line.strip():
+            continue
+        if line.lower().startswith("http/"):
+            headers["__status_line__"] = line.strip()
+            continue
+        if ":" not in line:
+            continue
+        key, value = line.split(":", 1)
+        headers[key.strip().lower()] = value.strip()
+    return headers
+
+
+def assert_browser_readable(head_text: str) -> None:
+    headers = parse_http_headers(head_text)
+    status = headers.get("__status_line__", "")
+    if " 200 " not in status and not status.endswith(" 200"):
+        raise RuntimeError(f"edge bundle URL is not reachable (status={status or '<missing>'})")
+
+    content_type = (headers.get("content-type") or "").lower()
+    if "json" not in content_type:
+        raise RuntimeError(f"edge bundle meta.json Content-Type not JSON: {content_type or '<missing>'}")
+
+    cors = headers.get("access-control-allow-origin") or ""
+    if cors not in {"*", ""}:
+        raise RuntimeError(f"edge bundle meta.json unexpected CORS header: {cors}")
+
+    cache_control = (headers.get("cache-control") or "").lower()
+    if cache_control and "no-store" in cache_control:
+        raise RuntimeError(f"edge bundle meta.json cache-control blocks caching: {cache_control}")
 
 
 def main() -> int:
@@ -68,7 +106,7 @@ def main() -> int:
 
     print(f"OK edgeBundleUrl={edge_url}")
 
-    if args.validate_http:
+    if args.validate_http or args.require_browser_headers:
         head_path = output_path.with_suffix(".curl-head.txt")
         head = subprocess.run(
             ["curl", "-sS", "-I", edge_url],
@@ -79,6 +117,8 @@ def main() -> int:
         ).stdout
         head_path.write_text(head, encoding="utf-8")
         print(f"OK httpHead={head_path}")
+        if args.require_browser_headers:
+            assert_browser_readable(head)
 
     return 0
 

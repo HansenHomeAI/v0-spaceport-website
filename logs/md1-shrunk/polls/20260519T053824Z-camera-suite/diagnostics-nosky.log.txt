@@ -1,0 +1,1 @@
+{"decision": "warning", "panel_count": 6, "findings": [{"severity": "warning", "category": "sky_horizon_instability", "evidence": "median top-band RMSE 0.4368 > 0.35"}, {"severity": "warning", "category": "sky_horizon_brightness_shift", "evidence": "median top-band brightness delta -0.3275 exceeds +/-0.25"}]}

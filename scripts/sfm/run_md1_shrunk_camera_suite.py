@@ -70,6 +70,11 @@ def parse_args() -> argparse.Namespace:
         required=True,
         help="S3 prefix to COLMAP images/ directory (s3://bucket/.../images)",
     )
+    parser.add_argument(
+        "--include-names",
+        default="",
+        help="Comma-separated list of image base names (e.g. DJI_01029.JPG) to render (overrides sampling)",
+    )
     parser.add_argument("--out-dir", default="", help="Defaults to logs/md1-shrunk/polls/<timestamp>/suite")
     parser.add_argument("--sample-count", type=int, default=6)
     parser.add_argument("--distance-to-target", type=float, default=0.3)
@@ -124,6 +129,10 @@ def main() -> int:
         "--sample-count",
         str(args.sample_count),
     ]
+    if args.colmap_images_txt.rstrip().endswith("frames.txt"):
+        derive_cmd += ["--image-names-s3-prefix", args.colmap_images_s3_prefix]
+    if args.include_names.strip():
+        derive_cmd += ["--include-names", args.include_names.strip()]
     derive_log = out_dir / "derive-camera-poses.log.txt"
     derive_log.write_text(run(derive_cmd), encoding="utf-8")
 
@@ -137,50 +146,61 @@ def main() -> int:
     panels_dir = out_dir / "panels"
     panels_sky_dir = panels_dir / "skybox"
     panels_no_dir = panels_dir / "nosky"
+    inputs_dir.mkdir(parents=True, exist_ok=True)
+    renders_dir.mkdir(parents=True, exist_ok=True)
+    panels_sky_dir.mkdir(parents=True, exist_ok=True)
+    panels_no_dir.mkdir(parents=True, exist_ok=True)
+
+    failures: list[dict[str, Any]] = []
 
     for pose in poses:
         name = str(pose.get("name") or "")
         if not name:
             continue
-        input_uri = f"{args.colmap_images_s3_prefix.rstrip('/')}/{name}"
-        input_path = inputs_dir / f"input-{name}"
-        aws_cp(input_uri, input_path)
+        try:
+            input_uri = f"{args.colmap_images_s3_prefix.rstrip('/')}/{name}"
+            input_path = inputs_dir / f"input-{name}"
+            aws_cp(input_uri, input_path)
 
-        for variant, skybox_value, panel_subdir in [
-            ("skybox", "background_skybox.webp", panels_sky_dir),
-            ("nosky", "none", panels_no_dir),
-        ]:
-            render_path = renders_dir / f"render-{variant}-{Path(name).stem}.png"
-            render_log = renders_dir / f"render-{variant}-{Path(name).stem}.log.txt"
-            env = {
-                "MD1_VIEWER_URL": args.viewer_url.rstrip("/"),
-                "MD1_BUNDLE_URL": bundle_url,
-                "MD1_CAM_POS": str(pose.get("camPos") or ""),
-                "MD1_CAM_TARGET": str(pose.get("camTarget") or ""),
-                "MD1_CAM_UP": str(pose.get("camUp") or ""),
-                "MD1_SKYBOX": skybox_value,
-                "MD1_COLLAPSE_PANEL": "1",
-                "MD1_SCREENSHOT_TARGET": "iframe",
-                "MD1_OUT": str(render_path),
-            }
-            cmd = ["node", "scripts/render-md1-camera-check.mjs"]
-            output = run(cmd, cwd=WEB_DIR, env={**dict(os.environ), **env})
-            render_log.write_text(output, encoding="utf-8")
+            for variant, skybox_value, panel_subdir in [
+                ("skybox", "background_skybox.webp", panels_sky_dir),
+                ("nosky", "none", panels_no_dir),
+            ]:
+                render_path = renders_dir / f"render-{variant}-{Path(name).stem}.png"
+                render_log = renders_dir / f"render-{variant}-{Path(name).stem}.log.txt"
+                env = {
+                    "MD1_VIEWER_URL": args.viewer_url.rstrip("/"),
+                    "MD1_BUNDLE_URL": bundle_url,
+                    "MD1_CAM_POS": str(pose.get("camPos") or ""),
+                    "MD1_CAM_TARGET": str(pose.get("camTarget") or ""),
+                    "MD1_CAM_UP": str(pose.get("camUp") or ""),
+                    "MD1_SKYBOX": skybox_value,
+                    "MD1_COLLAPSE_PANEL": "1",
+                    "MD1_SCREENSHOT_TARGET": "iframe",
+                    "MD1_OUT": str(render_path),
+                }
+                cmd = ["node", "scripts/render-md1-camera-check.mjs"]
+                output = run(cmd, cwd=WEB_DIR, env={**dict(os.environ), **env})
+                render_log.write_text(output, encoding="utf-8")
 
-            panel_path = panel_subdir / f"panel-{variant}-{Path(name).stem}.png"
-            panel_log = panel_subdir / f"panel-{variant}-{Path(name).stem}.log.txt"
-            panel_env = {
-                "MD1_LEFT_IMAGE": str(input_path),
-                "MD1_RIGHT_IMAGE": str(render_path),
-                "MD1_PANEL_OUT": str(panel_path),
-            }
-            panel_output = run(
-                ["node", "scripts/make-md1-side-by-side-panel.mjs"],
-                cwd=WEB_DIR,
-                env={**dict(os.environ), **panel_env},
-            )
-            panel_log.parent.mkdir(parents=True, exist_ok=True)
-            panel_log.write_text(panel_output, encoding="utf-8")
+                panel_path = panel_subdir / f"panel-{variant}-{Path(name).stem}.png"
+                panel_log = panel_subdir / f"panel-{variant}-{Path(name).stem}.log.txt"
+                panel_env = {
+                    "MD1_LEFT_IMAGE": str(input_path),
+                    "MD1_RIGHT_IMAGE": str(render_path),
+                    "MD1_PANEL_OUT": str(panel_path),
+                }
+                panel_output = run(
+                    ["node", "scripts/make-md1-side-by-side-panel.mjs"],
+                    cwd=WEB_DIR,
+                    env={**dict(os.environ), **panel_env},
+                )
+                panel_log.parent.mkdir(parents=True, exist_ok=True)
+                panel_log.write_text(panel_output, encoding="utf-8")
+        except subprocess.CalledProcessError as exc:
+            failures.append({"name": name, "exit_code": exc.returncode, "output": exc.stdout[-4000:] if exc.stdout else ""})
+        except Exception as exc:  # noqa: BLE001
+            failures.append({"name": name, "error": str(exc)})
 
     # Diagnose panels.
     diagnostics: dict[str, Any] = {"bundle_url": bundle_url, "viewer_url": args.viewer_url}
@@ -229,9 +249,21 @@ def main() -> int:
             decision = "warning"
 
     summary_path = out_dir / "suite-summary.json"
-    summary_path.write_text(json.dumps({"decision": decision, **diagnostics}, indent=2) + "\n", encoding="utf-8")
-    print(f"OK {summary_path} decision={decision} panels={len(list(panels_dir.rglob('panel-*.png')))}")
-    if args.strict and decision != "pass":
+    panel_count = len(list(panels_dir.rglob("panel-*.png")))
+    summary_payload: dict[str, Any] = {
+        "decision": "fail" if failures else decision,
+        "camera_poses": {
+            "path": str(poses_out),
+            "selected_count": len(poses),
+            "names": [str(pose.get("name") or "") for pose in poses if pose.get("name")],
+        },
+        "failures": failures,
+        **diagnostics,
+    }
+    summary_path.write_text(json.dumps(summary_payload, indent=2) + "\n", encoding="utf-8")
+    final_decision = summary_payload["decision"]
+    print(f"OK {summary_path} decision={final_decision} panels={panel_count} failures={len(failures)}")
+    if args.strict and final_decision != "pass":
         raise SystemExit(2)
     return 0
 
