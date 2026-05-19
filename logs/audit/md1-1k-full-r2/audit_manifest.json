@@ -28510,5 +28510,101 @@
     },
     "paid_compute_launched": false,
     "next_required_action": "wait for all processing idle or receive explicit override of the idle/concurrency gate before paid retry; no quota increase needed"
+  },
+  "md1_r0v5relax_retry1_training_processing_hold_1352fbfc_20260519": {
+    "status": "training_processing_stepfunctions_hold_changed_no_paid_compute",
+    "summary": "Fresh live checks show head 1352fbfc is a logs-only skip-ci commit, last meaningful CDK 26059422703 is green, and spaceport-ml-containers CodeBuild is idle. Retry remains blocked because one SageMaker 3DGS training job, four SageMaker processing jobs, and one relevant Step Functions execution are InProgress/RUNNING. Prior md1-shrunk-prodspine-sfm and md1-viscell-full-l05 cleared, but md1-shrunk-prodspine-wlight-202605190027-3dgs plus md1-viscell-full-l06/l07 are now active. SageMaker processing quota is not the primary blocker: ml.g4dn.xlarge quota is 6, active usage is 4, and headroom is 2. No quota increase requested and no paid retry launched.",
+    "timestamp_utc": "20260519T005245Z",
+    "head": "1352fbfc447b0267e1a4eac2b8c605e1b37bd060",
+    "exact_head_skip_ci_no_runs": true,
+    "last_meaningful_exact_head_cdk_run": "26059422703",
+    "exact_head_runs": [],
+    "last_meaningful_exact_head_runs": [
+      {
+        "conclusion": "success",
+        "createdAt": "2026-05-18T20:44:57Z",
+        "databaseId": 26059422703,
+        "event": "push",
+        "headSha": "00541502a6e5f246cca11f05f53f78f1ca80559d",
+        "name": "CDK Deploy",
+        "status": "completed",
+        "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26059422703"
+      }
+    ],
+    "training_blockers": [
+      "md1-shrunk-prodspine-wlight-202605190027-3dgs"
+    ],
+    "processing_blockers": [
+      "md1-viscell-full-l07-1779151432",
+      "md1-viscell-full-l06-1779150311",
+      "cvhr-secondary-20260518t2113z-sfm",
+      "cvhr-mtc-20260518T1729Z-sfm"
+    ],
+    "stepfunctions_running": [
+      {
+        "name": "execution-md1-shrunk-prodspine-wlight-202605190027",
+        "status": "RUNNING",
+        "stateMachineArn": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-8abcbd5662",
+        "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-br-8abcbd5662:execution-md1-shrunk-prodspine-wlight-202605190027",
+        "startDate": "2026-05-18T18:28:13.202000-06:00"
+      }
+    ],
+    "training_inprogress_count": 1,
+    "processing_inprogress_count": 4,
+    "stepfunctions_running_count": 1,
+    "codebuild_active_count": 0,
+    "quotas": {
+      "ml_g4dn_xlarge_processing_quota_code": "L-2F1EB012",
+      "ml_g4dn_xlarge_processing_quota_value": 6.0,
+      "ml_g4dn_xlarge_processing_active_instances": 4,
+      "ml_g4dn_xlarge_processing_headroom_instances": 2,
+      "all_processing_instances_quota_code": "L-F311B08F",
+      "all_processing_instances_quota_value": 75.0,
+      "all_processing_instances_active_instances": 4,
+      "quota_is_primary_blocker": false,
+      "quota_increase_requested": false
+    },
+    "corrected_retry_job_name": "md1-r0v5relax-merge-retry1-8fdaa86f-20260518T170629Z",
+    "corrected_payload_json": "logs/md1-r0v5relax-merge-corrected-payload-8fdaa86f-20260518T170629Z.json",
+    "corrected_payload_has_BACKGROUND_SOURCE_TILE_ID": false,
+    "failed_original_merge_job_never_reuse": "md1-r0v5relax-merge-20260515",
+    "evidence": {
+      "summary": "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-summary.json",
+      "aws_identity": "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-aws-identity.json",
+      "exact_head_gh_runs": "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-gh-runs-head.json",
+      "last_meaningful_exact_head_gh_runs": "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-gh-runs-last-meaningful-head.json",
+      "training_inprogress": "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-training-inprogress.json",
+      "training_names": "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-training-names.txt",
+      "processing_inprogress_listed": "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-processing-inprogress-listed.json",
+      "processing_names": "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-processing-names.txt",
+      "codebuild_spaceport_ml_containers_ids": "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-codebuild-spaceport-ml-containers-ids.json",
+      "codebuild_spaceport_ml_containers_recent": "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-codebuild-spaceport-ml-containers-recent.json",
+      "codebuild_spaceport_ml_containers_active": "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-codebuild-spaceport-ml-containers-active.json",
+      "stepfunctions_state_machines": "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-stepfunctions-state-machines.json",
+      "stepfunctions_running": "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-stepfunctions-running.json",
+      "stepfunctions_running_describe": "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-stepfunctions-running-describe.json",
+      "quota_ml_g4dn_xlarge_processing": "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-quota-ml-g4dn-xlarge-processing.json",
+      "quota_all_processing_instances": "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-quota-all-processing-instances.json",
+      "training_describes": [
+        "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-md1-shrunk-prodspine-wlight-202605190027-3dgs-training-describe.json"
+      ],
+      "training_tags": [
+        "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-md1-shrunk-prodspine-wlight-202605190027-3dgs-training-tags.json"
+      ],
+      "processing_describes": [
+        "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-cvhr-mtc-20260518T1729Z-sfm-processing-describe.json",
+        "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-cvhr-secondary-20260518t2113z-sfm-processing-describe.json",
+        "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-md1-viscell-full-l06-1779150311-processing-describe.json",
+        "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-md1-viscell-full-l07-1779151432-processing-describe.json"
+      ],
+      "processing_tags": [
+        "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-cvhr-mtc-20260518T1729Z-sfm-processing-tags.json",
+        "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-cvhr-secondary-20260518t2113z-sfm-processing-tags.json",
+        "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-md1-viscell-full-l06-1779150311-processing-tags.json",
+        "logs/md1-r0v5relax-retry1-training-processing-hold-1352fbfc-20260519T005245Z-md1-viscell-full-l07-1779151432-processing-tags.json"
+      ]
+    },
+    "paid_compute_launched": false,
+    "next_required_action": "wait for all training, processing, and relevant Step Functions idle before paid retry; no quota increase needed"
   }
 }
