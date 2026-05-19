@@ -1,0 +1,4 @@
+2026-05-19 16:49:11  104128001 3dgs/cvhr-mtc-secondary-20260518t2113z/cvhr-mtc-secondary-20260518t2113z-3dgs/output/model.tar.gz
+
+Total Objects: 1
+   Total Size: 104128001
