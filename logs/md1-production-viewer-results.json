@@ -11,7 +11,7 @@
         "lodLevels": null,
         "chunkFiles": 0,
         "chunkMetaRequests": 0,
-        "firstFrameMs": 4215.700000047684,
+        "firstFrameMs": 6183.599999904633,
         "lodMin": 0,
         "lodMax": 3
       },
@@ -20,11 +20,11 @@
         "height": 960,
         "sampled": 38400,
         "visibleRatio": 1,
-        "brightRatio": 0.8644791666666667,
+        "brightRatio": 0.8645052083333333,
         "darkRatio": 0,
-        "meanLuma": 172.3884841562494,
-        "lumaStdDev": 68.07778337000099,
-        "meanColorSpread": 27.382447916666667
+        "meanLuma": 172.38957991666618,
+        "lumaStdDev": 68.0807551336414,
+        "meanColorSpread": 27.380208333333332
       },
       "modelVisualStats": {
         "width": 920,
@@ -37,7 +37,7 @@
         "lumaStdDev": 48.99407583865189,
         "meanColorSpread": 22.83695652173913
       },
-      "chunkMetaResponses": 3,
+      "chunkMetaResponses": 2,
       "screenshotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-production-viewer-desktop.png",
       "modelScreenshotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-production-viewer-desktop-model.png"
     },
@@ -51,7 +51,7 @@
         "lodLevels": null,
         "chunkFiles": 0,
         "chunkMetaRequests": 0,
-        "firstFrameMs": 4583.699999928474,
+        "firstFrameMs": 6586.300000071526,
         "lodMin": 2,
         "lodMax": 3
       },
@@ -60,11 +60,11 @@
         "height": 896,
         "sampled": 92736,
         "visibleRatio": 1,
-        "brightRatio": 0.6310062974465148,
+        "brightRatio": 0.6310278640441684,
         "darkRatio": 0,
-        "meanLuma": 124.35543813190021,
-        "lumaStdDev": 66.89048957459781,
-        "meanColorSpread": 21.999751984126984
+        "meanLuma": 124.35612680296649,
+        "lumaStdDev": 66.89681082131514,
+        "meanColorSpread": 21.99159981021394
       },
       "modelVisualStats": {
         "width": 1,
@@ -77,7 +77,7 @@
         "lumaStdDev": 36.47116250079637,
         "meanColorSpread": 25.662946428571427
       },
-      "chunkMetaResponses": 2,
+      "chunkMetaResponses": 3,
       "screenshotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-production-viewer-mobile.png",
       "modelScreenshotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-production-viewer-mobile-model.png"
     },
@@ -91,7 +91,7 @@
         "lodLevels": null,
         "chunkFiles": 0,
         "chunkMetaRequests": 0,
-        "firstFrameMs": 4439.600000023842,
+        "firstFrameMs": 2458.600000023842,
         "lodMin": 0,
         "lodMax": 3
       },
@@ -100,11 +100,11 @@
         "height": 960,
         "sampled": 38400,
         "visibleRatio": 0.7819010416666666,
-        "brightRatio": 0.37940104166666666,
+        "brightRatio": 0.3793229166666667,
         "darkRatio": 0.20270833333333332,
-        "meanLuma": 72.20682403125024,
-        "lumaStdDev": 62.88438801093326,
-        "meanColorSpread": 21.502109375
+        "meanLuma": 72.1905723697919,
+        "lumaStdDev": 62.87532846218897,
+        "meanColorSpread": 21.499244791666666
       },
       "modelVisualStats": {
         "width": 920,
@@ -117,7 +117,7 @@
         "lumaStdDev": 66.57658157226747,
         "meanColorSpread": 17.283571105072465
       },
-      "chunkMetaResponses": 3,
+      "chunkMetaResponses": 2,
       "screenshotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-production-viewer-desktop-nosky.png",
       "modelScreenshotPath": "/Users/gabrielhansen/MD1-Baseline/logs/md1-production-viewer-desktop-nosky-model.png"
     }

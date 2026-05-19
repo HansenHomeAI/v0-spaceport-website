@@ -661,6 +661,8 @@ export default function Md1ProductionViewer() {
           <a href={MD1_V18_SAMPLED_INSPECTION_URL}>sampled PLY</a>
         </p>
 
+          </>
+        )}
         <div
           data-testid="md1-bundle-metrics"
           className="md1-hidden-metrics"
@@ -681,8 +683,6 @@ export default function Md1ProductionViewer() {
           data-bounds-min={bundleSummary?.bounds ? bundleSummary.bounds.min.join(",") : ""}
           data-bounds-max={bundleSummary?.bounds ? bundleSummary.bounds.max.join(",") : ""}
         />
-          </>
-        )}
       </aside>
     </main>
   );

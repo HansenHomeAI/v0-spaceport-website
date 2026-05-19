@@ -7821,3 +7821,41 @@ skybox, compression, artifact handoff, and visual gates.
   - Stage a narrow commit with the viewer/harness fixes and concise evidence.
   - Bump `web/trigger-dev-build.txt`, push, watch exact-head Pages/CDK workflows.
   - Re-run the public bundle smoke and side-by-side visual gate against the exact deployed preview URL, with skybox and no-sky modes.
+
+## 2026-05-19T04:30Z exact-head deploy gate and collapsed telemetry fix
+
+- Pushed viewer/harness commit:
+  - branch/head: `agent-113647-md1-baseline-e2e` / `13fdcfa56823474500e62d973089e9d6639aa5f3`
+  - commit: `fix: harden md1 shrunk viewer verification`
+- Exact-head workflows:
+  - `CDK Deploy` run `26074919486` for `13fdcfa56823474500e62d973089e9d6639aa5f3` succeeded.
+  - `Deploy Next.js to Cloudflare Pages` run `26074919465` for `13fdcfa56823474500e62d973089e9d6639aa5f3` succeeded.
+  - resolved preview alias: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+  - resolved hash URL: `https://0472e255.v0-spaceport-website-preview2.pages.dev`
+  - evidence: `logs/md1-shrunk/gh-run-log-pages-26074919465-20260519T0412Z.txt`
+- Deployed public-bundle smoke against preview alias:
+  - command:
+    - `cd web && MD1_VIEWER_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev MD1_LOD_URL=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json MD1_EXPECT_ROOT_FILE=meta.json MD1_RUN_NO_SKY=1 node scripts/test-md1-production-viewer.mjs`
+  - result: passed desktop, mobile, and no-sky.
+  - first-frame times: desktop `6183.6ms`, mobile `6586.3ms`, desktop no-sky `2458.6ms`.
+  - evidence: `logs/md1-shrunk/md1-prodspine-wlight-public-deployed-viewer-smoke-20260519T0415Z.log`, `logs/md1-production-viewer-results.json`, `logs/md1-production-viewer-desktop.png`, `logs/md1-production-viewer-mobile.png`.
+- Deployed camera-pose render with `panel=collapsed` exposed a real verification bug:
+  - the collapse button worked, but hidden telemetry (`data-testid="md1-bundle-metrics"`) was rendered inside the collapsible content and disappeared when the panel was collapsed.
+  - `scripts/render-md1-camera-check.mjs` timed out waiting for telemetry before it could prove the side-by-side render.
+  - this was a viewer instrumentation regression, not an ML-job or bundle failure.
+- Patch applied:
+  - moved hidden telemetry outside the collapsible controls block while keeping it inside the panel component.
+  - bumped `web/trigger-dev-build.txt` for a follow-up Pages deploy.
+- Local validation after patch:
+  - `node --check web/scripts/render-md1-camera-check.mjs` passed.
+  - `node --check web/scripts/test-md1-production-viewer.mjs` passed.
+  - `PATH=/Users/gabrielhansen/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:/opt/homebrew/bin:$PATH npm run build` passed.
+  - restarted local dev server on `http://127.0.0.1:3033` after the prior server served stale chunks.
+  - collapsed-panel camera render passed against the public MD1-Shrunk bundle:
+    - `cd web && MD1_VIEWER_URL=http://127.0.0.1:3033 MD1_BUNDLE_URL=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json MD1_SKYBOX=background_skybox.webp MD1_CAM_POS=0.550350,0.535033,-0.032677 MD1_CAM_TARGET=0.810371,0.661083,-0.113302 MD1_CAM_UP=0.228003,0.145459,0.962734 MD1_COLLAPSE_PANEL=1 MD1_OUT=../logs/md1-shrunk/render-local-collapse-telemetry-regression-20260519T0430Z.png node scripts/render-md1-camera-check.mjs`
+  - local render metrics: `bundleKind=single`, `rootFile=meta.json`, `sourceUrl=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`, `firstFrameMs=3758.3`, `hasGsplat=true`.
+  - evidence: `logs/md1-shrunk/npm-build-collapse-telemetry-20260519T0425Z.log`, `logs/md1-shrunk/render-local-collapse-telemetry-regression-20260519T0430Z.log`, `logs/md1-shrunk/render-local-collapse-telemetry-regression-20260519T0430Z.png`.
+- Next:
+  - Commit/push the telemetry fix.
+  - Watch exact-head `CDK Deploy` and Pages workflows for the new head.
+  - Re-run deployed preview public-bundle smoke and deployed side-by-side camera render with `panel=collapsed`, skybox, and no-sky.
