@@ -1,0 +1,66 @@
+2026-05-19 00:33:15,043 - INFO - 📝 Override model.sh_degree = 3 (from SH_DEGREE)
+2026-05-19 00:33:15,043 - INFO - 📝 Override model.bilateral_processing = False (from BILATERAL_PROCESSING)
+2026-05-19 00:33:15,043 - INFO - 📝 Override model.variant = splatfacto-w-light (from MODEL_VARIANT)
+2026-05-19 00:33:15,044 - INFO - 📝 Override model.rasterize_mode = classic (from RASTERIZE_MODE)
+2026-05-19 00:33:15,044 - INFO - 📝 Override model.use_scale_regularization = True (from USE_SCALE_REGULARIZATION)
+2026-05-19 00:33:15,044 - INFO - 📝 Override model.cull_alpha_thresh = 0.12 (from CULL_ALPHA_THRESH)
+2026-05-19 00:33:15,044 - INFO - 📝 Override model.cull_scale_thresh = 0.35 (from CULL_SCALE_THRESH)
+2026-05-19 00:33:15,044 - INFO - 📝 Override model.enable_bg_model = True (from ENABLE_BG_MODEL)
+2026-05-19 00:33:15,044 - INFO - 📝 Override model.enable_alpha_loss = True (from ENABLE_ALPHA_LOSS)
+2026-05-19 00:33:15,044 - INFO - 📝 Override model.enable_robust_mask = True (from ENABLE_ROBUST_MASK)
+2026-05-19 00:33:15,044 - INFO - 📝 Override model.bg_sh_degree = 8 (from BG_SH_DEGREE)
+2026-05-19 00:33:15,044 - INFO - 📝 Override model.appearance_embed_dim = 64 (from APPEARANCE_EMBED_DIM)
+2026-05-19 00:33:15,044 - INFO - 📝 Override model.never_mask_upper = 0.4 (from NEVER_MASK_UPPER)
+2026-05-19 00:33:15,044 - INFO - 📝 Override output.background_skybox.appearance_mode = auto_camera (from BACKGROUND_APPEARANCE_MODE)
+2026-05-19 00:33:15,044 - INFO - 📝 Override output.background_skybox.width = 2048 (from BACKGROUND_SKYBOX_WIDTH)
+2026-05-19 00:33:15,044 - INFO - 📝 Override output.background_skybox.height = 1024 (from BACKGROUND_SKYBOX_HEIGHT)
+2026-05-19 00:33:15,044 - INFO - 📝 Override output.background_skybox.quality = 95 (from BACKGROUND_SKYBOX_QUALITY)
+2026-05-19 00:33:15,044 - INFO - 📝 Override output.background_skybox.selection_stride = 5 (from BACKGROUND_SELECTION_STRIDE)
+2026-05-19 00:33:15,044 - INFO - 📝 Override output.background_skybox.selection_max_frames = 32 (from BACKGROUND_SELECTION_MAX_FRAMES)
+2026-05-19 00:33:15,044 - INFO - 📝 Override output.floater_pruning.enabled = True (from FLOATER_PRUNING_ENABLED)
+2026-05-19 00:33:15,044 - INFO - 📝 Override output.floater_pruning.min_views = 6 (from FLOATER_PRUNING_MIN_VIEWS)
+2026-05-19 00:33:15,045 - INFO - 📝 Override output.floater_pruning.top_region_ratio = 0.35 (from FLOATER_PRUNING_TOP_REGION_RATIO)
+2026-05-19 00:33:15,045 - INFO - 📝 Override output.floater_pruning.top_view_fraction = 0.9 (from FLOATER_PRUNING_TOP_VIEW_FRACTION)
+2026-05-19 00:33:15,045 - INFO - 📝 Override output.floater_pruning.min_sky_views = 2 (from FLOATER_PRUNING_MIN_SKY_VIEWS)
+2026-05-19 00:33:15,045 - INFO - 📝 Override output.floater_pruning.sky_min_luminance = 0.3 (from FLOATER_PRUNING_SKY_MIN_LUMINANCE)
+2026-05-19 00:33:15,045 - INFO - 📝 Override output.floater_pruning.sky_min_saturation = 0.08 (from FLOATER_PRUNING_SKY_MIN_SATURATION)
+2026-05-19 00:33:15,045 - INFO - 📝 Override output.floater_pruning.sky_blue_dominance_margin = 0.02 (from FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN)
+2026-05-19 00:33:15,045 - INFO - 📝 Override output.floater_pruning.max_opacity = 0.75 (from FLOATER_PRUNING_MAX_OPACITY)
+2026-05-19 00:33:15,045 - INFO - 📝 Override output.floater_pruning.max_color_distance = 0.18 (from FLOATER_PRUNING_MAX_COLOR_DISTANCE)
+2026-05-19 00:33:15,045 - INFO - 📝 Override output.floater_pruning.min_edge_support = 1 (from FLOATER_PRUNING_MIN_EDGE_SUPPORT)
+2026-05-19 00:33:15,045 - INFO - 🚀 NerfStudio Trainer initialized (Spaceport splatfacto-w-light)
+2026-05-19 00:33:15,045 - INFO - 🔍 Validating COLMAP data format for NerfStudio...
+2026-05-19 00:33:15,870 - INFO - 📊 COLMAP Data Validation:
+2026-05-19 00:33:15,870 - INFO -    Cameras: 1
+2026-05-19 00:33:15,870 - INFO -    Images registered: 1456
+2026-05-19 00:33:15,870 - INFO -    Image files: 1456
+2026-05-19 00:33:15,870 - INFO -    3D points: 954351
+2026-05-19 00:33:16,459 - INFO - ✅ COLMAP data validation passed - converting to NerfStudio format
+2026-05-19 00:33:16,460 - INFO - 🔄 Converting COLMAP TXT to BIN (required by ns-process-data)...
+2026-05-19 00:33:27,564 - INFO - 📊 BINARY FILE VERIFICATION:
+2026-05-19 00:33:27,564 - INFO -    ✅ cameras.bin: 64 bytes
+2026-05-19 00:33:27,564 - INFO -    ✅ images.bin: 367205405 bytes
+2026-05-19 00:33:27,564 - INFO -    ✅ points3D.bin: 98543117 bytes
+2026-05-19 00:33:27,564 - INFO - ✅ COLMAP TXT→BIN conversion completed successfully
+2026-05-19 00:33:27,564 - INFO -    ns-process-data images --data /opt/ml/input/data/training/images --output-dir /tmp/nerfstudio_training/converted_data --skip-colmap --colmap-model-path /tmp/nerfstudio_training/colmap_bin/0
+2026-05-19 00:36:21,262 - INFO - 📊 ns-process-data STDOUT:
+2026-05-19 00:36:21,263 - INFO -    STDOUT:            Starting with 1456 images                                                 images_to_nerfstudio_dataset.py:138
+2026-05-19 00:36:21,263 - INFO -    STDOUT:            Colmap matched 1456 images                                                images_to_nerfstudio_dataset.py:138
+2026-05-19 00:36:21,263 - INFO -    STDOUT:            COLMAP found poses for all images, CONGRATS!                              images_to_nerfstudio_dataset.py:138
+2026-05-19 00:36:21,263 - INFO - 📊 ns-process-data STDERR:
+2026-05-19 00:36:21,356 - INFO - 📄 transforms.json file size: 1287684 bytes
+2026-05-19 00:36:21,357 - INFO -    Total frames: 1456
+2026-05-19 00:36:21,358 - INFO -    Total frames: 1456
+2026-05-19 00:36:21,358 - INFO - ✅ transforms.json validation passed
+2026-05-19 00:36:21,361 - INFO - 🔥 Starting NerfStudio training (splatfacto-w-light)
+2026-05-19 00:36:21,362 - INFO - 🎯 Training Configuration:
+2026-05-19 00:36:21,362 - INFO -    Model: splatfacto-w-light
+2026-05-19 00:36:21,362 - INFO -    Max iterations: 30000
+2026-05-19 00:36:21,362 - INFO -    Background model: True
+2026-05-19 00:36:21,362 - INFO -    Alpha loss: True
+2026-05-19 00:36:21,362 - INFO -    Robust sky masking: True
+2026-05-19 00:36:21,362 - INFO -    Dataparser: transforms.json (via ns-process-data conversion)
+2026-05-19 00:36:21,362 - INFO - 🚀 Executing NerfStudio training command:
+2026-05-19 00:36:21,363 - INFO -    ns-train splatfacto-w-light --data /tmp/nerfstudio_training/converted_data --output-dir /tmp/nerfstudio_training --vis tensorboard --max_num_iterations 30000 --pipeline.model.sh_degree 3 --logging.steps_per_log 100 --pipeline.model.rasterize_mode classic --pipeline.model.use_scale_regularization True --pipeline.model.cull_alpha_thresh 0.12 --pipeline.model.cull_scale_thresh 0.35 --pipeline.model.enable_bg_model True --pipeline.model.enable_alpha_loss True --pipeline.model.enable_robust_mask True --pipeline.model.bg_sh_degree 8 --pipeline.model.appearance_embed_dim 64 --pipeline.model.never_mask_upper 0.4 --pipeline.model.max-gauss-ratio 10.0
+2026-05-19 00:36:21,363 - INFO - ⏱️  Training timeout: 14400 seconds
+2026-05-19 00:36:21,363 - INFO - 🐍 PYTHONPATH for ns-train: /opt/ml/code:/opt/ml/code:

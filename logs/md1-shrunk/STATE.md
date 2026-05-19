@@ -7615,3 +7615,56 @@ skybox, compression, artifact handoff, and visual gates.
   - `logs/md1-shrunk/stepfunctions-describe-execution-md1-shrunk-prodspine-wlight-202605190027-20260519T0028Z.json`
   - `logs/md1-shrunk/stepfunctions-history-reverse-tail-md1-shrunk-prodspine-wlight-202605190027-20260519T0028Z.json`
   - `logs/md1-shrunk/sagemaker-describe-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0028Z.json`
+
+## 2026-05-19T00:37Z in-chat 3DGS startup gate
+
+- Current canonical downstream execution:
+  - Step Functions execution: `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-br-8abcbd5662:execution-md1-shrunk-prodspine-wlight-202605190027`
+  - training job: `md1-shrunk-prodspine-wlight-202605190027-3dgs`
+  - status at `20260519T0036Z`: `TrainingJobStatus=InProgress`, `SecondaryStatus=Training`, `FailureReason=null`.
+  - `TrainingStartTime=2026-05-18T18:29:04.860000-06:00`.
+  - latest transition: `Training image download completed. Training in progress.` at `2026-05-18T18:33:12.437000-06:00`.
+- CloudWatch startup gate passed:
+  - log stream: `md1-shrunk-prodspine-wlight-202605190027-3dgs/algo-1-1779150544`
+  - model overrides applied:
+    - `model.variant=splatfacto-w-light`
+    - `model.enable_bg_model=True`
+    - `model.enable_alpha_loss=True`
+    - `model.enable_robust_mask=True`
+    - `model.bg_sh_degree=8`
+    - `output.background_skybox.appearance_mode=auto_camera`
+    - `output.background_skybox.width=2048`
+    - `output.background_skybox.height=1024`
+    - `output.floater_pruning.enabled=True`
+  - COLMAP validation:
+    - cameras: `1`
+    - registered images: `1456`
+    - image files: `1456`
+    - 3D points: `954351`
+  - COLMAP TXT-to-BIN conversion completed:
+    - `cameras.bin: 64 bytes`
+    - `images.bin: 367205405 bytes`
+    - `points3D.bin: 98543117 bytes`
+  - `ns-process-data` completed:
+    - `Starting with 1456 images`
+    - `Colmap matched 1456 images`
+    - `COLMAP found poses for all images`
+  - `transforms.json` validation passed:
+    - file size: `1287684` bytes
+    - total frames: `1456`
+  - accepted training command is running:
+    - `ns-train splatfacto-w-light --data /tmp/nerfstudio_training/converted_data --output-dir /tmp/nerfstudio_training --vis tensorboard --max_num_iterations 30000 --pipeline.model.sh_degree 3 --logging.steps_per_log 100 --pipeline.model.rasterize_mode classic --pipeline.model.use_scale_regularization True --pipeline.model.cull_alpha_thresh 0.12 --pipeline.model.cull_scale_thresh 0.35 --pipeline.model.enable_bg_model True --pipeline.model.enable_alpha_loss True --pipeline.model.enable_robust_mask True --pipeline.model.bg_sh_degree 8 --pipeline.model.appearance_embed_dim 64 --pipeline.model.never_mask_upper 0.4 --pipeline.model.max-gauss-ratio 10.0`
+  - training timeout: `14400 seconds`.
+- S3 output:
+  - `s3://spaceport-ml-processing-staging/3dgs/md1-shrunk-prodspine-wlight-202605190027/` remained empty at `20260519T0032Z`, expected until SageMaker EndOfJob model upload.
+- Decision:
+  - Continue passive monitoring. The trainer captures subprocess output, so iteration progress may not stream until `ns-train` exits. Use SageMaker status as live gate; inspect logs periodically for failure/OOM/timeout.
+- Evidence:
+  - `logs/md1-shrunk/sagemaker-describe-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0031Z.json`
+  - `logs/md1-shrunk/cloudwatch-stream-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0032Z.json`
+  - `logs/md1-shrunk/s3-3dgs-md1-shrunk-prodspine-wlight-202605190027-20260519T0032Z.txt`
+  - `logs/md1-shrunk/stepfunctions-describe-execution-md1-shrunk-prodspine-wlight-202605190027-20260519T0032Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0036Z.json`
+  - `logs/md1-shrunk/cloudwatch-stream-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0036Z.json`
+  - `logs/md1-shrunk/cloudwatch-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0037Z.json`
+  - `logs/md1-shrunk/cloudwatch-training-summary-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0037Z.txt`
