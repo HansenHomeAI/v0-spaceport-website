@@ -62,3 +62,4 @@
 [2026-05-19T21:50Z] md1-shrunk: pushed 4df1a40c; CDK Deploy 26127221994 success; Pages unchanged (logs-only follow-up [skip ci]) -> idle
 [2026-05-19T22:07Z] md1-shrunk: heartbeat verify 20260519T220745Z -> strict camera-suite PASS (pose max_delta=0.0) + edge publish report PASS + Step Functions RUNNING=0 -> idle
 [2026-05-19T22:17Z] md1-shrunk: pushed b3dface9 + 20e1f834 (logs-only; [skip ci]); no new workflows; last Pages=26111270702 CDK=26127221994 -> idle
+[2026-05-19T22:17Z] md1-shrunk: pushed 26ae31a3 (postpush snapshot; [skip ci]); no new workflows -> idle
