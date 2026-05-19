@@ -7682,3 +7682,21 @@ skybox, compression, artifact handoff, and visual gates.
 - Evidence:
   - `logs/md1-shrunk/sagemaker-describe-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0039Z.json`
   - `logs/md1-shrunk/sagemaker-describe-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0049Z.json`
+
+## 2026-05-19T01:29Z in-chat 3DGS heartbeat
+
+- Current canonical downstream execution:
+  - Step Functions execution: `arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-br-8abcbd5662:execution-md1-shrunk-prodspine-wlight-202605190027`
+  - training job: `md1-shrunk-prodspine-wlight-202605190027-3dgs`
+- SageMaker status:
+  - `20260519T0059Z`: `TrainingJobStatus=InProgress`, `SecondaryStatus=Training`, `TrainingTimeInSeconds=1839`, `FailureReason=null`.
+  - `20260519T0109Z`: `TrainingJobStatus=InProgress`, `SecondaryStatus=Training`, `TrainingTimeInSeconds=2440`, `FailureReason=null`.
+  - `20260519T0119Z`: `TrainingJobStatus=InProgress`, `SecondaryStatus=Training`, `TrainingTimeInSeconds=3041`, `FailureReason=null`.
+  - `20260519T0129Z`: `TrainingJobStatus=InProgress`, `SecondaryStatus=Training`, `TrainingTimeInSeconds=3642`, `FailureReason=null`.
+- Decision:
+  - Continue low-churn polling. No failure, OOM, timeout, or duplicate job is visible.
+- Evidence:
+  - `logs/md1-shrunk/sagemaker-describe-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0059Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0109Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0119Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-training-md1-shrunk-prodspine-wlight-202605190027-3dgs-20260519T0129Z.json`
