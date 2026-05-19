@@ -42,3 +42,4 @@
 [2026-05-19T14:29:06Z] md1-shrunk: hardened edge publish validation (Origin CORS + all meta.json assets) and verified bundle headers/coverage -> next: commit/push + watch exact-head CI
 [2026-05-19T14:43:16Z] md1-shrunk: pushed 0ac17e86 (edge CORS+asset validation) + 67e00242 (Pages trigger); exact-head Pages 26104135660 + CDK 26104135709 green; PREVIEW_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev
 [2026-05-19T15:08Z] md1-shrunk: added camera_pose_mismatch gate + HTML report for camera-suite; unit tests pass; oneshot DJI_02500 decision=warning (nosky horizon_black_band) -> next: commit/push + watch CI
+[2026-05-19T15:23Z] md1-shrunk: pushed 56498cf3 + d0020517; exact-head Pages 26106566140 + CDK 26106566149 green; PREVIEW_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev -> next: commit CI proof logs

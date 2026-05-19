@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-19T15:08:20Z
+updated: 2026-05-19T15:23:55Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -8088,3 +8088,20 @@ skybox, compression, artifact handoff, and visual gates.
   - decision: `warning` (no-sky `horizon_black_band`)
   - suite summary: `logs/md1-shrunk/polls/20260519T150556Z-camera-suite/suite-summary.json`
   - browser report: `logs/md1-shrunk/polls/20260519T150556Z-camera-suite/report.html`
+
+## 2026-05-19T15:23Z exact-head CI proof (Pages + CDK)
+
+- Commit/push:
+  - `feat: add md1-shrunk camera suite html report` -> `56498cf3`
+    - exact-head `CDK Deploy` run `26106278926` -> success (Pages not triggered):
+      - `logs/md1-shrunk/polls/20260519T151040Z-ci/gh-run-watch-cdk-26106278926.txt`
+  - `chore: trigger pages deploy` -> `d0020517`
+- GitHub workflows (exact-head `d0020517...`):
+  - `Deploy Next.js to Cloudflare Pages` run `26106566140` -> success
+  - `CDK Deploy` run `26106566149` -> success
+  - PREVIEW_URL extract:
+    - `logs/md1-shrunk/polls/20260519T151534Z-ci/pages-preview-url.txt`
+    - `PREVIEW_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+  - evidence:
+    - `logs/md1-shrunk/polls/20260519T151534Z-ci/gh-run-watch-pages-26106566140.txt`
+    - `logs/md1-shrunk/polls/20260519T151534Z-ci/gh-run-watch-cdk-26106566149.txt`
