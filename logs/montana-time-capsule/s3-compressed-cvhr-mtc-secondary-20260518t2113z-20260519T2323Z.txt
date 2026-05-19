@@ -1,0 +1,25 @@
+2026-05-19 17:14:06    1381786 compressed/cvhr-mtc-secondary-20260518t2113z/compressed_splat/means_l.webp
+2026-05-19 17:14:06     790530 compressed/cvhr-mtc-secondary-20260518t2113z/compressed_splat/means_u.webp
+2026-05-19 17:14:06       1377 compressed/cvhr-mtc-secondary-20260518t2113z/compressed_splat/meta.json
+2026-05-19 17:14:06    1487400 compressed/cvhr-mtc-secondary-20260518t2113z/compressed_splat/quats.webp
+2026-05-19 17:14:06     800432 compressed/cvhr-mtc-secondary-20260518t2113z/compressed_splat/scales.webp
+2026-05-19 17:14:06    1164844 compressed/cvhr-mtc-secondary-20260518t2113z/compressed_splat/sh0.webp
+2026-05-19 17:14:06    1049256 compressed/cvhr-mtc-secondary-20260518t2113z/compressed_splat/shN_centroids.webp
+2026-05-19 17:14:06     913238 compressed/cvhr-mtc-secondary-20260518t2113z/compressed_splat/shN_labels.webp
+2026-05-19 17:14:06       2312 compressed/cvhr-mtc-secondary-20260518t2113z/sogs_compression_summary.json
+2026-05-19 17:14:06        975 compressed/cvhr-mtc-secondary-20260518t2113z/supersplat_bundle/background_manifest.json
+2026-05-19 17:14:06      55144 compressed/cvhr-mtc-secondary-20260518t2113z/supersplat_bundle/background_skybox.webp
+2026-05-19 17:14:06        948 compressed/cvhr-mtc-secondary-20260518t2113z/supersplat_bundle/export_manifest.json
+2026-05-19 17:14:06    1381786 compressed/cvhr-mtc-secondary-20260518t2113z/supersplat_bundle/means_l.webp
+2026-05-19 17:14:06     790530 compressed/cvhr-mtc-secondary-20260518t2113z/supersplat_bundle/means_u.webp
+2026-05-19 17:14:06       1377 compressed/cvhr-mtc-secondary-20260518t2113z/supersplat_bundle/meta.json
+2026-05-19 17:14:06    1487400 compressed/cvhr-mtc-secondary-20260518t2113z/supersplat_bundle/quats.webp
+2026-05-19 17:14:06     800432 compressed/cvhr-mtc-secondary-20260518t2113z/supersplat_bundle/scales.webp
+2026-05-19 17:14:06        242 compressed/cvhr-mtc-secondary-20260518t2113z/supersplat_bundle/settings.json
+2026-05-19 17:14:06    1164844 compressed/cvhr-mtc-secondary-20260518t2113z/supersplat_bundle/sh0.webp
+2026-05-19 17:14:06    1049256 compressed/cvhr-mtc-secondary-20260518t2113z/supersplat_bundle/shN_centroids.webp
+2026-05-19 17:14:06     913238 compressed/cvhr-mtc-secondary-20260518t2113z/supersplat_bundle/shN_labels.webp
+2026-05-19 17:14:06       1488 compressed/cvhr-mtc-secondary-20260518t2113z/supersplat_bundle/training_metadata.json
+
+Total Objects: 22
+   Total Size: 15238835

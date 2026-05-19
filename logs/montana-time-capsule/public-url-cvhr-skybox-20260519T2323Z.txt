@@ -1,0 +1,1 @@
+https://spaceport-ml-processing-staging.s3.amazonaws.com/compressed/cvhr-mtc-secondary-20260518t2113z/supersplat_bundle/background_skybox.webp

@@ -615,6 +615,77 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/gh-run-list-exact-head-20260518T2242Z.json`
 - Next unblocked step: continue monitoring canonical `cvhr-mtc-20260518T1729Z-sfm` to terminal. If it completes, run `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip --launch` exactly once to start pinned Montana 3DGS. Keep recording the non-canonical secondary job but do not stop it unless clearly proven orphaned.
 
+## 2026-05-19T23:23Z Compression Complete, Hosted Viewer Verified
+
+- Branch/head/status command:
+  - `git branch --show-current && git rev-parse HEAD && git status --short && git status --branch --short`
+  - Result before this pass: branch `agent-40136728-montana-time-capsule`, head `4659864d4478963a49d4e4fc922d4ab687efff99`; local status had only current heartbeat evidence files plus `logs/montana-time-capsule/cv-hr-state.json`.
+- AWS identity command:
+  - `aws sts get-caller-identity --output json`
+  - Result: account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+- Pinned Montana compression status command:
+  - `aws sagemaker describe-processing-job --processing-job-name cvhr-mtc-secondary-20260518t2113z-compression --output json`
+  - Result: `ProcessingJobStatus=Completed`, `ProcessingStartTime=2026-05-19T17:05:49.683000-06:00`, `ProcessingEndTime=2026-05-19T17:14:10.174000-06:00`, no `FailureReason`, no `ExitMessage`.
+  - Image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab`.
+  - Input: `s3://spaceport-ml-processing-staging/3dgs/cvhr-mtc-secondary-20260518t2113z/cvhr-mtc-secondary-20260518t2113z-3dgs/output/model.tar.gz`.
+  - Output: `s3://spaceport-ml-processing-staging/compressed/cvhr-mtc-secondary-20260518t2113z/`.
+- Compression output listing:
+  - `aws s3 ls s3://spaceport-ml-processing-staging/compressed/cvhr-mtc-secondary-20260518t2113z/ --recursive --summarize`
+  - Result: `22` objects, `15,238,835` bytes, including `supersplat_bundle/meta.json`, seven WebP SOGS files, `background_skybox.webp`, `background_manifest.json`, `export_manifest.json`, and `training_metadata.json`.
+  - SOGS metadata: `461041` gaussians in `meta.json`; original PLY `109.3503 MB`, compressed SOGS payload `7.2373 MB`, compression ratio `15.109x`.
+  - Skybox metadata: `background_skybox.webp`, `2048x1024`, selected from `/tmp/nerfstudio_training/converted_data/images/frame_01660.JPG`, score `0.7296118806998818`.
+- Guarded runner advancement command:
+  - `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip --launch`
+  - Result: no duplicate job launched; state advanced to `status=completed`, `last_action=completed`, `sfm_status=Completed`, `3dgs_status=Completed`, `compression_status=Completed`.
+  - Final bundle state: `s3://spaceport-ml-processing-staging/compressed/cvhr-mtc-secondary-20260518t2113z/supersplat_bundle/meta.json`.
+- Direct public S3 reachability:
+  - Direct staging URLs for `meta.json` and `background_skybox.webp` returned HTTP `400` because this bucket/object path requires signed SigV4/KMS access.
+  - Non-staging public URLs returned HTTP `403`.
+  - Resolution: hosted viewer uses `/api/sogs-proxy` on the branch preview, which signs the allowed staging S3 origin.
+- Hosted proxy reachability:
+  - `curl -fsS https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.us-west-2.amazonaws.com/compressed/cvhr-mtc-secondary-20260518t2113z/supersplat_bundle/meta.json`
+  - Result: HTTP `200`, `meta.json` loaded with `means.shape=[461041,3]`.
+  - `background_skybox.webp` through the same hosted proxy returned HTTP `200` and decoded as WebP `2048x1024`.
+- Hosted Pages deploy:
+  - Command: `gh workflow run deploy-cloudflare-pages.yml --ref agent-40136728-montana-time-capsule`
+  - Run: `https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26131478855`
+  - Result: success for exact head `4659864d4478963a49d4e4fc922d4ab687efff99`.
+  - Preview alias: `https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev`.
+  - Hash URL: `https://2e89a848.v0-spaceport-website-preview2.pages.dev`.
+- Hosted viewer verification:
+  - Skybox URL: `https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.us-west-2.amazonaws.com%2Fcompressed%2Fcvhr-mtc-secondary-20260518t2113z%2Fsupersplat_bundle%2Fmeta.json&skybox=background_skybox.webp`
+  - No-sky URL: `https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.us-west-2.amazonaws.com%2Fcompressed%2Fcvhr-mtc-secondary-20260518t2113z%2Fsupersplat_bundle%2Fmeta.json&skybox=off`
+  - Skybox smoke command: `cd web && SOGS_MIGRATED_URL=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev SOGS_BUNDLE_URL=https://spaceport-ml-processing-staging.s3.us-west-2.amazonaws.com/compressed/cvhr-mtc-secondary-20260518t2113z/supersplat_bundle/meta.json SOGS_SKYBOX_OVERRIDE=background_skybox.webp SOGS_EXPECT_SKYBOX_SUBSTRING=background_skybox.webp SOGS_EXPECT_BUNDLED_SKYBOX=1 node scripts/test-sogs-migrated-viewer.mjs`
+  - Skybox result: passed; iframe rendered visible content (`1280x800`, `bright=1014142`, `alpha=1024000`), camera finite, bundled skybox proxy request returned HTTP `200`.
+  - No-sky smoke command: `cd web && SOGS_MIGRATED_URL=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev SOGS_BUNDLE_URL=https://spaceport-ml-processing-staging.s3.us-west-2.amazonaws.com/compressed/cvhr-mtc-secondary-20260518t2113z/supersplat_bundle/meta.json SOGS_DISABLE_SKYBOX=1 SOGS_EXPECT_SKYBOX_SUBSTRING=background_skybox.webp node scripts/test-sogs-migrated-viewer.mjs`
+  - No-sky result: passed; iframe rendered visible content (`1280x800`, `bright=975370`, `alpha=1024000`) and made no `background_skybox.webp` request.
+  - Visual proof screenshots:
+    - `logs/montana-time-capsule/cvhr-hosted-sogs-skybox-smoke-20260519T2323Z.png`
+    - `logs/montana-time-capsule/cvhr-hosted-sogs-nosky-smoke-20260519T2323Z.png`
+- Active CV-HR SageMaker sweep after completion:
+  - `aws sagemaker list-training-jobs --status-equals InProgress --name-contains cvhr --max-results 20`: no active CV-HR training jobs.
+  - `aws sagemaker list-processing-jobs --status-equals InProgress --name-contains cvhr --max-results 20`: only unrelated `cvhr-viscell-full-l09-1779233441` and `cvhr-viscell-full-l08-1779230706` remained active; no action taken because they are not owned by this automation.
+- Evidence files:
+  - `logs/montana-time-capsule/aws-sts-20260519T2323Z.json`
+  - `logs/montana-time-capsule/sagemaker-describe-cvhr-mtc-secondary-20260518t2113z-compression-20260519T2323Z.json`
+  - `logs/montana-time-capsule/sagemaker-describe-cvhr-mtc-secondary-20260518t2113z-compression-summary-20260519T2337Z.json`
+  - `logs/montana-time-capsule/cloudwatch-tail-cvhr-mtc-secondary-20260518t2113z-compression-20260519T2323Z.log`
+  - `logs/montana-time-capsule/s3-compressed-cvhr-mtc-secondary-20260518t2113z-20260519T2323Z.txt`
+  - `logs/montana-time-capsule/runner-status-compression-complete-20260519T2323Z.log`
+  - `logs/montana-time-capsule/cvhr-super-splat-meta-20260519T2323Z.json`
+  - `logs/montana-time-capsule/cvhr-sogs-compression-summary-20260519T2323Z.json`
+  - `logs/montana-time-capsule/cvhr-background-manifest-20260519T2323Z.json`
+  - `logs/montana-time-capsule/cvhr-training-metadata-20260519T2323Z.json`
+  - `logs/montana-time-capsule/pages-deploy-26131478855-20260519T2323Z.log`
+  - `logs/montana-time-capsule/gh-run-list-exact-head-20260519T2323Z-postdeploy.json`
+  - `logs/montana-time-capsule/cvhr-hosted-sogs-skybox-smoke-20260519T2323Z.log`
+  - `logs/montana-time-capsule/cvhr-hosted-sogs-skybox-smoke-20260519T2323Z.png`
+  - `logs/montana-time-capsule/cvhr-hosted-sogs-nosky-smoke-20260519T2323Z.log`
+  - `logs/montana-time-capsule/cvhr-hosted-sogs-nosky-smoke-20260519T2323Z.png`
+  - `logs/montana-time-capsule/hosted-proxy-head-cvhr-meta-20260519T2323Z.headers`
+  - `logs/montana-time-capsule/hosted-proxy-head-cvhr-skybox-20260519T2323Z.headers`
+- Current status: CV-HR Montana time capsule SfM, 3DGS, compression, hosted proxy reachability, and hosted skybox/no-sky viewer verification are complete for run `cvhr-mtc-secondary-20260518t2113z`.
+
 ## 2026-05-19T18:03Z Heartbeat Monitor Pass
 
 - Branch/head/status command:
@@ -3115,3 +3186,25 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/gh-run-list-agent-40136728-20260519T0029Z.json`
   - `logs/montana-time-capsule/gh-run-list-exact-head-20260519T0029Z.json`
 - Next unblocked step: continue monitoring canonical `cvhr-mtc-20260518T1729Z-sfm` to terminal. If it completes, run `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip --launch` exactly once to start pinned Montana 3DGS. Keep recording the non-canonical secondary job but do not stop it unless clearly proven orphaned.
+
+## 2026-05-19T23:40Z Current Final State
+
+- Current canonical completed run: `cvhr-mtc-secondary-20260518t2113z`.
+- Final state file: `logs/montana-time-capsule/cv-hr-state.json` reports `status=completed`, `last_action=completed`, `sfm_status=Completed`, `3dgs_status=Completed`, and `compression_status=Completed`.
+- Final hosted viewer with skybox:
+  - `https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.us-west-2.amazonaws.com%2Fcompressed%2Fcvhr-mtc-secondary-20260518t2113z%2Fsupersplat_bundle%2Fmeta.json&skybox=background_skybox.webp`
+- Final hosted viewer without skybox:
+  - `https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.us-west-2.amazonaws.com%2Fcompressed%2Fcvhr-mtc-secondary-20260518t2113z%2Fsupersplat_bundle%2Fmeta.json&skybox=off`
+- Branch Pages deploy proof: run `26131478855` succeeded for exact head `4659864d4478963a49d4e4fc922d4ab687efff99`; preview alias `https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev`, hash URL `https://2e89a848.v0-spaceport-website-preview2.pages.dev`.
+- Hosted viewer proof:
+  - Skybox smoke passed with finite camera, visible render (`1280x800`, `bright=1014142`, `alpha=1024000`), and HTTP `200` bundled skybox proxy request. Screenshot: `logs/montana-time-capsule/cvhr-hosted-sogs-skybox-smoke-20260519T2323Z.png`.
+  - No-sky smoke passed with finite camera, visible render (`1280x800`, `bright=975370`, `alpha=1024000`), and no `background_skybox.webp` request. Screenshot: `logs/montana-time-capsule/cvhr-hosted-sogs-nosky-smoke-20260519T2323Z.png`.
+- Artifact facts:
+  - Bundle: `s3://spaceport-ml-processing-staging/compressed/cvhr-mtc-secondary-20260518t2113z/supersplat_bundle/meta.json`.
+  - SOGS `meta.json`: `461041` gaussians.
+  - Compression: source PLY `109.3503 MB`, compressed payload `7.2373 MB`, ratio `15.109x`.
+  - Skybox: `background_skybox.webp`, `2048x1024`.
+- Active CV-HR SageMaker state at final sweep:
+  - No active CV-HR training jobs owned by this automation.
+  - Only unrelated active processing jobs matched `cvhr`: `cvhr-viscell-full-l09-1779233441` and `cvhr-viscell-full-l08-1779230706`; no action taken.
+- Detailed evidence is in the `2026-05-19T23:23Z Compression Complete, Hosted Viewer Verified` section above and in the `logs/montana-time-capsule/*20260519T2323Z*` artifacts.

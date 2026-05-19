@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Error><Code>InvalidArgument</Code><Message>Requests specifying Server Side Encryption with AWS KMS managed keys require AWS Signature Version 4.</Message><ArgumentName>Authorization</ArgumentName><RequestId>0VWWKY4NVDNN8KQ6</RequestId><HostId>0i2JXZ8YGmo5LmUTtkKwDCaJTEq59P0bZ5euWPGwGHQ+gJGFLmuX4buNbCe1qouFEi7ry8MmoSk=</HostId></Error>

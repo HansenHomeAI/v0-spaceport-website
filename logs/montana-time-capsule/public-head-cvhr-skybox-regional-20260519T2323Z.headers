@@ -1,0 +1,9 @@
+HTTP/1.1 400 Bad Request
+x-amz-request-id: 0VWPYFPXCF6A7SMQ
+x-amz-id-2: BS2LCV3NnYjuiGEaXRmGE3wDxKhHggEaKdrcD4Z/IWgL3gXuKNsovbIqAQyRmJ9yFwsu/oxl5eM=
+x-amz-region: us-west-2
+Content-Type: application/xml
+Transfer-Encoding: chunked
+Date: Tue, 19 May 2026 23:25:46 GMT
+Connection: close
+Server: AmazonS3
