@@ -7455,3 +7455,50 @@ skybox, compression, artifact handoff, and visual gates.
   - `logs/md1-shrunk/sagemaker-list-processing-inprogress-20260519T0001Z.json`
   - `logs/md1-shrunk/sagemaker-list-training-inprogress-20260519T0001Z.json`
   - `logs/md1-shrunk/gh-runs-agent-113647-20260519T0001Z.json`
+
+## 2026-05-19T00:07Z in-chat automation poll
+
+- Verification before poll:
+  - branch: `agent-113647-md1-baseline-e2e`
+  - head: `e8beb6c2f8b7efe31d666a7cc6e783c2e6f3828b`
+  - AWS identity captured for account `975050048887`.
+  - Step Functions `SpaceportMLPipeline-staging` RUNNING executions: `0`.
+  - InProgress training jobs: `0`.
+  - InProgress processing jobs include canonical `md1-shrunk-prodspine-sfm-1779128752` plus external `md1-viscell-full-l05-1779147527`, `md1-viscell-full-l04-1779146968`, `cvhr-secondary-20260518t2113z-sfm`, and `cvhr-mtc-20260518T1729Z-sfm`; external jobs remain untouched.
+  - current head is a logs-only `[skip ci]` commit; latest meaningful non-skipped workflow proof remains `CDK Deploy` run `26052859100` for `1900964d7d3601733e6cb9d587a3128717749336`.
+- Canonical SfM status:
+  - job: `md1-shrunk-prodspine-sfm-1779128752`
+  - SageMaker describe still reported `ProcessingJobStatus=InProgress`, `FailureReason=null`, but CloudWatch and S3 show successful output completion/upload.
+  - CloudWatch reports `SPACEPORT COLMAP GPU SfM COMPLETED SUCCESSFULLY`, completed at `Tue May 19 00:04:29 UTC 2026`.
+- COLMAP output validation from CloudWatch:
+  - `COLMAP format validation passed`
+  - cameras registered: `1`
+  - images registered: `1456`
+  - images copied for 3DGS: `1456`
+  - 3D points: `954351`
+  - processing time: `20098.88 seconds`
+  - GPS priors detected: `1456`
+  - match profile: `P1`
+  - sequential matcher enabled: `False`
+  - fallback reason: `not_needed`
+  - vocab tree candidates: `40`
+  - SIFT max features: `8192`
+- S3 handoff validation:
+  - prefix: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-sfm-20260518T1826Z/colmap`
+  - `Total Objects: 1469`
+  - `Total Size: 9.3 GiB`
+  - required trainable COLMAP handoff is present: `database.db`, `sfm_metadata.json`, `images/`, `sparse/0/cameras.txt`, `sparse/0/images.txt`, `sparse/0/points3D.txt`, `sparse/0/frames.txt`, `sparse/0/rigs.txt`, and matching `sparse_raw/0/...` files.
+  - key sizes: `database.db` `2.2 GiB`, `sparse/0/images.txt` `583.7 MiB`, `sparse/0/points3D.txt` `143.3 MiB`.
+- Decision:
+  - Wait one more short poll for SageMaker terminal `Completed` before launching downstream, even though CloudWatch/S3 are green, to avoid racing SageMaker's final state.
+- Evidence:
+  - `logs/md1-shrunk/git-status-20260519T0007Z.txt`
+  - `logs/md1-shrunk/git-head-20260519T0007Z.txt`
+  - `logs/md1-shrunk/aws-identity-20260519T0007Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260519T0007Z.json`
+  - `logs/md1-shrunk/cloudwatch-recent-md1-shrunk-prodspine-sfm-1779128752-20260519T0007Z.json`
+  - `logs/md1-shrunk/s3-colmap-md1-shrunk-prodspine-sfm-20260518T1826Z-20260519T0007Z.txt`
+  - `logs/md1-shrunk/stepfunctions-running-20260519T0007Z.json`
+  - `logs/md1-shrunk/sagemaker-list-processing-inprogress-20260519T0007Z.json`
+  - `logs/md1-shrunk/sagemaker-list-training-inprogress-20260519T0007Z.json`
+  - `logs/md1-shrunk/gh-runs-agent-113647-20260519T0007Z.json`
