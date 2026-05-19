@@ -1,0 +1,160 @@
+2026-05-19T15:44:13 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:13.313583  8007 feature_matching.cc:217] in 0.050s
+2026-05-19T15:44:13 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:13.313638  8007 pairing.cc:328] Processing image [41/177]
+2026-05-19T15:44:13 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:13.360167  8007 feature_matching.cc:217] in 0.047s
+2026-05-19T15:44:13 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:13.360219  8007 pairing.cc:328] Processing image [42/177]
+2026-05-19T15:44:14 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:13.424683  8007 feature_matching.cc:217] in 0.065s
+2026-05-19T15:44:14 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:13.424738  8007 pairing.cc:328] Processing image [43/177]
+2026-05-19T15:44:14 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:13.492570  8007 feature_matching.cc:217] in 0.068s
+2026-05-19T15:44:14 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:13.492626  8007 pairing.cc:328] Processing image [44/177]
+2026-05-19T15:44:14 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:13.567090  8007 feature_matching.cc:217] in 0.075s
+2026-05-19T15:44:14 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:13.567147  8007 pairing.cc:328] Processing image [45/177]
+2026-05-19T15:44:14 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:13.701558  8007 feature_matching.cc:217] in 0.134s
+2026-05-19T15:44:14 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:13.701614  8007 pairing.cc:328] Processing image [46/177]
+2026-05-19T15:44:14 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:14.144466  8007 feature_matching.cc:217] in 0.443s
+2026-05-19T15:44:14 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:14.144852  8007 pairing.cc:328] Processing image [47/177]
+2026-05-19T15:44:14 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:14.145056  8007 feature_matching.cc:217] in 0.000s
+2026-05-19T15:44:14 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:14.145073  8007 pairing.cc:328] Processing image [48/177]
+2026-05-19T15:44:14 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:14.149160  8007 feature_matching.cc:217] in 0.004s
+2026-05-19T15:44:14 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:14.149204  8007 pairing.cc:328] Processing image [49/177]
+2026-05-19T15:44:15 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:15.382772  8007 feature_matching.cc:217] in 1.234s
+2026-05-19T15:44:15 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:15.382838  8007 pairing.cc:328] Processing image [50/177]
+2026-05-19T15:44:16 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:16.077986  8007 feature_matching.cc:217] in 0.695s
+2026-05-19T15:44:16 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:16.078051  8007 pairing.cc:328] Processing image [51/177]
+2026-05-19T15:44:16 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:16.220710  8007 feature_matching.cc:217] in 0.143s
+2026-05-19T15:44:16 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:16.220772  8007 pairing.cc:328] Processing image [52/177]
+2026-05-19T15:44:16 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:16.383826  8007 feature_matching.cc:217] in 0.163s
+2026-05-19T15:44:16 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:16.383888  8007 pairing.cc:328] Processing image [53/177]
+2026-05-19T15:44:17 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:16.509778  8007 feature_matching.cc:217] in 0.126s
+2026-05-19T15:44:17 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:16.509841  8007 pairing.cc:328] Processing image [54/177]
+2026-05-19T15:44:17 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:16.646763  8007 feature_matching.cc:217] in 0.137s
+2026-05-19T15:44:17 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:16.646829  8007 pairing.cc:328] Processing image [55/177]
+2026-05-19T15:44:17 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:16.912283  8007 feature_matching.cc:217] in 0.265s
+2026-05-19T15:44:17 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:16.912353  8007 pairing.cc:328] Processing image [56/177]
+2026-05-19T15:44:17 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:17.427850  8007 feature_matching.cc:217] in 0.516s
+2026-05-19T15:44:17 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:17.427924  8007 pairing.cc:328] Processing image [57/177]
+2026-05-19T15:44:18 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:17.594601  8007 feature_matching.cc:217] in 0.167s
+2026-05-19T15:44:18 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:17.594699  8007 pairing.cc:328] Processing image [58/177]
+2026-05-19T15:44:18 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:18.051630  8007 feature_matching.cc:217] in 0.457s
+2026-05-19T15:44:18 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:18.051702  8007 pairing.cc:328] Processing image [59/177]
+2026-05-19T15:44:18 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:18.138505  8007 feature_matching.cc:217] in 0.087s
+2026-05-19T15:44:18 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:18.138568  8007 pairing.cc:328] Processing image [60/177]
+2026-05-19T15:44:18 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:18.320943  8007 feature_matching.cc:217] in 0.182s
+2026-05-19T15:44:18 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:18.321000  8007 pairing.cc:328] Processing image [61/177]
+2026-05-19T15:44:21 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:21.073216  8007 feature_matching.cc:217] in 2.752s
+2026-05-19T15:44:21 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:21.073264  8007 pairing.cc:328] Processing image [62/177]
+2026-05-19T15:44:22 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:22.218751  8007 feature_matching.cc:217] in 1.146s
+2026-05-19T15:44:22 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:22.218801  8007 pairing.cc:328] Processing image [63/177]
+2026-05-19T15:44:22 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:22.289796  8007 feature_matching.cc:217] in 0.071s
+2026-05-19T15:44:22 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:22.289855  8007 pairing.cc:328] Processing image [64/177]
+2026-05-19T15:44:23 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:22.887243  8007 feature_matching.cc:217] in 0.597s
+2026-05-19T15:44:23 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:22.887315  8007 pairing.cc:328] Processing image [65/177]
+2026-05-19T15:44:24 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:23.499975  8007 feature_matching.cc:217] in 0.613s
+2026-05-19T15:44:24 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:23.500029  8007 pairing.cc:328] Processing image [66/177]
+2026-05-19T15:44:24 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:23.889645  8007 feature_matching.cc:217] in 0.390s
+2026-05-19T15:44:24 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:23.889699  8007 pairing.cc:328] Processing image [67/177]
+2026-05-19T15:44:25 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:24.553821  8007 feature_matching.cc:217] in 0.664s
+2026-05-19T15:44:25 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:24.553889  8007 pairing.cc:328] Processing image [68/177]
+2026-05-19T15:44:25 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:25.059662  8007 feature_matching.cc:217] in 0.506s
+2026-05-19T15:44:25 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:25.059725  8007 pairing.cc:328] Processing image [69/177]
+2026-05-19T15:44:26 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:25.559171  8007 feature_matching.cc:217] in 0.499s
+2026-05-19T15:44:26 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:25.559223  8007 pairing.cc:328] Processing image [70/177]
+2026-05-19T15:44:26 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:26.071050  8007 feature_matching.cc:217] in 0.512s
+2026-05-19T15:44:26 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:26.071105  8007 pairing.cc:328] Processing image [71/177]
+2026-05-19T15:44:27 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:26.488601  8007 feature_matching.cc:217] in 0.418s
+2026-05-19T15:44:27 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:26.488668  8007 pairing.cc:328] Processing image [72/177]
+2026-05-19T15:44:27 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:27.071432  8007 feature_matching.cc:217] in 0.583s
+2026-05-19T15:44:27 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:27.071502  8007 pairing.cc:328] Processing image [73/177]
+2026-05-19T15:44:28 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:27.567165  8007 feature_matching.cc:217] in 0.496s
+2026-05-19T15:44:28 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:27.567221  8007 pairing.cc:328] Processing image [74/177]
+2026-05-19T15:44:28 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:28.097294  8007 feature_matching.cc:217] in 0.530s
+2026-05-19T15:44:28 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:28.097348  8007 pairing.cc:328] Processing image [75/177]
+2026-05-19T15:44:29 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:28.453447  8007 feature_matching.cc:217] in 0.356s
+2026-05-19T15:44:29 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:28.453498  8007 pairing.cc:328] Processing image [76/177]
+2026-05-19T15:44:29 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:29.020048  8007 feature_matching.cc:217] in 0.567s
+2026-05-19T15:44:29 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:29.020143  8007 pairing.cc:328] Processing image [77/177]
+2026-05-19T15:44:30 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:29.653236  8007 feature_matching.cc:217] in 0.633s
+2026-05-19T15:44:30 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:29.653291  8007 pairing.cc:328] Processing image [78/177]
+2026-05-19T15:44:31 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:30.427165  8007 feature_matching.cc:217] in 0.774s
+2026-05-19T15:44:31 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:30.427215  8007 pairing.cc:328] Processing image [79/177]
+2026-05-19T15:44:31 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:30.476451  8007 feature_matching.cc:217] in 0.049s
+2026-05-19T15:44:31 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:30.476503  8007 pairing.cc:328] Processing image [80/177]
+2026-05-19T15:44:31 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:30.476984  8007 feature_matching.cc:217] in 0.001s
+2026-05-19T15:44:31 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:30.477016  8007 pairing.cc:328] Processing image [81/177]
+2026-05-19T15:44:31 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:30.577306  8007 feature_matching.cc:217] in 0.100s
+2026-05-19T15:44:31 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:30.577374  8007 pairing.cc:328] Processing image [82/177]
+2026-05-19T15:44:31 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:30.577549  8007 feature_matching.cc:217] in 0.000s
+2026-05-19T15:44:31 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:30.577569  8007 pairing.cc:328] Processing image [83/177]
+2026-05-19T15:44:31 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:30.577742  8007 feature_matching.cc:217] in 0.000s
+2026-05-19T15:44:31 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:30.577764  8007 pairing.cc:328] Processing image [84/177]
+2026-05-19T15:44:31 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:30.715034  8007 feature_matching.cc:217] in 0.137s
+2026-05-19T15:44:31 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:30.715090  8007 pairing.cc:328] Processing image [85/177]
+2026-05-19T15:44:31 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:30.715283  8007 feature_matching.cc:217] in 0.000s
+2026-05-19T15:44:31 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:30.715296  8007 pairing.cc:328] Processing image [86/177]
+2026-05-19T15:44:31 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:30.764986  8007 feature_matching.cc:217] in 0.050s
+2026-05-19T15:44:31 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:30.765029  8007 pairing.cc:328] Processing image [87/177]
+2026-05-19T15:44:32 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:31.843608  8007 feature_matching.cc:217] in 1.079s
+2026-05-19T15:44:32 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:31.843672  8007 pairing.cc:328] Processing image [88/177]
+2026-05-19T15:44:32 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:31.983655  8007 feature_matching.cc:217] in 0.140s
+2026-05-19T15:44:32 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:31.983717  8007 pairing.cc:328] Processing image [89/177]
+2026-05-19T15:44:32 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:32.096716  8007 feature_matching.cc:217] in 0.113s
+2026-05-19T15:44:32 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:32.096776  8007 pairing.cc:328] Processing image [90/177]
+2026-05-19T15:44:32 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:32.199658  8007 feature_matching.cc:217] in 0.103s
+2026-05-19T15:44:32 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:32.199715  8007 pairing.cc:328] Processing image [91/177]
+2026-05-19T15:44:33 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:32.778503  8007 feature_matching.cc:217] in 0.579s
+2026-05-19T15:44:33 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:32.778578  8007 pairing.cc:328] Processing image [92/177]
+2026-05-19T15:44:33 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:32.858785  8007 feature_matching.cc:217] in 0.080s
+2026-05-19T15:44:33 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:32.858844  8007 pairing.cc:328] Processing image [93/177]
+2026-05-19T15:44:33 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:32.950274  8007 feature_matching.cc:217] in 0.091s
+2026-05-19T15:44:33 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:32.950335  8007 pairing.cc:328] Processing image [94/177]
+2026-05-19T15:44:33 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:33.166189  8007 feature_matching.cc:217] in 0.216s
+2026-05-19T15:44:33 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:33.166251  8007 pairing.cc:328] Processing image [95/177]
+2026-05-19T15:44:34 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:33.696913  8007 feature_matching.cc:217] in 0.531s
+2026-05-19T15:44:34 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:33.696978  8007 pairing.cc:328] Processing image [96/177]
+2026-05-19T15:44:35 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:34.949041  8007 feature_matching.cc:217] in 1.252s
+2026-05-19T15:44:35 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:34.949105  8007 pairing.cc:328] Processing image [97/177]
+2026-05-19T15:44:35 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:34.949293  8007 feature_matching.cc:217] in 0.000s
+2026-05-19T15:44:35 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:34.949311  8007 pairing.cc:328] Processing image [98/177]
+2026-05-19T15:44:35 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:34.960582  8007 feature_matching.cc:217] in 0.011s
+2026-05-19T15:44:35 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:34.960631  8007 pairing.cc:328] Processing image [99/177]
+2026-05-19T15:44:38 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:37.588677  8007 feature_matching.cc:217] in 2.628s
+2026-05-19T15:44:38 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:37.588742  8007 pairing.cc:328] Processing image [100/177]
+2026-05-19T15:44:38 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:37.710064  8007 feature_matching.cc:217] in 0.121s
+2026-05-19T15:44:38 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:37.710125  8007 pairing.cc:328] Processing image [101/177]
+2026-05-19T15:44:39 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:38.791002  8007 feature_matching.cc:217] in 1.081s
+2026-05-19T15:44:39 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:38.791056  8007 pairing.cc:328] Processing image [102/177]
+2026-05-19T15:44:39 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:38.858070  8007 feature_matching.cc:217] in 0.067s
+2026-05-19T15:44:39 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:38.858129  8007 pairing.cc:328] Processing image [103/177]
+2026-05-19T15:44:39 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:39.042464  8007 feature_matching.cc:217] in 0.184s
+2026-05-19T15:44:39 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:39.042532  8007 pairing.cc:328] Processing image [104/177]
+2026-05-19T15:44:40 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:39.110005  8007 feature_matching.cc:217] in 0.068s
+2026-05-19T15:44:40 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:39.110062  8007 pairing.cc:328] Processing image [105/177]
+2026-05-19T15:44:40 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:39.305146  8007 feature_matching.cc:217] in 0.195s
+2026-05-19T15:44:40 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:39.305209  8007 pairing.cc:328] Processing image [106/177]
+2026-05-19T15:44:40 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:39.890703  8007 feature_matching.cc:217] in 0.586s
+2026-05-19T15:44:40 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:39.890758  8007 pairing.cc:328] Processing image [107/177]
+2026-05-19T15:44:42 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:41.215360  8007 feature_matching.cc:217] in 1.325s
+2026-05-19T15:44:42 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:41.215430  8007 pairing.cc:328] Processing image [108/177]
+2026-05-19T15:44:43 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:42.313398  8007 feature_matching.cc:217] in 1.098s
+2026-05-19T15:44:43 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:42.313449  8007 pairing.cc:328] Processing image [109/177]
+2026-05-19T15:44:43 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:43.008687  8007 feature_matching.cc:217] in 0.695s
+2026-05-19T15:44:43 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:43.008741  8007 pairing.cc:328] Processing image [110/177]
+2026-05-19T15:44:44 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:43.811193  8007 feature_matching.cc:217] in 0.802s
+2026-05-19T15:44:44 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:43.811250  8007 pairing.cc:328] Processing image [111/177]
+2026-05-19T15:44:46 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:45.323271  8007 feature_matching.cc:217] in 1.512s
+2026-05-19T15:44:46 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:45.323318  8007 pairing.cc:328] Processing image [112/177]
+2026-05-19T15:44:46 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:45.573859  8007 feature_matching.cc:217] in 0.251s
+2026-05-19T15:44:46 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:45.573910  8007 pairing.cc:328] Processing image [113/177]
+2026-05-19T15:44:46 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:45.609112  8007 feature_matching.cc:217] in 0.035s
+2026-05-19T15:44:46 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:45.609174  8007 pairing.cc:328] Processing image [114/177]
+2026-05-19T15:44:47 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:46.221438  8007 feature_matching.cc:217] in 0.612s
+2026-05-19T15:44:47 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:46.221509  8007 pairing.cc:328] Processing image [115/177]
+2026-05-19T15:44:47 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:46.221889  8007 feature_matching.cc:217] in 0.000s
+2026-05-19T15:44:47 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:46.221939  8007 pairing.cc:328] Processing image [116/177]
+2026-05-19T15:44:48 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:47.946977  8007 feature_matching.cc:217] in 1.725s
+2026-05-19T15:44:48 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:47.947027  8007 pairing.cc:328] Processing image [117/177]
+2026-05-19T15:44:49 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:48.587225  8007 feature_matching.cc:217] in 0.640s
+2026-05-19T15:44:49 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:48.587280  8007 pairing.cc:328] Processing image [118/177]
+2026-05-19T15:44:49 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:49.083487  8007 feature_matching.cc:217] in 0.496s
+2026-05-19T15:44:49 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:49.083554  8007 pairing.cc:328] Processing image [119/177]
+2026-05-19T15:44:49 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:49.110589  8007 feature_matching.cc:217] in 0.027s
+2026-05-19T15:44:49 COLMAP[chunk_05_vocab_tree_matcher_recovery] I20260519 15:44:49.110646  8007 pairing.cc:328] Processing image [120/177]
