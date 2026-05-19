@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-19T00:01:00Z
+updated: 2026-05-19T05:58:21Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -7904,3 +7904,69 @@ skybox, compression, artifact handoff, and visual gates.
   - Add explicit sky/horizon acceptance criteria so no-sky artifacts cannot hide behind a skybox.
   - Wire the public-delivery copy step so compressed artifacts are delivered browser-readable without manual AES256 sync.
   - Convert the derived camera-pose transform into a reusable verifier rather than a one-off notebook-style derivation.
+
+## 2026-05-19T05:58:00Z - Multi-camera readiness gate hardened (frames.txt + CI proof)
+
+- Branch/head:
+  - branch: `agent-113647-md1-baseline-e2e`
+  - HEAD: `090cd434c5ad1bded1eb8c6d8515b94a45e67784` (`chore: trigger pages deploy`)
+  - prior: `1da3fa14c1bcb4d6df3ae4fde3d296b795fefe54` (`fix: harden md1-shrunk multi-camera suite`)
+- AWS identity / active jobs:
+  - `aws sts get-caller-identity` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+  - Step Functions `SpaceportMLPipeline-staging` RUNNING: `0`.
+  - SageMaker processing InProgress (not owned by this md1-shrunk run): `md1-viscell-full-l17-1779168816`, `md1-viscell-full-l16-1779167589`.
+- Camera suite code hardening:
+  - `scripts/sfm/derive_viewer_camera_poses_from_colmap.py` now supports S3 `frames.txt` inputs by preserving the downloaded leaf name (prevents the prior "every-other-line" skip + bogus `name=1` bug).
+  - `scripts/sfm/run_md1_shrunk_camera_suite.py` now passes `--image-names-s3-prefix` when given `frames.txt`, records failures into `suite-summary.json`, and emits pose-name lists.
+  - `scripts/publish_ml_bundle_to_edge.py` adds a `--require-browser-headers` option for browser-readable delivery checks.
+- Multi-camera input-vs-render gate run (6 poses, skybox + no-sky):
+  - command:
+    - `python3 scripts/sfm/run_md1_shrunk_camera_suite.py --viewer-url https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev --job-id md1-shrunk-prodspine-wlight-202605190027 --compressed-output-s3-uri s3://spaceport-ml-processing-staging/compressed/md1-shrunk-prodspine-wlight-202605190027/ --colmap-images-txt s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-sfm-20260518T1826Z/colmap/sparse/0/frames.txt --colmap-images-s3-prefix s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-sfm-20260518T1826Z/colmap/images --sample-count 6`
+  - result: `decision=warning` (no failures; warnings flag horizon instability + minor edge-retention softness).
+  - evidence: `logs/md1-shrunk/polls/20260519T053824Z-camera-suite/suite-summary.json`
+- Exact-head workflows (Pages + CDK):
+  - `CDK Deploy` run `26078897888` for `090cd434c5ad1bded1eb8c6d8515b94a45e67784` succeeded.
+  - `Deploy Next.js to Cloudflare Pages` run `26078897872` for `090cd434c5ad1bded1eb8c6d8515b94a45e67784` succeeded.
+  - PREVIEW_URL evidence (same run): `logs/md1-shrunk/polls/20260519T054912Z-ci/pages-preview-url.txt`
+
+## 2026-05-19T05:56Z production-readiness hardening (multi-camera suite + sky/horizon gates)
+
+- Branch/head/status:
+  - `git branch --show-current` -> `agent-113647-md1-baseline-e2e`
+  - `git rev-parse HEAD` -> `090cd434c5ad1bded1eb8c6d8515b94a45e67784` (`chore: trigger pages deploy`)
+  - `git status --porcelain=v1` -> clean (only new poll artifacts under `logs/`)
+- AWS identity (read-only; no launches/stops):
+  - `aws sts get-caller-identity --output json` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`
+- Active pipeline state (cost-bounded):
+  - Step Functions RUNNING executions on `SpaceportMLPipeline-staging`: `0`
+  - Step Functions RUNNING executions on `SpaceportMLPipeline-br-8abcbd5662`: `0`
+  - SageMaker processing InProgress: external `md1-viscell-full-*` only; left untouched
+- Browser-readable public delivery automation:
+  - edge bundle URL (meta.json):
+    - `https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+  - headers proof (Content-Type + immutable cache-control):
+    - `logs/md1-shrunk/polls/20260519T051911Z-camera-suite/publish-edge.curl-head.txt`
+  - automation entrypoint:
+    - `python3 scripts/publish_ml_bundle_to_edge.py --function-name Spaceport-MLPublishBundle-brc908ce627c --job-id md1-shrunk-prodspine-wlight-202605190027 --compressed-output-s3-uri s3://spaceport-ml-processing-staging/compressed/md1-shrunk-prodspine-wlight-202605190027/ --output <path> --validate-http`
+    - note: uses `aws lambda invoke --cli-binary-format raw-in-base64-out` (fixes base64 payload errors)
+- Reusable camera-pose verification:
+  - derive poses from COLMAP `images.txt`:
+    - `python3 scripts/sfm/derive_viewer_camera_poses_from_colmap.py --images-txt s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-sfm-20260518T1826Z/colmap/sparse/0/images.txt --output <path> --sample-count N`
+  - suite runner (multi-camera input-vs-render + gates):
+    - `python3 scripts/sfm/run_md1_shrunk_camera_suite.py --viewer-url https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev --bundle-url https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json --job-id md1-shrunk-prodspine-wlight-202605190027 --compressed-output-s3-uri s3://spaceport-ml-processing-staging/compressed/md1-shrunk-prodspine-wlight-202605190027/ --colmap-images-txt s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-sfm-20260518T1826Z/colmap/sparse/0/images.txt --colmap-images-s3-prefix s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-sfm-20260518T1826Z/colmap/images --sample-count 1 --strict`
+- Explicit sky/horizon artifact gates:
+  - implemented via `scripts/sfm/diagnose_heldout_panels.py` over side-by-side panels (input | render)
+  - MD1 no-sky background tuned via:
+    - `web/public/supersplat-lod-viewer/settings-nosky.json`
+    - selected when `skybox=none` (MD1 viewer switches settings file automatically)
+- Acceptance gate status:
+  - multi-camera suite PASS (skybox + no-sky):
+    - `logs/md1-shrunk/polls/20260519T054523Z-camera-suite/suite-summary.json`
+    - sample panel (DJI_02500):
+      - skybox: `logs/md1-shrunk/polls/20260519T054523Z-camera-suite/panels/skybox/panel-skybox-DJI_02500.png`
+      - no-sky: `logs/md1-shrunk/polls/20260519T054523Z-camera-suite/panels/nosky/panel-nosky-DJI_02500.png`
+- GitHub workflows (exact-head):
+  - `CDK Deploy` + `Deploy Next.js to Cloudflare Pages` green for head `090cd434`:
+    - `logs/md1-shrunk/polls/20260519T054912Z-ci/gh-run-watch-cdk-26078897888.txt`
+    - `logs/md1-shrunk/polls/20260519T054912Z-ci/gh-run-watch-pages-26078897872.txt`
+    - preview URL proof: `logs/md1-shrunk/polls/20260519T054912Z-ci/preview-url.txt`
