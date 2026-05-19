@@ -1,5 +1,9 @@
 timestamp_utc=20260519T173532Z
-head=161c5a47f052dafd150880bac97c5164be5cc4c0
+preflight_head=161c5a47f052dafd150880bac97c5164be5cc4c0
+heartbeat_commit=6d9ff6aea1e635f48e8949ca3cf55fb159dcece6
+
+exact-head runs:
+(none; this commit includes [skip ci])
 
 recent:
 completed	success	feat: harden md1-shrunk camera suite baselines	CDK Deploy	agent-113647-md1-baseline-e2e	push	26111270602	3m56s	2026-05-19T16:38:50Z

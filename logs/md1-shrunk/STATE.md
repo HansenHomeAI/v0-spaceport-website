@@ -8249,3 +8249,5 @@ skybox, compression, artifact handoff, and visual gates.
   - edge meta.json: `https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
 - GitHub Actions (exact-head): no new runs (this heartbeat is logs-only + `[skip ci]`); last green remains `c3f52d2e...`:
   - `logs/md1-shrunk/polls/20260519T173532Z-ci/summary.txt`
+- Commit/push:
+  - `chore: record md1-shrunk heartbeat verification [skip ci]` -> `6d9ff6ae`
