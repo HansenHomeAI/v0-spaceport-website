@@ -1,0 +1,29 @@
+{
+  "failure_reason": null,
+  "inprogress_processing_jobs": [
+    "md1-viscell-full-l18-1779170653",
+    "md1-viscell-full-l17-1779168816"
+  ],
+  "inprogress_training_jobs": [],
+  "latest_cloudwatch_line": "2026-05-18T23:31:39.156000+00:00 COLMAP[vocab_tree_builder] I20260518 23:31:38.931711  8398 vocab_tree.cc:94] Building index for visual words...",
+  "latest_workflows": [
+    {
+      "conclusion": "success",
+      "createdAt": "2026-05-18T21:15:08Z",
+      "databaseId": 26060892234,
+      "headSha": "0b60d8bf9e7e4355bd46001dcd61387b327a8e5a",
+      "status": "completed",
+      "workflowName": "CDK Deploy"
+    }
+  ],
+  "log_streams": [
+    "cvhr-secondary-20260518t2113z-sfm/algo-1-1779139231"
+  ],
+  "processing_end_time": "None",
+  "processing_job": "cvhr-secondary-20260518t2113z-sfm",
+  "processing_start_time": "2026-05-18T15:20:32.428000-06:00",
+  "processing_status": "InProgress",
+  "running_stepfunctions": [],
+  "secondary_s3_total_objects_zero": true,
+  "timestamp": "2026-05-19T06:05:00Z"
+}
