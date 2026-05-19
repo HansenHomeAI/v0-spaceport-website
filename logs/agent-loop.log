@@ -25,3 +25,4 @@
 [2026-05-19T00:22Z] md1-shrunk: canonical sfm 1779128752 direct S3 validation green (1456 images, required COLMAP files, metadata quality_check_passed=true) but SageMaker still InProgress through 00:22Z -> next: passive poll terminal status before 3DGS
 [2026-05-19T00:28Z] md1-shrunk: sfm 1779128752 terminal Completed; launched exactly one br8abc 3DGS continuation md1-shrunk-prodspine-wlight-202605190027-3dgs on ml.g5.4xlarge with skybox/robust-mask payload -> next: monitor training startup
 [2026-05-19T00:37Z] md1-shrunk: 3DGS startup gate passed (COLMAP 1456/1456, ns-process-data matched 1456, transforms 1456 frames, ns-train splatfacto-w-light accepted with bg/alpha/robust mask) -> next: long poll training status
+[2026-05-19T00:49Z] md1-shrunk: 3DGS training heartbeat healthy (InProgress/Training, 1238s, failure=null) -> next: continue low-churn status poll
