@@ -1127,6 +1127,52 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/gh-run-list-exact-head-20260519T2103Z.json`
 - Next unblocked step: continue monitoring `cvhr-mtc-secondary-20260518t2113z-3dgs` through terminal state. Do not rerun the launcher while this job exists. On success, run the runner once with `--launch` to start pinned Montana compression; on failure, capture exact SageMaker describe, CloudWatch tail, and S3 output before patching.
 
+## 2026-05-19T21:23Z Heartbeat Monitor Pass
+
+- Branch/head/status command:
+  - `git branch --show-current`, `git rev-parse HEAD`, `git status --short --branch`
+  - Result: branch `agent-40136728-montana-time-capsule`, head `de0a23b3d12afd1ea202645d95a2b4485d887f17`; status only showed current-pass evidence after the AWS identity capture (`?? logs/montana-time-capsule/aws-sts-20260519T2123Z.json`) before this monitor pass added new evidence files.
+- AWS identity command:
+  - `aws sts get-caller-identity`
+  - Result: account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+- Current canonical 3DGS status command:
+  - `aws sagemaker describe-training-job --training-job-name cvhr-mtc-secondary-20260518t2113z-3dgs`
+  - Result: `TrainingJobStatus=InProgress`, no `FailureReason`; `TrainingStartTime=2026-05-19T13:29:17.980000-06:00`, `TrainingTimeInSeconds=6890`; active phase remains `Training`.
+  - Pinned image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db`.
+  - Input: `s3://spaceport-ml-processing-staging/manual-validations/cvhr-secondary-20260518t2113z/colmap`.
+  - Output: `s3://spaceport-ml-processing-staging/3dgs/cvhr-mtc-secondary-20260518t2113z/`.
+- CV-HR active SageMaker sweep:
+  - `aws sagemaker list-training-jobs --name-contains cvhr --status-equals InProgress --max-results 100`
+  - Result: two active CV-HR training jobs:
+    - canonical time-capsule job `cvhr-mtc-secondary-20260518t2113z-3dgs` (`InProgress`)
+    - separate non-mtc job `cvhr-secondary-20260518t2113z-3dgs` (`InProgress`, same input/pinned image, output `s3://spaceport-ml-processing-staging/3dgs/cvhr-secondary-20260518t2113z/`); action taken: none.
+  - `aws sagemaker list-processing-jobs --name-contains cvhr --status-equals InProgress --max-results 100`
+  - Result: only unrelated viscell processing jobs are active: `cvhr-viscell-full-l05-1779224497` and `cvhr-viscell-full-l06-1779225051`; action taken: none.
+- 3DGS log/S3 status:
+  - Log stream exists: `cvhr-mtc-secondary-20260518t2113z-3dgs/algo-1-1779218957`; latest stream event timestamp remains `2026-05-19T19:38:17Z`.
+  - A 25-minute CloudWatch tail returned `0` lines after the earlier `ns-train splatfacto-w-light ...` launch; still consistent with captured subprocess output while training is active.
+  - S3 output remains empty: `Total Objects: 0`, `Total Size: 0`, expected until SageMaker EndOfJob upload.
+- No-launch runner status command:
+  - `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip`
+  - Result: state remains `status=3dgs_running`, `last_action=3dgs_running`, `3dgs_status=InProgress`; no duplicate launch.
+- GitHub exact-head workflow command:
+  - `gh run list --branch agent-40136728-montana-time-capsule --limit 50 --json databaseId,headSha,workflowName,status,conclusion,createdAt,updatedAt,url | jq --arg sha "$(git rev-parse HEAD)" '[.[] | select(.headSha==$sha)]'`
+  - Result: `[]` for logs-only `[skip ci]` head `de0a23b3d12afd1ea202645d95a2b4485d887f17`; prior exact-head code commit `7b38bd43b956fbfa92700ae513c3b64afee62ec1` has green `CDK Deploy` run `26120469998`.
+- Evidence files:
+  - `logs/montana-time-capsule/aws-sts-20260519T2123Z.json`
+  - `logs/montana-time-capsule/sagemaker-describe-cvhr-mtc-secondary-20260518t2113z-3dgs-20260519T2123Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-training-cvhr-20260519T2123Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-training-cvhr-active-20260519T2123Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-processing-cvhr-20260519T2123Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-processing-cvhr-active-20260519T2123Z.json`
+  - `logs/montana-time-capsule/logstreams-cvhr-mtc-secondary-20260518t2113z-3dgs-20260519T2123Z.json`
+  - `logs/montana-time-capsule/cloudwatch-tail-cvhr-mtc-secondary-20260518t2113z-3dgs-20260519T2123Z.log`
+  - `logs/montana-time-capsule/s3-3dgs-cvhr-mtc-secondary-20260518t2113z-20260519T2123Z.txt`
+  - `logs/montana-time-capsule/runner-status-3dgs-20260519T2123Z.log`
+  - `logs/montana-time-capsule/gh-run-list-agent-40136728-20260519T2123Z.json`
+  - `logs/montana-time-capsule/gh-run-list-exact-head-20260519T2123Z.json`
+- Next unblocked step: continue monitoring `cvhr-mtc-secondary-20260518t2113z-3dgs` through terminal state. Do not rerun the launcher while this job exists. On success, run the runner once with `--launch` to start pinned Montana compression; on failure, capture exact SageMaker describe, CloudWatch tail, and S3 output before patching.
+
 ## 2026-05-19T17:43Z Heartbeat Monitor Pass
 
 - Branch/head/status command:
