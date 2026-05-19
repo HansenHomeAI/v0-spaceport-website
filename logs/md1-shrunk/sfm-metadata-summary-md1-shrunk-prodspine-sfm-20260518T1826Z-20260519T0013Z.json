@@ -1,0 +1,20 @@
+{
+  "timestamp": "2026-05-19T00:04:27Z",
+  "dataset_image_count": 1456,
+  "images_registered": 1456,
+  "cameras_registered": 1,
+  "points_3d": 1155771,
+  "quality_check_passed": true,
+  "processing_time_seconds": 20098.88,
+  "chunking_enabled": true,
+  "chunk_planner": "footprint_graph_v1",
+  "chunk_count": 8,
+  "merged_component_count": 1,
+  "fallback_reason": "not_needed",
+  "timed_out": false,
+  "match_profile": "P1",
+  "sequential_matcher_enabled": false,
+  "gpu_enabled": true,
+  "gps_priors_detected": 1456,
+  "final_points_per_registered_image": 793.8
+}

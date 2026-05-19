@@ -22,3 +22,4 @@
 [2026-05-18T23:55Z] md1-shrunk: canonical sfm 1779128752 InProgress (seam 10 retry 02 reached image #1456/1455, global BA heartbeat) -> next: poll
 [2026-05-19T00:01Z] md1-shrunk: canonical sfm 1779128752 InProgress (seam 10 retry 02 global BA finished after heartbeat elapsed 471s; extracting colors) -> next: poll
 [2026-05-19T00:07Z] md1-shrunk: canonical sfm 1779128752 CloudWatch/S3 success (1456 images, 954351 points, 1469 S3 objects/9.3GiB) while SageMaker describe still InProgress -> next: wait for terminal Completed then downstream gate
+[2026-05-19T00:22Z] md1-shrunk: canonical sfm 1779128752 direct S3 validation green (1456 images, required COLMAP files, metadata quality_check_passed=true) but SageMaker still InProgress through 00:22Z -> next: passive poll terminal status before 3DGS

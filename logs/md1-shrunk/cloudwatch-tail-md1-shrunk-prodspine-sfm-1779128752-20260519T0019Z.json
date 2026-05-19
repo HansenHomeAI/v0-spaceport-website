@@ -1,0 +1,106 @@
+{
+    "events": [
+        {
+            "timestamp": 1779149070058,
+            "message": "📷 Cameras registered: 1",
+            "ingestionTime": 1779149073600
+        },
+        {
+            "timestamp": 1779149070058,
+            "message": "🖼️ Images registered: 1456",
+            "ingestionTime": 1779149073600
+        },
+        {
+            "timestamp": 1779149070058,
+            "message": "🖼️ Images copied for 3DGS: 1456",
+            "ingestionTime": 1779149073600
+        },
+        {
+            "timestamp": 1779149070058,
+            "message": "🎯 3D points: 954351",
+            "ingestionTime": 1779149073600
+        },
+        {
+            "timestamp": 1779149070058,
+            "message": "⏱️ Processing time: 20098.88 seconds",
+            "ingestionTime": 1779149073600
+        },
+        {
+            "timestamp": 1779149070058,
+            "message": "🛰️ GPS priors detected: 1456",
+            "ingestionTime": 1779149073600
+        },
+        {
+            "timestamp": 1779149070058,
+            "message": "🔗 Matchers: chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_bridge_matches_importer, chunk_bridge_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer, chunk_matches_importer",
+            "ingestionTime": 1779149073600
+        },
+        {
+            "timestamp": 1779149070058,
+            "message": "🧭 Match profile: P1",
+            "ingestionTime": 1779149073600
+        },
+        {
+            "timestamp": 1779149070058,
+            "message": "➡️ Sequential matcher enabled: False",
+            "ingestionTime": 1779149073600
+        },
+        {
+            "timestamp": 1779149070058,
+            "message": "↩️ Fallback reason: not_needed",
+            "ingestionTime": 1779149073600
+        },
+        {
+            "timestamp": 1779149070058,
+            "message": "🎯 Vocab tree candidates: 40",
+            "ingestionTime": 1779149073600
+        },
+        {
+            "timestamp": 1779149070058,
+            "message": "📌 SIFT max features: 8192",
+            "ingestionTime": 1779149073600
+        },
+        {
+            "timestamp": 1779149070058,
+            "message": "============================================================",
+            "ingestionTime": 1779149073600
+        },
+        {
+            "timestamp": 1779149070058,
+            "message": "🎉 SPACEPORT COLMAP GPU SfM COMPLETED SUCCESSFULLY!",
+            "ingestionTime": 1779149073600
+        },
+        {
+            "timestamp": 1779149070058,
+            "message": "============================================================",
+            "ingestionTime": 1779149073600
+        },
+        {
+            "timestamp": 1779149070058,
+            "message": "✅ GPU-accelerated COLMAP SfM completed",
+            "ingestionTime": 1779149073600
+        },
+        {
+            "timestamp": 1779149070058,
+            "message": "📁 Output files ready for 3D Gaussian Splatting training",
+            "ingestionTime": 1779149073600
+        },
+        {
+            "timestamp": 1779149070058,
+            "message": "🔗 COLMAP TXT handoff maintained",
+            "ingestionTime": 1779149073600
+        },
+        {
+            "timestamp": 1779149070058,
+            "message": "📅 Completed at: Tue May 19 00:04:29 UTC 2026",
+            "ingestionTime": 1779149073600
+        },
+        {
+            "timestamp": 1779149070058,
+            "message": "============================================================",
+            "ingestionTime": 1779149073600
+        }
+    ],
+    "nextForwardToken": "f/39676350081566166752449386930791990393788443643049607207/s",
+    "nextBackwardToken": "b/39676350081566166752449386930791990393788443643049607188/s"
+}

@@ -7502,3 +7502,74 @@ skybox, compression, artifact handoff, and visual gates.
   - `logs/md1-shrunk/sagemaker-list-processing-inprogress-20260519T0007Z.json`
   - `logs/md1-shrunk/sagemaker-list-training-inprogress-20260519T0007Z.json`
   - `logs/md1-shrunk/gh-runs-agent-113647-20260519T0007Z.json`
+
+## 2026-05-19T00:22Z in-chat automation poll
+
+- Verification before poll:
+  - branch: `agent-113647-md1-baseline-e2e`
+  - head at start of poll: `f2ab20e1ea729e770e27a2fe9700c90a90788363`
+  - AWS identity captured for account `975050048887`.
+  - Step Functions `SpaceportMLPipeline-staging` RUNNING executions: `0`.
+  - GitHub workflow list unchanged for meaningful non-skipped CI: latest proof remains `CDK Deploy` run `26052859100` for `1900964d7d3601733e6cb9d587a3128717749336`; current head is logs-only `[skip ci]`.
+- Canonical SfM terminal-state lag:
+  - job: `md1-shrunk-prodspine-sfm-1779128752`
+  - SageMaker describe remained `ProcessingJobStatus=InProgress`, `FailureReason=null` at `20260519T0011Z`, `0012Z`, `0013Z`, `0014Z`, `0015Z`, `0017Z`, `0018Z`, `0019Z`, `0020Z`, `0021Z`, and `0022Z`.
+  - CloudWatch tail still has no events after the successful completion banner at `Tue May 19 00:04:29 UTC 2026`.
+  - No downstream 3DGS or compression has been launched while waiting for SageMaker terminal `Completed`.
+- Direct S3 COLMAP handoff validation:
+  - prefix: `s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-sfm-20260518T1826Z/colmap`
+  - `images/` count: `1456`
+  - required objects validated with `head-object`: `database.db`, `sfm_metadata.json`, `chunk_planner_manifest.json`, `sparse/0/cameras.txt`, `sparse/0/images.txt`, `sparse/0/points3D.txt`, `sparse/0/frames.txt`, `sparse/0/rigs.txt`, and matching `sparse_raw/0/...` files.
+  - key sizes from head-object:
+    - `database.db`: `2329702400` bytes
+    - `sparse/0/images.txt`: `612034411` bytes
+    - `sparse/0/points3D.txt`: `150235832` bytes
+    - `sparse_raw/0/images.txt`: `616156172` bytes
+    - `sparse_raw/0/points3D.txt`: `177365623` bytes
+  - `sfm_metadata.json` summary:
+    - timestamp: `2026-05-19T00:04:27Z`
+    - dataset images: `1456`
+    - registered images: `1456`
+    - cameras registered: `1`
+    - points_3d: `1155771`
+    - quality_check_passed: `true`
+    - processing_time_seconds: `20098.88`
+    - chunking_enabled: `true`
+    - chunk_planner: `footprint_graph_v1`
+    - chunk_count: `8`
+    - merged_component_count: `1`
+    - fallback_reason: `not_needed`
+    - timed_out: `false`
+    - match_profile: `P1`
+    - gps_priors_detected: `1456`
+- Downstream readiness evidence gathered but not launched:
+  - branch state machine exists: `arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-8abcbd5662`.
+  - intended proven 3DGS image digest remains present in ECR: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db`, tag `agent53108255splatfactowlightskybox`, pushed `2026-04-04T23:38:25.773000-06:00`.
+  - intended proven compressor image digest remains present in ECR: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab`, tags `agent53108255splatfactowlightskybox` and `agent70148362investigatesfmrecovery`, pushed `2026-04-01T14:03:58.377000-06:00`.
+- Decision:
+  - Continue passive polling until SageMaker terminal state changes from `InProgress`; launch exactly one downstream 3DGS+compression continuation only after terminal `Completed`.
+- Evidence:
+  - `logs/md1-shrunk/git-status-20260519T0011Z.txt`
+  - `logs/md1-shrunk/git-head-20260519T0011Z.txt`
+  - `logs/md1-shrunk/aws-identity-20260519T0011Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260519T0011Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260519T0012Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260519T0013Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260519T0014Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260519T0015Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260519T0017Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260519T0018Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260519T0019Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260519T0020Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260519T0021Z.json`
+  - `logs/md1-shrunk/sagemaker-describe-md1-shrunk-prodspine-sfm-1779128752-20260519T0022Z.json`
+  - `logs/md1-shrunk/stepfunctions-running-20260519T0011Z.json`
+  - `logs/md1-shrunk/gh-runs-agent-113647-20260519T0011Z.json`
+  - `logs/md1-shrunk/s3-colmap-head-validation-md1-shrunk-prodspine-sfm-20260518T1826Z-20260519T0013Z.txt`
+  - `logs/md1-shrunk/sfm-metadata-md1-shrunk-prodspine-sfm-20260518T1826Z-20260519T0013Z.json`
+  - `logs/md1-shrunk/sfm-metadata-summary-md1-shrunk-prodspine-sfm-20260518T1826Z-20260519T0013Z.json`
+  - `logs/md1-shrunk/cloudwatch-stream-md1-shrunk-prodspine-sfm-1779128752-20260519T0018Z.json`
+  - `logs/md1-shrunk/cloudwatch-tail-md1-shrunk-prodspine-sfm-1779128752-20260519T0019Z.json`
+  - `logs/md1-shrunk/stepfunctions-state-machines-md1-pipeline-20260519T0014Z.json`
+  - `logs/md1-shrunk/ecr-3dgs-digest-482c1789-20260519T0014Z.json`
+  - `logs/md1-shrunk/ecr-compressor-digest-a0784727-20260519T0014Z.json`

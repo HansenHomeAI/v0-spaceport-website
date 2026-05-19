@@ -1,0 +1,68 @@
+prefix=s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-sfm-20260518T1826Z/colmap
+image_count=1456
+
+database.db {
+    "ContentLength": 2329702400,
+    "LastModified": "2026-05-19T00:04:55+00:00",
+    "ETag": "\"a85592564dcc6184435e7a8624398dad-445\""
+}
+sfm_metadata.json {
+    "ContentLength": 44685,
+    "LastModified": "2026-05-19T00:05:17+00:00",
+    "ETag": "\"9abc7cf4ed0b48be506149ec777576a5\""
+}
+sparse/0/cameras.txt {
+    "ContentLength": 194,
+    "LastModified": "2026-05-19T00:05:17+00:00",
+    "ETag": "\"c92084b46bc4307a641cddae12724943\""
+}
+sparse/0/images.txt {
+    "ContentLength": 612034411,
+    "LastModified": "2026-05-19T00:05:17+00:00",
+    "ETag": "\"8e093cf65c0d222f864dc93a9adf9f7b-117\""
+}
+sparse/0/points3D.txt {
+    "ContentLength": 150235832,
+    "LastModified": "2026-05-19T00:05:17+00:00",
+    "ETag": "\"abfb2cb1e4f940c0db86689a1803eb4d-29\""
+}
+sparse/0/frames.txt {
+    "ContentLength": 237401,
+    "LastModified": "2026-05-19T00:05:17+00:00",
+    "ETag": "\"78d00d9503d23deb931edd96647e038a\""
+}
+sparse/0/rigs.txt {
+    "ContentLength": 218,
+    "LastModified": "2026-05-19T00:05:17+00:00",
+    "ETag": "\"2ee5798e49bf5c783a078c4d8d0e161c\""
+}
+sparse_raw/0/cameras.txt {
+    "ContentLength": 194,
+    "LastModified": "2026-05-19T00:05:17+00:00",
+    "ETag": "\"08188ed014053525d9cf6b9fe4d20b8c\""
+}
+sparse_raw/0/images.txt {
+    "ContentLength": 616156172,
+    "LastModified": "2026-05-19T00:05:17+00:00",
+    "ETag": "\"ee6c846fb8f1e40c2bf0d5541d8489dd-118\""
+}
+sparse_raw/0/points3D.txt {
+    "ContentLength": 177365623,
+    "LastModified": "2026-05-19T00:05:17+00:00",
+    "ETag": "\"fdb892c7381fb8b9e3925f47bef5ce6b-34\""
+}
+sparse_raw/0/frames.txt {
+    "ContentLength": 237401,
+    "LastModified": "2026-05-19T00:05:17+00:00",
+    "ETag": "\"cdeae6c38cf14ea167e4a0d3c43e5d45\""
+}
+sparse_raw/0/rigs.txt {
+    "ContentLength": 218,
+    "LastModified": "2026-05-19T00:05:17+00:00",
+    "ETag": "\"d03305c8ce5dbd735efa887e04414e17\""
+}
+chunk_planner_manifest.json {
+    "ContentLength": 343141,
+    "LastModified": "2026-05-19T00:04:55+00:00",
+    "ETag": "\"6900f64694639f579d02f258ee4cb631\""
+}
