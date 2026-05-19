@@ -1,0 +1,26 @@
+{
+    "events": [
+        {
+            "timestamp": 1779201489152,
+            "message": "✅ sitecustomize: filtered deprecated CUDA arch flags (TORCH_CUDA_ARCH_LIST=7.0;8.0;8.6+PTX)",
+            "ingestionTime": 1779201495347
+        },
+        {
+            "timestamp": 1779201489152,
+            "message": "✅ sitecustomize: patched nerfstudio PIL conversion",
+            "ingestionTime": 1779201495347
+        },
+        {
+            "timestamp": 1779201570718,
+            "message": "{\n  \"created_at\": \"2026-05-19T14:38:12Z\",\n  \"training_completed\": true,\n  \"training_mode\": \"remote_no_training_tiled_merge\",\n  \"merge_mode\": \"strict_core\",\n  \"background_source_tile_id\": null,\n  \"protected_overlap_tile_ids\": [],\n  \"protected_overlap_mode\": null,\n  \"merge_plan\": {\n    \"artifact_inputs\": [\n      {\n        \"artifact_input_name\": \"artifact-00\",\n        \"artifact_uri\": \"s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-20260515/tiles/tile_04/md1-r0vissent-v5relax-1778837840-tile-04/output/model.tar.gz\"\n      }\n    ],\n    \"selected_tile_ids\": [\n      \"tile_04\"\n    ],\n    \"source_summary_json\": \"logs/md1-r0-visual-sentinel-v5-density-relaxed-leaf-reuse-summary-head30d6-20260517.json\",\n    \"tiles\": [\n      {\n        \"artifact_input_name\": \"artifact-00\",\n        \"artifact_uri\": \"s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-20260515/tiles/tile_04/md1-r0vissent-v5relax-1778837840-tile-04/output/model.tar.gz\",\n        \"cache_status\": \"validated_leaf_reuse\",\n        \"candidate_members\": [\n          \"splat.ply\"\n        ],\n        \"quality_gate_status\": \"leaf_gate_passed_merge_review_allowed\",\n        \"stage_name\": \"T0_tile_04_validated_leaf_reuse\",\n        \"stage_type\": \"train\",\n        \"tile_id\": \"tile_04\"\n      }\n    ]\n  },\n  \"extracted_tiles\": [\n    {\n      \"tile_id\": \"tile_04\",\n      \"artifact_uri\": \"s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-20260515/tiles/tile_04/md1-r0vissent-v5relax-1778837840-tile-04/output/model.tar.gz\",\n      \"artifact_input_name\": \"artifact-00\",\n      \"selected_member\": \"splat.ply\",\n      \"selected_size_bytes\": 111442249,\n      \"tile_output_dir\": \"/opt/ml/processing/output/artifact/tiles/tile_04\"\n    }\n  ],\n  \"merge_report\": {\n    \"merge_mode\": \"strict_core\",\n    \"protected_overlap_mode\": null,\n    \"protected_overlap_tile_ids\": [],\n    \"merged_ply\": \"/opt/ml/processing/output/artifact/merged/merged_splat.ply\",\n    \"tile_count\": 1,\n    \"source_gaussians\": 1071554,\n    \"retained_gaussians\": 1071554,\n    \"dropped_gaussians\": 0,\n    \"fallback_tile_count\": 0,\n    \"retain_all_tile_count\": 0,\n    \"fallback_reasons\": [],\n    \"tiles\": [\n      {\n        \"tile_id\": \"tile_04\",\n        \"source_ply\": \"/opt/ml/processing/output/artifact/tiles/tile_04/splat.ply\",\n        \"source_gaussians\": 1071554,\n        \"retained_gaussians\": 1071554,\n        \"dropped_gaussians\": 0,\n        \"retention_strategy\": \"core_bounds\",\n        \"fallback_used\": false,\n        \"fallback_reason\": null,\n        \"ownership_bounds_available\": true\n      }\n    ],\n    \"background_asset\": {\n      \"asset\": \"background_skybox.webp\",\n      \"source_tile_id\": \"tile_04\",\n      \"source_asset\": \"/opt/ml/processing/output/artifact/tiles/tile_04/background_skybox.webp\",\n      \"selection_score\": 0.6293821613579591,\n      \"selection_mode\": \"best_score\",\n      \"requested_source_tile_id\": null,\n      \"retained_gaussians\": 1071554\n    }\n  },\n  \"model_artifact\": \"model.tar.gz\"",
+            "ingestionTime": 1779201575873
+        },
+        {
+            "timestamp": 1779201570718,
+            "message": "}",
+            "ingestionTime": 1779201575873
+        }
+    ],
+    "nextForwardToken": "f/39677520885407581441194592300768315844127305222431244289/s",
+    "nextBackwardToken": "b/39677519066424998577845785040915890609118453995916099584/s"
+}

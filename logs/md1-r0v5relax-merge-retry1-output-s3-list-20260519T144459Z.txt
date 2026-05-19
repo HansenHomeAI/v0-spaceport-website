@@ -1,0 +1,24 @@
+2026-05-19 08:39:44   83.7 KiB manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/3dgs_tile_manifest.json
+2026-05-19 08:39:44   20.6 KiB manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/3dgs_view_buckets.json
+2026-05-19 08:39:44    1.3 KiB manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/merged/background_manifest.json
+2026-05-19 08:39:44   34.7 KiB manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/merged/background_skybox.webp
+2026-05-19 08:39:44    1.1 KiB manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/merged/merge_report.json
+2026-05-19 08:39:44  106.3 MiB manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/merged/merged_splat.ply
+2026-05-19 08:39:44  436.2 MiB manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/model.tar.gz
+2026-05-19 08:39:44    3.0 KiB manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/remote_merge_summary.json
+2026-05-19 08:39:44   83.7 KiB manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/tiled_pipeline/inputs/tile_04/3dgs_tile_manifest.json
+2026-05-19 08:39:44   20.6 KiB manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/tiled_pipeline/inputs/tile_04/3dgs_view_buckets.json
+2026-05-19 08:39:44  342 Bytes manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/tiled_pipeline/inputs/tile_04/scaffold_init_metadata.json
+2026-05-19 08:39:44    3.0 KiB manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/tiled_pipeline_summary.json
+2026-05-19 08:39:44    1.1 KiB manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/tiles/tile_04/background_manifest.json
+2026-05-19 08:39:44   34.7 KiB manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/tiles/tile_04/background_skybox.webp
+2026-05-19 08:39:44    3.1 KiB manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/tiles/tile_04/export_manifest.json
+2026-05-19 08:39:44  463 Bytes manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/tiles/tile_04/floater_pruning_summary.json
+2026-05-19 08:39:44  106.3 MiB manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/tiles/tile_04/splat.ply
+2026-05-19 08:39:44  345 Bytes manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/tiles/tile_04/stage_summary.json
+2026-05-19 08:39:44   13.3 KiB manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/tiles/tile_04/training_metadata.json
+2026-05-19 08:39:44    7.0 KiB manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/tiles/tile_04/training_selection.json
+2026-05-19 08:39:44    3.0 KiB manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/output/artifact/training_metadata.json
+
+Total Objects: 21
+   Total Size: 649.1 MiB

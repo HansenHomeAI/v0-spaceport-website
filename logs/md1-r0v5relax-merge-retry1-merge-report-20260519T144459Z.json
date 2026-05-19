@@ -1,0 +1,35 @@
+{
+  "merge_mode": "strict_core",
+  "protected_overlap_mode": null,
+  "protected_overlap_tile_ids": [],
+  "merged_ply": "/opt/ml/processing/output/artifact/merged/merged_splat.ply",
+  "tile_count": 1,
+  "source_gaussians": 1071554,
+  "retained_gaussians": 1071554,
+  "dropped_gaussians": 0,
+  "fallback_tile_count": 0,
+  "retain_all_tile_count": 0,
+  "fallback_reasons": [],
+  "tiles": [
+    {
+      "tile_id": "tile_04",
+      "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_04/splat.ply",
+      "source_gaussians": 1071554,
+      "retained_gaussians": 1071554,
+      "dropped_gaussians": 0,
+      "retention_strategy": "core_bounds",
+      "fallback_used": false,
+      "fallback_reason": null,
+      "ownership_bounds_available": true
+    }
+  ],
+  "background_asset": {
+    "asset": "background_skybox.webp",
+    "source_tile_id": "tile_04",
+    "source_asset": "/opt/ml/processing/output/artifact/tiles/tile_04/background_skybox.webp",
+    "selection_score": 0.6293821613579591,
+    "selection_mode": "best_score",
+    "requested_source_tile_id": null,
+    "retained_gaussians": 1071554
+  }
+}

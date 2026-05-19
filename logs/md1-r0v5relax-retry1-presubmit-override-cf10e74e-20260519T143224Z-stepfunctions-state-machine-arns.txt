@@ -1,0 +1,3 @@
+arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-8abcbd5662
+arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging
+arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline

@@ -1,0 +1,8 @@
+{
+  "tile_id": "tile_04",
+  "stage_type": "train",
+  "source_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-20260515/tiles/tile_04/md1-r0vissent-v5relax-1778837840-tile-04/output/model.tar.gz",
+  "source_member": "splat.ply",
+  "splat_size_bytes": 111442249,
+  "stage_elapsed_seconds": 0
+}

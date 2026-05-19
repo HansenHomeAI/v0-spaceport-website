@@ -1,0 +1,8 @@
+{
+  "tile_id": "tile_04",
+  "scaffold_inheritance_mode": "remote_no_training_reuse",
+  "scaffold_source_artifact": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-20260515/tiles/tile_04/md1-r0vissent-v5relax-1778837840-tile-04/output/model.tar.gz",
+  "source_member_candidates": [
+    "splat.ply"
+  ]
+}

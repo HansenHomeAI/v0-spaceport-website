@@ -1,0 +1,42 @@
+{
+  "checked_at": "2026-05-19T14:32:42.117469+00:00",
+  "decision": "merge_review_submit_allowed",
+  "block_reasons": [],
+  "exact_head": "cf10e74ed69591fd0b1ffc7958d2a09304d0d8ab",
+  "git_head": "cf10e74ed69591fd0b1ffc7958d2a09304d0d8ab",
+  "workflow_conclusion": "success",
+  "training_jobs_in_progress": [],
+  "processing_jobs_in_progress": [],
+  "required_tile_ids": [
+    "tile_04"
+  ],
+  "leaf_reuse_summary_tile_ids": [
+    "tile_04"
+  ],
+  "merge_plan_tile_ids": [
+    "tile_04"
+  ],
+  "merge_review_gate_decision": "merge_review_allowed",
+  "payload_input_names": [
+    "merge-plan",
+    "tile-selection",
+    "artifact-00"
+  ],
+  "payload_unsupported_merge_environment": [],
+  "payload_max_runtime_seconds": 3600,
+  "input_materialization": {
+    "artifact_inputs_available": true,
+    "merge_plan_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5densityrelaxed-merge-retry1-8fdaa86f-20260518T170629Z/inputs/merge-plan",
+    "merge_plan_uploaded": true,
+    "required": true,
+    "tile_manifest_available": true,
+    "tile_selection_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0vissent-v5densityrelaxed-20260515/inputs/tile-selection",
+    "view_buckets_available": true,
+    "materialization_evidence_json": "logs/md1-r0v5relax-merge-retry1-materialization-1ea78942-20260518T171230Z-summary.json"
+  },
+  "max_merge_estimated_usd": 0.5,
+  "max_merge_runtime_seconds": 3600,
+  "max_review_estimated_usd": 0.75,
+  "max_review_runtime_seconds": 3600,
+  "next_required_action": "submit at most one bounded no-training merge/preflight, then one bounded V18/visual QA review only if merge preflight passes"
+}

@@ -1,0 +1,1985 @@
+{
+    "builds": [
+        {
+            "id": "spaceport-ml-containers:04906e4b-fd21-4cca-a1bf-3c457be5e98f",
+            "arn": "arn:aws:codebuild:us-west-2:975050048887:build/spaceport-ml-containers:04906e4b-fd21-4cca-a1bf-3c457be5e98f",
+            "buildNumber": 707,
+            "startTime": "2026-05-18T19:25:31.712000-06:00",
+            "endTime": "2026-05-18T19:38:55.923000-06:00",
+            "currentPhase": "COMPLETED",
+            "buildStatus": "SUCCEEDED",
+            "sourceVersion": "60fcec4fe28e3ee73e4c44aa5eebcf4ade543c54",
+            "resolvedSourceVersion": "60fcec4fe28e3ee73e4c44aa5eebcf4ade543c54",
+            "projectName": "spaceport-ml-containers",
+            "phases": [
+                {
+                    "phaseType": "SUBMITTED",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T19:25:31.712000-06:00",
+                    "endTime": "2026-05-18T19:25:31.906000-06:00",
+                    "durationInSeconds": 0
+                },
+                {
+                    "phaseType": "QUEUED",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T19:25:31.906000-06:00",
+                    "endTime": "2026-05-18T19:25:32.545000-06:00",
+                    "durationInSeconds": 0
+                },
+                {
+                    "phaseType": "PROVISIONING",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T19:25:32.545000-06:00",
+                    "endTime": "2026-05-18T19:25:40.089000-06:00",
+                    "durationInSeconds": 7,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "DOWNLOAD_SOURCE",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T19:25:40.089000-06:00",
+                    "endTime": "2026-05-18T19:25:54.471000-06:00",
+                    "durationInSeconds": 14,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "INSTALL",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T19:25:54.471000-06:00",
+                    "endTime": "2026-05-18T19:26:18.809000-06:00",
+                    "durationInSeconds": 24,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "PRE_BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T19:26:18.809000-06:00",
+                    "endTime": "2026-05-18T19:26:28.527000-06:00",
+                    "durationInSeconds": 9,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T19:26:28.527000-06:00",
+                    "endTime": "2026-05-18T19:38:52.827000-06:00",
+                    "durationInSeconds": 744,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "POST_BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T19:38:52.827000-06:00",
+                    "endTime": "2026-05-18T19:38:55.570000-06:00",
+                    "durationInSeconds": 2,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "UPLOAD_ARTIFACTS",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T19:38:55.570000-06:00",
+                    "endTime": "2026-05-18T19:38:55.635000-06:00",
+                    "durationInSeconds": 0,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "FINALIZING",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T19:38:55.635000-06:00",
+                    "endTime": "2026-05-18T19:38:55.923000-06:00",
+                    "durationInSeconds": 0,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": "Failed to report build status: There's no access token found for this account"
+                        },
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "COMPLETED",
+                    "startTime": "2026-05-18T19:38:55.923000-06:00"
+                }
+            ],
+            "source": {
+                "type": "GITHUB",
+                "location": "https://github.com/HansenHomeAI/v0-spaceport-website.git",
+                "gitCloneDepth": 5,
+                "buildspec": "buildspec.yml",
+                "reportBuildStatus": true,
+                "insecureSsl": false
+            },
+            "secondarySources": [],
+            "secondarySourceVersions": [],
+            "artifacts": {
+                "location": ""
+            },
+            "cache": {
+                "type": "S3",
+                "location": "spaceport-build-cache/codebuild-cache"
+            },
+            "environment": {
+                "type": "LINUX_CONTAINER",
+                "image": "aws/codebuild/standard:7.0",
+                "computeType": "BUILD_GENERAL1_LARGE",
+                "environmentVariables": [
+                    {
+                        "name": "BUILD_BASE_ONLY",
+                        "value": "0",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "CONTAINERS_TO_BUILD",
+                        "value": "sfm",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "BRANCH_SUFFIX",
+                        "value": "agent73948216sfmproductionspine",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "CONTAINERS_TO_IMPORT",
+                        "value": "",
+                        "type": "PLAINTEXT"
+                    }
+                ],
+                "privilegedMode": true,
+                "imagePullCredentialsType": "CODEBUILD"
+            },
+            "serviceRole": "arn:aws:iam::975050048887:role/CodeBuildServiceRole",
+            "logs": {
+                "groupName": "/aws/codebuild/spaceport-ml-containers",
+                "streamName": "04906e4b-fd21-4cca-a1bf-3c457be5e98f",
+                "deepLink": "https://console.aws.amazon.com/cloudwatch/home?region=us-west-2#logsV2:log-groups/log-group/$252Faws$252Fcodebuild$252Fspaceport-ml-containers/log-events/04906e4b-fd21-4cca-a1bf-3c457be5e98f",
+                "cloudWatchLogsArn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/codebuild/spaceport-ml-containers:log-stream:04906e4b-fd21-4cca-a1bf-3c457be5e98f"
+            },
+            "timeoutInMinutes": 120,
+            "queuedTimeoutInMinutes": 30,
+            "buildComplete": true,
+            "initiator": "root",
+            "encryptionKey": "arn:aws:kms:us-west-2:975050048887:alias/aws/s3"
+        },
+        {
+            "id": "spaceport-ml-containers:40210393-c277-4eef-921e-06ab1dec9bbe",
+            "arn": "arn:aws:codebuild:us-west-2:975050048887:build/spaceport-ml-containers:40210393-c277-4eef-921e-06ab1dec9bbe",
+            "buildNumber": 706,
+            "startTime": "2026-05-18T13:57:10.599000-06:00",
+            "endTime": "2026-05-18T14:10:59.800000-06:00",
+            "currentPhase": "COMPLETED",
+            "buildStatus": "SUCCEEDED",
+            "sourceVersion": "e2315457661b32e983d9e1317bd1aec1c300b774",
+            "resolvedSourceVersion": "e2315457661b32e983d9e1317bd1aec1c300b774",
+            "projectName": "spaceport-ml-containers",
+            "phases": [
+                {
+                    "phaseType": "SUBMITTED",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:57:10.599000-06:00",
+                    "endTime": "2026-05-18T13:57:10.735000-06:00",
+                    "durationInSeconds": 0
+                },
+                {
+                    "phaseType": "QUEUED",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:57:10.735000-06:00",
+                    "endTime": "2026-05-18T13:57:11.408000-06:00",
+                    "durationInSeconds": 0
+                },
+                {
+                    "phaseType": "PROVISIONING",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:57:11.408000-06:00",
+                    "endTime": "2026-05-18T13:57:19.339000-06:00",
+                    "durationInSeconds": 7,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "DOWNLOAD_SOURCE",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:57:19.339000-06:00",
+                    "endTime": "2026-05-18T13:57:33.539000-06:00",
+                    "durationInSeconds": 14,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "INSTALL",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:57:33.539000-06:00",
+                    "endTime": "2026-05-18T13:57:58.438000-06:00",
+                    "durationInSeconds": 24,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "PRE_BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:57:58.438000-06:00",
+                    "endTime": "2026-05-18T13:58:08.713000-06:00",
+                    "durationInSeconds": 10,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:58:08.713000-06:00",
+                    "endTime": "2026-05-18T14:10:56.600000-06:00",
+                    "durationInSeconds": 767,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "POST_BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T14:10:56.600000-06:00",
+                    "endTime": "2026-05-18T14:10:59.437000-06:00",
+                    "durationInSeconds": 2,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "UPLOAD_ARTIFACTS",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T14:10:59.437000-06:00",
+                    "endTime": "2026-05-18T14:10:59.501000-06:00",
+                    "durationInSeconds": 0,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "FINALIZING",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T14:10:59.501000-06:00",
+                    "endTime": "2026-05-18T14:10:59.800000-06:00",
+                    "durationInSeconds": 0,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": "Failed to report build status: There's no access token found for this account"
+                        },
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "COMPLETED",
+                    "startTime": "2026-05-18T14:10:59.800000-06:00"
+                }
+            ],
+            "source": {
+                "type": "GITHUB",
+                "location": "https://github.com/HansenHomeAI/v0-spaceport-website.git",
+                "gitCloneDepth": 5,
+                "buildspec": "buildspec.yml",
+                "reportBuildStatus": true,
+                "insecureSsl": false
+            },
+            "secondarySources": [],
+            "secondarySourceVersions": [],
+            "artifacts": {
+                "location": ""
+            },
+            "cache": {
+                "type": "S3",
+                "location": "spaceport-build-cache/codebuild-cache"
+            },
+            "environment": {
+                "type": "LINUX_CONTAINER",
+                "image": "aws/codebuild/standard:7.0",
+                "computeType": "BUILD_GENERAL1_LARGE",
+                "environmentVariables": [
+                    {
+                        "name": "BUILD_BASE_ONLY",
+                        "value": "0",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "CONTAINERS_TO_BUILD",
+                        "value": "sfm",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "BRANCH_SUFFIX",
+                        "value": "agent73948216sfmproductionspine",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "CONTAINERS_TO_IMPORT",
+                        "value": "",
+                        "type": "PLAINTEXT"
+                    }
+                ],
+                "privilegedMode": true,
+                "imagePullCredentialsType": "CODEBUILD"
+            },
+            "serviceRole": "arn:aws:iam::975050048887:role/CodeBuildServiceRole",
+            "logs": {
+                "groupName": "/aws/codebuild/spaceport-ml-containers",
+                "streamName": "40210393-c277-4eef-921e-06ab1dec9bbe",
+                "deepLink": "https://console.aws.amazon.com/cloudwatch/home?region=us-west-2#logsV2:log-groups/log-group/$252Faws$252Fcodebuild$252Fspaceport-ml-containers/log-events/40210393-c277-4eef-921e-06ab1dec9bbe",
+                "cloudWatchLogsArn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/codebuild/spaceport-ml-containers:log-stream:40210393-c277-4eef-921e-06ab1dec9bbe"
+            },
+            "timeoutInMinutes": 120,
+            "queuedTimeoutInMinutes": 30,
+            "buildComplete": true,
+            "initiator": "root",
+            "encryptionKey": "arn:aws:kms:us-west-2:975050048887:alias/aws/s3"
+        },
+        {
+            "id": "spaceport-ml-containers:0109c1cb-3e72-4547-a2f7-9dde1a170f12",
+            "arn": "arn:aws:codebuild:us-west-2:975050048887:build/spaceport-ml-containers:0109c1cb-3e72-4547-a2f7-9dde1a170f12",
+            "buildNumber": 705,
+            "startTime": "2026-05-18T13:24:44.046000-06:00",
+            "endTime": "2026-05-18T13:39:18.212000-06:00",
+            "currentPhase": "COMPLETED",
+            "buildStatus": "SUCCEEDED",
+            "sourceVersion": "436b620ed69ac0b5ea7611488a73968e4717db28",
+            "resolvedSourceVersion": "436b620ed69ac0b5ea7611488a73968e4717db28",
+            "projectName": "spaceport-ml-containers",
+            "phases": [
+                {
+                    "phaseType": "SUBMITTED",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:24:44.046000-06:00",
+                    "endTime": "2026-05-18T13:24:44.177000-06:00",
+                    "durationInSeconds": 0
+                },
+                {
+                    "phaseType": "QUEUED",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:24:44.177000-06:00",
+                    "endTime": "2026-05-18T13:24:44.840000-06:00",
+                    "durationInSeconds": 0
+                },
+                {
+                    "phaseType": "PROVISIONING",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:24:44.840000-06:00",
+                    "endTime": "2026-05-18T13:24:53.750000-06:00",
+                    "durationInSeconds": 8,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "DOWNLOAD_SOURCE",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:24:53.750000-06:00",
+                    "endTime": "2026-05-18T13:25:09.149000-06:00",
+                    "durationInSeconds": 15,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "INSTALL",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:25:09.149000-06:00",
+                    "endTime": "2026-05-18T13:25:34.716000-06:00",
+                    "durationInSeconds": 25,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "PRE_BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:25:34.716000-06:00",
+                    "endTime": "2026-05-18T13:25:45.091000-06:00",
+                    "durationInSeconds": 10,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:25:45.091000-06:00",
+                    "endTime": "2026-05-18T13:39:14.885000-06:00",
+                    "durationInSeconds": 809,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "POST_BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:39:14.885000-06:00",
+                    "endTime": "2026-05-18T13:39:17.859000-06:00",
+                    "durationInSeconds": 2,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "UPLOAD_ARTIFACTS",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:39:17.859000-06:00",
+                    "endTime": "2026-05-18T13:39:17.922000-06:00",
+                    "durationInSeconds": 0,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "FINALIZING",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:39:17.922000-06:00",
+                    "endTime": "2026-05-18T13:39:18.212000-06:00",
+                    "durationInSeconds": 0,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": "Failed to report build status: There's no access token found for this account"
+                        },
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "COMPLETED",
+                    "startTime": "2026-05-18T13:39:18.212000-06:00"
+                }
+            ],
+            "source": {
+                "type": "GITHUB",
+                "location": "https://github.com/HansenHomeAI/v0-spaceport-website.git",
+                "gitCloneDepth": 5,
+                "buildspec": "buildspec.yml",
+                "reportBuildStatus": true,
+                "insecureSsl": false
+            },
+            "secondarySources": [],
+            "secondarySourceVersions": [],
+            "artifacts": {
+                "location": ""
+            },
+            "cache": {
+                "type": "S3",
+                "location": "spaceport-build-cache/codebuild-cache"
+            },
+            "environment": {
+                "type": "LINUX_CONTAINER",
+                "image": "aws/codebuild/standard:7.0",
+                "computeType": "BUILD_GENERAL1_LARGE",
+                "environmentVariables": [
+                    {
+                        "name": "BUILD_BASE_ONLY",
+                        "value": "0",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "CONTAINERS_TO_BUILD",
+                        "value": "sfm",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "BRANCH_SUFFIX",
+                        "value": "agent73948216sfmproductionspine",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "CONTAINERS_TO_IMPORT",
+                        "value": "",
+                        "type": "PLAINTEXT"
+                    }
+                ],
+                "privilegedMode": true,
+                "imagePullCredentialsType": "CODEBUILD"
+            },
+            "serviceRole": "arn:aws:iam::975050048887:role/CodeBuildServiceRole",
+            "logs": {
+                "groupName": "/aws/codebuild/spaceport-ml-containers",
+                "streamName": "0109c1cb-3e72-4547-a2f7-9dde1a170f12",
+                "deepLink": "https://console.aws.amazon.com/cloudwatch/home?region=us-west-2#logsV2:log-groups/log-group/$252Faws$252Fcodebuild$252Fspaceport-ml-containers/log-events/0109c1cb-3e72-4547-a2f7-9dde1a170f12",
+                "cloudWatchLogsArn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/codebuild/spaceport-ml-containers:log-stream:0109c1cb-3e72-4547-a2f7-9dde1a170f12"
+            },
+            "timeoutInMinutes": 120,
+            "queuedTimeoutInMinutes": 30,
+            "buildComplete": true,
+            "initiator": "root",
+            "encryptionKey": "arn:aws:kms:us-west-2:975050048887:alias/aws/s3"
+        },
+        {
+            "id": "spaceport-ml-containers:83ad3e50-5f3f-4802-8dd6-616183c072a2",
+            "arn": "arn:aws:codebuild:us-west-2:975050048887:build/spaceport-ml-containers:83ad3e50-5f3f-4802-8dd6-616183c072a2",
+            "buildNumber": 704,
+            "startTime": "2026-05-18T13:10:43.407000-06:00",
+            "endTime": "2026-05-18T13:24:22.612000-06:00",
+            "currentPhase": "COMPLETED",
+            "buildStatus": "SUCCEEDED",
+            "sourceVersion": "cea64f7cda7ef960388bbbf43ae850909dcc6c28",
+            "resolvedSourceVersion": "cea64f7cda7ef960388bbbf43ae850909dcc6c28",
+            "projectName": "spaceport-ml-containers",
+            "phases": [
+                {
+                    "phaseType": "SUBMITTED",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:10:43.407000-06:00",
+                    "endTime": "2026-05-18T13:10:43.566000-06:00",
+                    "durationInSeconds": 0
+                },
+                {
+                    "phaseType": "QUEUED",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:10:43.566000-06:00",
+                    "endTime": "2026-05-18T13:10:44.214000-06:00",
+                    "durationInSeconds": 0
+                },
+                {
+                    "phaseType": "PROVISIONING",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:10:44.214000-06:00",
+                    "endTime": "2026-05-18T13:10:54.048000-06:00",
+                    "durationInSeconds": 9,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "DOWNLOAD_SOURCE",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:10:54.048000-06:00",
+                    "endTime": "2026-05-18T13:11:13.851000-06:00",
+                    "durationInSeconds": 19,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "INSTALL",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:11:13.851000-06:00",
+                    "endTime": "2026-05-18T13:11:39.576000-06:00",
+                    "durationInSeconds": 25,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "PRE_BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:11:39.576000-06:00",
+                    "endTime": "2026-05-18T13:11:50.395000-06:00",
+                    "durationInSeconds": 10,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:11:50.395000-06:00",
+                    "endTime": "2026-05-18T13:24:19.562000-06:00",
+                    "durationInSeconds": 749,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "POST_BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:24:19.562000-06:00",
+                    "endTime": "2026-05-18T13:24:22.263000-06:00",
+                    "durationInSeconds": 2,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "UPLOAD_ARTIFACTS",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:24:22.263000-06:00",
+                    "endTime": "2026-05-18T13:24:22.324000-06:00",
+                    "durationInSeconds": 0,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "FINALIZING",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T13:24:22.324000-06:00",
+                    "endTime": "2026-05-18T13:24:22.612000-06:00",
+                    "durationInSeconds": 0,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": "Failed to report build status: There's no access token found for this account"
+                        },
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "COMPLETED",
+                    "startTime": "2026-05-18T13:24:22.612000-06:00"
+                }
+            ],
+            "source": {
+                "type": "GITHUB",
+                "location": "https://github.com/HansenHomeAI/v0-spaceport-website.git",
+                "gitCloneDepth": 5,
+                "buildspec": "buildspec.yml",
+                "reportBuildStatus": true,
+                "insecureSsl": false
+            },
+            "secondarySources": [],
+            "secondarySourceVersions": [],
+            "artifacts": {
+                "location": ""
+            },
+            "cache": {
+                "type": "S3",
+                "location": "spaceport-build-cache/codebuild-cache"
+            },
+            "environment": {
+                "type": "LINUX_CONTAINER",
+                "image": "aws/codebuild/standard:7.0",
+                "computeType": "BUILD_GENERAL1_LARGE",
+                "environmentVariables": [
+                    {
+                        "name": "BUILD_BASE_ONLY",
+                        "value": "0",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "CONTAINERS_TO_BUILD",
+                        "value": "sfm",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "BRANCH_SUFFIX",
+                        "value": "agent73948216sfmproductionspine",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "CONTAINERS_TO_IMPORT",
+                        "value": "",
+                        "type": "PLAINTEXT"
+                    }
+                ],
+                "privilegedMode": true,
+                "imagePullCredentialsType": "CODEBUILD"
+            },
+            "serviceRole": "arn:aws:iam::975050048887:role/CodeBuildServiceRole",
+            "logs": {
+                "groupName": "/aws/codebuild/spaceport-ml-containers",
+                "streamName": "83ad3e50-5f3f-4802-8dd6-616183c072a2",
+                "deepLink": "https://console.aws.amazon.com/cloudwatch/home?region=us-west-2#logsV2:log-groups/log-group/$252Faws$252Fcodebuild$252Fspaceport-ml-containers/log-events/83ad3e50-5f3f-4802-8dd6-616183c072a2",
+                "cloudWatchLogsArn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/codebuild/spaceport-ml-containers:log-stream:83ad3e50-5f3f-4802-8dd6-616183c072a2"
+            },
+            "timeoutInMinutes": 120,
+            "queuedTimeoutInMinutes": 30,
+            "buildComplete": true,
+            "initiator": "root",
+            "encryptionKey": "arn:aws:kms:us-west-2:975050048887:alias/aws/s3"
+        },
+        {
+            "id": "spaceport-ml-containers:063b2f62-140d-4da2-9c60-3397899616cb",
+            "arn": "arn:aws:codebuild:us-west-2:975050048887:build/spaceport-ml-containers:063b2f62-140d-4da2-9c60-3397899616cb",
+            "buildNumber": 703,
+            "startTime": "2026-05-18T11:54:57.792000-06:00",
+            "endTime": "2026-05-18T12:13:50.495000-06:00",
+            "currentPhase": "COMPLETED",
+            "buildStatus": "SUCCEEDED",
+            "sourceVersion": "df57b678c025ed39fe27b7500d3e7a301b74b603",
+            "resolvedSourceVersion": "df57b678c025ed39fe27b7500d3e7a301b74b603",
+            "projectName": "spaceport-ml-containers",
+            "phases": [
+                {
+                    "phaseType": "SUBMITTED",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:54:57.792000-06:00",
+                    "endTime": "2026-05-18T11:54:57.934000-06:00",
+                    "durationInSeconds": 0
+                },
+                {
+                    "phaseType": "QUEUED",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:54:57.934000-06:00",
+                    "endTime": "2026-05-18T11:54:58.654000-06:00",
+                    "durationInSeconds": 0
+                },
+                {
+                    "phaseType": "PROVISIONING",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:54:58.654000-06:00",
+                    "endTime": "2026-05-18T11:55:06.057000-06:00",
+                    "durationInSeconds": 7,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "DOWNLOAD_SOURCE",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:55:06.057000-06:00",
+                    "endTime": "2026-05-18T11:55:22.644000-06:00",
+                    "durationInSeconds": 16,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "INSTALL",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:55:22.644000-06:00",
+                    "endTime": "2026-05-18T11:55:49.581000-06:00",
+                    "durationInSeconds": 26,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "PRE_BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:55:49.581000-06:00",
+                    "endTime": "2026-05-18T11:56:00.524000-06:00",
+                    "durationInSeconds": 10,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:56:00.524000-06:00",
+                    "endTime": "2026-05-18T12:13:47.776000-06:00",
+                    "durationInSeconds": 1067,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "POST_BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T12:13:47.776000-06:00",
+                    "endTime": "2026-05-18T12:13:50.121000-06:00",
+                    "durationInSeconds": 2,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "UPLOAD_ARTIFACTS",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T12:13:50.121000-06:00",
+                    "endTime": "2026-05-18T12:13:50.203000-06:00",
+                    "durationInSeconds": 0,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "FINALIZING",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T12:13:50.203000-06:00",
+                    "endTime": "2026-05-18T12:13:50.495000-06:00",
+                    "durationInSeconds": 0,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": "Failed to report build status: There's no access token found for this account"
+                        },
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "COMPLETED",
+                    "startTime": "2026-05-18T12:13:50.495000-06:00"
+                }
+            ],
+            "source": {
+                "type": "GITHUB",
+                "location": "https://github.com/HansenHomeAI/v0-spaceport-website.git",
+                "gitCloneDepth": 5,
+                "buildspec": "buildspec.yml",
+                "reportBuildStatus": true,
+                "insecureSsl": false
+            },
+            "secondarySources": [],
+            "secondarySourceVersions": [],
+            "artifacts": {
+                "location": ""
+            },
+            "cache": {
+                "type": "S3",
+                "location": "spaceport-build-cache/codebuild-cache"
+            },
+            "environment": {
+                "type": "LINUX_CONTAINER",
+                "image": "aws/codebuild/standard:7.0",
+                "computeType": "BUILD_GENERAL1_LARGE",
+                "environmentVariables": [
+                    {
+                        "name": "BUILD_BASE_ONLY",
+                        "value": "0",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "CONTAINERS_TO_BUILD",
+                        "value": "sfm",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "CONTAINERS_TO_IMPORT",
+                        "value": "",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "BRANCH_SUFFIX",
+                        "value": "agent113647md1baselinee2e",
+                        "type": "PLAINTEXT"
+                    }
+                ],
+                "privilegedMode": true,
+                "imagePullCredentialsType": "CODEBUILD"
+            },
+            "serviceRole": "arn:aws:iam::975050048887:role/CodeBuildServiceRole",
+            "logs": {
+                "groupName": "/aws/codebuild/spaceport-ml-containers",
+                "streamName": "063b2f62-140d-4da2-9c60-3397899616cb",
+                "deepLink": "https://console.aws.amazon.com/cloudwatch/home?region=us-west-2#logsV2:log-groups/log-group/$252Faws$252Fcodebuild$252Fspaceport-ml-containers/log-events/063b2f62-140d-4da2-9c60-3397899616cb",
+                "cloudWatchLogsArn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/codebuild/spaceport-ml-containers:log-stream:063b2f62-140d-4da2-9c60-3397899616cb"
+            },
+            "timeoutInMinutes": 120,
+            "queuedTimeoutInMinutes": 30,
+            "buildComplete": true,
+            "initiator": "root",
+            "encryptionKey": "arn:aws:kms:us-west-2:975050048887:alias/aws/s3"
+        },
+        {
+            "id": "spaceport-ml-containers:531ba12a-75a3-42bf-b742-9351ed274d47",
+            "arn": "arn:aws:codebuild:us-west-2:975050048887:build/spaceport-ml-containers:531ba12a-75a3-42bf-b742-9351ed274d47",
+            "buildNumber": 702,
+            "startTime": "2026-05-18T11:28:24.528000-06:00",
+            "endTime": "2026-05-18T11:44:55.587000-06:00",
+            "currentPhase": "COMPLETED",
+            "buildStatus": "SUCCEEDED",
+            "sourceVersion": "a24d3603537db9c28b9cdc50f4fc48db0bcadc27",
+            "resolvedSourceVersion": "a24d3603537db9c28b9cdc50f4fc48db0bcadc27",
+            "projectName": "spaceport-ml-containers",
+            "phases": [
+                {
+                    "phaseType": "SUBMITTED",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:28:24.528000-06:00",
+                    "endTime": "2026-05-18T11:28:24.685000-06:00",
+                    "durationInSeconds": 0
+                },
+                {
+                    "phaseType": "QUEUED",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:28:24.685000-06:00",
+                    "endTime": "2026-05-18T11:28:25.345000-06:00",
+                    "durationInSeconds": 0
+                },
+                {
+                    "phaseType": "PROVISIONING",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:28:25.345000-06:00",
+                    "endTime": "2026-05-18T11:28:33.427000-06:00",
+                    "durationInSeconds": 8,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "DOWNLOAD_SOURCE",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:28:33.427000-06:00",
+                    "endTime": "2026-05-18T11:28:54.634000-06:00",
+                    "durationInSeconds": 21,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "INSTALL",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:28:54.634000-06:00",
+                    "endTime": "2026-05-18T11:29:20.555000-06:00",
+                    "durationInSeconds": 25,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "PRE_BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:29:20.555000-06:00",
+                    "endTime": "2026-05-18T11:29:30.742000-06:00",
+                    "durationInSeconds": 10,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:29:30.742000-06:00",
+                    "endTime": "2026-05-18T11:44:52.875000-06:00",
+                    "durationInSeconds": 922,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "POST_BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:44:52.875000-06:00",
+                    "endTime": "2026-05-18T11:44:55.200000-06:00",
+                    "durationInSeconds": 2,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "UPLOAD_ARTIFACTS",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:44:55.200000-06:00",
+                    "endTime": "2026-05-18T11:44:55.279000-06:00",
+                    "durationInSeconds": 0,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "FINALIZING",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:44:55.279000-06:00",
+                    "endTime": "2026-05-18T11:44:55.587000-06:00",
+                    "durationInSeconds": 0,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": "Failed to report build status: There's no access token found for this account"
+                        },
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "COMPLETED",
+                    "startTime": "2026-05-18T11:44:55.587000-06:00"
+                }
+            ],
+            "source": {
+                "type": "GITHUB",
+                "location": "https://github.com/HansenHomeAI/v0-spaceport-website.git",
+                "gitCloneDepth": 5,
+                "buildspec": "buildspec.yml",
+                "reportBuildStatus": true,
+                "insecureSsl": false
+            },
+            "secondarySources": [],
+            "secondarySourceVersions": [],
+            "artifacts": {
+                "location": ""
+            },
+            "cache": {
+                "type": "S3",
+                "location": "spaceport-build-cache/codebuild-cache"
+            },
+            "environment": {
+                "type": "LINUX_CONTAINER",
+                "image": "aws/codebuild/standard:7.0",
+                "computeType": "BUILD_GENERAL1_LARGE",
+                "environmentVariables": [
+                    {
+                        "name": "BUILD_BASE_ONLY",
+                        "value": "0",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "CONTAINERS_TO_BUILD",
+                        "value": "sfm",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "CONTAINERS_TO_IMPORT",
+                        "value": "",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "BRANCH_SUFFIX",
+                        "value": "agent113647md1baselinee2e",
+                        "type": "PLAINTEXT"
+                    }
+                ],
+                "privilegedMode": true,
+                "imagePullCredentialsType": "CODEBUILD"
+            },
+            "serviceRole": "arn:aws:iam::975050048887:role/CodeBuildServiceRole",
+            "logs": {
+                "groupName": "/aws/codebuild/spaceport-ml-containers",
+                "streamName": "531ba12a-75a3-42bf-b742-9351ed274d47",
+                "deepLink": "https://console.aws.amazon.com/cloudwatch/home?region=us-west-2#logsV2:log-groups/log-group/$252Faws$252Fcodebuild$252Fspaceport-ml-containers/log-events/531ba12a-75a3-42bf-b742-9351ed274d47",
+                "cloudWatchLogsArn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/codebuild/spaceport-ml-containers:log-stream:531ba12a-75a3-42bf-b742-9351ed274d47"
+            },
+            "timeoutInMinutes": 120,
+            "queuedTimeoutInMinutes": 30,
+            "buildComplete": true,
+            "initiator": "root",
+            "encryptionKey": "arn:aws:kms:us-west-2:975050048887:alias/aws/s3"
+        },
+        {
+            "id": "spaceport-ml-containers:e2ac4bd6-5627-49fa-8007-1d57c634cb01",
+            "arn": "arn:aws:codebuild:us-west-2:975050048887:build/spaceport-ml-containers:e2ac4bd6-5627-49fa-8007-1d57c634cb01",
+            "buildNumber": 701,
+            "startTime": "2026-05-18T11:05:28.257000-06:00",
+            "endTime": "2026-05-18T11:18:24.606000-06:00",
+            "currentPhase": "COMPLETED",
+            "buildStatus": "SUCCEEDED",
+            "sourceVersion": "414560c5818ed5d5173936697924de4ac5cb2c7f",
+            "resolvedSourceVersion": "414560c5818ed5d5173936697924de4ac5cb2c7f",
+            "projectName": "spaceport-ml-containers",
+            "phases": [
+                {
+                    "phaseType": "SUBMITTED",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:05:28.257000-06:00",
+                    "endTime": "2026-05-18T11:05:28.401000-06:00",
+                    "durationInSeconds": 0
+                },
+                {
+                    "phaseType": "QUEUED",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:05:28.401000-06:00",
+                    "endTime": "2026-05-18T11:05:28.987000-06:00",
+                    "durationInSeconds": 0
+                },
+                {
+                    "phaseType": "PROVISIONING",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:05:28.987000-06:00",
+                    "endTime": "2026-05-18T11:05:38.151000-06:00",
+                    "durationInSeconds": 9,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "DOWNLOAD_SOURCE",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:05:38.151000-06:00",
+                    "endTime": "2026-05-18T11:05:53.485000-06:00",
+                    "durationInSeconds": 15,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "INSTALL",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:05:53.485000-06:00",
+                    "endTime": "2026-05-18T11:06:20.865000-06:00",
+                    "durationInSeconds": 27,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "PRE_BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:06:20.865000-06:00",
+                    "endTime": "2026-05-18T11:06:31.343000-06:00",
+                    "durationInSeconds": 10,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:06:31.343000-06:00",
+                    "endTime": "2026-05-18T11:18:21.142000-06:00",
+                    "durationInSeconds": 709,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "POST_BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:18:21.142000-06:00",
+                    "endTime": "2026-05-18T11:18:24.228000-06:00",
+                    "durationInSeconds": 3,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "UPLOAD_ARTIFACTS",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:18:24.228000-06:00",
+                    "endTime": "2026-05-18T11:18:24.307000-06:00",
+                    "durationInSeconds": 0,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "FINALIZING",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-18T11:18:24.307000-06:00",
+                    "endTime": "2026-05-18T11:18:24.606000-06:00",
+                    "durationInSeconds": 0,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": "Failed to report build status: There's no access token found for this account"
+                        },
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "COMPLETED",
+                    "startTime": "2026-05-18T11:18:24.606000-06:00"
+                }
+            ],
+            "source": {
+                "type": "GITHUB",
+                "location": "https://github.com/HansenHomeAI/v0-spaceport-website.git",
+                "gitCloneDepth": 5,
+                "buildspec": "buildspec.yml",
+                "reportBuildStatus": true,
+                "insecureSsl": false
+            },
+            "secondarySources": [],
+            "secondarySourceVersions": [],
+            "artifacts": {
+                "location": ""
+            },
+            "cache": {
+                "type": "S3",
+                "location": "spaceport-build-cache/codebuild-cache"
+            },
+            "environment": {
+                "type": "LINUX_CONTAINER",
+                "image": "aws/codebuild/standard:7.0",
+                "computeType": "BUILD_GENERAL1_LARGE",
+                "environmentVariables": [
+                    {
+                        "name": "BUILD_BASE_ONLY",
+                        "value": "0",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "CONTAINERS_TO_BUILD",
+                        "value": "sfm",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "CONTAINERS_TO_IMPORT",
+                        "value": "",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "BRANCH_SUFFIX",
+                        "value": "agent113647md1baselinee2e",
+                        "type": "PLAINTEXT"
+                    }
+                ],
+                "privilegedMode": true,
+                "imagePullCredentialsType": "CODEBUILD"
+            },
+            "serviceRole": "arn:aws:iam::975050048887:role/CodeBuildServiceRole",
+            "logs": {
+                "groupName": "/aws/codebuild/spaceport-ml-containers",
+                "streamName": "e2ac4bd6-5627-49fa-8007-1d57c634cb01",
+                "deepLink": "https://console.aws.amazon.com/cloudwatch/home?region=us-west-2#logsV2:log-groups/log-group/$252Faws$252Fcodebuild$252Fspaceport-ml-containers/log-events/e2ac4bd6-5627-49fa-8007-1d57c634cb01",
+                "cloudWatchLogsArn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/codebuild/spaceport-ml-containers:log-stream:e2ac4bd6-5627-49fa-8007-1d57c634cb01"
+            },
+            "timeoutInMinutes": 120,
+            "queuedTimeoutInMinutes": 30,
+            "buildComplete": true,
+            "initiator": "root",
+            "encryptionKey": "arn:aws:kms:us-west-2:975050048887:alias/aws/s3"
+        },
+        {
+            "id": "spaceport-ml-containers:7d8db46a-66d5-44fc-9316-1b7aa767dfbc",
+            "arn": "arn:aws:codebuild:us-west-2:975050048887:build/spaceport-ml-containers:7d8db46a-66d5-44fc-9316-1b7aa767dfbc",
+            "buildNumber": 700,
+            "startTime": "2026-05-15T20:39:05.228000-06:00",
+            "endTime": "2026-05-15T20:48:50.887000-06:00",
+            "currentPhase": "COMPLETED",
+            "buildStatus": "SUCCEEDED",
+            "sourceVersion": "9e251de9f70c207e0190a6710686a0ecb8e6e3eb",
+            "resolvedSourceVersion": "9e251de9f70c207e0190a6710686a0ecb8e6e3eb",
+            "projectName": "spaceport-ml-containers",
+            "phases": [
+                {
+                    "phaseType": "SUBMITTED",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T20:39:05.228000-06:00",
+                    "endTime": "2026-05-15T20:39:05.389000-06:00",
+                    "durationInSeconds": 0
+                },
+                {
+                    "phaseType": "QUEUED",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T20:39:05.389000-06:00",
+                    "endTime": "2026-05-15T20:39:06.065000-06:00",
+                    "durationInSeconds": 0
+                },
+                {
+                    "phaseType": "PROVISIONING",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T20:39:06.065000-06:00",
+                    "endTime": "2026-05-15T20:39:13.856000-06:00",
+                    "durationInSeconds": 7,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "DOWNLOAD_SOURCE",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T20:39:13.856000-06:00",
+                    "endTime": "2026-05-15T20:39:23.532000-06:00",
+                    "durationInSeconds": 9,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "INSTALL",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T20:39:23.532000-06:00",
+                    "endTime": "2026-05-15T20:39:45.953000-06:00",
+                    "durationInSeconds": 22,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "PRE_BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T20:39:45.953000-06:00",
+                    "endTime": "2026-05-15T20:39:55.913000-06:00",
+                    "durationInSeconds": 9,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T20:39:55.913000-06:00",
+                    "endTime": "2026-05-15T20:48:46.215000-06:00",
+                    "durationInSeconds": 530,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "POST_BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T20:48:46.215000-06:00",
+                    "endTime": "2026-05-15T20:48:50.519000-06:00",
+                    "durationInSeconds": 4,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "UPLOAD_ARTIFACTS",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T20:48:50.519000-06:00",
+                    "endTime": "2026-05-15T20:48:50.588000-06:00",
+                    "durationInSeconds": 0,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "FINALIZING",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T20:48:50.588000-06:00",
+                    "endTime": "2026-05-15T20:48:50.887000-06:00",
+                    "durationInSeconds": 0,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": "Failed to report build status: There's no access token found for this account"
+                        },
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "COMPLETED",
+                    "startTime": "2026-05-15T20:48:50.887000-06:00"
+                }
+            ],
+            "source": {
+                "type": "GITHUB",
+                "location": "https://github.com/HansenHomeAI/v0-spaceport-website.git",
+                "gitCloneDepth": 5,
+                "buildspec": "buildspec.yml",
+                "reportBuildStatus": true,
+                "insecureSsl": false
+            },
+            "secondarySources": [],
+            "secondarySourceVersions": [],
+            "artifacts": {
+                "location": ""
+            },
+            "cache": {
+                "type": "S3",
+                "location": "spaceport-build-cache/codebuild-cache"
+            },
+            "environment": {
+                "type": "LINUX_CONTAINER",
+                "image": "aws/codebuild/standard:7.0",
+                "computeType": "BUILD_GENERAL1_LARGE",
+                "environmentVariables": [
+                    {
+                        "name": "BUILD_BASE_ONLY",
+                        "value": "0",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "BRANCH_SUFFIX",
+                        "value": "agent73948216sfmproductionspine",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "CONTAINERS_TO_IMPORT",
+                        "value": "",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "CONTAINERS_TO_BUILD",
+                        "value": "3dgs",
+                        "type": "PLAINTEXT"
+                    }
+                ],
+                "privilegedMode": true,
+                "imagePullCredentialsType": "CODEBUILD"
+            },
+            "serviceRole": "arn:aws:iam::975050048887:role/CodeBuildServiceRole",
+            "logs": {
+                "groupName": "/aws/codebuild/spaceport-ml-containers",
+                "streamName": "7d8db46a-66d5-44fc-9316-1b7aa767dfbc",
+                "deepLink": "https://console.aws.amazon.com/cloudwatch/home?region=us-west-2#logsV2:log-groups/log-group/$252Faws$252Fcodebuild$252Fspaceport-ml-containers/log-events/7d8db46a-66d5-44fc-9316-1b7aa767dfbc",
+                "cloudWatchLogsArn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/codebuild/spaceport-ml-containers:log-stream:7d8db46a-66d5-44fc-9316-1b7aa767dfbc"
+            },
+            "timeoutInMinutes": 120,
+            "queuedTimeoutInMinutes": 30,
+            "buildComplete": true,
+            "initiator": "root",
+            "encryptionKey": "arn:aws:kms:us-west-2:975050048887:alias/aws/s3"
+        },
+        {
+            "id": "spaceport-ml-containers:f2c51eac-e42c-46e9-a7a8-21349b3df38e",
+            "arn": "arn:aws:codebuild:us-west-2:975050048887:build/spaceport-ml-containers:f2c51eac-e42c-46e9-a7a8-21349b3df38e",
+            "buildNumber": 699,
+            "startTime": "2026-05-15T20:05:20.190000-06:00",
+            "endTime": "2026-05-15T20:19:56.597000-06:00",
+            "currentPhase": "COMPLETED",
+            "buildStatus": "SUCCEEDED",
+            "sourceVersion": "ecf6dbd732208d249783a723d7fa0734d41424f7",
+            "resolvedSourceVersion": "ecf6dbd732208d249783a723d7fa0734d41424f7",
+            "projectName": "spaceport-ml-containers",
+            "phases": [
+                {
+                    "phaseType": "SUBMITTED",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T20:05:20.190000-06:00",
+                    "endTime": "2026-05-15T20:05:20.355000-06:00",
+                    "durationInSeconds": 0
+                },
+                {
+                    "phaseType": "QUEUED",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T20:05:20.355000-06:00",
+                    "endTime": "2026-05-15T20:05:21.009000-06:00",
+                    "durationInSeconds": 0
+                },
+                {
+                    "phaseType": "PROVISIONING",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T20:05:21.009000-06:00",
+                    "endTime": "2026-05-15T20:05:30.282000-06:00",
+                    "durationInSeconds": 9,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "DOWNLOAD_SOURCE",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T20:05:30.282000-06:00",
+                    "endTime": "2026-05-15T20:05:40.220000-06:00",
+                    "durationInSeconds": 9,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "INSTALL",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T20:05:40.220000-06:00",
+                    "endTime": "2026-05-15T20:06:05.557000-06:00",
+                    "durationInSeconds": 25,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "PRE_BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T20:06:05.557000-06:00",
+                    "endTime": "2026-05-15T20:06:15.990000-06:00",
+                    "durationInSeconds": 10,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T20:06:15.990000-06:00",
+                    "endTime": "2026-05-15T20:19:51.714000-06:00",
+                    "durationInSeconds": 815,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "POST_BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T20:19:51.714000-06:00",
+                    "endTime": "2026-05-15T20:19:56.203000-06:00",
+                    "durationInSeconds": 4,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "UPLOAD_ARTIFACTS",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T20:19:56.203000-06:00",
+                    "endTime": "2026-05-15T20:19:56.276000-06:00",
+                    "durationInSeconds": 0,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "FINALIZING",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T20:19:56.276000-06:00",
+                    "endTime": "2026-05-15T20:19:56.597000-06:00",
+                    "durationInSeconds": 0,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": "Failed to report build status: There's no access token found for this account"
+                        },
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "COMPLETED",
+                    "startTime": "2026-05-15T20:19:56.597000-06:00"
+                }
+            ],
+            "source": {
+                "type": "GITHUB",
+                "location": "https://github.com/HansenHomeAI/v0-spaceport-website.git",
+                "gitCloneDepth": 5,
+                "buildspec": "buildspec.yml",
+                "reportBuildStatus": true,
+                "insecureSsl": false
+            },
+            "secondarySources": [],
+            "secondarySourceVersions": [],
+            "artifacts": {
+                "location": ""
+            },
+            "cache": {
+                "type": "S3",
+                "location": "spaceport-build-cache/codebuild-cache"
+            },
+            "environment": {
+                "type": "LINUX_CONTAINER",
+                "image": "aws/codebuild/standard:7.0",
+                "computeType": "BUILD_GENERAL1_LARGE",
+                "environmentVariables": [
+                    {
+                        "name": "BUILD_BASE_ONLY",
+                        "value": "0",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "BRANCH_SUFFIX",
+                        "value": "agent73948216sfmproductionspine",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "CONTAINERS_TO_IMPORT",
+                        "value": "",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "CONTAINERS_TO_BUILD",
+                        "value": "3dgs",
+                        "type": "PLAINTEXT"
+                    }
+                ],
+                "privilegedMode": true,
+                "imagePullCredentialsType": "CODEBUILD"
+            },
+            "serviceRole": "arn:aws:iam::975050048887:role/CodeBuildServiceRole",
+            "logs": {
+                "groupName": "/aws/codebuild/spaceport-ml-containers",
+                "streamName": "f2c51eac-e42c-46e9-a7a8-21349b3df38e",
+                "deepLink": "https://console.aws.amazon.com/cloudwatch/home?region=us-west-2#logsV2:log-groups/log-group/$252Faws$252Fcodebuild$252Fspaceport-ml-containers/log-events/f2c51eac-e42c-46e9-a7a8-21349b3df38e",
+                "cloudWatchLogsArn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/codebuild/spaceport-ml-containers:log-stream:f2c51eac-e42c-46e9-a7a8-21349b3df38e"
+            },
+            "timeoutInMinutes": 120,
+            "queuedTimeoutInMinutes": 30,
+            "buildComplete": true,
+            "initiator": "root",
+            "encryptionKey": "arn:aws:kms:us-west-2:975050048887:alias/aws/s3"
+        },
+        {
+            "id": "spaceport-ml-containers:d4691f87-0684-47fe-a235-3fa7c5c6e98d",
+            "arn": "arn:aws:codebuild:us-west-2:975050048887:build/spaceport-ml-containers:d4691f87-0684-47fe-a235-3fa7c5c6e98d",
+            "buildNumber": 698,
+            "startTime": "2026-05-15T03:40:25.899000-06:00",
+            "endTime": "2026-05-15T03:44:33.822000-06:00",
+            "currentPhase": "COMPLETED",
+            "buildStatus": "SUCCEEDED",
+            "sourceVersion": "5682b21363c305626706e4b40edcff49a7bd1fb2",
+            "resolvedSourceVersion": "5682b21363c305626706e4b40edcff49a7bd1fb2",
+            "projectName": "spaceport-ml-containers",
+            "phases": [
+                {
+                    "phaseType": "SUBMITTED",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T03:40:25.899000-06:00",
+                    "endTime": "2026-05-15T03:40:26.068000-06:00",
+                    "durationInSeconds": 0
+                },
+                {
+                    "phaseType": "QUEUED",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T03:40:26.068000-06:00",
+                    "endTime": "2026-05-15T03:40:26.702000-06:00",
+                    "durationInSeconds": 0
+                },
+                {
+                    "phaseType": "PROVISIONING",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T03:40:26.702000-06:00",
+                    "endTime": "2026-05-15T03:40:35.969000-06:00",
+                    "durationInSeconds": 9,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "DOWNLOAD_SOURCE",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T03:40:35.969000-06:00",
+                    "endTime": "2026-05-15T03:40:45.988000-06:00",
+                    "durationInSeconds": 10,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "INSTALL",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T03:40:45.988000-06:00",
+                    "endTime": "2026-05-15T03:41:12.029000-06:00",
+                    "durationInSeconds": 26,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "PRE_BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T03:41:12.029000-06:00",
+                    "endTime": "2026-05-15T03:41:22.506000-06:00",
+                    "durationInSeconds": 10,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T03:41:22.506000-06:00",
+                    "endTime": "2026-05-15T03:44:32.464000-06:00",
+                    "durationInSeconds": 189,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "POST_BUILD",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T03:44:32.464000-06:00",
+                    "endTime": "2026-05-15T03:44:33.457000-06:00",
+                    "durationInSeconds": 0,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "UPLOAD_ARTIFACTS",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T03:44:33.457000-06:00",
+                    "endTime": "2026-05-15T03:44:33.521000-06:00",
+                    "durationInSeconds": 0,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "FINALIZING",
+                    "phaseStatus": "SUCCEEDED",
+                    "startTime": "2026-05-15T03:44:33.521000-06:00",
+                    "endTime": "2026-05-15T03:44:33.822000-06:00",
+                    "durationInSeconds": 0,
+                    "contexts": [
+                        {
+                            "statusCode": "",
+                            "message": "Failed to report build status: There's no access token found for this account"
+                        },
+                        {
+                            "statusCode": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "phaseType": "COMPLETED",
+                    "startTime": "2026-05-15T03:44:33.822000-06:00"
+                }
+            ],
+            "source": {
+                "type": "GITHUB",
+                "location": "https://github.com/HansenHomeAI/v0-spaceport-website.git",
+                "gitCloneDepth": 5,
+                "buildspec": "buildspec.yml",
+                "reportBuildStatus": true,
+                "insecureSsl": false
+            },
+            "secondarySources": [],
+            "secondarySourceVersions": [],
+            "artifacts": {
+                "location": ""
+            },
+            "cache": {
+                "type": "S3",
+                "location": "spaceport-build-cache/codebuild-cache"
+            },
+            "environment": {
+                "type": "LINUX_CONTAINER",
+                "image": "aws/codebuild/standard:7.0",
+                "computeType": "BUILD_GENERAL1_LARGE",
+                "environmentVariables": [
+                    {
+                        "name": "BUILD_BASE_ONLY",
+                        "value": "0",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "CONTAINERS_TO_IMPORT",
+                        "value": "",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "BRANCH_SUFFIX",
+                        "value": "agent113647md1baselinee2e",
+                        "type": "PLAINTEXT"
+                    },
+                    {
+                        "name": "CONTAINERS_TO_BUILD",
+                        "value": "compressor",
+                        "type": "PLAINTEXT"
+                    }
+                ],
+                "privilegedMode": true,
+                "imagePullCredentialsType": "CODEBUILD"
+            },
+            "serviceRole": "arn:aws:iam::975050048887:role/CodeBuildServiceRole",
+            "logs": {
+                "groupName": "/aws/codebuild/spaceport-ml-containers",
+                "streamName": "d4691f87-0684-47fe-a235-3fa7c5c6e98d",
+                "deepLink": "https://console.aws.amazon.com/cloudwatch/home?region=us-west-2#logsV2:log-groups/log-group/$252Faws$252Fcodebuild$252Fspaceport-ml-containers/log-events/d4691f87-0684-47fe-a235-3fa7c5c6e98d",
+                "cloudWatchLogsArn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/codebuild/spaceport-ml-containers:log-stream:d4691f87-0684-47fe-a235-3fa7c5c6e98d"
+            },
+            "timeoutInMinutes": 120,
+            "queuedTimeoutInMinutes": 30,
+            "buildComplete": true,
+            "initiator": "root",
+            "encryptionKey": "arn:aws:kms:us-west-2:975050048887:alias/aws/s3"
+        }
+    ],
+    "buildsNotFound": []
+}
