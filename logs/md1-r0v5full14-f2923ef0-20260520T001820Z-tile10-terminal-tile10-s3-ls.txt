@@ -1,0 +1,4 @@
+2026-05-19 15:05:55  121.2 MiB model.tar.gz
+
+Total Objects: 1
+   Total Size: 121.2 MiB

@@ -1,0 +1,46 @@
+{
+  "timestamp_utc": "20260520T001820Z",
+  "head_before_evidence_commit": "0ba7ff5e533a253ca0fb7910e1ecffed7a58a837",
+  "last_meaningful_code_head": "f2923ef00417750f4efdfdc904c328645c168509",
+  "last_meaningful_exact_head_cdk": "26107107781 green",
+  "tile10_final": {
+    "Name": "md1-r0v5full14-f2923-1779209514-tile-10",
+    "Status": "Completed",
+    "Secondary": "Completed",
+    "TrainingTime": 12186,
+    "Billable": 12186,
+    "Failure": null,
+    "Output": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_10/md1-r0v5full14-f2923-1779209514-tile-10/output/model.tar.gz",
+    "CreationTime": "2026-05-19T14:28:58.057000-06:00",
+    "TrainingStartTime": "2026-05-19T14:29:39.360000-06:00",
+    "TrainingEndTime": "2026-05-19T17:52:45.313000-06:00",
+    "LastModifiedTime": "2026-05-19T17:52:45.544000-06:00"
+  },
+  "terminal_rollup_json": "logs/md1-r0v5full14-f2923ef0-20260520T001820Z-tile10-terminal-terminal-rollup.json",
+  "training_inprogress": [],
+  "training_stopping": [],
+  "processing_inprogress": [
+    {
+      "Name": "cvhr-viscell-full-l09-1779233441",
+      "Status": "InProgress",
+      "Created": "2026-05-19T17:30:42.803000-06:00",
+      "Modified": "2026-05-19T17:33:14.032000-06:00"
+    }
+  ],
+  "md1_processing_inprogress": [],
+  "cvhr_processing_inprogress": [
+    {
+      "Name": "cvhr-viscell-full-l09-1779233441",
+      "Status": "InProgress",
+      "Created": "2026-05-19T17:30:42.803000-06:00",
+      "Modified": "2026-05-19T17:33:14.032000-06:00"
+    }
+  ],
+  "stepfunctions_running": [],
+  "codebuild_active": [],
+  "full14_billable_seconds": 43542,
+  "full14_debited_usd": 12.095,
+  "full14_cap_usd": 10.5,
+  "full14_over_cap_usd": 1.595,
+  "decision": "tile10 terminal billable recorded; full14 leaf stage complete/debited; no merge/review/LOD/viewer/promotion launched without explicit next gate"
+}

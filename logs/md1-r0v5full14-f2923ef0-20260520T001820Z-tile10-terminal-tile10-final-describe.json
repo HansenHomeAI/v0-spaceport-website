@@ -1,0 +1,13 @@
+{
+    "Name": "md1-r0v5full14-f2923-1779209514-tile-10",
+    "Status": "Completed",
+    "Secondary": "Completed",
+    "TrainingTime": 12186,
+    "Billable": 12186,
+    "Failure": null,
+    "Output": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5full14-f2923ef0-20260519T1645Z/tiles/tile_10/md1-r0v5full14-f2923-1779209514-tile-10/output/model.tar.gz",
+    "CreationTime": "2026-05-19T14:28:58.057000-06:00",
+    "TrainingStartTime": "2026-05-19T14:29:39.360000-06:00",
+    "TrainingEndTime": "2026-05-19T17:52:45.313000-06:00",
+    "LastModifiedTime": "2026-05-19T17:52:45.544000-06:00"
+}

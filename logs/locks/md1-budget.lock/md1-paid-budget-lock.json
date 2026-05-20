@@ -4,7 +4,7 @@
     "head": "f2923ef00417750f4efdfdc904c328645c168509",
     "currency": "USD",
     "starting_remaining_after_tile04": 14.0,
-    "remaining_reserved_or_available": 2.93138,
+    "remaining_reserved_or_available": 1.33638,
     "stage_caps": {
         "sentinel_merge": 0.5,
         "sentinel_review": 0.75,
@@ -132,7 +132,7 @@
         {
             "stage": "full14_training",
             "cap_usd": 10.5,
-            "status": "post_leaf_preflight_passed_tile10_stopping_pending_final_billable",
+            "status": "completed_debited_over_cap_due_tile10_uploading_control_plane_hang",
             "lock_dir": "logs/locks/full14_training-md1-r0v5full14-f2923ef0-20260519T1645Z-f2923ef0.lock",
             "experiment_id": "md1-r0v5full14-f2923ef0-20260519T1645Z",
             "job_prefix": "md1-r0v5full14-f2923",
@@ -180,7 +180,7 @@
             "tile_13_status": "Submitted",
             "tile_13_job_name": "md1-r0v5full14-f2923-1779209514-tile-13",
             "tile_13_create_request_json": "logs/md1-r0v5full14-f2923ef0-20260519T2145Z-manual-tile_13-create-training-job.json",
-            "tile_10_status": "Stopping/Uploading after stop request; artifact preflight passed; final billable time pending AWS terminal status",
+            "tile_10_status": "Completed",
             "post_leaf_preflight_summary_json": "logs/md1-r0v5full14-f2923ef0-20260519T232800Z-leaf-preflight/aggregate-summary.json",
             "post_leaf_gate_summary_json": "logs/md1-r0v5full14-f2923ef0-20260519T232800Z-leaf-preflight/aggregate-gate-summary.json",
             "leaf_describe_rollup_json": "logs/md1-r0v5full14-f2923ef0-20260519T234100Z-leaf-describe-rollup.json",
@@ -192,12 +192,15 @@
             "stopping_sagemaker_job_count": 1,
             "known_billable_seconds_excluding_tile10_null": 31356,
             "known_billable_usd_excluding_tile10_null": 8.71,
-            "conservative_training_seconds_including_tile10_stopping": 43302,
-            "conservative_training_usd_including_tile10_stopping": 12.028333,
-            "post_leaf_live_summary_json": "logs/md1-r0v5full14-f2923ef0-20260519T234728Z-postleaf-live-summary.json",
-            "tile_10_latest_training_time_seconds": 11946,
-            "tile_10_latest_billable_seconds": null,
-            "last_checked_utc": "20260519T234728Z"
+            "post_leaf_live_summary_json": "logs/md1-r0v5full14-f2923ef0-20260520T001820Z-tile10-terminal-summary.json",
+            "tile_10_latest_training_time_seconds": 12186,
+            "tile_10_latest_billable_seconds": 12186,
+            "last_checked_utc": "20260520T001820Z",
+            "completed_at_utc": "20260520T001820Z",
+            "terminal_rollup_json": "logs/md1-r0v5full14-f2923ef0-20260520T001820Z-tile10-terminal-terminal-rollup.json",
+            "final_billable_seconds": 43542,
+            "final_debited_usd": 12.095,
+            "cap_exceeded_by_usd": 1.595
         }
     ],
     "debits": [
@@ -243,13 +246,33 @@
             "final_describe_json": "logs/md1-r0v5repair-f2923ef0-20260519T154420Z-leaf-final-describe.json",
             "preflight_json": "logs/md1-r0v5repair-f2923ef0-20260519T154420Z-tile_04-leaf-preflight.json",
             "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-r0v5repair-f2923ef0-20260519T154420Z/tiles/tile_04/md1-r0v5repair-f2923-1779205460-1779205616-tile-04/output/model.tar.gz"
+        },
+        {
+            "stage": "full14_training",
+            "job_prefix": "md1-r0v5full14-f2923-1779209514",
+            "terminal_status": "Completed",
+            "completed_sagemaker_job_count": 14,
+            "runtime_seconds": 43542,
+            "debited_usd": 12.095,
+            "cap_usd": 10.5,
+            "cap_exceeded_by_usd": 1.595,
+            "cap_exception_reason": "tile_10 succeeded and artifact existed, but SageMaker control plane remained Uploading after training; final billable was only available after terminal completion.",
+            "pricing_basis": "conservative ml.g4dn.xlarge $1.00/hr",
+            "debited_at_utc": "20260520T001820Z",
+            "terminal_rollup_json": "logs/md1-r0v5full14-f2923ef0-20260520T001820Z-tile10-terminal-terminal-rollup.json",
+            "tile10_final_describe_json": "logs/md1-r0v5full14-f2923ef0-20260520T001820Z-tile10-terminal-tile10-final-describe.json",
+            "post_leaf_preflight_summary_json": "logs/md1-r0v5full14-f2923ef0-20260519T232800Z-leaf-preflight/aggregate-summary.json",
+            "post_leaf_gate_summary_json": "logs/md1-r0v5full14-f2923ef0-20260519T232800Z-leaf-preflight/aggregate-gate-summary.json",
+            "remote_merge_plan_json": "logs/md1-r0v5full14-f2923ef0-20260519T232800Z-remote-merge-plan.json",
+            "remote_merge_payload_json": "logs/md1-r0v5full14-f2923ef0-20260519T232800Z-remote-merge-payload.json",
+            "note": "Full14 leaf stage is complete and debited; no merge/review/LOD/viewer/promotion launched under this debit."
         }
     ],
     "pricing_basis": {
         "ml.g4dn.xlarge_usd_per_hour": 1.0,
         "source": "conservative fallback until current AWS pricing is fetched"
     },
-    "last_updated_utc": "20260519T234728Z",
-    "latest_live_state_evidence": "tile_10 remains Stopping/Uploading with null billable/output; training InProgress empty; MD1 processing empty; Step Functions and spaceport-ml-containers CodeBuild idle; CV-HR processing non-blocking only; no merge/review/LOD/viewer/promotion launched",
-    "notes": "full14 leaf artifacts and gates passed; full14 debit pending tile_10 final AWS billable time; no merge/review/LOD/viewer/promotion authorized."
+    "last_updated_utc": "20260520T001820Z",
+    "latest_live_state_evidence": "tile_10 reached terminal Completed with BillableTimeInSeconds=12186; full14 leaf stage debited $12.095000; training and MD1 processing are idle; Step Functions and spaceport-ml-containers CodeBuild idle; CV-HR processing non-blocking only; no merge/review/LOD/viewer/promotion launched.",
+    "notes": "full14 leaf artifacts and gates passed; full14 training debit recorded; next compute requires explicit allowed gate for merge/review/LOD/viewer/promotion."
 }
