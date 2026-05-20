@@ -1,0 +1,93 @@
+timestamp_utc=20260520T041342Z
+
+## git
+agent-113647-md1-baseline-e2e
+e1c45f40d45ffc748f1e48a1606ef01a228b5eee
+?? logs/md1-shrunk/polls/20260520T041342Z-preflight/
+
+## aws sts get-caller-identity
+{
+    "UserId": "975050048887",
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root"
+}
+
+## stepfunctions RUNNING
+staging_running=0
+br8abc_running=0
+
+## stepfunctions describe known execution (summary)
+{
+  "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-br-8abcbd5662:execution-md1-shrunk-prodspine-wlight-202605190027",
+  "status": "SUCCEEDED",
+  "startDate": "2026-05-18T18:28:13.202000-06:00",
+  "stopDate": "2026-05-18T21:03:39.663000-06:00",
+  "redriveStatus": "NOT_REDRIVABLE"
+}
+
+## sagemaker InProgress counts
+processing_inprogress=0
+training_inprogress=0
+
+## local dev server listeners
+30330 /bin/zsh -c cd /Users/gabrielhansen/MD1-Baseline && ts=$(date -u +%Y%m%dT%H%M%SZ) && out="logs/md1-shrunk/polls/${ts}-preflight" && mkdir -p "$out" && {\012  echo "timestamp_utc=${ts}";\012  echo;\012  echo "## git";\012  git rev-parse --abbrev-ref HEAD;\012  git rev-parse HEAD;\012  git status --porcelain=v1;\012  echo;\012  echo "## aws sts get-caller-identity";\012  aws sts get-caller-identity --output json | tee "$out/aws-sts-get-caller-identity.json";\012  echo;\012  echo "## stepfunctions RUNNING";\012  aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --status-filter RUNNING --max-results 10 --output json | tee "$out/stepfunctions-running-staging.json" >/dev/null;\012  staging_running=$(jq -r '.executions | length' "$out/stepfunctions-running-staging.json");\012  aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-8abcbd5662 --status-filter RUNNING --max-results 10 --output json | tee "$out/stepfunctions-running-br8abc.json" >/dev/null;\012  br8abc_running=$(jq -r '.executions | length' "$out/stepfunctions-running-br8abc.json");\012  echo "staging_running=${staging_running}";\012  echo "br8abc_running=${br8abc_running}";\012  echo;\012  echo "## stepfunctions describe known execution (summary)";\012  aws stepfunctions describe-execution --execution-arn arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-br-8abcbd5662:execution-md1-shrunk-prodspine-wlight-202605190027 --output json | tee "$out/stepfunctions-describe-known.json" | jq '{executionArn,status,startDate,stopDate,redriveStatus}';\012  echo;\012  echo "## sagemaker InProgress counts";\012  aws sagemaker list-processing-jobs --status-equals InProgress --max-results 10 --output json | tee "$out/sagemaker-list-processing-inprogress.json" >/dev/null;\012  processing_inprogress=$(jq -r '.ProcessingJobSummaries | length' "$out/sagemaker-list-processing-inprogress.json");\012  aws sagemaker list-training-jobs --status-equals InProgress --max-results 10 --output json | tee "$out/sagemaker-list-training-inprogress.json" >/dev/null;\012  training_inprogress=$(jq -r '.TrainingJobSummaries | length' "$out/sagemaker-list-training-inprogress.json");\012  echo "processing_inprogress=${processing_inprogress}";\012  echo "training_inprogress=${training_inprogress}";\012  echo;\012  echo "## local dev server listeners";\012  ps ax -o pid=,command= | rg "next dev" || true;\012  echo;\012  echo "## public S3 meta.json HEAD";\012  curl -sI https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json;\012  echo;\012  echo "## edge meta.json HEAD";\012  curl -sI https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json;\012  echo;\012  echo "## gh runs (branch)";\012  gh run list --branch agent-113647-md1-baseline-e2e --limit 20 --json status,conclusion,displayTitle,name,headBranch,event,databaseId,createdAt,updatedAt | tee "$out/gh-run-list.json" | jq -r '.[] | [.status,.conclusion,.displayTitle,.name,.databaseId,.createdAt] | @tsv' | head -n 20;\012} > "$out/preflight.txt" && {\012  echo "# Generated cost-bounded preflight snapshot.";\012  echo "# Source of truth is the captured JSON + preflight.txt.";\012  echo "# Commands executed (approx):";\012  echo "aws sts get-caller-identity --output json > aws-sts-get-caller-identity.json";\012  echo "aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --status-filter RUNNING --max-results 10 --output json > stepfunctions-running-staging.json";\012  echo "aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-8abcbd5662 --status-filter RUNNING --max-results 10 --output json > stepfunctions-running-br8abc.json";\012  echo "aws stepfunctions describe-execution --execution-arn arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-br-8abcbd5662:execution-md1-shrunk-prodspine-wlight-202605190027 --output json > stepfunctions-describe-known.json";\012  echo "aws sagemaker list-processing-jobs --status-equals InProgress --max-results 10 --output json > sagemaker-list-processing-inprogress.json";\012  echo "aws sagemaker list-training-jobs --status-equals InProgress --max-results 10 --output json > sagemaker-list-training-inprogress.json";\012  echo "gh run list --branch agent-113647-md1-baseline-e2e --limit 20 --json status,conclusion,displayTitle,name,headBranch,event,databaseId,createdAt,updatedAt > gh-run-list.json";\012  echo "curl -sI https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json";\012  echo "curl -sI https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json";\012  echo "ps ax -o pid=,command= | rg \"next dev\"";\012} > "$out/run.cmd.txt" && echo "$out"
+30354 rg next dev
+42135 node /Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule/web/node_modules/.bin/next dev --hostname 127.0.0.1 --port 3033
+
+## public S3 meta.json HEAD
+HTTP/1.1 200 OK
+x-amz-id-2: qFDrcVex7aZ5N1/zj2PeDuI1B7+lwSElWy7uAQkpRvOOqe6fWbfznR5WfF/F4BaemZwwY25Zcxo=
+x-amz-request-id: 9Q92MSGP3CVA0XE4
+Date: Wed, 20 May 2026 04:13:49 GMT
+Last-Modified: Tue, 19 May 2026 03:14:11 GMT
+ETag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: lwCX4ptdSjx.9.5LMjn4a8Ervrln8HMA
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1421
+Server: AmazonS3
+
+
+## edge meta.json HEAD
+HTTP/2 200 
+content-type: application/json
+content-length: 1421
+date: Tue, 19 May 2026 14:24:08 GMT
+last-modified: Tue, 19 May 2026 06:37:13 GMT
+etag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+cache-control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: vUW1wpcXNiVbn3gf6_kSkXCXdN6e83vX
+accept-ranges: bytes
+server: AmazonS3
+x-cache: Hit from cloudfront
+via: 1.1 9f5987600ae02814b698233e1842c294.cloudfront.net (CloudFront)
+x-amz-cf-pop: LAX53-P6
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: T_7Z8c-nAp-bFhb9c0OBGmuamhQsOKckD3GksjQGdZnOjBGg0DsOsQ==
+age: 49781
+vary: Origin
+
+
+## gh runs (branch)
+completed	success	fix: retry iframe screenshot for md1 camera-suite	CDK Deploy	26138455344	2026-05-20T02:57:26Z
+completed	success	fix: retry iframe screenshot for md1 camera-suite	Deploy Next.js to Cloudflare Pages	26138455345	2026-05-20T02:57:26Z
+completed	success	chore: md1-shrunk heartbeat verify strict gates	CDK Deploy	26127221994	2026-05-19T21:45:18Z
+completed	success	feat: harden md1-shrunk camera suite baselines	CDK Deploy	26111270602	2026-05-19T16:38:50Z
+completed	success	feat: harden md1-shrunk camera suite baselines	Deploy Next.js to Cloudflare Pages	26111270702	2026-05-19T16:38:50Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	26109660239	2026-05-19T16:09:14Z
+completed	success	chore: trigger pages deploy	CDK Deploy	26109660240	2026-05-19T16:09:14Z
+completed	success	fix: calibrate md1-shrunk camera-suite edge retention gate	CDK Deploy	26109384090	2026-05-19T16:04:19Z
+completed	success	fix: lighten md1 nosky background for camera gates	CDK Deploy	26107587599	2026-05-19T15:32:55Z
+completed	success	fix: lighten md1 nosky background for camera gates	Deploy Next.js to Cloudflare Pages	26107587902	2026-05-19T15:32:55Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	26106566140	2026-05-19T15:15:28Z
+completed	success	chore: trigger pages deploy	CDK Deploy	26106566149	2026-05-19T15:15:28Z
+completed	success	feat: add md1-shrunk camera suite html report	CDK Deploy	26106278926	2026-05-19T15:10:35Z
+completed	success	chore: record md1-shrunk CI proof	CDK Deploy	26104689980	2026-05-19T14:43:59Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	26104135660	2026-05-19T14:34:20Z
+completed	success	chore: trigger pages deploy	CDK Deploy	26104135709	2026-05-19T14:34:20Z
+completed	success	fix: harden edge bundle browser delivery checks	CDK Deploy	26103861417	2026-05-19T14:29:38Z
+completed	success	chore: record md1-shrunk ci proof	CDK Deploy	26081063367	2026-05-19T06:46:13Z
+completed	success	chore: record md1-shrunk horizon gate repro	CDK Deploy	26080845481	2026-05-19T06:40:47Z
+completed	success	chore: record md1-shrunk horizon gate CI	CDK Deploy	26080505088	2026-05-19T06:32:09Z

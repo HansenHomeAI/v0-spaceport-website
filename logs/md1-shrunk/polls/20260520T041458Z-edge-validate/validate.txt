@@ -1,0 +1,36 @@
+origin=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev
+edge_meta=https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json
+base=https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/
+
+## meta.json HEAD (with Origin)
+HTTP/2 200 
+content-type: application/json
+content-length: 1421
+date: Tue, 19 May 2026 14:24:08 GMT
+last-modified: Tue, 19 May 2026 06:37:13 GMT
+etag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+cache-control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: vUW1wpcXNiVbn3gf6_kSkXCXdN6e83vX
+accept-ranges: bytes
+server: AmazonS3
+x-cache: Hit from cloudfront
+via: 1.1 b0a911ba4778cdb479566c0f03452054.cloudfront.net (CloudFront)
+x-amz-cf-pop: LAX53-P6
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: k1ve9l5pBLTQTVEOuXW7C_iuRBqs9hPPsRrO6l9RmLXRCUm9wBfyIA==
+age: 49884
+access-control-allow-origin: *
+
+
+files_total=7
+files_bad=0
+
+## files (first 20)
+- means_l.webp
+- means_u.webp
+- quats.webp
+- scales.webp
+- sh0.webp
+- shN_centroids.webp
+- shN_labels.webp
