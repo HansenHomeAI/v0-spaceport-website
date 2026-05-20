@@ -1,0 +1,78 @@
+# preflight 20260520T044301Z
+
+## git
+branch=agent-113647-md1-baseline-e2e
+head=f0470c742ea3f5113c1d11505e62b33f99595d0f
+?? logs/md1-shrunk/polls/20260520T044301Z-preflight/
+
+## aws sts
+Account=975050048887 Arn=arn:aws:iam::975050048887:root
+
+## stepfunctions running
+staging_running=0
+br8abc_running=0
+known_status=SUCCEEDED
+
+## sagemaker inprogress
+processing_inprogress=0
+training_inprogress=0
+
+## public bundle HEAD
+HTTP/1.1 200 OK
+x-amz-id-2: E2UGDtavUs4SeT6I6CGoWNCJTw0v+5d1TipYy3lwCcnSOwrGBnxzB7hMmumV6nWOjgUHf5oHk5wCAuHUJe4O48OHsT8Wm04CqVL/tIIJKso=
+x-amz-request-id: AVAJD7Y0GGBED46B
+Date: Wed, 20 May 2026 04:44:02 GMT
+Last-Modified: Tue, 19 May 2026 03:14:11 GMT
+ETag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: lwCX4ptdSjx.9.5LMjn4a8Ervrln8HMA
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1421
+Server: AmazonS3
+
+
+HTTP/2 200 
+content-type: application/json
+content-length: 1421
+date: Tue, 19 May 2026 14:24:08 GMT
+last-modified: Tue, 19 May 2026 06:37:13 GMT
+etag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+cache-control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: vUW1wpcXNiVbn3gf6_kSkXCXdN6e83vX
+accept-ranges: bytes
+server: AmazonS3
+x-cache: Hit from cloudfront
+via: 1.1 3e2aa25435caaccdfb641c2423e5116e.cloudfront.net (CloudFront)
+x-amz-cf-pop: LAX53-P6
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: aOdNjOyRdQpvU3VXtkhhKiOfT5IUaJbbsDNJZLBHam6VB-B0f2bMIg==
+age: 51595
+vary: Origin
+
+
+## local dev servers
+40194 /bin/zsh -c cd /Users/gabrielhansen/MD1-Baseline && TS=20260520T044301Z && PREF="logs/md1-shrunk/polls/${TS}-preflight" && (cd "$PREF" && {\012  echo "# preflight ${TS}";\012  echo;\012  echo "## git";\012  echo "branch=$(git -C /Users/gabrielhansen/MD1-Baseline rev-parse --abbrev-ref HEAD)";\012  echo "head=$(git -C /Users/gabrielhansen/MD1-Baseline rev-parse HEAD)";\012  git -C /Users/gabrielhansen/MD1-Baseline status --porcelain=v1;\012  echo;\012  echo "## aws sts";\012  jq -r '"Account="+.Account+" Arn="+.Arn' aws-sts-get-caller-identity.json;\012  echo;\012  echo "## stepfunctions running";\012  echo "staging_running=$(jq '.executions | length' stepfunctions-running-staging.json)";\012  echo "br8abc_running=$(jq '.executions | length' stepfunctions-running-br8abc.json)";\012  echo "known_status=$(jq -r '.status' stepfunctions-describe-known.json)";\012  echo;\012  echo "## sagemaker inprogress";\012  echo "processing_inprogress=$(jq '.ProcessingJobSummaries | length' sagemaker-list-processing-inprogress.json)";\012  echo "training_inprogress=$(jq '.TrainingJobSummaries | length' sagemaker-list-training-inprogress.json)";\012  echo;\012  echo "## public bundle HEAD";\012  curl -sI https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json || true;\012  echo;\012  curl -sI https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json || true;\012  echo;\012  echo "## local dev servers";\012  ps ax -o pid=,command= | rg "next dev" || true;\012  echo;\012  echo "## listeners";\012  lsof -nP -iTCP -sTCP:LISTEN || true;\012} > preflight.txt)\012
+40207 rg next dev
+42135 node /Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule/web/node_modules/.bin/next dev --hostname 127.0.0.1 --port 3033
+
+## listeners
+COMMAND     PID          USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+rapportd    629 gabrielhansen   10u  IPv4 0xd43fe9904368dc77      0t0  TCP *:57108 (LISTEN)
+rapportd    629 gabrielhansen   11u  IPv6 0xe16a739ca4c9e001      0t0  TCP *:57108 (LISTEN)
+rapportd    629 gabrielhansen   20u  IPv6  0x9e31fe01f536617      0t0  TCP *:53106 (LISTEN)
+rapportd    629 gabrielhansen   23u  IPv6 0x440e221cb618b4b3      0t0  TCP *:53107 (LISTEN)
+ControlCe   671 gabrielhansen   10u  IPv4  0x1d6f516c03dbe78      0t0  TCP *:7000 (LISTEN)
+ControlCe   671 gabrielhansen   11u  IPv6 0x323b59c737344082      0t0  TCP *:7000 (LISTEN)
+ControlCe   671 gabrielhansen   12u  IPv4 0x15183ba995babbab      0t0  TCP *:5000 (LISTEN)
+ControlCe   671 gabrielhansen   13u  IPv6 0x74899407a6b44171      0t0  TCP *:5000 (LISTEN)
+sharingd    731 gabrielhansen   26u  IPv6 0xb8e1c62129f065f9      0t0  TCP *:8770 (LISTEN)
+node        990 gabrielhansen   15u  IPv4 0x3ba8349c576cb96a      0t0  TCP *:18789 (LISTEN)
+node        990 gabrielhansen   22u  IPv4 0xc30287d8799625c6      0t0  TCP 127.0.0.1:18792 (LISTEN)
+figma_age  1010 gabrielhansen    3u  IPv4  0x15caf79fc3a5872      0t0  TCP 127.0.0.1:44950 (LISTEN)
+figma_age  1010 gabrielhansen   14u  IPv4 0xa707bb1274999ca8      0t0  TCP 127.0.0.1:44960 (LISTEN)
+whisper-d 11840 gabrielhansen    3u  IPv4 0x54e8688f71e55e6c      0t0  TCP 127.0.0.1:44123 (LISTEN)
+whisper-s 11847 gabrielhansen    3u  IPv4 0x58134ae9f6f12888      0t0  TCP 127.0.0.1:8177 (LISTEN)
+node      42136 gabrielhansen   13u  IPv4 0x81bd7fef9702d453      0t0  TCP 127.0.0.1:3033 (LISTEN)
+Google    53437 gabrielhansen   30u  IPv6 0x7d6c05cbd748094b      0t0  TCP [::1]:7679 (LISTEN)

@@ -1,0 +1,11 @@
+origin=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev
+edge_meta=https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json
+base=https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/
+
+# meta.json HEAD (with Origin)
+curl -sI -H "Origin: https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev" "https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json"
+
+# extract referenced asset files
+curl -fsSL "https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json" | jq -r '.. | objects | .files? // empty | .[]' | sort -u
+
+# for each referenced file: HEAD with Origin; require 200/206 + ACAO:*; record cache-control

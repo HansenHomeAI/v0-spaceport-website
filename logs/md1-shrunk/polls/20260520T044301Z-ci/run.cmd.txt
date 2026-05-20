@@ -1,0 +1,2 @@
+# Snapshot GH Actions runs for the branch.
+gh run list --branch agent-113647-md1-baseline-e2e --limit 30 --json databaseId,workflowName,headSha,status,conclusion,createdAt,updatedAt,url,displayTitle,event > runs.json
