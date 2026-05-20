@@ -126,3 +126,4 @@
 [2026-05-20T12:20:59Z] md1-shrunk: pushed 0e8b574e ([skip ci]); recorded postpush snapshot logs/md1-shrunk/polls/20260520T122042Z-ci-postpush-sha-0e8b574e/postpush.txt -> next: commit/push snapshot+STATE then idle
 [2026-05-20T12:53:08Z] md1-shrunk: heartbeat verify 20260520T124603Z -> strict PASS (camera-suite decision=pass pose max_delta=0.0 artifacts_pruned=true) + edge-validate OK + bundle parity PASS (S3==edge) + unit PASS + Step Functions RUNNING=0 + SageMaker InProgress=0 -> next: commit/push (logs+STATE) then record postpush CI snapshot
 [2026-05-20T12:54:24Z] md1-shrunk: pushed 88a9383f (heartbeat verify 20260520T124603Z) [skip ci]; recorded postpush snapshot logs/md1-shrunk/polls/20260520T125355Z-ci-postpush-sha-88a9383f/postpush.txt -> idle
+[2026-05-20T12:55:24Z] md1-shrunk: pushed 8053f2cc (postpush snapshot commit) [skip ci]; recorded postpush snapshot logs/md1-shrunk/polls/20260520T125453Z-ci-postpush-sha-8053f2cc/postpush.txt -> idle
