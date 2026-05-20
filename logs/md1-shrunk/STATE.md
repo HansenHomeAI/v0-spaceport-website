@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-20T08:14:01Z
+updated: 2026-05-20T08:21:23Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -9109,3 +9109,7 @@ skybox, compression, artifact handoff, and visual gates.
   - output: `logs/md1-shrunk/polls/20260520T081401Z-unit/unittest.txt`
 - GitHub Actions snapshot (head is logs-only; `[skip ci]` -> typically no new runs):
   - `logs/md1-shrunk/polls/20260520T081401Z-ci/summary.txt`
+- Commit/push:
+  - `chore: record md1-shrunk heartbeat verification (20260520T081401Z) [skip ci]` -> `35f0b387`
+  - GitHub Actions postpush snapshot (no new runs expected for `[skip ci]` head):
+    - `logs/md1-shrunk/polls/20260520T082123Z-ci-postpush-sha-35f0b387/postpush.txt`
