@@ -1,0 +1,8 @@
+# ci postpush snapshot 20260520T235038Z
+branch=agent-113647-md1-baseline-e2e
+head_full=8d2da8baeeb292095feead5b9445c3ba914c8186
+head_short=8d2da8ba
+exact_head_run_count=0
+
+## head runs
+

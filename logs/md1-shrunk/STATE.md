@@ -10103,7 +10103,15 @@ note: reran heartbeat after `20260520T144551Z` because bundle parity was skipped
 - GitHub Actions snapshot (head is logs-only; no new runs expected):
   - `logs/md1-shrunk/polls/20260520T204327Z-ci/summary.txt`
 
-- Next: commit/push (poll logs + STATE) then record postpush snapshot.
+- Next: record postpush CI snapshot for the new head.
+
+## 2026-05-20T23:50Z postpush CI snapshot (head is logs-only; no new runs expected)
+
+- exact-head commit: `8d2da8ba` (`[skip ci]` head; exact-head workflows expected: none)
+- Evidence:
+  - `logs/md1-shrunk/polls/20260520T235038Z-ci-postpush-sha-8d2da8ba/postpush.txt`
+
+- Next: idle.
 
 ## 2026-05-20T20:50Z postpush CI snapshot (head is logs-only; no new runs expected)
 
