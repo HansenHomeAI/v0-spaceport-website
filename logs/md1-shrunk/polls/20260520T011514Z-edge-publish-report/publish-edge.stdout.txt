@@ -1,0 +1,6 @@
+OK edgeBundleUrl=https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json
+OK httpHead=logs/md1-shrunk/polls/20260520T011514Z-edge-publish-report/publish-edge.curl-head.txt
+OK httpHeadOrigin=logs/md1-shrunk/polls/20260520T011514Z-edge-publish-report/publish-edge.curl-head-origin.txt
+OK metaJson=logs/md1-shrunk/polls/20260520T011514Z-edge-publish-report/publish-edge.meta.json
+OK assetsHead=logs/md1-shrunk/polls/20260520T011514Z-edge-publish-report/publish-edge.assets.json
+OK htmlReport=logs/md1-shrunk/polls/20260520T011514Z-edge-publish-report/publish-edge.report.html
