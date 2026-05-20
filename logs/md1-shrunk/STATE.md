@@ -8847,3 +8847,7 @@ skybox, compression, artifact handoff, and visual gates.
   - result: `logs/md1-shrunk/polls/20260520T034725Z-camera-suite/suite-summary.json` -> `decision=pass`
   - report: `logs/md1-shrunk/polls/20260520T034725Z-camera-suite/report.html`
   - reusable camera-pose verification: `pose_verification.max_delta=0.0` (baseline: `logs/md1-shrunk/polls/20260519T163352Z-camera-suite`)
+- Commit/push:
+  - `chore: record md1-shrunk heartbeat verification (20260520T035250Z) [skip ci]` -> `802ff846`
+  - GitHub Actions postpush snapshot (no new runs expected for `[skip ci]` head):
+    - `logs/md1-shrunk/polls/20260520T035502Z-ci-postpush/postpush-final.txt`
