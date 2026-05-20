@@ -8827,3 +8827,23 @@ skybox, compression, artifact handoff, and visual gates.
   - `chore: record md1-shrunk postpush snapshot (20260520T031430Z) [skip ci]` -> `150b2b74`
   - GitHub Actions postpush snapshot (no new runs expected for `[skip ci]` head):
     - `logs/md1-shrunk/polls/20260520T031430Z-ci/postpush-final.txt`
+
+## 2026-05-20T03:55Z heartbeat verify (strict gates PASS; no new jobs)
+
+- Preflight snapshot (read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260520T034403Z-preflight/preflight.txt`
+  - Step Functions (staging + `SpaceportMLPipeline-br-8abcbd5662`) RUNNING: `0` (see preflight JSON captures)
+  - Known execution `execution-md1-shrunk-prodspine-wlight-202605190027` status: `SUCCEEDED`:
+    - `logs/md1-shrunk/polls/20260520T034403Z-preflight/stepfunctions-describe-known.json`
+  - Public S3 meta.json HEAD -> `200` + Edge meta.json HEAD -> `200` (see preflight file)
+  - SageMaker InProgress: `0` (processing + training)
+  - Local dev server listeners: detected a `next dev` in another worktree (see preflight file); no MD1-Baseline server assumed.
+- Public bundle snapshot (S3-vs-edge meta.json parity):
+  - `logs/md1-shrunk/polls/20260520T035250Z-bundle/bundle.txt`
+- Browser-readable public delivery validation (no republish; Origin CORS + cache headers for meta.json + referenced assets):
+  - `logs/md1-shrunk/polls/20260520T035154Z-edge-validate/validate.txt`
+- Multi-camera input-vs-render checks (deployed preview; strict; baseline pose verification):
+  - command: `logs/md1-shrunk/polls/20260520T034725Z-camera-suite/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260520T034725Z-camera-suite/suite-summary.json` -> `decision=pass`
+  - report: `logs/md1-shrunk/polls/20260520T034725Z-camera-suite/report.html`
+  - reusable camera-pose verification: `pose_verification.max_delta=0.0` (baseline: `logs/md1-shrunk/polls/20260519T163352Z-camera-suite`)

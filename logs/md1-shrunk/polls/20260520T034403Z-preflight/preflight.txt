@@ -1,0 +1,91 @@
+timestamp_utc=20260520T034403Z
+
+## git
+agent-113647-md1-baseline-e2e
+9b99fb53f33fe07d70ca34a0e012807d7fa52d80
+?? logs/md1-shrunk/polls/20260520T034403Z-preflight/
+
+## aws sts get-caller-identity
+{
+    "UserId": "975050048887",
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root"
+}
+
+## stepfunctions RUNNING
+staging_running=0
+br8abc_running=0
+
+## stepfunctions describe known execution (summary)
+{
+    "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-br-8abcbd5662:execution-md1-shrunk-prodspine-wlight-202605190027",
+    "status": "SUCCEEDED",
+    "startDate": "2026-05-18T18:28:13.202000-06:00",
+    "stopDate": "2026-05-18T21:03:39.663000-06:00",
+    "redriveStatus": "NOT_REDRIVABLE"
+}
+
+## sagemaker InProgress counts
+processing_inprogress=0
+training_inprogress=0
+
+## local dev server listeners
+42135 node /Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule/web/node_modules/.bin/next dev --hostname 127.0.0.1 --port 3033
+
+## public S3 meta.json HEAD
+HTTP/1.1 200 OK
+x-amz-id-2: DObCaMXjhnxlZCXdZO7p8a28vcgBrOtL938dPJKZRTzkaSL1gRCw94u8xWjw98iyqf0AyH4QaqSCGH/W1wQG1PzO/Xb6CxaJGLa+yjLyCd8=
+x-amz-request-id: DQQEQJ0D8J075FFP
+Date: Wed, 20 May 2026 03:46:14 GMT
+Last-Modified: Tue, 19 May 2026 03:14:11 GMT
+ETag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: lwCX4ptdSjx.9.5LMjn4a8Ervrln8HMA
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1421
+Server: AmazonS3
+
+
+## edge meta.json HEAD
+HTTP/2 200 
+content-type: application/json
+content-length: 1421
+date: Tue, 19 May 2026 14:24:08 GMT
+last-modified: Tue, 19 May 2026 06:37:13 GMT
+etag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+cache-control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: vUW1wpcXNiVbn3gf6_kSkXCXdN6e83vX
+accept-ranges: bytes
+server: AmazonS3
+x-cache: Hit from cloudfront
+via: 1.1 dfd304f8a9d0311c835e78943f8ff050.cloudfront.net (CloudFront)
+x-amz-cf-pop: LAX53-P6
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: IAfN0cg1PBdWRgXsoISMCuJDs5oGvu4zrWnKGNpQRWD2PPqEkmkYvA==
+age: 48126
+vary: Origin
+
+
+## gh runs (branch)
+completed	success	fix: retry iframe screenshot for md1 camera-suite	CDK Deploy	agent-113647-md1-baseline-e2e	push	26138455344	2026-05-20T02:57:26Z
+completed	success	fix: retry iframe screenshot for md1 camera-suite	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26138455345	2026-05-20T02:57:26Z
+completed	success	chore: md1-shrunk heartbeat verify strict gates	CDK Deploy	agent-113647-md1-baseline-e2e	push	26127221994	2026-05-19T21:45:18Z
+completed	success	feat: harden md1-shrunk camera suite baselines	CDK Deploy	agent-113647-md1-baseline-e2e	push	26111270602	2026-05-19T16:38:50Z
+completed	success	feat: harden md1-shrunk camera suite baselines	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26111270702	2026-05-19T16:38:50Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26109660239	2026-05-19T16:09:14Z
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26109660240	2026-05-19T16:09:14Z
+completed	success	fix: calibrate md1-shrunk camera-suite edge retention gate	CDK Deploy	agent-113647-md1-baseline-e2e	push	26109384090	2026-05-19T16:04:19Z
+completed	success	fix: lighten md1 nosky background for camera gates	CDK Deploy	agent-113647-md1-baseline-e2e	push	26107587599	2026-05-19T15:32:55Z
+completed	success	fix: lighten md1 nosky background for camera gates	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26107587902	2026-05-19T15:32:55Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26106566140	2026-05-19T15:15:28Z
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26106566149	2026-05-19T15:15:28Z
+completed	success	feat: add md1-shrunk camera suite html report	CDK Deploy	agent-113647-md1-baseline-e2e	push	26106278926	2026-05-19T15:10:35Z
+completed	success	chore: record md1-shrunk CI proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	26104689980	2026-05-19T14:43:59Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26104135660	2026-05-19T14:34:20Z
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26104135709	2026-05-19T14:34:20Z
+completed	success	fix: harden edge bundle browser delivery checks	CDK Deploy	agent-113647-md1-baseline-e2e	push	26103861417	2026-05-19T14:29:38Z
+completed	success	chore: record md1-shrunk ci proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	26081063367	2026-05-19T06:46:13Z
+completed	success	chore: record md1-shrunk horizon gate repro	CDK Deploy	agent-113647-md1-baseline-e2e	push	26080845481	2026-05-19T06:40:47Z
+completed	success	chore: record md1-shrunk horizon gate CI	CDK Deploy	agent-113647-md1-baseline-e2e	push	26080505088	2026-05-19T06:32:09Z

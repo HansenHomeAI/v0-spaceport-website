@@ -1,0 +1,7 @@
+# Validate S3 meta.json vs edge meta.json parity.
+S3_META=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json
+EDGE_META=https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json
+curl -s "$S3_META" | shasum -a 256
+curl -s "$EDGE_META" | shasum -a 256
+curl -sI "$S3_META"
+curl -sI "$EDGE_META"

@@ -1,0 +1,4 @@
+# Validate edge meta.json + referenced files for browser headers (CORS + cache) without republishing.
+python3 - <<'PY'
+# See validate.txt for exact URLs and summarized results.
+PY
