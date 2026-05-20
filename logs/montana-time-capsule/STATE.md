@@ -3612,3 +3612,60 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/gh-run-list-branch-latest-20260520T231643Z.json`
   - `logs/montana-time-capsule/runner-hmc-20260520T231547Z.log`
 - Next unblocked step: keep polling until SfM becomes `Completed`; immediately after completion, run `python3 scripts/montana_time_capsule/hmc_time_capsule.py --launch` once to start pinned 3DGS (avoid duplicates).
+
+## 2026-05-20T23:34Z Monitor Pass (HMC)
+
+- Repo/worktree: /Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule
+- Git head check command:
+  - `git rev-parse --abbrev-ref HEAD && git rev-parse HEAD && git status --porcelain=v1 -b`
+  - Result: branch `agent-40136728-montana-time-capsule`, head `851d3228b1d3ac84d11f8709c2832b55e3357ac2`, status clean.
+- AWS identity command: `aws sts get-caller-identity`
+  - Result: account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+
+### HMC archive proof (do not re-upload)
+
+- Zip head-object command: `aws s3api head-object --bucket spaceport-uploads --key 1778952912508-hmc-high-mountain-camp-images-flat.zip`
+  - Result: LastModified `2026-05-16T17:35:27Z`, Size `8646557673` (~8.65GB), ETag `ed86661a82b28856997a09f129ce6bec-1031`.
+- Manifest head-object command: `aws s3api head-object --bucket spaceport-uploads --key 1778952912508-hmc-high-mountain-camp-images-flat.manifest.json`
+  - Result: LastModified `2026-05-16T17:49:54Z`, Size `352691`, ETag `1e0ee825159077dc4e1781ba75cd3386`.
+- Evidence files:
+  - logs/montana-time-capsule/s3-head-spaceport-uploads-hmc-zip-20260520T233435Z.json
+  - logs/montana-time-capsule/s3-head-spaceport-uploads-hmc-manifest-20260520T233435Z.json
+
+### SageMaker (SfM)
+
+- Describe command: `aws sagemaker describe-processing-job --processing-job-name hmc-mtc-20260520T2015Z-sfm`
+  - Result: `ProcessingJobStatus=InProgress` (LastModified `2026-05-20T20:18:53Z`).
+- Duplicate guard command: `aws sagemaker list-processing-jobs --name-contains hmc-mtc-20260520T2015Z --max-results 20`
+  - Result: only one matching job (`hmc-mtc-20260520T2015Z-sfm`, `InProgress`).
+- CloudWatch tail command: `aws logs tail /aws/sagemaker/ProcessingJobs --since 20m --log-stream-name-prefix hmc-mtc-20260520T2015Z-sfm --format short`
+  - Result: chunked sequential matcher actively progressing (chunk_13). No failure indicators.
+- Output S3 listing command: `aws s3 ls s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/ --recursive --human-readable --summarize`
+  - Result: empty (expected until `S3UploadMode=EndOfJob`).
+- Evidence files:
+  - logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260520T233401Z.json
+  - logs/montana-time-capsule/sagemaker-list-hmc-mtc-20260520T2015Z-20260520T233402Z.json
+  - logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260520T233402Z.log
+
+### Runner state refresh (no launch)
+
+- Refresh command:
+  - `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --dataset-id HMC --run-prefix hmc-mtc-20260520T2015Z --profile brass-chunked --input-s3-uri s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip --state-file logs/montana-time-capsule/hmc-state.json`
+  - Result: state remains `status=sfm_running`, `sfm_status=InProgress`.
+- Evidence file:
+  - logs/montana-time-capsule/runner-refresh-20260520T233435Z.log
+
+### GitHub Actions (exact-head)
+
+- Workflow list command:
+  - `gh run list --branch agent-40136728-montana-time-capsule --limit 50 --json databaseId,headSha,workflowName,status,conclusion,createdAt,updatedAt,url`
+  - Exact-head filter: `.[] | select(.headSha=="$(git rev-parse HEAD)")`
+  - Result: `[]` (expected for `[skip ci]` ledger-only head).
+- Evidence files:
+  - logs/montana-time-capsule/gh-run-list-agent-40136728-20260520T233402Z.json
+  - logs/montana-time-capsule/gh-run-list-exact-head-20260520T233402Z.json
+
+## Next unblocked step
+
+- Keep polling `hmc-mtc-20260520T2015Z-sfm` until `Completed`.
+- Then run the runner exactly once with `--launch` to start the pinned Montana 3DGS stage.

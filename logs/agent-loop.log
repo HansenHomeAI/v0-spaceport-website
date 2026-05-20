@@ -19,3 +19,4 @@
 [2026-05-20T22:15Z] hmc monitor -> sfm InProgress (chunk_03 mapper initial model registered 142/142; S3 archive+manifest re-proven; outputs empty) -> wait
 [2026-05-20T22:43:51Z] hmc monitor -> sfm InProgress (mapping chunk_07); verified archive only in spaceport-uploads; next poll until Completed then launch 3DGS once
 [2026-05-20T23:16Z] verify+refresh -> sfm still InProgress; exact-head workflows []; archive+manifest re-proven -> continue polling until Completed then launch 3DGS once
+[2026-05-20 17:34:41 MDT] monitor -> sfm still InProgress; refreshed evidence; no launch -> next: poll until Completed
