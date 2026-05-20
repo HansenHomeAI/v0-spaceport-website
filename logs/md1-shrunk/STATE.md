@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-20T06:24:59Z
+updated: 2026-05-20T06:54:10Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -9002,3 +9002,32 @@ skybox, compression, artifact handoff, and visual gates.
   - `chore: record md1-shrunk postpush snapshot (20260520T061516Z) [skip ci]` -> `ee58c67b`
   - GitHub Actions postpush snapshot (no new runs expected for `[skip ci]` head):
     - `logs/md1-shrunk/polls/20260520T061516Z-ci-postpush/postpush-final.txt`
+
+## 2026-05-20T06:48Z heartbeat verify (scripted; strict gates PASS; no new jobs)
+
+- New automation script (replaces the ad-hoc one-liner; produces the same poll structure deterministically):
+  - `scripts/sfm/run_md1_shrunk_heartbeat_verify.py`
+- Heartbeat poll summary:
+  - `logs/md1-shrunk/polls/20260520T064811Z-summary.json`
+- Preflight snapshot (read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260520T064811Z-preflight/preflight.txt`
+  - Step Functions (staging + `SpaceportMLPipeline-br-8abcbd5662`) RUNNING: `0`
+  - Known execution `execution-md1-shrunk-prodspine-wlight-202605190027` status: `SUCCEEDED`:
+    - `logs/md1-shrunk/polls/20260520T064811Z-preflight/stepfunctions-describe-known.json`
+  - SageMaker InProgress: `0` (processing + training)
+- Public bundle snapshot (S3-vs-edge meta.json parity):
+  - `logs/md1-shrunk/polls/20260520T064811Z-bundle/bundle.txt`
+- Browser-readable public delivery validation (automation; Origin CORS + cache headers for meta.json + referenced assets):
+  - command: `logs/md1-shrunk/polls/20260520T064811Z-edge-validate/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260520T064811Z-edge-validate/validate.txt`
+  - report: `logs/md1-shrunk/polls/20260520T064811Z-edge-validate/publish-edge.report.html`
+- Multi-camera input-vs-render checks (deployed preview; strict; baseline pose verification + sky/horizon diagnostics):
+  - command: `logs/md1-shrunk/polls/20260520T064811Z-camera-suite/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260520T064811Z-camera-suite/suite-summary.json` -> `decision=pass`
+  - report: `logs/md1-shrunk/polls/20260520T064811Z-camera-suite/report.html`
+  - reusable camera-pose verification: `pose_verification.max_delta=0.0` (baseline: `logs/md1-shrunk/polls/20260519T163352Z-camera-suite`)
+- Unit proof (verbose output to make PASS explicit in-file):
+  - command: `logs/md1-shrunk/polls/20260520T064811Z-unit/run.cmd.txt`
+  - output: `logs/md1-shrunk/polls/20260520T064811Z-unit/unittest.txt`
+- GitHub Actions snapshot (head is not deployed; exact-head runs remain the last green Pages+CDK pair):
+  - `logs/md1-shrunk/polls/20260520T064811Z-ci/summary.txt`
