@@ -32,7 +32,7 @@ import subprocess
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Iterator
 
 
 Vector3 = tuple[float, float, float]
@@ -201,6 +201,50 @@ def download_s3_uri(uri: str, destination: Path) -> None:
         stdout=subprocess.DEVNULL,
     )
 
+def iter_text_lines(source: Path | str) -> Iterator[str]:
+    """Yield text lines from either a local file path or an S3 URI.
+
+    Important: COLMAP `images.txt` can be extremely large because it embeds
+    points2D observations. This function supports streaming from S3 so callers
+    can parse only the header lines without downloading the full file to disk.
+    """
+
+    if isinstance(source, Path):
+        with source.open("r", encoding="utf-8", errors="replace") as handle:
+            for line in handle:
+                yield line
+        return
+
+    if source.startswith("s3://"):
+        aws = resolve_aws()
+        proc = subprocess.Popen(
+            [aws, "s3", "cp", "--no-progress", source, "-"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+        assert proc.stdout is not None
+        assert proc.stderr is not None
+        try:
+            for line in proc.stdout:
+                yield line
+        finally:
+            proc.stdout.close()
+        stderr = proc.stderr.read()
+        proc.stderr.close()
+        rc = proc.wait()
+        if rc != 0:
+            message = stderr.strip() or f"aws s3 cp failed with rc={rc}"
+            raise RuntimeError(message)
+        return
+
+    path = Path(source)
+    with path.open("r", encoding="utf-8", errors="replace") as handle:
+        for line in handle:
+            yield line
+
 
 def resolve_images_txt(path_or_s3: str) -> Path:
     if path_or_s3.startswith("s3://"):
@@ -223,13 +267,14 @@ class ParsedImage:
     tvec: Vector3
 
 
-def parse_colmap_images_txt(path: Path) -> list[ParsedImage]:
+def parse_colmap_images_txt(path_or_s3: Path | str) -> list[ParsedImage]:
     images: list[ParsedImage] = []
-    lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
-    index = 0
-    while index < len(lines):
-        line = lines[index].strip()
-        index += 1
+    skip_points2d = False
+    for raw in iter_text_lines(path_or_s3):
+        if skip_points2d:
+            skip_points2d = False
+            continue
+        line = raw.strip()
         if not line or line.startswith("#"):
             continue
         parts = line.split()
@@ -243,9 +288,8 @@ def parse_colmap_images_txt(path: Path) -> list[ParsedImage]:
         t = (float(parts[5]), float(parts[6]), float(parts[7]))
         name = parts[9]
         images.append(ParsedImage(image_id=image_id, name=name, qvec=q, tvec=t))
-        # Skip points2D line if present.
-        if index < len(lines):
-            index += 1
+        # COLMAP images.txt has a second line per image with points2D (can be huge).
+        skip_points2d = True
     return images
 
 
@@ -471,19 +515,19 @@ def choose_samples(images: list[ParsedImage], sample_count: int) -> list[ParsedI
 
 def main() -> int:
     args = parse_args()
-    images_path = resolve_images_txt(args.images_txt)
     # Frames.txt is compact but does not carry image names; map them from S3.
-    if str(images_path).endswith("frames.txt"):
+    if str(args.images_txt).endswith("frames.txt"):
         if not args.image_names_s3_prefix.strip():
             raise RuntimeError("--image-names-s3-prefix is required when parsing frames.txt")
         image_names = list_s3_image_names(args.image_names_s3_prefix.strip())
         if not image_names:
             raise RuntimeError(f"no image names listed under {args.image_names_s3_prefix}")
+        images_path = resolve_images_txt(args.images_txt)
         images = parse_colmap_frames_txt(images_path, image_names)
     else:
-        images = parse_colmap_images_txt(images_path)
+        images = parse_colmap_images_txt(args.images_txt)
     if not images:
-        raise RuntimeError(f"No images parsed from {images_path}")
+        raise RuntimeError(f"No images parsed from {args.images_txt}")
 
     normalization = derive_normalization(images)
     center_list = normalization["center"]

@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-20T15:45:02Z
+updated: 2026-05-20T16:28:55Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -9673,3 +9673,48 @@ note: reran heartbeat after `20260520T144551Z` because bundle parity was skipped
   - `chore: md1-shrunk heartbeat verify 20260520T154502Z [skip ci]` -> `0449b764`
   - GitHub Actions postpush snapshot (exact-head run count `0` for `[skip ci]` head `0449b764...`):
     - `logs/md1-shrunk/polls/20260520T154502Z-ci-postpush-sha-0449b764/postpush.txt`
+
+## 2026-05-20T16:15Z heartbeat verify (scripted; camera suite failed; local disk full)
+
+- Preflight snapshot (scripted; read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260520T161512Z-preflight/preflight.txt`
+  - Step Functions RUNNING: `0` (staging + `SpaceportMLPipeline-br-8abcbd5662`)
+  - SageMaker InProgress: `0` (processing + training)
+- Bundle parity + edge delivery validation completed before failure:
+  - `logs/md1-shrunk/polls/20260520T161512Z-bundle/bundle.txt`
+  - `logs/md1-shrunk/polls/20260520T161512Z-edge-validate/validate.txt`
+- Failure evidence:
+  - `logs/md1-shrunk/polls/20260520T161512Z-camera-suite/run.out.txt`
+  - `logs/md1-shrunk/polls/20260520T161512Z-camera-suite/diagnosis.txt`
+- Root cause: camera-suite pose derivation attempted to download ~600MB COLMAP `images.txt` (points2D payload) into temp; repeated downloads exhausted local disk.
+
+## 2026-05-20T16:23Z heartbeat verify (scripted; strict gates PASS; no new jobs)
+
+- Heartbeat poll summary:
+  - `logs/md1-shrunk/polls/20260520T162347Z-summary.json`
+  - HEAD: `ec27bc6225a7fac268e7b2c8ea05edb6bf1d544f`
+  - PREVIEW_URL: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+  - edge meta.json: `https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+  - public S3 meta.json: `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+- Preflight snapshot (scripted; read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260520T162347Z-preflight/preflight.txt`
+  - Step Functions RUNNING: `0` (staging + `SpaceportMLPipeline-br-8abcbd5662`)
+  - Known execution `execution-md1-shrunk-prodspine-wlight-202605190027` status: `SUCCEEDED`:
+    - `logs/md1-shrunk/polls/20260520T162347Z-preflight/stepfunctions-describe-known.json`
+  - SageMaker InProgress: `0` (processing + training)
+- Browser-readable public delivery validation (automation; Origin CORS + cache headers for meta.json + referenced assets):
+  - command: `logs/md1-shrunk/polls/20260520T162347Z-edge-validate/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260520T162347Z-edge-validate/validate.txt`
+  - report: `logs/md1-shrunk/polls/20260520T162347Z-edge-validate/publish-edge.report.html`
+- Public bundle snapshot (S3-vs-edge meta.json parity):
+  - `logs/md1-shrunk/polls/20260520T162347Z-bundle/bundle.txt` (sha256 match)
+- Multi-camera input-vs-render checks (deployed preview; strict; baseline pose verification + sky/horizon gates):
+  - command: `logs/md1-shrunk/polls/20260520T162347Z-camera-suite/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260520T162347Z-camera-suite/suite-summary.json` -> `decision=pass` (`pose_verification.max_delta=0.0`; `artifacts_pruned=true`; `skybox.decision=pass`; `nosky.decision=pass`)
+  - note: pose derivation used compact `frames.txt` (see `logs/md1-shrunk/polls/20260520T162347Z-camera-suite/camera-poses.json` -> `.images_txt`).
+  - report: `logs/md1-shrunk/polls/20260520T162347Z-camera-suite/report.html`
+- Unit proof:
+  - command: `logs/md1-shrunk/polls/20260520T162347Z-unit/run.cmd.txt`
+  - output: `logs/md1-shrunk/polls/20260520T162347Z-unit/unittest.txt`
+- GitHub Actions snapshot (head is code+logs; CI should run after push):
+  - `logs/md1-shrunk/polls/20260520T162347Z-ci/summary.txt`

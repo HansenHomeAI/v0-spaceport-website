@@ -1,0 +1,35 @@
+# camera-suite failure diagnosis (manual note)
+
+## Failure
+
+The heartbeat attempt at `20260520T161512Z` failed during camera-pose derivation:
+- `scripts/sfm/run_md1_shrunk_camera_suite.py` -> `scripts/sfm/derive_viewer_camera_poses_from_colmap.py`
+- It attempted to `aws s3 cp` COLMAP `images.txt` to a temp directory.
+- Temp volume ran out of space due to repeated ~600MB downloads.
+
+Observed error (from a direct reproduce of the derive step):
+
+```
+download failed: s3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-sfm-20260518T1826Z/colmap/sparse/0/images.txt to /var/folders/.../T/colmap-images-txt-*/images.txt [Errno 28] No space left on device
+```
+
+## Root cause (images.txt is huge)
+
+`images.txt` includes points2D payloads and is ~600MB:
+
+```json
+{
+  "ContentLength": 612034411,
+  "ETag": "\"8e093cf65c0d222f864dc93a9adf9f7b-117\"",
+  "LastModified": "2026-05-19T00:05:17+00:00"
+}
+```
+
+## Fix
+
+- Prefer `frames.txt` (compact) when available, using `--image-names-s3-prefix` to map names.
+- Stream/parse `images.txt` without downloading to disk when it must be used.
+
+## Cleanup (local)
+
+Removed temp dirs `colmap-images-txt-*` under the system temp directory to recover disk space.

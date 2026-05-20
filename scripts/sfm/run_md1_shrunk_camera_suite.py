@@ -344,24 +344,45 @@ def main() -> int:
     else:
         if not args.colmap_images_txt.strip():
             raise RuntimeError("--colmap-images-txt is required when --poses-json is not set")
-        derive_cmd = [
-            python,
-            str(REPO_ROOT / "scripts" / "sfm" / "derive_viewer_camera_poses_from_colmap.py"),
-            "--images-txt",
-            args.colmap_images_txt,
-            "--output",
-            str(poses_out),
-            "--distance-to-target",
-            str(args.distance_to_target),
-            "--sample-count",
-            str(args.sample_count),
-        ]
-        if args.colmap_images_txt.rstrip().endswith("frames.txt"):
-            derive_cmd += ["--image-names-s3-prefix", args.colmap_images_s3_prefix]
-        if args.include_names.strip():
-            derive_cmd += ["--include-names", args.include_names.strip()]
+        colmap_source = args.colmap_images_txt.strip()
+        derive_script = str(REPO_ROOT / "scripts" / "sfm" / "derive_viewer_camera_poses_from_colmap.py")
+
+        def build_derive_cmd(images_txt: str) -> list[str]:
+            cmd = [
+                python,
+                derive_script,
+                "--images-txt",
+                images_txt,
+                "--output",
+                str(poses_out),
+                "--distance-to-target",
+                str(args.distance_to_target),
+                "--sample-count",
+                str(args.sample_count),
+            ]
+            if images_txt.rstrip().endswith("frames.txt"):
+                cmd += ["--image-names-s3-prefix", args.colmap_images_s3_prefix]
+            if args.include_names.strip():
+                cmd += ["--include-names", args.include_names.strip()]
+            return cmd
+
         derive_log = out_dir / "derive-camera-poses.log.txt"
-        derive_log.write_text(run(derive_cmd), encoding="utf-8")
+
+        # Prefer frames.txt when available to avoid downloading enormous images.txt with points2D payloads.
+        if colmap_source.startswith("s3://") and colmap_source.rstrip().endswith("images.txt") and args.colmap_images_s3_prefix.strip():
+            frames_source = colmap_source.rstrip()[: -len("images.txt")] + "frames.txt"
+            try:
+                derive_log.write_text(run(build_derive_cmd(frames_source)), encoding="utf-8")
+            except subprocess.CalledProcessError as exc:
+                derive_log.write_text(
+                    (getattr(exc, "stdout", None) or getattr(exc, "output", None) or "")
+                    + "\n\nfallback: frames.txt derive failed; retrying with images.txt\n",
+                    encoding="utf-8",
+                )
+                with derive_log.open("a", encoding="utf-8") as handle:
+                    handle.write(run(build_derive_cmd(colmap_source)))
+        else:
+            derive_log.write_text(run(build_derive_cmd(colmap_source)), encoding="utf-8")
 
     pose_payload = load_json(poses_out)
     poses = pose_payload.get("poses") or []
