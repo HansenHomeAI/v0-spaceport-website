@@ -9149,3 +9149,17 @@ skybox, compression, artifact handoff, and visual gates.
   - output: `logs/md1-shrunk/polls/20260520T085749Z-unit/unittest.txt`
 - GitHub Actions snapshot:
   - `logs/md1-shrunk/polls/20260520T085749Z-ci/summary.txt`
+
+## 2026-05-20T09:20Z exact-head workflows green (post-push)
+
+- Commit/push:
+  - `fix: harden md1-shrunk heartbeat parity` -> `8f922d21`
+    - CDK Deploy run `26152775602` succeeded for sha `8f922d21` (Pages did not trigger because no `web/` changes).
+  - `chore: trigger pages build` -> `14f6eaf2`
+    - CDK Deploy run `26153004933` -> `success`
+    - Pages run `26153004935` -> `success`
+    - PREVIEW_URL proof (from same Pages run log):
+      - `logs/md1-shrunk/polls/20260520T0912Z-ci-postpush-sha-14f6eaf2/pages-preview-url.txt`
+    - CDK + Pages full logs:
+      - `logs/md1-shrunk/polls/20260520T0912Z-ci-postpush-sha-14f6eaf2/view-cdk.log.txt`
+      - `logs/md1-shrunk/polls/20260520T0912Z-ci-postpush-sha-14f6eaf2/view-pages.log.txt`
