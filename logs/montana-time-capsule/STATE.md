@@ -3479,6 +3479,14 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/gh-run-list-agent-40136728-20260520T221728Z-postpush.json`
   - `logs/montana-time-capsule/gh-run-list-exact-head-20260520T221728Z-postpush.json`
 
+## 2026-05-20T22:18Z Exact-Head Workflow Check (Current Head)
+
+- Branch/head: `agent-40136728-montana-time-capsule` @ `2924a24568eb9b81b44afce26f8163ab80be99b7` (`[skip ci]`)
+- Exact-head `gh run list` result: `[]` (expected for `[skip ci]` head).
+- Evidence files:
+  - `logs/montana-time-capsule/gh-run-list-agent-40136728-20260520T221812Z-postpush2.json`
+  - `logs/montana-time-capsule/gh-run-list-exact-head-20260520T221812Z-postpush2.json`
+
 ## 2026-05-20T21:56Z Ledger Commit + Push
 
 - Commit: `7de8797425f1d703b5dfe071cf74d228ee0754cc`
