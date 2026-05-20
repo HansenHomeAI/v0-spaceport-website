@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-20T16:28:55Z
+updated: 2026-05-20T16:43:18Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -9718,3 +9718,13 @@ note: reran heartbeat after `20260520T144551Z` because bundle parity was skipped
   - output: `logs/md1-shrunk/polls/20260520T162347Z-unit/unittest.txt`
 - GitHub Actions snapshot (head is code+logs; CI should run after push):
   - `logs/md1-shrunk/polls/20260520T162347Z-ci/summary.txt`
+
+## 2026-05-20T16:42Z postpush CI snapshot (Pages + CDK both green)
+
+- exact-head commit: `74aed926` (`chore: trigger pages build`)
+- CDK Deploy run: `26176189124` -> success
+- Deploy Next.js to Cloudflare Pages run: `26176189057` -> success
+- PREVIEW_URL resolved from that Pages run:
+  - `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+- Evidence:
+  - `logs/md1-shrunk/polls/20260520T164240Z-ci-postpush-sha-74aed926/postpush.txt`
