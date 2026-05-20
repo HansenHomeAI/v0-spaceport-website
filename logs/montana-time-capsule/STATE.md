@@ -3467,3 +3467,13 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260520T215420Z.log`
   - `logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260520T215452Z.json`
 - Next unblocked step: keep polling until SfM `Completed` (or `Failed`); if `Completed`, launch the pinned Montana 3DGS stage exactly once (no duplicates).
+
+## 2026-05-20T21:56Z Ledger Commit + Push
+
+- Commit: `7de8797425f1d703b5dfe071cf74d228ee0754cc`
+- Message: `chore: record hmc sfm poll evidence [skip ci]`
+- Push: `git push origin agent-40136728-montana-time-capsule`
+- Exact-head workflow check:
+  - Exact-head `gh run list ... --commit 7de87974` returned `[]` (expected for `[skip ci]` head).
+- Evidence files:
+  - `logs/montana-time-capsule/gh-run-list-exact-head-20260520T215605Z-postpush.json`
