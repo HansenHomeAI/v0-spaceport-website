@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-20T09:28:17Z
+updated: 2026-05-20T10:20:06Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -9238,3 +9238,30 @@ skybox, compression, artifact handoff, and visual gates.
       - `logs/md1-shrunk/polls/20260520T100053Z-ci-postpush-sha-4abff30c/view-pages.log.txt`
     - Postpush run list:
       - `logs/md1-shrunk/polls/20260520T100053Z-ci-postpush-sha-4abff30c/run-list.txt`
+
+## 2026-05-20T10:14Z heartbeat verify (scripted; strict gates PASS; no new jobs)
+
+- Heartbeat poll summary:
+  - `logs/md1-shrunk/polls/20260520T101455Z-summary.json`
+  - HEAD: `a1157bf81bfe91a553c91b34c32f3d2d85329570`
+  - PREVIEW_URL: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+  - edge meta.json: `https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+- Preflight snapshot (read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260520T101455Z-preflight/preflight.txt`
+  - Step Functions RUNNING: `0` (staging + `SpaceportMLPipeline-br-8abcbd5662`)
+  - SageMaker InProgress: `0` (processing + training)
+- Browser-readable public delivery validation (Origin CORS + cache headers for meta.json + referenced assets):
+  - command: `logs/md1-shrunk/polls/20260520T101455Z-edge-validate/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260520T101455Z-edge-validate/validate.txt`
+  - report: `logs/md1-shrunk/polls/20260520T101455Z-edge-validate/publish-edge.report.html`
+- Public bundle snapshot (S3-vs-edge meta.json parity):
+  - `logs/md1-shrunk/polls/20260520T101455Z-bundle/bundle.txt` (sha256 match)
+- Multi-camera input-vs-render checks (deployed preview; strict; baseline pose verification + sky/horizon gates):
+  - command: `logs/md1-shrunk/polls/20260520T101455Z-camera-suite/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260520T101455Z-camera-suite/suite-summary.json` -> `decision=pass` (`pose_verification.max_delta=0.0`; `artifacts_pruned=true`)
+  - report: `logs/md1-shrunk/polls/20260520T101455Z-camera-suite/report.html`
+- Unit proof:
+  - command: `logs/md1-shrunk/polls/20260520T101455Z-unit/run.cmd.txt`
+  - output: `logs/md1-shrunk/polls/20260520T101455Z-unit/unittest.txt`
+- GitHub Actions snapshot:
+  - `logs/md1-shrunk/polls/20260520T101455Z-ci/summary.txt`

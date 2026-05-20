@@ -1,0 +1,278 @@
+# preflight 20260520T101455Z
+
+## git
+branch=agent-113647-md1-baseline-e2e
+head=a1157bf81bfe91a553c91b34c32f3d2d85329570
+status_porcelain=clean
+
+## aws sts get-caller-identity
+{
+  "UserId": "975050048887",
+  "Account": "975050048887",
+  "Arn": "arn:aws:iam::975050048887:root"
+}
+
+## stepfunctions RUNNING (staging)
+{
+  "executions": []
+}
+
+## stepfunctions RUNNING (branch)
+{
+  "executions": []
+}
+
+## sagemaker processing InProgress
+{
+  "ProcessingJobSummaries": [],
+  "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTRGe0rwG12B5OJ0IudJEP09ADf/S3cAp9o6+VVkGlV5FVCcGE0EHRtbSdzooNaGCWBxWS97COnVqQAw35RNaTcJvDEr2+9DPLP6VaJ9lWN8VauP5UUhqS2KB7vzUblbWpLi8y7DGW2J+Xhka+3s9ZvcLuvAapgdSJYxh0gCmHEZrKxwwiq0N6R7IzWt9UbTI9NW4Ng0epGms2XEEzsfFVzC3dlKHmNe64Cya1MLrIwZ7Y/0NC1sWwcYpCyK6YQxBDfVYgTm7SSO/njpT6qX1fonaczuIsNYf1j0DHLyA+6g17DoiureAon4rKi0bCBpwfaOa/uVvdVynqGr0F8AMlzqoB+xgcABNZJ0aRtRHc5CTZeVR+mgOBAByL+s2iirmDzSkeCCFCgBs6j2ICgHwu6Ej5oeOpfD43KCG9wFeAToUaLB3DGGR9r5+QfqjKaCOFMSC0okQi8kGPhzOJf5j+y7kmTOYMNK4nKvaDRw5PeIH/TqjvjV5IgI9kpmlURfE="
+}
+
+## sagemaker training InProgress
+{
+  "TrainingJobSummaries": [],
+  "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTRGe0rwG12B5OJ0IudJEP09ADf/S3cAp9o6+VVkGlV5FVCcGE0EHRtbSdzooNaGCWBxWS97COnVqQAw35RNaTcJvDEr2+9DPLP6VaJ9lWN8VauP5UUhqS2KB7vzUblbWpLi8y7DGW2J+Xhka+3s9ZvcLuvAapgdSJYxh0gCmHEZrKxwwiq0N6R7IzWt9UbTI9NW4Ng0epGms2XEEzsfFVzC3dlKHmNe64Cya1MLrIwZ7Y/0NC1sWwcYpCyK6YQxBDfVYgTm7SSO/njpT6qX1fonaczuIsNYf1j0DHLyA+6g17DoiureAon4rKi0bCBpwfaOa/uVvdVynqGr0F8AMlz+68wtvSeCa7Dfe5h6n5cTDjuv8XcN+sCsUzyVn/YCJ0l3nwDtitDikOn4tzJxt9xgfX7D98hQmCQ+mMxyV0+AgXbq8k+2bzSw9/et89NnhU7CzrqQXL/MsEH1rWIgmrhdNCDxVIt+xV56hAZ+igdVuISAO5tzMyEDt/vH6VM4w2T+I="
+}
+
+## gh runs (branch)
+[
+  {
+    "conclusion": "success",
+    "createdAt": "2026-05-20T10:00:49Z",
+    "databaseId": 26155418466,
+    "event": "push",
+    "headSha": "4abff30c243b60464ef8ccf6218a4b166d33a5f2",
+    "status": "completed",
+    "updatedAt": "2026-05-20T10:04:50Z",
+    "workflowName": "CDK Deploy"
+  },
+  {
+    "conclusion": "success",
+    "createdAt": "2026-05-20T10:00:49Z",
+    "databaseId": 26155418467,
+    "event": "push",
+    "headSha": "4abff30c243b60464ef8ccf6218a4b166d33a5f2",
+    "status": "completed",
+    "updatedAt": "2026-05-20T10:08:35Z",
+    "workflowName": "Deploy Next.js to Cloudflare Pages"
+  },
+  {
+    "conclusion": "success",
+    "createdAt": "2026-05-20T09:12:07Z",
+    "databaseId": 26153004935,
+    "event": "push",
+    "headSha": "14f6eaf259c4310bf0d613d7c348a22acda4f38a",
+    "status": "completed",
+    "updatedAt": "2026-05-20T09:19:50Z",
+    "workflowName": "Deploy Next.js to Cloudflare Pages"
+  },
+  {
+    "conclusion": "success",
+    "createdAt": "2026-05-20T09:12:07Z",
+    "databaseId": 26153004933,
+    "event": "push",
+    "headSha": "14f6eaf259c4310bf0d613d7c348a22acda4f38a",
+    "status": "completed",
+    "updatedAt": "2026-05-20T09:16:13Z",
+    "workflowName": "CDK Deploy"
+  },
+  {
+    "conclusion": "success",
+    "createdAt": "2026-05-20T09:07:30Z",
+    "databaseId": 26152775602,
+    "event": "push",
+    "headSha": "8f922d210bc53db2cb8b16464d36ee98f7593547",
+    "status": "completed",
+    "updatedAt": "2026-05-20T09:11:30Z",
+    "workflowName": "CDK Deploy"
+  },
+  {
+    "conclusion": "success",
+    "createdAt": "2026-05-20T07:42:06Z",
+    "databaseId": 26148667948,
+    "event": "push",
+    "headSha": "641b0273632ac29e1d15b8c1084b105420c750f6",
+    "status": "completed",
+    "updatedAt": "2026-05-20T07:49:25Z",
+    "workflowName": "Deploy Next.js to Cloudflare Pages"
+  },
+  {
+    "conclusion": "success",
+    "createdAt": "2026-05-20T07:42:06Z",
+    "databaseId": 26148667959,
+    "event": "push",
+    "headSha": "641b0273632ac29e1d15b8c1084b105420c750f6",
+    "status": "completed",
+    "updatedAt": "2026-05-20T07:45:40Z",
+    "workflowName": "CDK Deploy"
+  },
+  {
+    "conclusion": "success",
+    "createdAt": "2026-05-20T07:37:00Z",
+    "databaseId": 26148433269,
+    "event": "push",
+    "headSha": "31d9bd7c3813bd39766950f634ba68883132f0b2",
+    "status": "completed",
+    "updatedAt": "2026-05-20T07:40:56Z",
+    "workflowName": "CDK Deploy"
+  },
+  {
+    "conclusion": "success",
+    "createdAt": "2026-05-20T06:56:47Z",
+    "databaseId": 26146671471,
+    "event": "push",
+    "headSha": "4f3aa3017c5252747f9292324d7bed7b8210c7cc",
+    "status": "completed",
+    "updatedAt": "2026-05-20T07:00:26Z",
+    "workflowName": "CDK Deploy"
+  },
+  {
+    "conclusion": "success",
+    "createdAt": "2026-05-20T06:56:47Z",
+    "databaseId": 26146671467,
+    "event": "push",
+    "headSha": "4f3aa3017c5252747f9292324d7bed7b8210c7cc",
+    "status": "completed",
+    "updatedAt": "2026-05-20T07:04:31Z",
+    "workflowName": "Deploy Next.js to Cloudflare Pages"
+  },
+  {
+    "conclusion": "success",
+    "createdAt": "2026-05-20T02:57:26Z",
+    "databaseId": 26138455344,
+    "event": "push",
+    "headSha": "13327ca311110b45bd068034822c491b6a791313",
+    "status": "completed",
+    "updatedAt": "2026-05-20T03:01:21Z",
+    "workflowName": "CDK Deploy"
+  },
+  {
+    "conclusion": "success",
+    "createdAt": "2026-05-20T02:57:26Z",
+    "databaseId": 26138455345,
+    "event": "push",
+    "headSha": "13327ca311110b45bd068034822c491b6a791313",
+    "status": "completed",
+    "updatedAt": "2026-05-20T03:04:59Z",
+    "workflowName": "Deploy Next.js to Cloudflare Pages"
+  },
+  {
+    "conclusion": "success",
+    "createdAt": "2026-05-19T21:45:18Z",
+    "databaseId": 26127221994,
+    "event": "push",
+    "headSha": "4df1a40c6f91669d78defaf074afd8e7b8ee582b",
+    "status": "completed",
+    "updatedAt": "2026-05-19T21:49:17Z",
+    "workflowName": "CDK Deploy"
+  },
+  {
+    "conclusion": "success",
+    "createdAt": "2026-05-19T16:38:50Z",
+    "databaseId": 26111270602,
+    "event": "push",
+    "headSha": "c3f52d2e8d8a3a7afa8dfa0d1c747b62479a392e",
+    "status": "completed",
+    "updatedAt": "2026-05-19T16:42:46Z",
+    "workflowName": "CDK Deploy"
+  },
+  {
+    "conclusion": "success",
+    "createdAt": "2026-05-19T16:38:50Z",
+    "databaseId": 26111270702,
+    "event": "push",
+    "headSha": "c3f52d2e8d8a3a7afa8dfa0d1c747b62479a392e",
+    "status": "completed",
+    "updatedAt": "2026-05-19T16:46:36Z",
+    "workflowName": "Deploy Next.js to Cloudflare Pages"
+  },
+  {
+    "conclusion": "success",
+    "createdAt": "2026-05-19T16:09:14Z",
+    "databaseId": 26109660239,
+    "event": "push",
+    "headSha": "a73a4adb30fb75a7fb1149156d0d48ab5ccfd443",
+    "status": "completed",
+    "updatedAt": "2026-05-19T16:17:02Z",
+    "workflowName": "Deploy Next.js to Cloudflare Pages"
+  },
+  {
+    "conclusion": "success",
+    "createdAt": "2026-05-19T16:09:14Z",
+    "databaseId": 26109660240,
+    "event": "push",
+    "headSha": "a73a4adb30fb75a7fb1149156d0d48ab5ccfd443",
+    "status": "completed",
+    "updatedAt": "2026-05-19T16:13:26Z",
+    "workflowName": "CDK Deploy"
+  },
+  {
+    "conclusion": "success",
+    "createdAt": "2026-05-19T16:04:19Z",
+    "databaseId": 26109384090,
+    "event": "push",
+    "headSha": "e16881d0867f00195efb1c30c188a5eabf736831",
+    "status": "completed",
+    "updatedAt": "2026-05-19T16:08:32Z",
+    "workflowName": "CDK Deploy"
+  },
+  {
+    "conclusion": "success",
+    "createdAt": "2026-05-19T15:32:55Z",
+    "databaseId": 26107587599,
+    "event": "push",
+    "headSha": "e20276397b444e4ea38f3735f1222856cb046a7a",
+    "status": "completed",
+    "updatedAt": "2026-05-19T15:36:49Z",
+    "workflowName": "CDK Deploy"
+  },
+  {
+    "conclusion": "success",
+    "createdAt": "2026-05-19T15:32:55Z",
+    "databaseId": 26107587902,
+    "event": "push",
+    "headSha": "e20276397b444e4ea38f3735f1222856cb046a7a",
+    "status": "completed",
+    "updatedAt": "2026-05-19T15:40:30Z",
+    "workflowName": "Deploy Next.js to Cloudflare Pages"
+  }
+]
+
+## public S3 meta.json HEAD (with Origin)
+HTTP/1.1 200 OK
+x-amz-id-2: Oqqw/vKSUJ8JxxENV/K0Ku4Z53Lg+/6AZDN1fU+x22acOpbCrsaVlNlhgAk4YrB4J3H+Jk+PnmzNrINy9li0W6gj4CLjjGdL
+x-amz-request-id: 4B9C3VJS3RXW008J
+Date: Wed, 20 May 2026 10:15:03 GMT
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: GET, HEAD
+Access-Control-Expose-Headers: ETag, Content-Length, Content-Range, Accept-Ranges, x-amz-version-id
+Access-Control-Max-Age: 86400
+Vary: Origin, Access-Control-Request-Headers, Access-Control-Request-Method
+Last-Modified: Tue, 19 May 2026 03:14:11 GMT
+ETag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: lwCX4ptdSjx.9.5LMjn4a8Ervrln8HMA
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1421
+Server: AmazonS3
+
+## local tcp listeners
+COMMAND     PID          USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+rapportd    629 gabrielhansen   10u  IPv4 0xd43fe9904368dc77      0t0  TCP *:57108 (LISTEN)
+rapportd    629 gabrielhansen   11u  IPv6 0xe16a739ca4c9e001      0t0  TCP *:57108 (LISTEN)
+rapportd    629 gabrielhansen   20u  IPv6  0x9e31fe01f536617      0t0  TCP *:53106 (LISTEN)
+rapportd    629 gabrielhansen   23u  IPv6 0x440e221cb618b4b3      0t0  TCP *:53107 (LISTEN)
+ControlCe   671 gabrielhansen   10u  IPv4  0x1d6f516c03dbe78      0t0  TCP *:7000 (LISTEN)
+ControlCe   671 gabrielhansen   11u  IPv6 0x323b59c737344082      0t0  TCP *:7000 (LISTEN)
+ControlCe   671 gabrielhansen   12u  IPv4 0x15183ba995babbab      0t0  TCP *:5000 (LISTEN)
+ControlCe   671 gabrielhansen   13u  IPv6 0x74899407a6b44171      0t0  TCP *:5000 (LISTEN)
+sharingd    731 gabrielhansen   26u  IPv6 0xb8e1c62129f065f9      0t0  TCP *:8770 (LISTEN)
+node        990 gabrielhansen   15u  IPv4 0x3ba8349c576cb96a      0t0  TCP *:18789 (LISTEN)
+node        990 gabrielhansen   22u  IPv4 0xc30287d8799625c6      0t0  TCP 127.0.0.1:18792 (LISTEN)
+figma_age  1010 gabrielhansen    3u  IPv4  0x15caf79fc3a5872      0t0  TCP 127.0.0.1:44950 (LISTEN)
+figma_age  1010 gabrielhansen   14u  IPv4 0xa707bb1274999ca8      0t0  TCP 127.0.0.1:44960 (LISTEN)
+whisper-d 11840 gabrielhansen    3u  IPv4 0x54e8688f71e55e6c      0t0  TCP 127.0.0.1:44123 (LISTEN)
+whisper-s 11847 gabrielhansen    3u  IPv4 0x58134ae9f6f12888      0t0  TCP 127.0.0.1:8177 (LISTEN)
+node      42136 gabrielhansen   13u  IPv4 0x81bd7fef9702d453      0t0  TCP 127.0.0.1:3033 (LISTEN)
+Google    53437 gabrielhansen   30u  IPv6 0x7d6c05cbd748094b      0t0  TCP [::1]:7679 (LISTEN)
