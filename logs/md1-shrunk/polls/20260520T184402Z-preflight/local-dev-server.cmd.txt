@@ -1,0 +1,2 @@
+pgrep -fl 'next dev|npm run dev|vite|wrangler dev|cloudflared'
+lsof -nP -iTCP -sTCP:LISTEN
