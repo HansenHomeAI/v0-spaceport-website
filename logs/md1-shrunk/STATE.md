@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-20T07:05:12Z
+updated: 2026-05-20T07:36:10Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -9040,3 +9040,34 @@ skybox, compression, artifact handoff, and visual gates.
   - Postpush artifacts:
     - `logs/md1-shrunk/polls/20260520T064811Z-ci-postpush/postpush-final.txt`
     - `logs/md1-shrunk/polls/20260520T064811Z-ci-postpush/pages-preview-url.txt`
+
+## 2026-05-20T07:29Z heartbeat verify (scripted; strict gates PASS; no new jobs; baseline auto-pick)
+
+- Heartbeat poll summary:
+  - `logs/md1-shrunk/polls/20260520T072905Z-summary.json`
+- Script hardening (pose baseline is now reusable without passing `--baseline-suite-dir`):
+  - `scripts/sfm/run_md1_shrunk_heartbeat_verify.py` auto-selects a stable baseline camera-suite dir when omitted, preferring the baseline referenced by the most recent passing run for the same bundle+viewer.
+- Preflight snapshot (read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260520T072905Z-preflight/preflight.txt`
+  - Step Functions (staging + `SpaceportMLPipeline-br-8abcbd5662`) RUNNING: `0`
+  - Known execution `execution-md1-shrunk-prodspine-wlight-202605190027` status: `SUCCEEDED`:
+    - `logs/md1-shrunk/polls/20260520T072905Z-preflight/stepfunctions-describe-known.json`
+  - Public S3 meta.json HEAD -> `200` + Edge meta.json HEAD -> `200` (see `preflight.txt`)
+  - SageMaker InProgress: `0` (processing + training)
+  - Local dev server listeners + listen ports: see `preflight.txt`.
+- Public bundle snapshot (S3-vs-edge meta.json parity):
+  - `logs/md1-shrunk/polls/20260520T072905Z-bundle/bundle.txt`
+- Browser-readable public delivery validation (automation; Origin CORS + cache headers for meta.json + referenced assets):
+  - command: `logs/md1-shrunk/polls/20260520T072905Z-edge-validate/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260520T072905Z-edge-validate/validate.txt`
+  - report: `logs/md1-shrunk/polls/20260520T072905Z-edge-validate/publish-edge.report.html`
+- Multi-camera input-vs-render checks (deployed preview; strict; baseline pose verification + sky/horizon diagnostics):
+  - command: `logs/md1-shrunk/polls/20260520T072905Z-camera-suite/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260520T072905Z-camera-suite/suite-summary.json` -> `decision=pass`
+  - report: `logs/md1-shrunk/polls/20260520T072905Z-camera-suite/report.html`
+  - reusable camera-pose verification: `pose_verification.max_delta=0.0` (baseline: `logs/md1-shrunk/polls/20260519T163352Z-camera-suite`)
+- Unit proof:
+  - command: `logs/md1-shrunk/polls/20260520T072905Z-unit/run.cmd.txt`
+  - output: `logs/md1-shrunk/polls/20260520T072905Z-unit/unittest.txt`
+- GitHub Actions snapshot (exact-head remains last deployed `4f3aa301` until the next push):
+  - `logs/md1-shrunk/polls/20260520T072905Z-ci/summary.txt`

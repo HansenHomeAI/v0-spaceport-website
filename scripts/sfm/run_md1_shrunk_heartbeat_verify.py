@@ -132,6 +132,61 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def find_baseline_suite_dir(
+    polls_root: Path,
+    *,
+    bundle_url: str,
+    viewer_url: str,
+    current_ts: str,
+) -> str:
+    """Pick a stable prior camera-suite directory for pose drift checks.
+
+    When no explicit `--baseline-suite-dir` is passed, search earlier `*-camera-suite`
+    directories under `polls_root` and pick the oldest passing run that matches the
+    same bundle + viewer. This gives us a long-lived baseline without hardcoding a
+    timestamp.
+    """
+
+    candidates: list[tuple[str, Path, dict[str, Any]]] = []
+    for entry in polls_root.iterdir():
+        if not entry.is_dir():
+            continue
+        name = entry.name
+        if not name.endswith("-camera-suite"):
+            continue
+        ts = name.removesuffix("-camera-suite")
+        if ts >= current_ts:
+            continue
+
+        summary_path = entry / "suite-summary.json"
+        if not summary_path.exists():
+            continue
+        try:
+            summary = json.loads(summary_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+        if summary.get("decision") != "pass":
+            continue
+        if str(summary.get("bundle_url") or "").strip() != bundle_url:
+            continue
+        if str(summary.get("viewer_url") or "").strip() != viewer_url:
+            continue
+        candidates.append((ts, entry, summary))
+
+    if not candidates:
+        return ""
+
+    # Prefer the baseline suite dir referenced by the most recent passing run.
+    candidates.sort(key=lambda pair: pair[0])  # chronological
+    for ts, entry, summary in reversed(candidates):
+        baseline = str(summary.get("baseline_suite_dir") or "").strip()
+        if baseline and Path(baseline).exists():
+            return str(Path(baseline).resolve())
+
+    # Otherwise, default to using the most recent passing suite as the baseline.
+    return str(candidates[-1][1].resolve())
+
+
 def main() -> int:
     args = parse_args()
     ts = utc_timestamp()
@@ -348,6 +403,15 @@ def main() -> int:
     # If caller did not pass edge URL, use the resolved one for camera suite.
     bundle_url = args.edge_meta_url.strip() or edge_url
 
+    baseline_suite_dir = args.baseline_suite_dir.strip()
+    if not baseline_suite_dir:
+        baseline_suite_dir = find_baseline_suite_dir(
+            polls_root,
+            bundle_url=bundle_url,
+            viewer_url=args.viewer_url,
+            current_ts=ts,
+        )
+
     # --- camera suite ---
     cmd_camera = [
         py,
@@ -369,8 +433,8 @@ def main() -> int:
         "--out-dir",
         str(cam_dir),
     ]
-    if args.baseline_suite_dir.strip():
-        cmd_camera += ["--baseline-suite-dir", args.baseline_suite_dir]
+    if baseline_suite_dir:
+        cmd_camera += ["--baseline-suite-dir", baseline_suite_dir]
     if args.strict:
         cmd_camera += ["--strict"]
 
@@ -426,4 +490,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
