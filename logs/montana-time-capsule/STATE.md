@@ -225,6 +225,28 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/sfm-poll-20260518T183539Z.log`
 - Next unblocked step: keep polling `cvhr-mtc-20260518T1729Z-sfm` to completion; run the same `--launch` command once immediately after completion to launch pinned Montana 3DGS.
 
+## 2026-05-20T21:46Z HMC Monitor Pass (SfM Mapping Phase)
+
+- Branch/head/status command:
+  - `git rev-parse --abbrev-ref HEAD && git rev-parse HEAD && git status --short --branch`
+  - Result: branch `agent-40136728-montana-time-capsule`, head `a14d874f38d6914a4b0f4cfee46befa54afb2a57` (`[skip ci]`), status clean.
+- AWS identity command: `aws sts get-caller-identity`
+  - Result: account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+- HMC archive proof (no re-upload):
+  - `aws s3api head-object --bucket spaceport-uploads --key 1778952912508-hmc-high-mountain-camp-images-flat.zip`
+  - Result: LastModified `2026-05-16T17:35:27Z`, size `8646557673`, ETag `ed86661a82b28856997a09f129ce6bec-1031`.
+  - Object metadata (from `head-object`): `sha256=8ac35927d5c90969f5e10f1fa011333e6065140924986c75f18fc81f899b1df2`, `dataset=hmc`, `source=dropbox`, `photo-count=2063`.
+- SageMaker status command: `aws sagemaker describe-processing-job --processing-job-name hmc-mtc-20260520T2015Z-sfm`
+  - Result: `ProcessingJobStatus=InProgress`; pinned SfM image `sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811`.
+- CloudWatch progress samples:
+  - Feature extraction reached `Processed file [2063/2063]` and reported GPS priors coverage `2063/2063` (100%).
+  - Mapping moved into `chunk_00_mapper_initial`, registering images (sampled `num_reg_frames=95`) and running bundle adjustment/retriangulation.
+  - Evidence logs captured (gitignored): `logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260520T214101Z.log`, `logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260520T214615Z.log`.
+- S3 outputs:
+  - Prefix still empty (EndOfJob upload): `s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/colmap/`.
+- Next unblocked step:
+  - Keep polling until `hmc-mtc-20260520T2015Z-sfm` becomes `Completed`, then run `python3 scripts/montana_time_capsule/hmc_time_capsule.py --launch` exactly once to launch pinned 3DGS.
+
 ## 2026-05-18T18:49Z Ledger Commit + Push
 
 - Commit: `4cd3ed8be671d9f1b6796375c5df67ac9250722d`
