@@ -9816,3 +9816,35 @@ note: reran heartbeat after `20260520T144551Z` because bundle parity was skipped
   - PREVIEW_URL: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
 - Evidence:
   - `logs/md1-shrunk/polls/20260520T172145Z-ci-postpush-sha-89cf4b1e/postpush.txt`
+
+## 2026-05-20T17:44Z heartbeat verify (scripted; strict gates PASS; no new jobs)
+
+- Heartbeat command:
+  - `logs/md1-shrunk/polls/20260520T174451Z-heartbeat.cmd.txt`
+- Heartbeat poll summary:
+  - `logs/md1-shrunk/polls/20260520T174451Z-summary.json`
+  - HEAD: `936ca1f2a7b73c9deb81bdd74032fdbe0520fc58` (`[skip ci]` head; exact-head workflows expected: none)
+  - PREVIEW_URL: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+  - edge meta.json: `https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+  - public S3 meta.json: `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+- Preflight snapshot (scripted; read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260520T174451Z-preflight/preflight.txt`
+  - Step Functions RUNNING: `0` (staging + `SpaceportMLPipeline-br-8abcbd5662`)
+  - Known execution `execution-md1-shrunk-prodspine-wlight-202605190027` status: `SUCCEEDED`:
+    - `logs/md1-shrunk/polls/20260520T174451Z-preflight/stepfunctions-describe-known.json`
+  - SageMaker InProgress: `0` (processing + training)
+- Browser-readable public delivery validation (automation; Origin CORS + cache headers for meta.json + referenced assets):
+  - command: `logs/md1-shrunk/polls/20260520T174451Z-edge-validate/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260520T174451Z-edge-validate/validate.txt`
+  - report: `logs/md1-shrunk/polls/20260520T174451Z-edge-validate/publish-edge.report.html`
+- Public bundle snapshot (S3-vs-edge meta.json parity):
+  - `logs/md1-shrunk/polls/20260520T174451Z-bundle/bundle.txt` (sha256 match)
+- Multi-camera input-vs-render checks (deployed preview; strict; baseline pose verification + sky/horizon gates):
+  - command: `logs/md1-shrunk/polls/20260520T174451Z-camera-suite/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260520T174451Z-camera-suite/suite-summary.json` -> `decision=pass` (`pose_verification.max_delta=0.0`; `artifacts_pruned=true`; `skybox.decision=pass`; `nosky.decision=pass`)
+  - report: `logs/md1-shrunk/polls/20260520T174451Z-camera-suite/report.html`
+- Unit proof:
+  - command: `logs/md1-shrunk/polls/20260520T174451Z-unit/run.cmd.txt`
+  - output: `logs/md1-shrunk/polls/20260520T174451Z-unit/unittest.txt`
+- GitHub Actions snapshot (head is logs-only; no new runs expected):
+  - `logs/md1-shrunk/polls/20260520T174451Z-ci/summary.txt`
