@@ -8910,3 +8910,30 @@ skybox, compression, artifact handoff, and visual gates.
   - `chore: fix md1-shrunk STATE commit pointer (20260520T044301Z) [skip ci]` -> `dcaf0d5a`
   - GitHub Actions postpush snapshot (no new runs expected for `[skip ci]` head):
     - `logs/md1-shrunk/polls/20260520T044301Z-ci-postpush/postpush-final.txt`
+
+## 2026-05-20T05:14Z heartbeat verify (strict gates PASS; no new jobs)
+
+- Preflight snapshot (read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260520T051407Z-preflight/preflight.txt`
+  - Step Functions (staging + `SpaceportMLPipeline-br-8abcbd5662`) RUNNING: `0` (see captured JSON)
+  - Known execution `execution-md1-shrunk-prodspine-wlight-202605190027` status: `SUCCEEDED`:
+    - `logs/md1-shrunk/polls/20260520T051407Z-preflight/stepfunctions-describe-known.json`
+  - Public S3 meta.json HEAD -> `200` + Edge meta.json HEAD -> `200` (see `preflight.txt`)
+  - SageMaker InProgress: `0` (processing + training)
+  - Local dev server listeners + listen ports: see `preflight.txt`.
+- Public bundle snapshot (S3-vs-edge meta.json parity):
+  - `logs/md1-shrunk/polls/20260520T051407Z-bundle/bundle.txt`
+- Browser-readable public delivery validation (no republish; Origin CORS + cache headers for meta.json + referenced assets):
+  - `logs/md1-shrunk/polls/20260520T051407Z-edge-validate/validate.txt`
+- Multi-camera input-vs-render checks (deployed preview; strict; baseline pose verification):
+  - command: `logs/md1-shrunk/polls/20260520T051407Z-camera-suite/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260520T051407Z-camera-suite/suite-summary.json` -> `decision=pass`
+  - report: `logs/md1-shrunk/polls/20260520T051407Z-camera-suite/report.html`
+  - reusable camera-pose verification: `pose_verification.max_delta=0.0` (baseline: `logs/md1-shrunk/polls/20260519T163352Z-camera-suite`)
+- Unit proof:
+  - command: `logs/md1-shrunk/polls/20260520T051407Z-unit/run.cmd.txt`
+  - output: `logs/md1-shrunk/polls/20260520T051407Z-unit/unittest.txt`
+- GitHub Actions snapshot:
+  - `logs/md1-shrunk/polls/20260520T051407Z-ci/summary.txt`
+- Commit/push:
+  - pending (will be recorded after push)

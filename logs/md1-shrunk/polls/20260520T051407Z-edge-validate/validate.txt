@@ -1,0 +1,185 @@
+# edge validate 20260520T051407Z
+
+origin=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev
+edge_meta=https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json
+
+## meta.json head (Origin)
+HTTP/2 200 
+content-type: application/json
+content-length: 1421
+date: Tue, 19 May 2026 14:24:08 GMT
+last-modified: Tue, 19 May 2026 06:37:13 GMT
+etag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+cache-control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: vUW1wpcXNiVbn3gf6_kSkXCXdN6e83vX
+accept-ranges: bytes
+server: AmazonS3
+x-cache: Hit from cloudfront
+via: 1.1 b7b9d4ff5955525f07b19c08b74c752e.cloudfront.net (CloudFront)
+x-amz-cf-pop: LAX53-P6
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: XHb1z5TmW1hjQE0sgrTluRxwCqOiqY2nK2_LJ0mpYTqxtrMLwhiv6w==
+age: 53554
+access-control-allow-origin: *
+
+
+## referenced assets
+means_l.webp
+means_u.webp
+quats.webp
+scales.webp
+sh0.webp
+shN_centroids.webp
+shN_labels.webp
+
+## per-asset head
+
+### means_l.webp
+HTTP/2 200 
+content-type: application/octet-stream
+content-length: 2875402
+date: Tue, 19 May 2026 14:28:07 GMT
+last-modified: Tue, 19 May 2026 14:28:06 GMT
+etag: "eb71e6fa0de2a17a6d098f48d36b382e"
+x-amz-server-side-encryption: AES256
+cache-control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: 7XE9pleqx.2myE9zV6PZzP2IucAMTkUA
+accept-ranges: bytes
+server: AmazonS3
+x-cache: Hit from cloudfront
+via: 1.1 7941f6ba2d1fdb7f442fab92706057da.cloudfront.net (CloudFront)
+x-amz-cf-pop: LAX53-P6
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: 9AxI1KABCIHBFPWDX5lFZ_SzWsXtXVsPRR_IiRQbP3J3YsMhK_yCRg==
+age: 53316
+access-control-allow-origin: *
+
+
+### means_u.webp
+HTTP/2 200 
+content-type: application/octet-stream
+content-length: 1909702
+date: Tue, 19 May 2026 14:28:08 GMT
+last-modified: Tue, 19 May 2026 14:28:06 GMT
+etag: "fd8494eb436aabb58978a955b4cdc4ad"
+x-amz-server-side-encryption: AES256
+cache-control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: zJ15OO84mclJLhz.Vjwe5.nCFZPCVm.Y
+accept-ranges: bytes
+server: AmazonS3
+x-cache: Hit from cloudfront
+via: 1.1 ed44b2ce269f864e7a3f4a5b06b805e6.cloudfront.net (CloudFront)
+x-amz-cf-pop: LAX53-P6
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: FtEEWbze2lwRfXafEG1I-D40lzr-6vKdcnE_IqDdx58TGLcxc6OvDg==
+age: 53315
+access-control-allow-origin: *
+
+
+### quats.webp
+HTTP/2 200 
+content-type: application/octet-stream
+content-length: 3042496
+date: Tue, 19 May 2026 14:28:08 GMT
+last-modified: Tue, 19 May 2026 14:28:06 GMT
+etag: "9ff748eb585e72254d7e428725d77383"
+x-amz-server-side-encryption: AES256
+cache-control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: ELMGj6OGhSJDJ6DPOqvgxyeuGnbpnujJ
+accept-ranges: bytes
+server: AmazonS3
+x-cache: Hit from cloudfront
+via: 1.1 b7b9d4ff5955525f07b19c08b74c752e.cloudfront.net (CloudFront)
+x-amz-cf-pop: LAX53-P6
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: o0lIHurztKBfQp3BJBXFtulKalHwfUQxlGMU0y2O-QuMYD_mQFdQFg==
+age: 53315
+access-control-allow-origin: *
+
+
+### scales.webp
+HTTP/2 200 
+content-type: application/octet-stream
+content-length: 1714072
+date: Tue, 19 May 2026 14:28:08 GMT
+last-modified: Tue, 19 May 2026 14:28:06 GMT
+etag: "43da3e2b0e00db8cb55d8e95c9a38331"
+x-amz-server-side-encryption: AES256
+cache-control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: fy_o.88.8YtzCvZP2XoUOHMdo8PHBjav
+accept-ranges: bytes
+server: AmazonS3
+x-cache: Hit from cloudfront
+via: 1.1 85e660bc5e54e6020597f85d8b86f362.cloudfront.net (CloudFront)
+x-amz-cf-pop: LAX53-P6
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: hqLAon4y8rRtlF3y3s-UKciIswPLWuELs8W_N3QfNHvQOlA-4N32fg==
+age: 53315
+access-control-allow-origin: *
+
+
+### sh0.webp
+HTTP/2 200 
+content-type: application/octet-stream
+content-length: 2307560
+date: Tue, 19 May 2026 14:28:08 GMT
+last-modified: Tue, 19 May 2026 14:28:06 GMT
+etag: "90a2126e11ed9556e52b94824e8e7b25"
+x-amz-server-side-encryption: AES256
+cache-control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: DWDFpb8tV7L.6Fc1bK_9mNXIw_9P6woo
+accept-ranges: bytes
+server: AmazonS3
+x-cache: Hit from cloudfront
+via: 1.1 0f1ad28bbe358153c2fbe34c30aa9462.cloudfront.net (CloudFront)
+x-amz-cf-pop: LAX53-P6
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: JZk265WvLcg3pqcmzRYYnx_Hz0HNxzCen5z9wBVLS_bcJ4wbD9e7-g==
+age: 53315
+access-control-allow-origin: *
+
+
+### shN_centroids.webp
+HTTP/2 200 
+content-type: application/octet-stream
+content-length: 733814
+date: Tue, 19 May 2026 14:28:09 GMT
+last-modified: Tue, 19 May 2026 14:28:06 GMT
+etag: "43896950526db5f5a2cf73bc1548c2ed"
+x-amz-server-side-encryption: AES256
+cache-control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: qgGJTxSd3zYNMLxCAD.LuiNzL0k3Q0Fd
+accept-ranges: bytes
+server: AmazonS3
+x-cache: Hit from cloudfront
+via: 1.1 0879fd5d6004d1fa8783479aa15a29b2.cloudfront.net (CloudFront)
+x-amz-cf-pop: LAX53-P6
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: LOJGInh_zqlDT8QC_pL-htBB-e-QAQWj1cJnVcNtfXQIMiwFQCDGtw==
+age: 53314
+access-control-allow-origin: *
+
+
+### shN_labels.webp
+HTTP/2 200 
+content-type: application/octet-stream
+content-length: 1903638
+date: Tue, 19 May 2026 14:28:09 GMT
+last-modified: Tue, 19 May 2026 14:28:06 GMT
+etag: "e62b0f1e08e952841e8ba763be7e6a1c"
+x-amz-server-side-encryption: AES256
+cache-control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: JPrGqbJ27g8adhVJZOM8ifdavzxlBzWr
+accept-ranges: bytes
+server: AmazonS3
+x-cache: Hit from cloudfront
+via: 1.1 583de3760ccd8588ca8465ac531aeadc.cloudfront.net (CloudFront)
+x-amz-cf-pop: LAX53-P6
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: 0EOOX2Lgb4SMjcrGa9BjROp0nldhXQa0lE5irpjNiJ5IJ48VlLq1rQ==
+age: 53315
+access-control-allow-origin: *
+
+
+decision=pass
