@@ -3309,3 +3309,39 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260520T0040Z.json`
   - `logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260520T0040Z.log`
 - Next unblocked step: continue polling feature extraction and later mapping/chunk output for `hmc-mtc-20260520T2015Z-sfm`; do not launch 3DGS until SfM is `Completed`.
+
+## 2026-05-20T20:42Z HMC SfM Monitor Pass (No Duplicate Launch)
+
+- Branch/head/status:
+  - Branch: `agent-40136728-montana-time-capsule`
+  - Head: `0a57250d0d8824bd1dc61f3787c0e807ebd44e8d` (`[skip ci]`)
+  - Status: clean (plus 2 untracked local viewer screenshots pending commit).
+- AWS identity:
+  - Account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+- HMC upload object proof (user expected Friday/Saturday May 15-16, 2026):
+  - Found at `s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip` with `8646557673` bytes, ETag `"ed86661a82b28856997a09f129ce6bec-1031"`, LastModified `2026-05-16T17:35:27Z`.
+  - Confirmed missing at `s3://spaceport-uploads-staging/1778952912508-hmc-high-mountain-camp-images-flat.zip` (`404 Not Found`), so no re-upload was attempted.
+- SageMaker state:
+  - `hmc-mtc-20260520T2015Z-sfm`: `InProgress`
+  - Duplicate-job guard: `aws sagemaker list-processing-jobs --name-contains hmc-mtc --status-equals InProgress` still shows only the single SfM job.
+- Output S3 state:
+  - `s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/colmap/` lists `0` objects while SfM is running (`S3UploadMode=EndOfJob`).
+- Guarded advance:
+  - Re-running the same HMC runner `--launch` command held at `status=sfm_running` and did not create a second job.
+- Evidence files:
+  - `logs/montana-time-capsule/aws-sts-20260520T203433Z.json`
+  - `logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260520T203447Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-processing-hmc-20260520T203447Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-processing-hmc-active-20260520T203447Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-training-hmc-20260520T203447Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-training-hmc-active-20260520T203447Z.json`
+  - `logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260520T203500Z.log`
+  - `logs/montana-time-capsule/hmc-sfm-poll-20260520T203613Z.log`
+  - `logs/montana-time-capsule/s3-head-spaceport-uploads-20260520T203520Z.json`
+  - `logs/montana-time-capsule/s3-head-spaceport-uploads-staging-20260520T203520Z.err`
+  - `logs/montana-time-capsule/s3-list-spaceport-uploads-prefix-177895-20260520T203520Z.json`
+  - `logs/montana-time-capsule/s3-list-spaceport-uploads-staging-prefix-177895-20260520T203520Z.json`
+  - `logs/montana-time-capsule/s3-list-hmc-sfm-output-20260520T203607Z.txt`
+  - `logs/montana-time-capsule/hmc-launch-20260520T204214Z.cmd.txt`
+  - `logs/montana-time-capsule/hmc-launch-20260520T204214Z.log`
+- Next unblocked step: keep polling `hmc-mtc-20260520T2015Z-sfm` until `Completed`; then run the same HMC runner command with `--launch` once to launch pinned Montana 3DGS.

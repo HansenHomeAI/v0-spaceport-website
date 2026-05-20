@@ -1,0 +1,1 @@
+python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --dataset-id HMC --run-prefix hmc-mtc --subset-strategy hmc_full_2063_montana_time_capsule --input-s3-uri s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip --expected-image-count 2063 --state-file logs/montana-time-capsule/hmc-state.json --search-prefix HMC --search-token hmc --launch
