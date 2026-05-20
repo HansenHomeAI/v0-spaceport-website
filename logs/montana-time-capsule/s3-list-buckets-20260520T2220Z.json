@@ -1,0 +1,324 @@
+{
+    "Buckets": [
+        {
+            "Name": "cdk-hnb659fds-assets-975050048887-us-east-1",
+            "CreationDate": "2026-04-29T22:14:23+00:00"
+        },
+        {
+            "Name": "cdk-hnb659fds-assets-975050048887-us-west-2",
+            "CreationDate": "2026-04-27T18:21:56+00:00"
+        },
+        {
+            "Name": "cdk-roadmap-assets-975050048887-us-west-2",
+            "CreationDate": "2026-04-27T17:10:05+00:00"
+        },
+        {
+            "Name": "gabe-output-renderingpipeline-bucket",
+            "CreationDate": "2026-04-25T07:32:25+00:00"
+        },
+        {
+            "Name": "gabe-recon-renderingpipeline-bucket",
+            "CreationDate": "2026-04-27T23:13:36+00:00"
+        },
+        {
+            "Name": "my-360-photos",
+            "CreationDate": "2026-04-28T09:39:29+00:00"
+        },
+        {
+            "Name": "my-drone-waypoints",
+            "CreationDate": "2026-04-27T15:52:07+00:00"
+        },
+        {
+            "Name": "my-website-uploads",
+            "CreationDate": "2026-04-24T17:08:09+00:00"
+        },
+        {
+            "Name": "pmd-rendered-assets-975050048887-us-west-2",
+            "CreationDate": "2026-04-16T21:11:40+00:00"
+        },
+        {
+            "Name": "roadmap-artifacts-roadmap-main-975050048887",
+            "CreationDate": "2026-04-27T19:59:36+00:00"
+        },
+        {
+            "Name": "sagemaker-us-west-2-975050048887",
+            "CreationDate": "2026-04-25T23:40:30+00:00"
+        },
+        {
+            "Name": "sogs-build-975050048887",
+            "CreationDate": "2026-04-24T21:50:30+00:00"
+        },
+        {
+            "Name": "sogs-build-artifacts-975050048887",
+            "CreationDate": "2026-04-26T11:26:33+00:00"
+        },
+        {
+            "Name": "sogs-code-975050048887",
+            "CreationDate": "2026-04-28T01:04:03+00:00"
+        },
+        {
+            "Name": "spaceport-build-cache",
+            "CreationDate": "2026-04-24T21:37:30+00:00"
+        },
+        {
+            "Name": "spaceport-ml-delivery-br-487517c20a",
+            "CreationDate": "2026-04-12T04:01:57+00:00"
+        },
+        {
+            "Name": "spaceport-ml-delivery-br-647952f8ea",
+            "CreationDate": "2026-04-25T11:06:40+00:00"
+        },
+        {
+            "Name": "spaceport-ml-delivery-br-b72314f13f",
+            "CreationDate": "2026-04-27T03:22:42+00:00"
+        },
+        {
+            "Name": "spaceport-ml-delivery-br-c908ce627c",
+            "CreationDate": "2026-04-12T00:58:29+00:00"
+        },
+        {
+            "Name": "spaceport-ml-delivery-br-dda7bdad32",
+            "CreationDate": "2026-04-27T12:10:24+00:00"
+        },
+        {
+            "Name": "spaceport-ml-delivery-staging",
+            "CreationDate": "2026-04-27T21:22:56+00:00"
+        },
+        {
+            "Name": "spaceport-ml-pipeline",
+            "CreationDate": "2026-04-27T22:06:06+00:00"
+        },
+        {
+            "Name": "spaceport-ml-processing",
+            "CreationDate": "2026-04-25T16:06:27+00:00"
+        },
+        {
+            "Name": "spaceport-ml-processing-br-fb273c6c47",
+            "CreationDate": "2026-04-28T07:33:26+00:00"
+        },
+        {
+            "Name": "spaceport-ml-processing-staging",
+            "CreationDate": "2026-04-27T14:43:08+00:00"
+        },
+        {
+            "Name": "spaceport-model-delivery-staging",
+            "CreationDate": "2026-04-24T17:22:03+00:00"
+        },
+        {
+            "Name": "spaceport-sagemaker-us-west-2",
+            "CreationDate": "2026-04-27T14:32:36+00:00"
+        },
+        {
+            "Name": "spaceport-uploads",
+            "CreationDate": "2026-04-28T11:43:02+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-0468116023",
+            "CreationDate": "2026-04-24T18:08:54+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-0d01e63d2e",
+            "CreationDate": "2026-04-16T14:31:37+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-18df3f5daa",
+            "CreationDate": "2026-04-28T02:35:16+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-2efbf47a4f",
+            "CreationDate": "2026-04-26T23:44:22+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-39740c2180",
+            "CreationDate": "2026-04-28T09:54:23+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-3a0b78b344",
+            "CreationDate": "2026-04-16T04:40:47+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-3a5b3005d7",
+            "CreationDate": "2026-04-28T03:47:17+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-3ee769dca7",
+            "CreationDate": "2026-04-24T23:18:36+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-3f053565c2",
+            "CreationDate": "2026-04-25T23:19:48+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-421b38da81",
+            "CreationDate": "2026-04-12T00:40:50+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-45ee130fef",
+            "CreationDate": "2026-04-24T22:27:36+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-487517c20a",
+            "CreationDate": "2026-04-12T04:06:34+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-4a58659172",
+            "CreationDate": "2026-04-27T16:17:17+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-4a861879eb",
+            "CreationDate": "2026-04-24T22:07:06+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-52804b744d",
+            "CreationDate": "2026-04-16T17:53:30+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-58c8335732",
+            "CreationDate": "2026-04-28T11:21:05+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-590bef09e3",
+            "CreationDate": "2026-04-28T06:08:44+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-5ddffedc6c",
+            "CreationDate": "2026-04-24T19:42:36+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-5ff44d7162",
+            "CreationDate": "2026-04-28T09:32:52+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-6134770281",
+            "CreationDate": "2026-04-11T16:30:39+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-647952f8ea",
+            "CreationDate": "2026-04-28T15:28:25+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-64f4abe549",
+            "CreationDate": "2026-04-24T17:31:46+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-679d519c73",
+            "CreationDate": "2026-04-15T22:25:05+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-6cd5762fc5",
+            "CreationDate": "2026-04-25T22:24:01+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-6e15a3e5ed",
+            "CreationDate": "2026-04-27T03:04:40+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-8989f2959f",
+            "CreationDate": "2026-04-27T20:49:11+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-9016cbe767",
+            "CreationDate": "2026-04-27T16:56:29+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-91c590205a",
+            "CreationDate": "2026-04-11T05:20:01+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-985396b507",
+            "CreationDate": "2026-04-12T04:02:01+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-98efe3a22f",
+            "CreationDate": "2026-04-27T22:29:30+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-9f3bbb8f70",
+            "CreationDate": "2026-04-11T21:28:17+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-a2a0178e1a",
+            "CreationDate": "2026-04-27T18:28:19+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-ac4b75bc57",
+            "CreationDate": "2026-04-28T00:48:53+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-ad3ac98348",
+            "CreationDate": "2026-04-11T14:54:29+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-ada4c6fc3f",
+            "CreationDate": "2026-04-11T23:23:14+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-af4b90ccd2",
+            "CreationDate": "2026-04-27T21:21:36+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-b72314f13f",
+            "CreationDate": "2026-04-28T02:53:50+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-b888dc6beb",
+            "CreationDate": "2026-04-28T02:36:26+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-bbb91ce9a5",
+            "CreationDate": "2026-04-28T04:56:18+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-bd4bf3a400",
+            "CreationDate": "2026-04-26T12:51:28+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-c55e953e52",
+            "CreationDate": "2026-04-27T19:56:26+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-d659db0a49",
+            "CreationDate": "2026-04-24T17:30:44+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-ddb6abd6bf",
+            "CreationDate": "2026-04-28T09:32:07+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-e043d7b48d",
+            "CreationDate": "2026-04-27T02:36:56+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-e7de77d9fd",
+            "CreationDate": "2026-04-28T09:05:08+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-e85ad62606",
+            "CreationDate": "2026-04-09T16:48:50+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-f9a9943d3b",
+            "CreationDate": "2026-04-27T20:42:04+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-fab1f8f8ab",
+            "CreationDate": "2026-04-24T19:47:17+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-br-fb273c6c47",
+            "CreationDate": "2026-04-25T13:02:38+00:00"
+        },
+        {
+            "Name": "spaceport-uploads-staging",
+            "CreationDate": "2026-04-24T22:44:09+00:00"
+        },
+        {
+            "Name": "user-submissions",
+            "CreationDate": "2026-04-28T09:13:56+00:00"
+        }
+    ],
+    "Owner": {
+        "ID": "7e62b73b190f88fc4ee02e6eb4cf82ce969064984caf007d4e92e37c939ca2af"
+    },
+    "Prefix": null
+}

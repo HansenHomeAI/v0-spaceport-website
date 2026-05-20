@@ -3537,3 +3537,41 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/gh-run-list-agent-40136728-20260520T221506Z.json`
   - `logs/montana-time-capsule/gh-run-list-exact-head-20260520T221506Z.json`
 - Next unblocked step: keep polling until SfM `Completed` (or `Failed`); if `Completed`, launch the pinned Montana 3DGS stage exactly once (no duplicates).
+
+## 2026-05-20T22:45Z HMC Monitor Pass (No Duplicate Uploads/Jobs)
+
+- Branch/head/status:
+  - Branch: `agent-40136728-montana-time-capsule`
+  - Head: `7cff0084de5d4bd39b9546814dd1e2b2faeeb503` (`[skip ci]`)
+- AWS identity:
+  - `arn:aws:iam::975050048887:root` (account `975050048887`, region `us-west-2`)
+- HMC archive proof (no upload performed; staging search exhausted by prefix evidence):
+  - ZIP exists in: `s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip` (LastModified `2026-05-16T17:35:27Z`, size `8,646,557,673`, ETag `ed86661a82b28856997a09f129ce6bec-1031`)
+  - Manifest exists in: `s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.manifest.json`
+  - Negative in staging uploads bucket: `aws s3api head-object` and `list-objects-v2 --prefix 1778952912508` both returned empty/404 for `spaceport-uploads-staging`.
+  - Negative in all other `spaceport-uploads*` buckets: prefix search for `1778952912508` hit only `spaceport-uploads` (no staging/branch upload buckets contained the key/prefix).
+- SageMaker:
+  - Job: `hmc-mtc-20260520T2015Z-sfm`
+  - Status: `InProgress` (3 polls at `22:36:46Z`, `22:38:47Z`, `22:40:48Z`)
+  - CloudWatch proof: SfM is in mapping phase (e.g. `chunk_07_mapper_initial` registering images) as of `2026-05-20T22:42:50Z`.
+  - Output: `EndOfJob` (S3 prefix still empty as expected).
+- S3 output prefix:
+  - `s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/colmap/`
+  - Result: empty as of this pass.
+- GitHub workflows:
+  - Exact-head `gh run list` returned `[]` (expected for `[skip ci]` head); evidence saved.
+- Evidence files (this pass):
+  - `logs/montana-time-capsule/aws-sts-get-caller-identity-20260520T2219Z.json`
+  - `logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260520T2219Z.json`
+  - `logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260520T2241Z.json`
+  - `logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260520T2219Z.log`
+  - `logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260520T2241Z.log`
+  - `logs/montana-time-capsule/hmc-sfm-poll-20260520T223646Z.log`
+  - `logs/montana-time-capsule/s3-list-buckets-20260520T2220Z.json`
+  - `logs/montana-time-capsule/s3-head-spaceport-uploads-staging-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260520T2221Z.json`
+  - `logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260520T2221Z.json`
+  - `logs/montana-time-capsule/s3-list-spaceport-uploads-staging-prefix-1778952912508-20260520T2221Z.json`
+  - `logs/montana-time-capsule/s3-list-spaceport-uploads-prefix-1778952912508-20260520T2221Z.json`
+  - `logs/montana-time-capsule/s3-search-uploads-buckets-prefix-1778952912508-20260520T2222Z.txt`
+  - `logs/montana-time-capsule/gh-run-list-exact-head-7cff0084-20260520T2223Z.json`
+- Next unblocked step: keep polling until SfM becomes `Completed`; immediately after completion, run `python3 scripts/montana_time_capsule/hmc_time_capsule.py --launch` once to start pinned 3DGS (avoid duplicates).
