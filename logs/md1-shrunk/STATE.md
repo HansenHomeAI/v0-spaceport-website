@@ -9114,3 +9114,38 @@ skybox, compression, artifact handoff, and visual gates.
   - `chore: record md1-shrunk postpush snapshot (20260520T082123Z) [skip ci]` -> `620add51`
   - GitHub Actions postpush snapshot (no new runs expected for `[skip ci]` head):
     - `logs/md1-shrunk/polls/20260520T082123Z-ci-postpush-sha-35f0b387/postpush.txt`
+
+## 2026-05-20T08:57Z heartbeat verify (parity fix + prod->staging publish fallback; strict gates PASS; no new jobs)
+
+- Bugfix: edge publish now tolerates prod-bucket inputs in preview stacks:
+  - symptom: `scripts/publish_ml_bundle_to_edge.py` failed when `--compressed-output-s3-uri` pointed at `s3://spaceport-ml-processing/...` because the preview publish Lambda lacks `s3:ListBucket` on the prod bucket.
+  - fix: `scripts/publish_ml_bundle_to_edge.py` now auto-falls back to `s3://spaceport-ml-processing-staging/...` (same prefix) when the prod bucket is denied and the staging prefix exists.
+  - proof (fallback captured in publish output JSON):
+    - `logs/md1-shrunk/polls/20260520T085749Z-edge-validate/publish-edge.json` (`fallbackUsed=true`)
+- Bugfix: bundle parity now runs even when `--edge-meta-url` is omitted:
+  - symptom: `scripts/sfm/run_md1_shrunk_heartbeat_verify.py` wrote `parity skipped` despite resolving the edge meta URL from the publish step.
+  - fix: parity is now computed after publish using the resolved edge meta URL.
+  - proof (sha256 parity match):
+    - `logs/md1-shrunk/polls/20260520T085749Z-bundle/bundle.txt`
+- Disk safety: pruned large camera-suite binary artifacts to prevent `No space left on device` during COLMAP `images.txt` download:
+  - removed reproducible `inputs/`, `renders/`, `panels/` from older `*-camera-suite` poll dirs (kept JSON summaries + diagnostics).
+- Heartbeat poll summary:
+  - `logs/md1-shrunk/polls/20260520T085749Z-summary.json`
+- Preflight snapshot (read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260520T085749Z-preflight/preflight.txt`
+  - Step Functions RUNNING: `0` (staging + `SpaceportMLPipeline-br-8abcbd5662`)
+  - SageMaker InProgress: `0` (processing + training)
+- Browser-readable public delivery validation (Origin CORS + cache headers for meta.json + referenced assets):
+  - command: `logs/md1-shrunk/polls/20260520T085749Z-edge-validate/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260520T085749Z-edge-validate/validate.txt`
+  - report: `logs/md1-shrunk/polls/20260520T085749Z-edge-validate/publish-edge.report.html`
+- Multi-camera input-vs-render checks (deployed preview; strict; baseline pose verification + sky/horizon diagnostics):
+  - command: `logs/md1-shrunk/polls/20260520T085749Z-camera-suite/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260520T085749Z-camera-suite/suite-summary.json` -> `decision=pass` (`pose_verification.max_delta=0.0`)
+  - report: `logs/md1-shrunk/polls/20260520T085749Z-camera-suite/report.html`
+  - baseline suite dir used: `logs/md1-shrunk/polls/20260519T163352Z-camera-suite`
+- Unit proof:
+  - command: `logs/md1-shrunk/polls/20260520T085749Z-unit/run.cmd.txt`
+  - output: `logs/md1-shrunk/polls/20260520T085749Z-unit/unittest.txt`
+- GitHub Actions snapshot:
+  - `logs/md1-shrunk/polls/20260520T085749Z-ci/summary.txt`

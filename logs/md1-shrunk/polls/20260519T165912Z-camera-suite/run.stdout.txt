@@ -1,1 +1,0 @@
-OK /Users/gabrielhansen/MD1-Baseline/logs/md1-shrunk/polls/20260519T165912Z-camera-suite/suite-summary.json decision=pass panels=12 failures=0 report=/Users/gabrielhansen/MD1-Baseline/logs/md1-shrunk/polls/20260519T165912Z-camera-suite/report.html

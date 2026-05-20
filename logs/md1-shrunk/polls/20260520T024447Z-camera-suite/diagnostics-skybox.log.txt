@@ -1,1 +1,0 @@
-{"decision": "warning", "panel_count": 6, "findings": [{"severity": "warning", "category": "foreground_smear", "evidence": "p90 bottom-band RMSE 0.4918 > 0.28"}]}

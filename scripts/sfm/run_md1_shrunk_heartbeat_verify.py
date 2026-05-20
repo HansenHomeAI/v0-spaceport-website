@@ -353,22 +353,8 @@ def main() -> int:
     write_text(pre_dir / "preflight.txt", "\n".join(preflight_txt))
 
     # --- bundle parity ---
-    parity_lines: list[str] = [f"# bundle parity {ts}"]
-    if args.s3_meta_url.strip() and args.edge_meta_url.strip():
-        s3_payload = curl_get(args.s3_meta_url)
-        edge_payload = curl_get(args.edge_meta_url)
-        parity_lines += [
-            "",
-            f"S3_META={args.s3_meta_url}",
-            f"EDGE_META={args.edge_meta_url}",
-            "",
-            "## shasum",
-            f"s3 {sha256_bytes(s3_payload)}  -",
-            f"edge {sha256_bytes(edge_payload)}  -",
-        ]
-    else:
-        parity_lines += ["", "note: parity skipped (missing --s3-meta-url or --edge-meta-url)"]
-    write_text(bundle_dir / "bundle.txt", "\n".join(parity_lines) + "\n")
+    # Compute after edge publish so we can use the resolved edge meta.json URL
+    # when `--edge-meta-url` is omitted.
 
     # --- edge publish/validate (also resolves edge url when missing) ---
     edge_output_json = edge_dir / "publish-edge.json"
@@ -400,8 +386,27 @@ def main() -> int:
     if not edge_url:
         raise RuntimeError(f"publish output missing edgeBundleUrl: {publish_result}")
 
-    # If caller did not pass edge URL, use the resolved one for camera suite.
+    # If caller did not pass edge URL, use the resolved one for parity + camera suite.
     bundle_url = args.edge_meta_url.strip() or edge_url
+
+    parity_lines: list[str] = [f"# bundle parity {ts}"]
+    s3_meta_url = args.s3_meta_url.strip()
+    edge_meta_url = bundle_url.strip()
+    if s3_meta_url and edge_meta_url:
+        s3_payload = curl_get(s3_meta_url)
+        edge_payload = curl_get(edge_meta_url)
+        parity_lines += [
+            "",
+            f"S3_META={s3_meta_url}",
+            f"EDGE_META={edge_meta_url}",
+            "",
+            "## shasum",
+            f"s3 {sha256_bytes(s3_payload)}  -",
+            f"edge {sha256_bytes(edge_payload)}  -",
+        ]
+    else:
+        parity_lines += ["", "note: parity skipped (missing --s3-meta-url or resolved edge url)"]
+    write_text(bundle_dir / "bundle.txt", "\n".join(parity_lines) + "\n")
 
     baseline_suite_dir = args.baseline_suite_dir.strip()
     if not baseline_suite_dir:

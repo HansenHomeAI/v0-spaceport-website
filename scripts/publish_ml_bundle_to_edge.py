@@ -22,6 +22,8 @@ from pathlib import Path
 
 
 HOMEBREW_AWS = Path("/opt/homebrew/bin/aws")
+DEFAULT_FALLBACK_BUCKET = "spaceport-ml-processing-staging"
+PRIMARY_PROD_BUCKET = "spaceport-ml-processing"
 
 def escape_html(text: str) -> str:
     return (
@@ -36,6 +38,53 @@ def escape_html(text: str) -> str:
 
 def resolve_aws() -> str:
     return str(HOMEBREW_AWS) if HOMEBREW_AWS.exists() else "aws"
+
+def parse_s3_uri(uri: str) -> tuple[str, str]:
+    raw = str(uri or "").strip()
+    if not raw.startswith("s3://"):
+        raise ValueError(f"expected s3:// uri, got: {uri}")
+    without = raw[len("s3://") :]
+    if "/" not in without:
+        return without, ""
+    bucket, prefix = without.split("/", 1)
+    return bucket, prefix
+
+
+def build_s3_uri(bucket: str, prefix: str) -> str:
+    prefix = str(prefix or "").lstrip("/")
+    return f"s3://{bucket}/{prefix}" if prefix else f"s3://{bucket}"
+
+
+def s3_prefix_exists(aws: str, *, bucket: str, prefix: str) -> bool:
+    try:
+        out = subprocess.run(
+            [
+                aws,
+                "s3api",
+                "list-objects-v2",
+                "--bucket",
+                bucket,
+                "--prefix",
+                prefix,
+                "--max-items",
+                "1",
+                "--output",
+                "json",
+            ],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+        ).stdout
+    except subprocess.CalledProcessError:
+        return False
+
+    try:
+        payload = json.loads(out)
+    except json.JSONDecodeError:
+        return False
+    contents = payload.get("Contents") or []
+    return bool(contents)
 
 
 def parse_args() -> argparse.Namespace:
@@ -59,6 +108,14 @@ def parse_args() -> argparse.Namespace:
         "--html-report",
         default="",
         help="Optional path to write a browser-readable HTML summary of the published bundle and asset URLs.",
+    )
+    parser.add_argument(
+        "--fallback-to-staging-on-access-denied",
+        action="store_true",
+        help=(
+            "When the publish Lambda lacks ListBucket permission for the source bucket (common for preview stacks), "
+            "retry by swapping the bucket to spaceport-ml-processing-staging when the same prefix exists there."
+        ),
     )
     return parser.parse_args()
 
@@ -218,30 +275,81 @@ def main() -> int:
     aws = resolve_aws()
 
     invoke_out = output_path.with_suffix(".lambda-response.json")
-    subprocess.run(
-        [
-            aws,
-            "lambda",
-            "invoke",
-            "--cli-binary-format",
-            "raw-in-base64-out",
-            "--function-name",
-            args.function_name,
-            "--payload",
-            json.dumps(payload),
-            str(invoke_out),
-        ],
-        check=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-    )
+    def invoke_lambda(*, payload_obj: dict[str, object], out_path: Path) -> dict[str, object]:
+        subprocess.run(
+            [
+                aws,
+                "lambda",
+                "invoke",
+                "--cli-binary-format",
+                "raw-in-base64-out",
+                "--function-name",
+                args.function_name,
+                "--payload",
+                json.dumps(payload_obj),
+                str(out_path),
+            ],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
+        return json.loads(out_path.read_text(encoding="utf-8"))
 
-    result = json.loads(invoke_out.read_text(encoding="utf-8"))
-    output_path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
-    edge_url = (result.get("edgeBundleUrl") or "").strip()
+    result: dict[str, object] = invoke_lambda(payload_obj=payload, out_path=invoke_out)
+    edge_url = str(result.get("edgeBundleUrl") or "").strip()
     if not edge_url:
-        raise RuntimeError(f"Lambda result missing edgeBundleUrl: {result}")
+        error_message = str(result.get("errorMessage") or "").strip()
+        try:
+            bucket, prefix = parse_s3_uri(args.compressed_output_s3_uri)
+        except ValueError:
+            bucket, prefix = "", ""
+
+        should_fallback = bool(args.fallback_to_staging_on_access_denied)
+        if not should_fallback:
+            # The most common failure mode is preview-stack IAM not being able to list the prod bucket.
+            should_fallback = (
+                bucket == PRIMARY_PROD_BUCKET
+                and "AccessDenied" in error_message
+                and "ListObjectsV2" in error_message
+                and "s3:ListBucket" in error_message
+                and PRIMARY_PROD_BUCKET in error_message
+            )
+
+        if should_fallback and bucket == PRIMARY_PROD_BUCKET and prefix:
+            fallback_uri = build_s3_uri(DEFAULT_FALLBACK_BUCKET, prefix)
+            fallback_bucket, fallback_prefix = parse_s3_uri(fallback_uri)
+            if s3_prefix_exists(aws, bucket=fallback_bucket, prefix=fallback_prefix):
+                invoke_fallback_out = output_path.with_suffix(".lambda-response.fallback.json")
+                fallback_payload = {"jobId": args.job_id, "compressedOutputS3Uri": fallback_uri}
+                fallback_result = invoke_lambda(payload_obj=fallback_payload, out_path=invoke_fallback_out)
+                fallback_edge = str(fallback_result.get("edgeBundleUrl") or "").strip()
+                if fallback_edge:
+                    fallback_result["fallbackUsed"] = True
+                    fallback_result["fallbackCompressedOutputS3Uri"] = fallback_uri
+                    fallback_result["originalCompressedOutputS3Uri"] = args.compressed_output_s3_uri
+                    fallback_result["originalErrorMessage"] = error_message
+                    result = fallback_result
+                    edge_url = fallback_edge
+
+    output_path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    edge_url = str(edge_url or "").strip()
+    if not edge_url:
+        error_message = str(result.get("errorMessage") or "").strip()
+        suffix = ""
+        try:
+            bucket, prefix = parse_s3_uri(args.compressed_output_s3_uri)
+            if bucket == PRIMARY_PROD_BUCKET:
+                suggestion = build_s3_uri(DEFAULT_FALLBACK_BUCKET, prefix)
+                suffix = (
+                    "\n\nTip: preview-stack publish Lambdas often cannot list the prod bucket. "
+                    f"Retry with --compressed-output-s3-uri {suggestion}"
+                )
+        except ValueError:
+            pass
+        if error_message:
+            raise RuntimeError(f"Lambda publish failed: {error_message}{suffix}")
+        raise RuntimeError(f"Lambda result missing edgeBundleUrl: {result}{suffix}")
 
     print(f"OK edgeBundleUrl={edge_url}")
 
