@@ -1,0 +1,16 @@
+# bundle parity snapshot
+curl -sS https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json > meta.s3.json
+curl -sS https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json > meta.edge.json
+python3 - <<'PY'
+import hashlib, json, pathlib
+root = pathlib.Path('.')
+left = root/'meta.s3.json'
+right = root/'meta.edge.json'
+ld = left.read_bytes(); rd = right.read_bytes()
+print('s3_bytes', len(ld))
+print('edge_bytes', len(rd))
+print('s3_sha256', hashlib.sha256(ld).hexdigest())
+print('edge_sha256', hashlib.sha256(rd).hexdigest())
+print('json_equal', json.loads(ld) == json.loads(rd))
+PY
+aws s3 ls --human-readable --summarize --recursive s3://spaceport-ml-processing/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/

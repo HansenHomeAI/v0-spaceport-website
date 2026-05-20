@@ -60,6 +60,40 @@ async function waitForFirstFrame(page) {
   throw new Error(`timed out waiting for md1-viewer; lastMetrics=${JSON.stringify(lastMetrics)}`);
 }
 
+function isRetryableScreenshotError(error) {
+  const message = String(error?.message ?? error ?? "");
+  return (
+    message.includes("Element is not attached to the DOM") ||
+    message.includes("Execution context was destroyed") ||
+    message.includes("Target closed") ||
+    message.includes("Navigation interrupted the execution") ||
+    message.includes("has been closed")
+  );
+}
+
+async function screenshotIframeStable(page, outPath) {
+  let lastError = null;
+  for (let attempt = 1; attempt <= 4; attempt += 1) {
+    const iframe = page.locator("iframe.md1-frame");
+    try {
+      await iframe.waitFor({ state: "visible", timeout: 60000 });
+      await iframe.screenshot({ path: outPath });
+      return;
+    } catch (error) {
+      lastError = error;
+      if (!isRetryableScreenshotError(error)) throw error;
+      await page.waitForTimeout(500 * attempt);
+    }
+  }
+
+  try {
+    await page.screenshot({ path: outPath, fullPage: false });
+    return;
+  } catch (error) {
+    throw lastError ?? error;
+  }
+}
+
 const baseUrl = (process.env.MD1_VIEWER_URL ?? "").replace(/\/$/, "");
 const bundleUrl = process.env.MD1_BUNDLE_URL ?? "";
 const camPos = parseVector(process.env.MD1_CAM_POS);
@@ -110,7 +144,7 @@ try {
   const metrics = await waitForFirstFrame(page);
   await page.waitForTimeout(1200);
   if (screenshotTarget === "iframe") {
-    await page.locator("iframe.md1-frame").screenshot({ path: outPath });
+    await screenshotIframeStable(page, outPath);
   } else {
     await page.screenshot({ path: outPath, fullPage: false });
   }
