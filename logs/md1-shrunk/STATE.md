@@ -8627,3 +8627,30 @@ skybox, compression, artifact handoff, and visual gates.
   - `chore: record md1-shrunk postpush snapshot (20260520T001435Z) [skip ci]` -> `669ce107`
   - `chore: refresh md1-shrunk CI head snapshot (20260520T001435Z) [skip ci]` -> `4dcf772f`
   - `chore: record md1-shrunk heartbeat ledger (20260520T001435Z) [skip ci]` -> `1d7b0900`
+
+## 2026-05-20T00:44Z heartbeat verify (strict gates still PASS; no new jobs)
+
+- Preflight snapshot (read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260520T004441Z-preflight/preflight.txt`
+  - Step Functions (staging + `SpaceportMLPipeline-br-8abcbd5662`) RUNNING: `0`
+  - Known execution `execution-md1-shrunk-prodspine-wlight-202605190027` status: `SUCCEEDED`:
+    - `logs/md1-shrunk/polls/20260520T004441Z-preflight/stepfunctions-describe-execution-md1-shrunk-prodspine-wlight-202605190027.json`
+  - Public S3 meta.json HEAD -> `200` + Edge meta.json HEAD -> `200` (see preflight file)
+  - SageMaker InProgress: external processing jobs present; left untouched
+  - Local dev server listeners: `port 3000 LISTEN` (see preflight file)
+- Public bundle snapshot (S3 listing + S3-vs-edge meta.json parity):
+  - `logs/md1-shrunk/polls/20260520T004441Z-bundle/bundle.txt`
+- GitHub Actions snapshot (exact-head is logs-only; `[skip ci]` -> typically no new runs):
+  - `logs/md1-shrunk/polls/20260520T004441Z-ci/summary.txt`
+- Browser-readable public delivery automation (Lambda publish + strict browser header validation + HTML report):
+  - command: `logs/md1-shrunk/polls/20260520T004441Z-edge-publish-report/run.cmd.txt`
+  - report: `logs/md1-shrunk/polls/20260520T004441Z-edge-publish-report/publish-edge.report.html`
+  - output: `logs/md1-shrunk/polls/20260520T004441Z-edge-publish-report/publish-edge.json`
+- Multi-camera input-vs-render checks (deployed preview; strict; baseline pose verification):
+  - command: `logs/md1-shrunk/polls/20260520T004441Z-camera-suite/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260520T004441Z-camera-suite/suite-summary.json` -> `decision=pass`
+  - report: `logs/md1-shrunk/polls/20260520T004441Z-camera-suite/report.html`
+  - reusable camera-pose verification: `pose_verification.max_delta=0.0` (baseline: `logs/md1-shrunk/polls/20260519T163352Z-camera-suite`)
+- Unit proof:
+  - command: `logs/md1-shrunk/polls/20260520T004441Z-unit/run.cmd.txt`
+  - output: `logs/md1-shrunk/polls/20260520T004441Z-unit/unittest.txt`
