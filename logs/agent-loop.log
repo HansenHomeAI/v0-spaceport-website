@@ -113,3 +113,5 @@
 [2026-05-20T10:49:37Z] md1-shrunk: heartbeat verify 20260520T104405Z -> strict PASS (camera-suite decision=pass pose max_delta=0.0 artifacts_pruned=true) + edge-validate OK + bundle parity PASS (S3==edge) + unit PASS + Step Functions RUNNING=0 + SageMaker InProgress=0 -> next: commit/push (logs+STATE) then record postpush snapshot
 [2026-05-20T10:50:56Z] md1-shrunk: pushed 27b2b6ac (heartbeat verify evidence + STATE) [skip ci]; no new workflows expected for head; last Pages=26155418467 CDK=26155418466 -> next: record postpush snapshot then idle
 [2026-05-20T10:51:10Z] md1-shrunk: confirmed head=27b2b6ac (postpush snapshot; [skip ci]); no new workflows expected for head; last Pages=26155418467 CDK=26155418466 -> idle
+[2026-05-20T10:52:07Z] md1-shrunk: pushed 743d3d73 (postpush snapshot commit; [skip ci]); no new workflows expected for head; last Pages=26155418467 CDK=26155418466 -> next: record final postpush snapshot then idle
+[2026-05-20T10:52:16Z] md1-shrunk: confirmed head=743d3d73 (final postpush snapshot; [skip ci]); no new workflows expected for head; last Pages=26155418467 CDK=26155418466 -> idle
