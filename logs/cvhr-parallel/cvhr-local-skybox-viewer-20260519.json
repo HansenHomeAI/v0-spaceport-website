@@ -1,0 +1,30 @@
+{
+  "name": "skybox",
+  "url": "http://127.0.0.1:3001/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fcvhr-secondary-20260518t2113z%2Fsupersplat_bundle%2Fmeta.json&skybox=https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fcvhr-secondary-20260518t2113z%2Fsupersplat_bundle%2Fbackground_skybox.webp",
+  "screenshot": "logs/cvhr-parallel/cvhr-local-skybox-viewer-20260519.png",
+  "renderStats": {
+    "width": 1280,
+    "height": 800,
+    "bright": 1014578,
+    "alpha": 1024000
+  },
+  "responses": [
+    {
+      "url": "http://127.0.0.1:3001/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fcvhr-secondary-20260518t2113z%2Fsupersplat_bundle%2Fmeta.json&skybox=https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fcvhr-secondary-20260518t2113z%2Fsupersplat_bundle%2Fbackground_skybox.webp",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:3001/supersplat-viewer/index.html?settings=%2Fsupersplat-viewer%2Fsettings.json&content=%2Fapi%2Fsogs-proxy%2Fhttps%3A%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fcvhr-secondary-20260518t2113z%2Fsupersplat_bundle%2Fmeta.json&skybox=%2Fapi%2Fsogs-proxy%2Fhttps%3A%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fcvhr-secondary-20260518t2113z%2Fsupersplat_bundle%2Fbackground_skybox.webp",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:3001/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/meta.json",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:3001/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/background_skybox.webp",
+      "status": 200
+    }
+  ],
+  "seriousConsole": []
+}

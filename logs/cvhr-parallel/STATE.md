@@ -2346,3 +2346,32 @@ as read-only context.
   - `logs/cvhr-parallel/evidence/public-skybox-headers-after-metadata-refresh-20260519T2355Z.txt`
   - `logs/cvhr-parallel/evidence/public-skybox-head-object-after-metadata-refresh-20260519T2355Z.json`
 - Next gate: run hosted viewer checks against the public URL with skybox and `skybox=none`, capture screenshots, and only then call the CV-HR secondary splat visually accepted.
+
+## 2026-05-20T00:23Z Hosted Viewer Deploy Gate
+
+- Branch/head/status:
+  - branch: `agent-73910482-cvhr-parallel-splat`
+  - head before patch: `066f00c1ea54cd9761180798c3ae2793b0532c73` (`[skip ci]` public bundle ledger commit)
+  - working tree before patch only had local viewer proof artifacts under `logs/cvhr-parallel/cvhr-local-*`
+- AWS / SageMaker / public bundle recheck:
+  - account: `975050048887`
+  - secondary SfM: `cvhr-secondary-20260518t2113z-sfm` -> `Completed`
+  - secondary 3DGS: `cvhr-secondary-20260518t2113z-3dgs` -> `Completed`
+  - secondary compression: `cvhr-secondary-20260518t2113z-compression` -> `Completed`
+  - public bundle still has `13` objects / `7600080` bytes under `s3://spaceport-ml-processing/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/`
+  - public `meta.json` head still shows `Content-Type: application/json`, `ServerSideEncryption: AES256`, and `ContentLength: 1378`
+- Local viewer proof already captured:
+  - local server: `http://127.0.0.1:3001`
+  - default local smoke passed with rendered canvas and screenshot `logs/cvhr-parallel/cvhr-local-default-viewer-20260519.png`
+  - explicit skybox local mode passed with public `background_skybox.webp` proxied at `200`, no serious console errors, and screenshot `logs/cvhr-parallel/cvhr-local-skybox-viewer-20260519.png`
+  - explicit `skybox=none` local mode passed with rendered canvas, no serious console errors, and screenshot `logs/cvhr-parallel/cvhr-local-nosky-viewer-20260519.png`
+  - proof JSON: `logs/cvhr-parallel/cvhr-local-viewer-proof-20260519.json`
+- Hosted Pages deploy attempt:
+  - command: `gh workflow run deploy-cloudflare-pages.yml --ref agent-73910482-cvhr-parallel-splat`
+  - run: `26133502171`
+  - result: failed in `Resolve CloudFormation outputs` before building the viewer
+  - proven blocker: shared fallback stack `SpaceportMLPipelineStagingStack` is `UPDATE_ROLLBACK_COMPLETE` but still exposes the required `MLPipelineApiUrl`
+- Patch:
+  - `.github/workflows/deploy-cloudflare-pages.yml` now allows `UPDATE_ROLLBACK_COMPLETE|UPDATE_ROLLBACK_FAILED` for the shared ML fallback stack, matching the existing auth fallback behavior.
+- Next gate:
+  - commit and push this workflow fix, watch exact-head `CDK Deploy` and `Deploy Next.js to Cloudflare Pages`, resolve the preview URL from the Pages run, then run hosted skybox and `skybox=none` viewer proof against the public CV-HR bundle.
