@@ -9224,3 +9224,17 @@ skybox, compression, artifact handoff, and visual gates.
   - output: `logs/md1-shrunk/polls/20260520T095305Z-unit/unittest.txt`
 - GitHub Actions snapshot:
   - `logs/md1-shrunk/polls/20260520T095305Z-ci/summary.txt`
+
+## 2026-05-20T10:09Z exact-head workflows green (post-push)
+
+- Commit/push:
+  - `fix: prune md1-shrunk camera artifacts on pass` -> `4abff30c`
+    - CDK Deploy run `26155418466` -> `success`
+    - Pages run `26155418467` -> `success`
+    - PREVIEW_URL proof (from same Pages run log):
+      - `logs/md1-shrunk/polls/20260520T100053Z-ci-postpush-sha-4abff30c/pages-preview-url.txt`
+    - CDK + Pages logs:
+      - `logs/md1-shrunk/polls/20260520T100053Z-ci-postpush-sha-4abff30c/view-cdk.log.txt`
+      - `logs/md1-shrunk/polls/20260520T100053Z-ci-postpush-sha-4abff30c/view-pages.log.txt`
+    - Postpush run list:
+      - `logs/md1-shrunk/polls/20260520T100053Z-ci-postpush-sha-4abff30c/run-list.txt`
