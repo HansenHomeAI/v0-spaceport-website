@@ -3477,3 +3477,44 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - Exact-head `gh run list ... --commit 7de87974` returned `[]` (expected for `[skip ci]` head).
 - Evidence files:
   - `logs/montana-time-capsule/gh-run-list-exact-head-20260520T215605Z-postpush.json`
+
+## 2026-05-20T22:15Z HMC Monitor Pass
+
+- Branch/head/status:
+  - Branch: `agent-40136728-montana-time-capsule`
+  - Head: `92c842b7f4483988356d9ce5e0db32376e7dc4d4` (`[skip ci]`)
+- AWS identity:
+  - `arn:aws:iam::975050048887:root` (account `975050048887`, region `us-west-2`)
+- HMC archive proof (no upload performed):
+  - ZIP: `s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip`
+  - LastModified: `2026-05-16T17:35:27Z`
+  - Size: `8,646,557,673` bytes
+  - ETag: `ed86661a82b28856997a09f129ce6bec-1031`
+  - Manifest: `s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.manifest.json`
+  - Staging upload bucket negative: list prefix in `s3://spaceport-uploads-staging/` returned empty.
+- SageMaker:
+  - Job: `hmc-mtc-20260520T2015Z-sfm`
+  - Status: `InProgress`
+  - Pinned image: `.../spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811`
+  - CloudWatch proof: chunked mapper is actively producing models (e.g. `chunk_03_mapper_initial model 0 registered 142/142 images and 103107 points` at `2026-05-20T22:13:28Z`).
+  - Output: `EndOfJob` (S3 prefix remains empty until completion).
+- S3 output prefix: `s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/`
+  - Result: still empty as of this pass.
+- GitHub workflows:
+  - Exact-head `gh run list` returned `[]` (expected for `[skip ci]` head).
+  - Latest branch workflow: `CDK Deploy` completed success on head `8a536ba434cfb0b771a9967c531de364128ec0e6`.
+- Evidence files:
+  - `logs/montana-time-capsule/aws-sts-get-caller-identity-20260520T221411Z.json`
+  - `logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260520T221411Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-processing-hmc-mtc-20260520T2015Z-20260520T221411Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-processing-hmc-active-20260520T221411Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-training-hmc-active-20260520T221411Z.json`
+  - `logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260520T221421Z.log`
+  - `logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260520T221439Z.json`
+  - `logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.manifest.json-20260520T221439Z.json`
+  - `logs/montana-time-capsule/s3-list-spaceport-uploads-1778952912508-hmc-high-mountain-camp-20260520T221439Z.json`
+  - `logs/montana-time-capsule/s3-list-spaceport-uploads-staging-hmc-20260520T221439Z.json`
+  - `logs/montana-time-capsule/s3-list-ml-processing-hmc-mtc-20260520T2015Z-20260520T221447Z.json`
+  - `logs/montana-time-capsule/gh-run-list-agent-40136728-20260520T221506Z.json`
+  - `logs/montana-time-capsule/gh-run-list-exact-head-20260520T221506Z.json`
+- Next unblocked step: keep polling until SfM `Completed` (or `Failed`); if `Completed`, launch the pinned Montana 3DGS stage exactly once (no duplicates).
