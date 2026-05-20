@@ -1,5 +1,5 @@
 timestamp_utc=20260520T011514Z
-head_sha=c96f0a938223fc764e14add81fc77337bde58b08
+head_sha=10609c7b6cc73f556f5cb780174193718ed8906f
 
 ## gh run list (commit=HEAD)
 
