@@ -1,0 +1,6 @@
+missing_required= []
+total_objects_line= Total Objects: 22
+total_size_line=    Total Size: 15145510
+means_shape= [462400, 3]
+webp_files= 7
+compression_ratio= 15.246227223278225

@@ -1,6 +1,6 @@
 # CV-HR Parallel Splat State
 
-updated: 2026-05-19T23:35:56Z
+updated: 2026-05-19T23:59:09Z
 branch: agent-73910482-cvhr-parallel-splat
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 repo: HansenHomeAI/v0-spaceport-website
@@ -671,3 +671,33 @@ Montana time capsule run, without touching or advancing the existing
   - `logs/cvhr-parallel/cv-hr-state.json` reports `status=compression_started`, `last_action=launched_compression`, `3dgs_status=Completed`, `compression_job_name=cvhr-secondary-20260518t2113z-compression`, `updated_at=2026-05-19T23:35:56Z`
 - External `cvhr-mtc-secondary-*` jobs were observed as read-only context only and were not modified or used.
 - Next gate: monitor `cvhr-secondary-20260518t2113z-compression`; after it completes, validate compressed manifests/files, copy to the public processing bucket with non-KMS encryption, then run hosted viewer checks with skybox and `skybox=none`.
+
+## 2026-05-19T23:55Z Compression Complete, Public Bundle Reachable
+
+- Branch/head/status:
+  - branch: `agent-73910482-cvhr-parallel-splat`
+  - head at start: `dbbded6eb92a6476e3d3a05955a6d721867f9959` (`[skip ci]` ledger commit)
+  - status before this poll: clean
+  - last meaningful exact-head workflow remains `CDK Deploy` run `26060892234` for code head `0b60d8bf9e7e4355bd46001dcd61387b327a8e5a`, conclusion `success`
+- Compression completed:
+  - job: `cvhr-secondary-20260518t2113z-compression`
+  - started: `2026-05-19T17:36:36.055000-06:00`
+  - ended: `2026-05-19T17:45:57.186000-06:00`
+  - no failure reason
+  - CloudWatch confirms `PlayCanvas SOGS compression completed successfully`, `15.25x` compression, `7` WebP texture files, and no OOM/Traceback/ERROR/failed strings in fetched events.
+- Private compressed output validation:
+  - source: `s3://spaceport-ml-processing-staging/compressed/cvhr-secondary-20260518t2113z/`
+  - private output: `22` objects / `15145510` bytes
+  - `supersplat_bundle`: `13` required objects, no missing required files
+  - `meta.json` means shape: `[462400, 3]`
+  - compression ratio: `15.246227223278225`
+- Public handoff:
+  - copied `supersplat_bundle/` to `s3://spaceport-ml-processing/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/`
+  - destination encryption is `AES256`, not KMS
+  - explicit content types were set for JSON and WebP assets
+  - public URL: `https://spaceport-ml-processing.s3.amazonaws.com/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/meta.json`
+  - public GET for `meta.json` returned `200 OK`
+  - public GET for `background_skybox.webp` returned `200 OK`
+- State update:
+  - `logs/cvhr-parallel/cv-hr-state.json` reports `status=completed`, `compression_status=Completed`, and records the public bundle S3/HTTPS URLs.
+- Next gate: run hosted viewer checks against the public URL in skybox and `skybox=none` modes, capture screenshots, and only then call the CV-HR secondary splat visually accepted.

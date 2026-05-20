@@ -1,0 +1,14 @@
+{
+    "logStreams": [
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-compression/algo-1-1779233795",
+            "creationTime": 1779233999882,
+            "firstEventTimestamp": 1779233993735,
+            "lastEventTimestamp": 1779233994737,
+            "lastIngestionTime": 1779233999895,
+            "uploadSequenceToken": "49039859672716087180277175022339781629016843520885676309",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:cvhr-secondary-20260518t2113z-compression/algo-1-1779233795",
+            "storedBytes": 0
+        }
+    ]
+}

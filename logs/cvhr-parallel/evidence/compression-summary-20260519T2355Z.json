@@ -1,0 +1,55 @@
+{
+  "method": "playcanvas_sogs_official",
+  "version": "1.1.0",
+  "gpu_accelerated": true,
+  "input_files": [
+    "/opt/ml/processing/input/extracted/splat.ply"
+  ],
+  "compressed_outputs": [
+    {
+      "input_file": "/opt/ml/processing/input/extracted/splat.ply",
+      "output_dir": "/opt/ml/processing/output/compressed_splat",
+      "output_files": [
+        "/opt/ml/processing/output/compressed_splat/shN_centroids.webp",
+        "/opt/ml/processing/output/compressed_splat/meta.json",
+        "/opt/ml/processing/output/compressed_splat/means_l.webp",
+        "/opt/ml/processing/output/compressed_splat/quats.webp",
+        "/opt/ml/processing/output/compressed_splat/means_u.webp",
+        "/opt/ml/processing/output/compressed_splat/sh0.webp",
+        "/opt/ml/processing/output/compressed_splat/scales.webp",
+        "/opt/ml/processing/output/compressed_splat/shN_labels.webp"
+      ],
+      "original_size_mb": 109.67644786834717,
+      "compressed_size_mb": 7.19367790222168,
+      "compression_ratio": 15.246227223278225,
+      "webp_files": [
+        "/opt/ml/processing/output/compressed_splat/shN_centroids.webp",
+        "/opt/ml/processing/output/compressed_splat/means_l.webp",
+        "/opt/ml/processing/output/compressed_splat/quats.webp",
+        "/opt/ml/processing/output/compressed_splat/means_u.webp",
+        "/opt/ml/processing/output/compressed_splat/sh0.webp",
+        "/opt/ml/processing/output/compressed_splat/scales.webp",
+        "/opt/ml/processing/output/compressed_splat/shN_labels.webp"
+      ],
+      "metadata_file": "/opt/ml/processing/output/compressed_splat/meta.json",
+      "sidecar_files": [
+        "/opt/ml/processing/input/extracted/background_skybox.webp",
+        "/opt/ml/processing/input/extracted/background_manifest.json",
+        "/opt/ml/processing/input/extracted/training_metadata.json",
+        "/opt/ml/processing/input/extracted/export_manifest.json"
+      ]
+    }
+  ],
+  "compression_stats": {
+    "file_0": {
+      "original_size_mb": 109.67644786834717,
+      "compressed_size_mb": 7.19367790222168,
+      "compression_ratio": 15.246227223278225,
+      "webp_count": 7
+    }
+  },
+  "overall_compression_ratio": 15.246227223278225,
+  "total_original_mb": 109.67644786834717,
+  "total_compressed_mb": 7.19367790222168,
+  "total_webp_files": 7
+}

@@ -346,9 +346,7 @@
   },
   "sfm_status": "Completed",
   "status": "completed",
-  "public_viewer_bundle_s3_uri": "s3://spaceport-ml-processing/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/meta.json",
-  "public_viewer_bundle_url": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/meta.json",
-  "updated_at": "2026-05-19T23:59:09Z",
+  "updated_at": "2026-05-19T23:57:34Z",
   "viewer_bundle_s3_uri": "s3://spaceport-ml-processing-staging/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/meta.json",
   "zip_entries": 1710
 }

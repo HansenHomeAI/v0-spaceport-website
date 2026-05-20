@@ -1,6 +1,6 @@
 # CV-HR Parallel Splat Ledger
 
-updated: 2026-05-19T23:35:56Z
+updated: 2026-05-19T23:59:09Z
 branch: agent-73910482-cvhr-parallel-splat
 base: origin/development @ b2b451ae6dc46a25c7547162b6f8d037437f2950
 
@@ -2276,3 +2276,73 @@ as read-only context.
   - `logs/cvhr-parallel/evidence/logstreams-cvhr-secondary-20260518t2113z-compression-20260519T2333Z.json`
   - `logs/cvhr-parallel/evidence/sagemaker-processing-inprogress-post-compression-launch-20260519T2333Z.json`
 - Next gate: monitor `cvhr-secondary-20260518t2113z-compression`; when it completes, validate compressed bundle files and manifests, copy the bundle to the public processing bucket with non-KMS encryption, then run hosted viewer checks with skybox and `skybox=none`.
+
+## 2026-05-19T23:55Z Heartbeat Poll
+
+- Branch/head/status:
+  - branch: `agent-73910482-cvhr-parallel-splat`
+  - head: `dbbded6eb92a6476e3d3a05955a6d721867f9959` (`[skip ci]` ledger commit)
+  - status before this poll: clean
+  - last meaningful exact-head workflow remains `CDK Deploy` run `26060892234` for code head `0b60d8bf9e7e4355bd46001dcd61387b327a8e5a`, conclusion `success`
+- AWS identity:
+  - account: `975050048887`
+  - ARN: `arn:aws:iam::975050048887:root`
+- Active SageMaker / Step Functions:
+  - branch-owned compression direct describe: `cvhr-secondary-20260518t2113z-compression` -> `Completed`
+  - compression started `2026-05-19T17:36:36.055000-06:00` and ended `2026-05-19T17:45:57.186000-06:00`
+  - compression failure reason: none
+  - in-progress training jobs: `0`
+  - in-progress processing jobs were external visibility-cell jobs only and were left untouched
+  - running `SpaceportMLPipeline-staging` Step Functions executions: `0`
+- Compression validation:
+  - private output: `s3://spaceport-ml-processing-staging/compressed/cvhr-secondary-20260518t2113z/`
+  - private output listing: `22` objects / `15145510` bytes
+  - required `supersplat_bundle` objects were present: `meta.json`, `means_l.webp`, `means_u.webp`, `quats.webp`, `scales.webp`, `sh0.webp`, `shN_centroids.webp`, `shN_labels.webp`, `background_skybox.webp`, `background_manifest.json`, `export_manifest.json`, `settings.json`, `training_metadata.json`
+  - `sogs_compression_summary.json` reports `7` WebP files, `109.67644786834717` MB original, `7.19367790222168` MB compressed, and `15.246227223278225` overall compression ratio
+  - `meta.json` means shape is `[462400, 3]`
+  - CloudWatch confirms `PlayCanvas SOGS compression completed successfully`, `15.25x` compression, `7` WebP texture files, and no OOM/OutOfMemory/Traceback/ERROR/Failed/failed strings in the fetched events
+- State advance:
+  - command: `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --input-s3-uri s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip --run-id cvhr-secondary-20260518t2113z --state-file logs/cvhr-parallel/cv-hr-state.json --launch`
+  - result: state moved to `status=completed`, `compression_status=Completed`, `viewer_bundle_s3_uri=s3://spaceport-ml-processing-staging/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/meta.json`
+- Public handoff:
+  - sync command copied `s3://spaceport-ml-processing-staging/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/` to `s3://spaceport-ml-processing/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/`
+  - destination public bundle listing: `13` objects / `7600080` bytes
+  - destination object encryption verified as `AES256`, not KMS
+  - destination metadata was refreshed with `Content-Type: application/json` for JSON files and `Content-Type: image/webp` for WebP files
+  - cache control: `public, max-age=31536000, s-maxage=31536000, immutable`
+  - public meta URL: `https://spaceport-ml-processing.s3.amazonaws.com/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/meta.json`
+  - public GET for `meta.json` returned `HTTP/1.1 200 OK`
+  - public GET for `background_skybox.webp` returned `HTTP/1.1 200 OK`
+- State update:
+  - `logs/cvhr-parallel/cv-hr-state.json` records `public_viewer_bundle_s3_uri=s3://spaceport-ml-processing/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/meta.json`
+  - `logs/cvhr-parallel/cv-hr-state.json` records `public_viewer_bundle_url=https://spaceport-ml-processing.s3.amazonaws.com/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/meta.json`
+- Evidence:
+  - `logs/cvhr-parallel/evidence/aws-sts-20260519T2355Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-describe-cvhr-secondary-20260518t2113z-compression-20260519T2355Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-processing-inprogress-20260519T2355Z.json`
+  - `logs/cvhr-parallel/evidence/sagemaker-training-inprogress-20260519T2355Z.json`
+  - `logs/cvhr-parallel/evidence/stepfunctions-running-20260519T2355Z.json`
+  - `logs/cvhr-parallel/evidence/gh-runs-agent-73910482-20260519T2355Z.json`
+  - `logs/cvhr-parallel/evidence/s3-compressed-cvhr-secondary-20260518t2113z-20260519T2355Z.txt`
+  - `logs/cvhr-parallel/evidence/logstreams-cvhr-secondary-20260518t2113z-compression-20260519T2355Z.json`
+  - `logs/cvhr-parallel/evidence/cloudwatch-tail-cvhr-secondary-20260518t2113z-compression-20260519T2355Z.json`
+  - `logs/cvhr-parallel/evidence/compression-summary-20260519T2355Z.json`
+  - `logs/cvhr-parallel/evidence/compressed-meta-20260519T2355Z.json`
+  - `logs/cvhr-parallel/evidence/compressed-export-manifest-20260519T2355Z.json`
+  - `logs/cvhr-parallel/evidence/compressed-background-manifest-20260519T2355Z.json`
+  - `logs/cvhr-parallel/evidence/compression-log-signals-20260519T2355Z.txt`
+  - `logs/cvhr-parallel/evidence/compression-validation-20260519T2355Z.txt`
+  - `logs/cvhr-parallel/evidence/advance-completed-20260519T2355Z.json`
+  - `logs/cvhr-parallel/evidence/public-bundle-sync-20260519T2355Z.log`
+  - `logs/cvhr-parallel/evidence/public-bundle-metadata-refresh-20260519T2355Z.txt`
+  - `logs/cvhr-parallel/evidence/s3-public-bundle-cvhr-secondary-20260518t2113z-20260519T2355Z.txt`
+  - `logs/cvhr-parallel/evidence/public-meta-headers-20260519T2355Z.txt`
+  - `logs/cvhr-parallel/evidence/public-meta-20260519T2355Z.json`
+  - `logs/cvhr-parallel/evidence/public-meta-head-object-20260519T2355Z.json`
+  - `logs/cvhr-parallel/evidence/public-skybox-headers-20260519T2355Z.txt`
+  - `logs/cvhr-parallel/evidence/public-meta-headers-after-metadata-refresh-20260519T2355Z.txt`
+  - `logs/cvhr-parallel/evidence/public-meta-after-metadata-refresh-20260519T2355Z.json`
+  - `logs/cvhr-parallel/evidence/public-meta-head-object-after-metadata-refresh-20260519T2355Z.json`
+  - `logs/cvhr-parallel/evidence/public-skybox-headers-after-metadata-refresh-20260519T2355Z.txt`
+  - `logs/cvhr-parallel/evidence/public-skybox-head-object-after-metadata-refresh-20260519T2355Z.json`
+- Next gate: run hosted viewer checks against the public URL with skybox and `skybox=none`, capture screenshots, and only then call the CV-HR secondary splat visually accepted.

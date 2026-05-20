@@ -1,0 +1,11 @@
+{
+    "AcceptRanges": "bytes",
+    "LastModified": "2026-05-19T23:58:57+00:00",
+    "ContentLength": 1378,
+    "ETag": "\"c198a494ae5ec8ce555760afb6603cd6\"",
+    "VersionId": "QetfR7z1dk2aBsDKBIFnBcNS.RH4f2EN",
+    "CacheControl": "public, max-age=31536000, s-maxage=31536000, immutable",
+    "ContentType": "application/octet-stream",
+    "ServerSideEncryption": "AES256",
+    "Metadata": {}
+}
