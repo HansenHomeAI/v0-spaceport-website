@@ -3411,3 +3411,13 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260520T211617Z.json`
   - `logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260520T211627Z.json`
 - Next unblocked step: keep polling `hmc-mtc-20260520T2015Z-sfm` until `Completed`; then run the same HMC runner command with `--launch` once to create pinned Montana 3DGS.
+
+## 2026-05-20T21:18Z Ledger Commit + Push
+
+- Commit: `a1c549ce19f01400f6c1f1350e4d183e4b9a0d33`
+- Message: `chore: record hmc sfm poll evidence [skip ci]`
+- Push: `git push origin agent-40136728-montana-time-capsule`
+- Exact-head workflow check:
+  - Exact-head `gh run list ... --commit a1c549ce` returned `[]` (expected for `[skip ci]` head).
+- Evidence files:
+  - `logs/montana-time-capsule/gh-run-list-exact-head-20260520T211854Z-postpush.json`
