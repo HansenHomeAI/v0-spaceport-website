@@ -8626,3 +8626,4 @@ skybox, compression, artifact handoff, and visual gates.
   - `chore: record md1-shrunk heartbeat verification (20260520T001435Z) [skip ci]` -> `af3573bc`
   - `chore: record md1-shrunk postpush snapshot (20260520T001435Z) [skip ci]` -> `669ce107`
   - `chore: refresh md1-shrunk CI head snapshot (20260520T001435Z) [skip ci]` -> `4dcf772f`
+  - `chore: record md1-shrunk heartbeat ledger (20260520T001435Z) [skip ci]` -> `1d7b0900`
