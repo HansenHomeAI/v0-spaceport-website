@@ -8787,3 +8787,11 @@ skybox, compression, artifact handoff, and visual gates.
 - Unit proof:
   - command: `logs/md1-shrunk/polls/20260520T025441Z-unit/run.cmd.txt`
   - output: `logs/md1-shrunk/polls/20260520T025441Z-unit/unittest.txt`
+- Commit/push:
+  - `fix: retry iframe screenshot for md1 camera-suite` -> `13327ca3`
+  - GitHub Actions exact-head:
+    - CDK Deploy success `26138455344` (sha `13327ca3`):
+      - `logs/md1-shrunk/polls/20260520T025739Z-ci-postpush/watch-cdk.txt`
+    - Pages success `26138455345` (sha `13327ca3`):
+      - `logs/md1-shrunk/polls/20260520T025739Z-ci-postpush/watch-pages.txt`
+      - preview alias line: `logs/md1-shrunk/polls/20260520T025739Z-ci-postpush/pages-preview-url.txt`
