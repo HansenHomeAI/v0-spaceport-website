@@ -1,0 +1,26 @@
+{
+    "Contents": [
+        {
+            "Key": "1778952912508-hmc-high-mountain-camp-images-flat.manifest.json",
+            "LastModified": "2026-05-16T17:49:54+00:00",
+            "ETag": "\"1e0ee825159077dc4e1781ba75cd3386\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 352691,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "1778952912508-hmc-high-mountain-camp-images-flat.zip",
+            "LastModified": "2026-05-16T17:35:27+00:00",
+            "ETag": "\"ed86661a82b28856997a09f129ce6bec-1031\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 8646557673,
+            "StorageClass": "STANDARD"
+        }
+    ],
+    "RequestCharged": null,
+    "Prefix": "1778952912508"
+}

@@ -198,6 +198,29 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/sagemaker-list-cvhr-mtc-20260518T1729Z-20260518T183516Z-postpush.json`
   - `logs/montana-time-capsule/sagemaker-list-cvhr-mtc-20260518T1729Z-20260518T184753Z-postpoll.json`
   - `logs/montana-time-capsule/launch-20260518T184753Z-postpoll.log`
+
+## 2026-05-20T21:03Z HMC Monitor Pass
+
+- Branch/head/status command:
+  - `git rev-parse --abbrev-ref HEAD && git rev-parse HEAD && git status --short --branch`
+  - Result: branch `agent-40136728-montana-time-capsule`, head `2c51e1a89c3c4aa3f50e426169fdb414479bbd5b`, status clean (`## agent-40136728-montana-time-capsule...origin/agent-40136728-montana-time-capsule`).
+- Exact-head workflows command:
+  - `gh run list --branch agent-40136728-montana-time-capsule --commit 2c51e1a89c3c4aa3f50e426169fdb414479bbd5b --json ...`
+  - Result: `[]` (expected for `[skip ci]` head); evidence saved under `logs/montana-time-capsule/gh-run-list-exact-head-*.json`.
+- AWS identity command: `/opt/homebrew/bin/aws sts get-caller-identity`
+  - Result: account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+- HMC archive proof (no re-upload):
+  - `s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip` (LastModified `2026-05-16T17:35:27Z`, size `8646557673`, ETag `ed86661a82b28856997a09f129ce6bec-1031`).
+  - Manifest: `s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.manifest.json`.
+  - Confirmed missing in staging uploads bucket: `s3://spaceport-uploads-staging/` (`404` HeadObject; empty list by `prefix=1778952912508`).
+- SageMaker status command: `/opt/homebrew/bin/aws sagemaker describe-processing-job --processing-job-name hmc-mtc-20260520T2015Z-sfm`
+  - Result: `ProcessingJobStatus=InProgress` using pinned SfM image `sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811`.
+- CloudWatch progress sample:
+  - Latest sampled: `Processed file [831/2063]` (feature extraction); log captured in `logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260520T205433Z.log`.
+- S3 outputs:
+  - Prefix currently empty (EndOfJob upload): `s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/colmap/`.
+- Next unblocked step:
+  - Keep polling until `hmc-mtc-20260520T2015Z-sfm` becomes `Completed`, then run `python3 scripts/montana_time_capsule/hmc_time_capsule.py --launch` once to launch pinned 3DGS.
   - `logs/montana-time-capsule/sagemaker-describe-cvhr-mtc-20260518T1729Z-sfm-20260518T184808Z-postpoll.json`
   - `logs/montana-time-capsule/sfm-poll-20260518T183539Z.log`
 - Next unblocked step: keep polling `cvhr-mtc-20260518T1729Z-sfm` to completion; run the same `--launch` command once immediately after completion to launch pinned Montana 3DGS.
