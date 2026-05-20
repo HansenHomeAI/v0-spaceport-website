@@ -3284,3 +3284,28 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/s3-sfm-output-hmc-mtc-20260520T2015Z-20260520T0029Z.txt`
   - `logs/montana-time-capsule/hmc-runner-hold-20260520T0032Z.json`
 - Next unblocked step: poll `hmc-mtc-20260520T2015Z-sfm` until it reaches `Completed`; then run the same HMC runner command with `--launch` exactly once to launch the pinned Montana 3DGS job.
+
+## 2026-05-20T20:23Z HMC Post-Push + First SfM Logs
+
+- Commit/push:
+  - Commit: `8a536ba434cfb0b771a9967c531de364128ec0e6`
+  - Message: `chore: launch hmc time capsule sfm`
+  - Push: `git push origin agent-40136728-montana-time-capsule`
+- Exact-head workflow check:
+  - `CDK Deploy` run `26187619621` completed successfully for exact head `8a536ba434cfb0b771a9967c531de364128ec0e6`.
+  - Exact-head workflow list contains only that `CDK Deploy` run; no Pages run was triggered for this script/log launch commit.
+- Current HMC SfM state:
+  - Job `hmc-mtc-20260520T2015Z-sfm` remains `InProgress`.
+  - Latest describe snapshot still uses pinned SfM image `sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811`.
+  - CloudWatch log stream is live. The job started the Montana COLMAP GPU processor, downloaded the `8646557673` byte HMC ZIP, extracted `2063` images, detected GPS EXIF priors and orientation priors on `2063` images, prepared a `2063` image list ordered by capture time then filename, and started GPU SIFT feature extraction.
+  - Latest sampled feature extraction progress: processed file `[4/2063]` by `2026-05-20T20:23:03Z`.
+  - S3 output remains empty as expected until EndOfJob upload.
+- Evidence files:
+  - `logs/montana-time-capsule/gh-run-list-agent-40136728-hmc-postpush-20260520T0035Z.json`
+  - `logs/montana-time-capsule/gh-run-list-exact-head-hmc-postpush-20260520T0035Z.json`
+  - `logs/montana-time-capsule/gh-run-list-agent-40136728-hmc-postcdk-20260520T0040Z.json`
+  - `logs/montana-time-capsule/gh-run-list-exact-head-hmc-postcdk-20260520T0040Z.json`
+  - `logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260520T0036Z.json`
+  - `logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260520T0040Z.json`
+  - `logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260520T0040Z.log`
+- Next unblocked step: continue polling feature extraction and later mapping/chunk output for `hmc-mtc-20260520T2015Z-sfm`; do not launch 3DGS until SfM is `Completed`.

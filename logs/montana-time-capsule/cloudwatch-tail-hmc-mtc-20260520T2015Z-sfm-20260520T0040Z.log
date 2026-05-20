@@ -1,0 +1,99 @@
+2026-05-20T20:21:49 ============================================================
+2026-05-20T20:21:49 🚀 SPACEPORT COLMAP GPU SfM PROCESSING
+2026-05-20T20:21:49 ============================================================
+2026-05-20T20:21:49 📅 Started at: Wed May 20 20:21:46 UTC 2026
+2026-05-20T20:21:49 🔧 Pipeline: COLMAP mapper with GPU SIFT + spatial/sequential/vocab matching
+2026-05-20T20:21:49 📍 GPS Priors: image EXIF metadata
+2026-05-20T20:21:49 🎯 Output: COLMAP TXT export for 3DGS
+2026-05-20T20:21:49 ============================================================
+2026-05-20T20:21:49 🔍 Verifying environment...
+2026-05-20T20:21:49 Python 3.12.3
+2026-05-20T20:21:49 📦 COLMAP version: unavailable via 'colmap version'
+2026-05-20T20:21:49 Wed May 20 20:21:46 2026
+2026-05-20T20:21:49 +-----------------------------------------------------------------------------------------+
+2026-05-20T20:21:49 | NVIDIA-SMI 570.211.01             Driver Version: 570.211.01     CUDA Version: 12.9     |
+2026-05-20T20:21:49 |-----------------------------------------+------------------------+----------------------+
+2026-05-20T20:21:49 | GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+2026-05-20T20:21:49 | Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+2026-05-20T20:21:49 |                                         |                        |               MIG M. |
+2026-05-20T20:21:49 |=========================================+========================+======================|
+2026-05-20T20:21:49 |   0  Tesla T4                       On  |   00000000:00:1E.0 Off |                    0 |
+2026-05-20T20:21:49 | N/A   27C    P8              9W /   70W |       0MiB /  15360MiB |      0%      Default |
+2026-05-20T20:21:49 |                                         |                        |                  N/A |
+2026-05-20T20:21:49 +-----------------------------------------+------------------------+----------------------+
+2026-05-20T20:21:49 +-----------------------------------------------------------------------------------------+
+2026-05-20T20:21:49 | Processes:                                                                              |
+2026-05-20T20:21:49 |  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+2026-05-20T20:21:49 |        ID   ID                                                               Usage      |
+2026-05-20T20:21:49 |=========================================================================================|
+2026-05-20T20:21:49 |  No running processes found                                                             |
+2026-05-20T20:21:49 +-----------------------------------------------------------------------------------------+
+2026-05-20T20:21:49 ✅ Environment verification completed
+2026-05-20T20:21:49 MEMORY_PROBE [startup]:
+2026-05-20T20:21:49 MemTotal:       16081288 kB
+2026-05-20T20:21:49 MemFree:          852004 kB
+2026-05-20T20:21:49 MemAvailable:   14962844 kB
+               total        used        free      shared  buff/cache   available
+2026-05-20T20:21:49 Mem:            15Gi       1.1Gi       832Mi       1.1Mi        13Gi        14Gi
+2026-05-20T20:21:49 Swap:             0B          0B          0B
+2026-05-20T20:21:49 📁 Input directory: /opt/ml/processing/input
+2026-05-20T20:21:49 📁 Output directory: /opt/ml/processing/output
+2026-05-20T20:21:49 🔍 Input directory contents:
+2026-05-20T20:21:49 total 8443916
+2026-05-20T20:21:49 drwxr-xr-x 2 root root       4096 May 20 20:17 .
+2026-05-20T20:21:49 drwxr-xr-x 1 root root       4096 Mar 30 20:31 ..
+2026-05-20T20:21:49 -rw-r--r-- 1 root root 8646557673 May 20 20:21 1778952912508-hmc-high-mountain-camp-images-flat.zip
+2026-05-20T20:21:49 📦 ZIP files found: 1
+2026-05-20T20:21:49 ============================================================
+2026-05-20T20:21:49 🚀 LAUNCHING COLMAP GPU PROCESSOR
+2026-05-20T20:21:49 ============================================================
+2026-05-20T20:21:49 MEMORY_PROBE [before_python]:
+2026-05-20T20:21:49 MemTotal:       16081288 kB
+2026-05-20T20:21:49 MemFree:          851704 kB
+2026-05-20T20:21:49 MemAvailable:   14962936 kB
+               total        used        free      shared  buff/cache   available
+2026-05-20T20:21:49 Mem:            15Gi       1.1Gi       831Mi       1.1Mi        13Gi        14Gi
+2026-05-20T20:21:49 Swap:             0B          0B          0B
+2026-05-20T20:21:49 MEMORY_PROBE [startup]:
+2026-05-20T20:21:49 MemTotal:       16081288 kB
+2026-05-20T20:21:49 MemFree:          839596 kB
+2026-05-20T20:21:49 MemAvailable:   14951200 kB
+2026-05-20T20:21:49 2026-05-20 20:21:47,016 - INFO - Extracting archive /opt/ml/processing/input/1778952912508-hmc-high-mountain-camp-images-flat.zip
+2026-05-20T20:22:24 2026-05-20 20:22:24,145 - INFO - Extracted 2063 images
+2026-05-20T20:22:40 2026-05-20 20:22:39,750 - INFO - Detected GPS EXIF priors on 2063 images; orientation priors present on 2063 images
+2026-05-20T20:22:53 2026-05-20 20:22:52,581 - INFO - Prepared image list with 2063 entries ordered by capture time then filename
+2026-05-20T20:22:53 2026-05-20 20:22:52,581 - INFO - [feature_extractor] colmap feature_extractor --database_path /tmp/colmap_sfm_kvb56gze/database.db --image_path /tmp/colmap_sfm_kvb56gze/images --ImageReader.single_camera 1 --ImageReader.camera_model SIMPLE_RADIAL --FeatureExtraction.use_gpu 1 --SiftExtraction.max_num_features 8192
+2026-05-20T20:22:53 COLMAP[feature_extractor] I20260520 20:22:52.811056    91 feature_extraction.cc:502] === Feature extraction ===
+2026-05-20T20:22:53 COLMAP[feature_extractor] I20260520 20:22:52.811896    96 sift.cc:754] Creating SIFT GPU feature extractor
+2026-05-20T20:23:02 COLMAP[feature_extractor] I20260520 20:23:02.094379    97 feature_extraction.cc:280] Processed file [1/2063]
+2026-05-20T20:23:02 COLMAP[feature_extractor] I20260520 20:23:02.094429    97 feature_extraction.cc:283]   Name:            hmc_0001_DJI_0661.JPG
+2026-05-20T20:23:02 COLMAP[feature_extractor] I20260520 20:23:02.094439    97 feature_extraction.cc:292]   Dimensions:      4000 x 2250
+2026-05-20T20:23:02 COLMAP[feature_extractor] I20260520 20:23:02.094450    97 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL
+2026-05-20T20:23:02 COLMAP[feature_extractor] I20260520 20:23:02.094461    97 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)
+2026-05-20T20:23:02 COLMAP[feature_extractor] I20260520 20:23:02.094476    97 feature_extraction.cc:302]   Features:        10366 (SIFT)
+2026-05-20T20:23:02 COLMAP[feature_extractor] I20260520 20:23:02.201009    97 feature_extraction.cc:316]   GPS:             LAT=0.000, LON=0.000, ALT=1169.912
+2026-05-20T20:23:02 COLMAP[feature_extractor] I20260520 20:23:02.201056    97 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000
+2026-05-20T20:23:02 COLMAP[feature_extractor] I20260520 20:23:02.207849    97 feature_extraction.cc:280] Processed file [2/2063]
+2026-05-20T20:23:02 COLMAP[feature_extractor] I20260520 20:23:02.208140    97 feature_extraction.cc:283]   Name:            hmc_0002_DJI_0660.JPG
+2026-05-20T20:23:02 COLMAP[feature_extractor] I20260520 20:23:02.208372    97 feature_extraction.cc:292]   Dimensions:      4000 x 2250
+2026-05-20T20:23:02 COLMAP[feature_extractor] I20260520 20:23:02.208585    97 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL
+2026-05-20T20:23:02 COLMAP[feature_extractor] I20260520 20:23:02.208802    97 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)
+2026-05-20T20:23:02 COLMAP[feature_extractor] I20260520 20:23:02.209014    97 feature_extraction.cc:302]   Features:        9593 (SIFT)
+2026-05-20T20:23:03 COLMAP[feature_extractor] I20260520 20:23:02.584565    97 feature_extraction.cc:316]   GPS:             LAT=36.722, LON=-81.291, ALT=1169.622
+2026-05-20T20:23:03 COLMAP[feature_extractor] I20260520 20:23:02.584627    97 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000
+2026-05-20T20:23:03 COLMAP[feature_extractor] I20260520 20:23:02.589972    97 feature_extraction.cc:280] Processed file [3/2063]
+2026-05-20T20:23:03 COLMAP[feature_extractor] I20260520 20:23:02.590008    97 feature_extraction.cc:283]   Name:            hmc_0003_DJI_0662.JPG
+2026-05-20T20:23:03 COLMAP[feature_extractor] I20260520 20:23:02.590019    97 feature_extraction.cc:292]   Dimensions:      4000 x 2250
+2026-05-20T20:23:03 COLMAP[feature_extractor] I20260520 20:23:02.590029    97 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL
+2026-05-20T20:23:03 COLMAP[feature_extractor] I20260520 20:23:02.590040    97 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)
+2026-05-20T20:23:03 COLMAP[feature_extractor] I20260520 20:23:02.590054    97 feature_extraction.cc:302]   Features:        7584 (SIFT)
+2026-05-20T20:23:03 COLMAP[feature_extractor] I20260520 20:23:02.590093    97 feature_extraction.cc:316]   GPS:             LAT=36.719, LON=-81.291, ALT=1207.255
+2026-05-20T20:23:03 COLMAP[feature_extractor] I20260520 20:23:02.590106    97 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000
+2026-05-20T20:23:03 COLMAP[feature_extractor] I20260520 20:23:02.616508    97 feature_extraction.cc:280] Processed file [4/2063]
+2026-05-20T20:23:03 COLMAP[feature_extractor] I20260520 20:23:02.616549    97 feature_extraction.cc:283]   Name:            hmc_0004_DJI_0666.JPG
+2026-05-20T20:23:03 COLMAP[feature_extractor] I20260520 20:23:02.616560    97 feature_extraction.cc:292]   Dimensions:      4000 x 2250
+2026-05-20T20:23:03 COLMAP[feature_extractor] I20260520 20:23:02.616571    97 feature_extraction.cc:295]   Camera:          #1 - SIMPLE_RADIAL
+2026-05-20T20:23:03 COLMAP[feature_extractor] I20260520 20:23:02.616583    97 feature_extraction.cc:298]   Focal Length:    2545.54px (Prior)
+2026-05-20T20:23:03 COLMAP[feature_extractor] I20260520 20:23:02.616596    97 feature_extraction.cc:302]   Features:        12430 (SIFT)
+2026-05-20T20:23:03 COLMAP[feature_extractor] I20260520 20:23:02.900259    97 feature_extraction.cc:316]   GPS:             LAT=36.722, LON=-81.291, ALT=1269.230
+2026-05-20T20:23:03 COLMAP[feature_extractor] I20260520 20:23:02.900311    97 feature_extraction.cc:323]   Gravity:         X=0.000, Y=1.000, Z=0.000
