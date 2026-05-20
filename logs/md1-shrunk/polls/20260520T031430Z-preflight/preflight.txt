@@ -1,0 +1,84 @@
+timestamp_utc=20260520T031430Z
+
+## git
+agent-113647-md1-baseline-e2e
+146841d7724972215ee490715d2c24f83094b629
+?? logs/md1-shrunk/polls/20260520T031430Z-preflight/
+
+## aws sts get-caller-identity
+{
+    "UserId": "975050048887",
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root"
+}
+
+## stepfunctions RUNNING
+staging_running=0
+br8abc_running=0
+
+## stepfunctions describe known execution (summary)
+{
+    "executionArn": "arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-br-8abcbd5662:execution-md1-shrunk-prodspine-wlight-202605190027",
+    "status": "SUCCEEDED",
+    "startDate": "2026-05-18T18:28:13.202000-06:00",
+    "stopDate": "2026-05-18T21:03:39.663000-06:00",
+    "redriveStatus": "NOT_REDRIVABLE"
+}
+
+## sagemaker InProgress counts
+processing_inprogress=0
+training_inprogress=0
+
+## local dev server listeners
+42135 node /Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule/web/node_modules/.bin/next dev --hostname 127.0.0.1 --port 3033
+11:node        990 gabrielhansen   15u  IPv4 0x3ba8349c576cb96a      0t0  TCP *:18789 (LISTEN)
+12:node        990 gabrielhansen   22u  IPv4 0xc30287d8799625c6      0t0  TCP 127.0.0.1:18792 (LISTEN)
+17:node      42136 gabrielhansen   13u  IPv4 0x81bd7fef9702d453      0t0  TCP 127.0.0.1:3033 (LISTEN)
+
+## public S3 meta.json HEAD
+HTTP/1.1 200 OK
+x-amz-id-2: UNwQovG95A9Tf1TNizhM+wiZcskL2ZdAsBF14cNF62AHbjwbDDnK0mhc9mkgFCacGDcFAdd6o9rfugD+MHp0W2o2EcuY9gD2
+x-amz-request-id: 2ZGYBWMS6RED1TMY
+Date: Wed, 20 May 2026 03:15:04 GMT
+Last-Modified: Tue, 19 May 2026 03:14:11 GMT
+ETag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: lwCX4ptdSjx.9.5LMjn4a8Ervrln8HMA
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1421
+Server: AmazonS3
+
+
+## edge meta.json HEAD
+HTTP/2 200 
+content-type: application/json
+content-length: 1421
+date: Tue, 19 May 2026 14:24:08 GMT
+last-modified: Tue, 19 May 2026 06:37:13 GMT
+etag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+cache-control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: vUW1wpcXNiVbn3gf6_kSkXCXdN6e83vX
+accept-ranges: bytes
+server: AmazonS3
+x-cache: Hit from cloudfront
+via: 1.1 07a18e504d30d77c3e6f1dd7736821bc.cloudfront.net (CloudFront)
+x-amz-cf-pop: LAX53-P6
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: SUW2_YYRX9HY9Gi1Qij_UldJgztsyIiuz2v_8CbxAgrU4GEnwu8r8w==
+age: 46256
+vary: Origin
+
+
+## gh runs (branch)
+completed	success	fix: retry iframe screenshot for md1 camera-suite	CDK Deploy	agent-113647-md1-baseline-e2e	push	26138455344	3m55s	2026-05-20T02:57:26Z
+completed	success	fix: retry iframe screenshot for md1 camera-suite	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26138455345	7m33s	2026-05-20T02:57:26Z
+completed	success	chore: md1-shrunk heartbeat verify strict gates	CDK Deploy	agent-113647-md1-baseline-e2e	push	26127221994	3m59s	2026-05-19T21:45:18Z
+completed	success	feat: harden md1-shrunk camera suite baselines	CDK Deploy	agent-113647-md1-baseline-e2e	push	26111270602	3m56s	2026-05-19T16:38:50Z
+completed	success	feat: harden md1-shrunk camera suite baselines	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26111270702	7m46s	2026-05-19T16:38:50Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26109660239	7m48s	2026-05-19T16:09:14Z
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26109660240	4m12s	2026-05-19T16:09:14Z
+completed	success	fix: calibrate md1-shrunk camera-suite edge retention gate	CDK Deploy	agent-113647-md1-baseline-e2e	push	26109384090	4m13s	2026-05-19T16:04:19Z
+completed	success	fix: lighten md1 nosky background for camera gates	CDK Deploy	agent-113647-md1-baseline-e2e	push	26107587599	3m54s	2026-05-19T15:32:55Z
+completed	success	fix: lighten md1 nosky background for camera gates	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26107587902	7m35s	2026-05-19T15:32:55Z
