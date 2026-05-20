@@ -3379,3 +3379,35 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
 - Evidence files:
   - `logs/montana-time-capsule/gh-run-list-agent-40136728-20260520T204452Z.json`
   - `logs/montana-time-capsule/gh-run-list-exact-head-20260520T204452Z.json`
+
+## 2026-05-20T21:16Z HMC Monitor Pass
+
+- Branch/head/status:
+  - `agent-40136728-montana-time-capsule` @ `f8ae947ae5d821758a78e52c4041a3da0028522f` (clean).
+- Exact-head workflows:
+  - Exact-head `gh run list ... --commit f8ae947a` returned `[]` (expected for `[skip ci]` head).
+- AWS identity:
+  - `/opt/homebrew/bin/aws sts get-caller-identity` -> account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+- SageMaker SfM status:
+  - `/opt/homebrew/bin/aws sagemaker describe-processing-job --processing-job-name hmc-mtc-20260520T2015Z-sfm` -> `ProcessingJobStatus=InProgress`, pinned SfM image `sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811`.
+- HMC archive proof (no upload):
+  - `s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip` `LastModified=2026-05-16T17:35:27Z`, size `8646557673`, ETag `ed86661a82b28856997a09f129ce6bec-1031`.
+  - Manifest `s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.manifest.json` `LastModified=2026-05-16T17:49:54Z`.
+  - Confirmed absent in `s3://spaceport-uploads-staging/` (404 HeadObject + empty prefix list).
+- Runner status:
+  - `logs/montana-time-capsule/hmc-state.json`: `status=sfm_running`, `sfm_status=InProgress` (no downstream jobs yet).
+- Evidence files:
+  - `logs/montana-time-capsule/aws-sts-get-caller-identity-20260520T211424Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-hmc-mtc-20260520T2015Z-20260520T211424Z.json`
+  - `logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260520T211424Z.json`
+  - `logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260520T211505Z.json`
+  - `logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.manifest.json-20260520T211505Z.json`
+  - `logs/montana-time-capsule/s3-head-spaceport-uploads-staging-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260520T211505Z.json`
+  - `logs/montana-time-capsule/s3-head-spaceport-uploads-staging-1778952912508-hmc-high-mountain-camp-images-flat.manifest.json-20260520T211505Z.json`
+  - `logs/montana-time-capsule/s3-list-spaceport-uploads-prefix-1778952912508-20260520T211505Z.json`
+  - `logs/montana-time-capsule/s3-list-spaceport-uploads-staging-prefix-1778952912508-20260520T211505Z.json`
+  - `logs/montana-time-capsule/gh-run-list-exact-head-20260520T211520Z.json`
+  - `logs/montana-time-capsule/hmc-advance-nolaunch-20260520T211604Z.json`
+  - `logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260520T211617Z.json`
+  - `logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260520T211627Z.json`
+- Next unblocked step: keep polling `hmc-mtc-20260520T2015Z-sfm` until `Completed`; then run the same HMC runner command with `--launch` once to create pinned Montana 3DGS.

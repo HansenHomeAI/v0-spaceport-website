@@ -1,0 +1,8 @@
+{
+    "IsTruncated": false,
+    "Name": "spaceport-uploads-staging",
+    "Prefix": "hmc",
+    "MaxKeys": 50,
+    "EncodingType": "url",
+    "KeyCount": 0
+}
