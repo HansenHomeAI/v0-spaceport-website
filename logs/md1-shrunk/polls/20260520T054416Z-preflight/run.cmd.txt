@@ -1,0 +1,14 @@
+# Generated cost-bounded preflight snapshot.
+# Source of truth is the captured JSON + preflight.txt.
+# Commands executed (approx):
+aws sts get-caller-identity --output json > aws-sts-get-caller-identity.json
+aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging --status-filter RUNNING --max-results 10 --output json > stepfunctions-running-staging.json
+aws stepfunctions list-executions --state-machine-arn arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-8abcbd5662 --status-filter RUNNING --max-results 10 --output json > stepfunctions-running-br8abc.json
+aws stepfunctions describe-execution --execution-arn arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-br-8abcbd5662:execution-md1-shrunk-prodspine-wlight-202605190027 --output json > stepfunctions-describe-known.json
+aws sagemaker list-processing-jobs --status-equals InProgress --max-results 10 --output json > sagemaker-list-processing-inprogress.json
+aws sagemaker list-training-jobs --status-equals InProgress --max-results 10 --output json > sagemaker-list-training-inprogress.json
+gh run list --branch agent-113647-md1-baseline-e2e --limit 20 --json databaseId,workflowName,status,conclusion,createdAt,headSha,event > gh-run-list.json
+curl -sI https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json
+curl -sI https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json
+ps ax -o pid=,command= | rg "next dev"
+lsof -nP -iTCP -sTCP:LISTEN
