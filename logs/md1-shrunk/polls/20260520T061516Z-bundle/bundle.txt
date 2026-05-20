@@ -1,0 +1,43 @@
+# bundle parity 20260520T061516Z
+S3_META=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json
+EDGE_META=https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json
+
+## shasum
+s3 f3ec9c95a0a6208f3ef9cae6a181e3cbc529ee20701252b91022efe1af02b02e  -
+edge f3ec9c95a0a6208f3ef9cae6a181e3cbc529ee20701252b91022efe1af02b02e  -
+
+## head s3
+HTTP/1.1 200 OK
+x-amz-id-2: OWIYvoiGgVmxSWXeL5optnLBgzx9VfUzhvWE4dFxVSf22OItDykT1Kyq+zLcmTY54BWdAmCM5FE=
+x-amz-request-id: 22BPRF01TPY3HXZZ
+Date: Wed, 20 May 2026 06:16:06 GMT
+Last-Modified: Tue, 19 May 2026 03:14:11 GMT
+ETag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: lwCX4ptdSjx.9.5LMjn4a8Ervrln8HMA
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1421
+Server: AmazonS3
+
+
+## head edge
+HTTP/2 200 
+content-type: application/json
+content-length: 1421
+date: Tue, 19 May 2026 14:24:08 GMT
+last-modified: Tue, 19 May 2026 06:37:13 GMT
+etag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+cache-control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: vUW1wpcXNiVbn3gf6_kSkXCXdN6e83vX
+accept-ranges: bytes
+server: AmazonS3
+x-cache: Hit from cloudfront
+via: 1.1 07a18e504d30d77c3e6f1dd7736821bc.cloudfront.net (CloudFront)
+x-amz-cf-pop: LAX53-P6
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: lwXiy6RLrs800Oe4DEqwsOp7D2oOWqGOHyC-At_T650jjngqf5aAgQ==
+age: 57118
+vary: Origin
+

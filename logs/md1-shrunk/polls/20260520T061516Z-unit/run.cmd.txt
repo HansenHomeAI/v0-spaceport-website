@@ -1,0 +1,1 @@
+/opt/homebrew/bin/python3 -m unittest tests.unit.test_sfm_heldout_panel_diagnostics tests.unit.test_viewer_camera_pose_derivation tests.unit.test_ml_publish_bundle
