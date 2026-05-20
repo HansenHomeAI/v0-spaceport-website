@@ -9805,3 +9805,14 @@ note: reran heartbeat after `20260520T144551Z` because bundle parity was skipped
   - output: `logs/md1-shrunk/polls/20260520T171531Z-unit/unittest.txt`
 - GitHub Actions snapshot (head is logs-only; no new runs expected):
   - `logs/md1-shrunk/polls/20260520T171531Z-ci/summary.txt`
+
+## 2026-05-20T17:21Z postpush CI snapshot (head is logs-only; no new runs expected)
+
+- exact-head commit: `89cf4b1e` (`[skip ci]` head; exact-head workflows expected: none)
+- last relevant Pages + CDK success remains:
+  - commit: `1359cb1a`
+  - CDK Deploy run: `26177531892` -> success
+  - Deploy Next.js to Cloudflare Pages run: `26177531889` -> success
+  - PREVIEW_URL: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+- Evidence:
+  - `logs/md1-shrunk/polls/20260520T172145Z-ci-postpush-sha-89cf4b1e/postpush.txt`
