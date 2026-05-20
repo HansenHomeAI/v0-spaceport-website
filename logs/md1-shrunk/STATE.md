@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-20T08:21:23Z
+updated: 2026-05-20T09:28:17Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -9163,3 +9163,31 @@ skybox, compression, artifact handoff, and visual gates.
     - CDK + Pages full logs:
       - `logs/md1-shrunk/polls/20260520T0912Z-ci-postpush-sha-14f6eaf2/view-cdk.log.txt`
       - `logs/md1-shrunk/polls/20260520T0912Z-ci-postpush-sha-14f6eaf2/view-pages.log.txt`
+
+## 2026-05-20T09:21Z heartbeat verify (scripted; strict gates PASS; no new jobs)
+
+- Heartbeat poll summary:
+  - `logs/md1-shrunk/polls/20260520T092120Z-summary.json`
+- Preflight snapshot (read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260520T092120Z-preflight/preflight.txt`
+  - Step Functions RUNNING: `0` (staging + `SpaceportMLPipeline-br-8abcbd5662`)
+  - Known execution `execution-md1-shrunk-prodspine-wlight-202605190027` status: `SUCCEEDED`:
+    - `logs/md1-shrunk/polls/20260520T092120Z-preflight/stepfunctions-describe-known.json`
+  - SageMaker InProgress: `0` (processing + training)
+  - Local dev server listeners + listen ports: see `preflight.txt`.
+- Browser-readable public delivery validation (Origin CORS + cache headers for meta.json + referenced assets):
+  - command: `logs/md1-shrunk/polls/20260520T092120Z-edge-validate/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260520T092120Z-edge-validate/validate.txt`
+  - report: `logs/md1-shrunk/polls/20260520T092120Z-edge-validate/publish-edge.report.html`
+  - publish proof: `logs/md1-shrunk/polls/20260520T092120Z-edge-validate/publish-edge.json` (`fallbackUsed=true`)
+- Public bundle snapshot (S3-vs-edge meta.json parity):
+  - `logs/md1-shrunk/polls/20260520T092120Z-bundle/bundle.txt` (sha256 match)
+- Multi-camera input-vs-render checks (deployed preview; strict; baseline pose verification + sky/horizon gates):
+  - command: `logs/md1-shrunk/polls/20260520T092120Z-camera-suite/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260520T092120Z-camera-suite/suite-summary.json` -> `decision=pass` (`pose_verification.max_delta=0.0`)
+  - report: `logs/md1-shrunk/polls/20260520T092120Z-camera-suite/report.html`
+- Unit proof:
+  - command: `logs/md1-shrunk/polls/20260520T092120Z-unit/run.cmd.txt`
+  - output: `logs/md1-shrunk/polls/20260520T092120Z-unit/unittest.txt`
+- GitHub Actions snapshot:
+  - `logs/md1-shrunk/polls/20260520T092120Z-ci/summary.txt`
