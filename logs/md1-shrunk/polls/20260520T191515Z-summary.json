@@ -1,0 +1,17 @@
+{
+  "branch": "agent-113647-md1-baseline-e2e",
+  "compressed_output_s3_uri": "s3://spaceport-ml-processing/compressed/md1-shrunk-prodspine-wlight-202605190027/",
+  "edge_meta_url": "https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json",
+  "head": "1f587dc4bfc1b341c651fe88af23f6caadc1f433",
+  "job_id": "md1-shrunk-prodspine-wlight-202605190027",
+  "poll_dirs": {
+    "bundle": "/Users/gabrielhansen/MD1-Baseline/logs/md1-shrunk/polls/20260520T191515Z-bundle",
+    "camera_suite": "/Users/gabrielhansen/MD1-Baseline/logs/md1-shrunk/polls/20260520T191515Z-camera-suite",
+    "ci": "/Users/gabrielhansen/MD1-Baseline/logs/md1-shrunk/polls/20260520T191515Z-ci",
+    "edge_validate": "/Users/gabrielhansen/MD1-Baseline/logs/md1-shrunk/polls/20260520T191515Z-edge-validate",
+    "preflight": "/Users/gabrielhansen/MD1-Baseline/logs/md1-shrunk/polls/20260520T191515Z-preflight",
+    "unit": "/Users/gabrielhansen/MD1-Baseline/logs/md1-shrunk/polls/20260520T191515Z-unit"
+  },
+  "timestamp_utc": "20260520T191515Z",
+  "viewer_url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev"
+}
