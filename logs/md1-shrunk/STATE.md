@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-20T07:36:10Z
+updated: 2026-05-20T07:50:48Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -9069,5 +9069,16 @@ skybox, compression, artifact handoff, and visual gates.
 - Unit proof:
   - command: `logs/md1-shrunk/polls/20260520T072905Z-unit/run.cmd.txt`
   - output: `logs/md1-shrunk/polls/20260520T072905Z-unit/unittest.txt`
-- GitHub Actions snapshot (exact-head remains last deployed `4f3aa301` until the next push):
+- GitHub Actions snapshot (pre-push; for the new head see `ci-postpush` artifacts below):
   - `logs/md1-shrunk/polls/20260520T072905Z-ci/summary.txt`
+- Commit/push + exact-head CI:
+  - `fix: auto-pick baseline for md1-shrunk heartbeat` -> `31d9bd7c`
+    - CDK Deploy: `26148433269` -> `success`
+    - CDK logs: `logs/md1-shrunk/polls/20260520T072905Z-ci-postpush/view-cdk.log.txt`
+    - note: Pages workflow did not trigger for this sha (no `web/` changes); bumped `web/trigger-dev-build.txt` to force Pages.
+  - `chore: trigger pages build` -> `641b0273`
+    - CDK Deploy: `26148667959` -> `success`
+    - Pages: `26148667948` -> `success`
+    - preview URL proof: `logs/md1-shrunk/polls/20260520T072905Z-ci-postpush-sha-641b0273/pages-preview-url.txt`
+    - CDK logs: `logs/md1-shrunk/polls/20260520T072905Z-ci-postpush-sha-641b0273/view-cdk.log.txt`
+    - Pages logs: `logs/md1-shrunk/polls/20260520T072905Z-ci-postpush-sha-641b0273/view-pages.log.txt`
