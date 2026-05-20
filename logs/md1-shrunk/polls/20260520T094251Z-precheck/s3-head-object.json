@@ -1,0 +1,11 @@
+# aws s3api head-object meta.json
+{
+    "AcceptRanges": "bytes",
+    "LastModified": "2026-05-19T03:14:11+00:00",
+    "ContentLength": 1421,
+    "ETag": "\"948345d6cf5eca623bfe32fe46aa4f99\"",
+    "VersionId": "lwCX4ptdSjx.9.5LMjn4a8Ervrln8HMA",
+    "ContentType": "application/octet-stream",
+    "ServerSideEncryption": "AES256",
+    "Metadata": {}
+}

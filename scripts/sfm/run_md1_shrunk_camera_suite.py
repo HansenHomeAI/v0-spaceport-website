@@ -18,6 +18,7 @@ import json
 import os
 import subprocess
 import time
+import shutil
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlencode
@@ -93,6 +94,7 @@ def write_html_report(
     decision: str,
     baseline_suite_dir: str,
     pose_verification: dict[str, Any] | None,
+    include_panel_links: bool,
 ) -> Path:
     def rel(path: Path) -> str:
         return path.relative_to(out_dir).as_posix()
@@ -145,12 +147,17 @@ def write_html_report(
             cam_up=cam_up,
             skybox="none",
         )
+        panel_sky_html = f"<a href=\"{escape_html(rel(panel_sky))}\">panel</a>"
+        panel_no_html = f"<a href=\"{escape_html(rel(panel_no))}\">panel</a>"
+        if not include_panel_links:
+            panel_sky_html = "<code>pruned</code>"
+            panel_no_html = "<code>pruned</code>"
         rows.append(
             "<tr>"
             f"<td>{escape_html(name)}</td>"
             f"<td><a href=\"{escape_html(url_sky)}\">viewer(skybox)</a> · <a href=\"{escape_html(url_no)}\">viewer(nosky)</a></td>"
-            f"<td><a href=\"{escape_html(rel(panel_sky))}\">panel</a></td>"
-            f"<td><a href=\"{escape_html(rel(panel_no))}\">panel</a></td>"
+            f"<td>{panel_sky_html}</td>"
+            f"<td>{panel_no_html}</td>"
             "</tr>"
         )
 
@@ -282,6 +289,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--sample-count", type=int, default=6)
     parser.add_argument("--distance-to-target", type=float, default=0.3)
     parser.add_argument("--strict", action="store_true", help="Exit non-zero when diagnostics report warnings")
+    parser.add_argument(
+        "--prune-artifacts",
+        action="store_true",
+        help="Delete large inputs/renders/panels outputs on PASS (keeps JSON summaries + logs).",
+    )
     return parser.parse_args()
 
 
@@ -564,6 +576,7 @@ def main() -> int:
     panel_count = len(list(panels_dir.rglob("panel-*.png")))
     summary_payload: dict[str, Any] = {
         "decision": "fail" if failures else decision,
+        "artifacts_pruned": False,
         "camera_poses": {
             "path": str(poses_out),
             "selected_count": len(validated_poses),
@@ -585,8 +598,19 @@ def main() -> int:
         decision=str(summary_payload["decision"]),
         baseline_suite_dir=baseline_suite_dir,
         pose_verification=baseline_pose_verification,
+        include_panel_links=not args.prune_artifacts,
     )
     final_decision = summary_payload["decision"]
+    if args.prune_artifacts and final_decision == "pass":
+        pruned_dirs: list[Path] = []
+        for leaf in ["inputs", "renders", "panels"]:
+            candidate = out_dir / leaf
+            if candidate.exists():
+                shutil.rmtree(candidate)
+                pruned_dirs.append(candidate)
+        summary_payload["artifacts_pruned"] = True
+        summary_payload["artifacts_pruned_dirs"] = [str(path) for path in pruned_dirs]
+        summary_path.write_text(json.dumps(summary_payload, indent=2) + "\n", encoding="utf-8")
     print(f"OK {summary_path} decision={final_decision} panels={panel_count} failures={len(failures)} report={report_path}")
     if args.strict and final_decision != "pass":
         raise SystemExit(2)

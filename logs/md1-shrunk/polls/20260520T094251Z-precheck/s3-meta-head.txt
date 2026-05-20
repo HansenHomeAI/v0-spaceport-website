@@ -1,0 +1,14 @@
+# curl -I https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json
+HTTP/1.1 200 OK
+x-amz-id-2: ap7fNq13ZLYiZ/J10AzIWvzYIyBWOeoBBLTltVhGXG9Pazkwzqfh/Rj8gDJtFWTnIEx5pbByyKI=
+x-amz-request-id: WEEG7GYZ0Y3GE45W
+Date: Wed, 20 May 2026 09:43:28 GMT
+Last-Modified: Tue, 19 May 2026 03:14:11 GMT
+ETag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: lwCX4ptdSjx.9.5LMjn4a8Ervrln8HMA
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1421
+Server: AmazonS3
+

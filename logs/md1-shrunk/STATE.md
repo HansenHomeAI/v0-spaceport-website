@@ -9198,3 +9198,29 @@ skybox, compression, artifact handoff, and visual gates.
   - `chore: record md1-shrunk postpush snapshot (20260520T092120Z) [skip ci]` -> `67bc90f3`
   - GitHub Actions postpush snapshot for the final head (no new runs expected for `[skip ci]`):
     - `logs/md1-shrunk/polls/20260520T092120Z-ci-postpush-sha-67bc90f3/postpush.txt`
+
+## 2026-05-20T09:53Z heartbeat verify (scripted; strict gates PASS; pruned camera artifacts; no new jobs)
+
+- Heartbeat poll summary:
+  - `logs/md1-shrunk/polls/20260520T095305Z-summary.json`
+- Preflight snapshot (read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260520T095305Z-preflight/preflight.txt`
+  - Step Functions RUNNING: `0` (staging + `SpaceportMLPipeline-br-8abcbd5662`)
+  - Known execution `execution-md1-shrunk-prodspine-wlight-202605190027` status: `SUCCEEDED`:
+    - `logs/md1-shrunk/polls/20260520T095305Z-preflight/stepfunctions-describe-known.json`
+  - SageMaker InProgress: `0` (processing + training)
+- Browser-readable public delivery validation (Origin CORS + cache headers for meta.json + referenced assets):
+  - command: `logs/md1-shrunk/polls/20260520T095305Z-edge-validate/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260520T095305Z-edge-validate/validate.txt`
+  - report: `logs/md1-shrunk/polls/20260520T095305Z-edge-validate/publish-edge.report.html`
+- Public bundle snapshot (S3-vs-edge meta.json parity):
+  - `logs/md1-shrunk/polls/20260520T095305Z-bundle/bundle.txt` (sha256 match)
+- Multi-camera input-vs-render checks (deployed preview; strict; baseline pose verification + sky/horizon gates):
+  - command: `logs/md1-shrunk/polls/20260520T095305Z-camera-suite/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260520T095305Z-camera-suite/suite-summary.json` -> `decision=pass` (`pose_verification.max_delta=0.0`; `artifacts_pruned=true`)
+  - report: `logs/md1-shrunk/polls/20260520T095305Z-camera-suite/report.html`
+- Unit proof:
+  - command: `logs/md1-shrunk/polls/20260520T095305Z-unit/run.cmd.txt`
+  - output: `logs/md1-shrunk/polls/20260520T095305Z-unit/unittest.txt`
+- GitHub Actions snapshot:
+  - `logs/md1-shrunk/polls/20260520T095305Z-ci/summary.txt`

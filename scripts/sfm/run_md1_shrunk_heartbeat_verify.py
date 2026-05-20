@@ -435,6 +435,7 @@ def main() -> int:
         args.colmap_images_s3_prefix,
         "--sample-count",
         str(args.sample_count),
+        "--prune-artifacts",
         "--out-dir",
         str(cam_dir),
     ]
