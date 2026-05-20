@@ -9111,5 +9111,6 @@ skybox, compression, artifact handoff, and visual gates.
   - `logs/md1-shrunk/polls/20260520T081401Z-ci/summary.txt`
 - Commit/push:
   - `chore: record md1-shrunk heartbeat verification (20260520T081401Z) [skip ci]` -> `35f0b387`
+  - `chore: record md1-shrunk postpush snapshot (20260520T082123Z) [skip ci]` -> `620add51`
   - GitHub Actions postpush snapshot (no new runs expected for `[skip ci]` head):
     - `logs/md1-shrunk/polls/20260520T082123Z-ci-postpush-sha-35f0b387/postpush.txt`
