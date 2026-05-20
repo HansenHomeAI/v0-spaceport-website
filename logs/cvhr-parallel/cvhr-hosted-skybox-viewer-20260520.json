@@ -1,0 +1,78 @@
+{
+  "name": "hosted-skybox",
+  "url": "https://agent-73910482-cvhr-parallel.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fcvhr-secondary-20260518t2113z%2Fsupersplat_bundle%2Fmeta.json&skybox=https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fcvhr-secondary-20260518t2113z%2Fsupersplat_bundle%2Fbackground_skybox.webp",
+  "screenshot": "logs/cvhr-parallel/cvhr-hosted-skybox-viewer-20260520.png",
+  "screenshotStats": {
+    "width": 1280,
+    "height": 800,
+    "bright": 1016326,
+    "alpha": 1024000
+  },
+  "responses": [
+    {
+      "url": "https://agent-73910482-cvhr-parallel.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fcvhr-secondary-20260518t2113z%2Fsupersplat_bundle%2Fmeta.json&skybox=https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fcvhr-secondary-20260518t2113z%2Fsupersplat_bundle%2Fbackground_skybox.webp",
+      "status": 200
+    },
+    {
+      "url": "https://agent-73910482-cvhr-parallel.v0-spaceport-website-preview2.pages.dev/_next/static/chunks/app/sogs-migrated-viewer/page-e1f3b0b616d127da.js",
+      "status": 200
+    },
+    {
+      "url": "https://agent-73910482-cvhr-parallel.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.html?settings=%2Fsupersplat-viewer%2Fsettings.json&content=%2Fapi%2Fsogs-proxy%2Fhttps%3A%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fcvhr-secondary-20260518t2113z%2Fsupersplat_bundle%2Fmeta.json&skybox=%2Fapi%2Fsogs-proxy%2Fhttps%3A%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fcvhr-secondary-20260518t2113z%2Fsupersplat_bundle%2Fbackground_skybox.webp",
+      "status": 200
+    },
+    {
+      "url": "https://agent-73910482-cvhr-parallel.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.css",
+      "status": 200
+    },
+    {
+      "url": "https://agent-73910482-cvhr-parallel.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/settings.json",
+      "status": 200
+    },
+    {
+      "url": "https://agent-73910482-cvhr-parallel.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/sogs-bridge.mjs",
+      "status": 200
+    },
+    {
+      "url": "https://agent-73910482-cvhr-parallel.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/meta.json",
+      "status": 200
+    },
+    {
+      "url": "https://agent-73910482-cvhr-parallel.v0-spaceport-website-preview2.pages.dev/supersplat-viewer/index.js",
+      "status": 200
+    },
+    {
+      "url": "https://agent-73910482-cvhr-parallel.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/background_skybox.webp",
+      "status": 200
+    },
+    {
+      "url": "https://agent-73910482-cvhr-parallel.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/sh0.webp",
+      "status": 200
+    },
+    {
+      "url": "https://agent-73910482-cvhr-parallel.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/means_l.webp",
+      "status": 200
+    },
+    {
+      "url": "https://agent-73910482-cvhr-parallel.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/quats.webp",
+      "status": 200
+    },
+    {
+      "url": "https://agent-73910482-cvhr-parallel.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/scales.webp",
+      "status": 200
+    },
+    {
+      "url": "https://agent-73910482-cvhr-parallel.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/shN_centroids.webp",
+      "status": 200
+    },
+    {
+      "url": "https://agent-73910482-cvhr-parallel.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/shN_labels.webp",
+      "status": 200
+    },
+    {
+      "url": "https://agent-73910482-cvhr-parallel.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/means_u.webp",
+      "status": 200
+    }
+  ],
+  "seriousConsole": []
+}

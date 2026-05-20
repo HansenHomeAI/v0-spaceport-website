@@ -2375,3 +2375,32 @@ as read-only context.
   - `.github/workflows/deploy-cloudflare-pages.yml` now allows `UPDATE_ROLLBACK_COMPLETE|UPDATE_ROLLBACK_FAILED` for the shared ML fallback stack, matching the existing auth fallback behavior.
 - Next gate:
   - commit and push this workflow fix, watch exact-head `CDK Deploy` and `Deploy Next.js to Cloudflare Pages`, resolve the preview URL from the Pages run, then run hosted skybox and `skybox=none` viewer proof against the public CV-HR bundle.
+
+## 2026-05-20T00:33Z Hosted Viewer Acceptance
+
+- Fix commit/push:
+  - commit: `e26ff2da371d3de17da5c4a3dbd16dd3d623831d`
+  - message: `fix: unblock cvhr preview deploy`
+  - pushed branch: `agent-73910482-cvhr-parallel-splat`
+- Exact-head CI/deploy:
+  - `CDK Deploy` run `26133564846` completed successfully for `e26ff2da371d3de17da5c4a3dbd16dd3d623831d`
+  - `Deploy Next.js to Cloudflare Pages` run `26133691181` completed successfully for `e26ff2da371d3de17da5c4a3dbd16dd3d623831d`
+  - resolved preview alias: `https://agent-73910482-cvhr-parallel.v0-spaceport-website-preview2.pages.dev`
+  - resolved hash URL: `https://9aefe10d.v0-spaceport-website-preview2.pages.dev`
+- Hosted viewer proof against public bundle:
+  - public bundle: `https://spaceport-ml-processing.s3.amazonaws.com/compressed/cvhr-secondary-20260518t2113z/supersplat_bundle/meta.json`
+  - skybox URL: `https://agent-73910482-cvhr-parallel.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fcvhr-secondary-20260518t2113z%2Fsupersplat_bundle%2Fmeta.json&skybox=https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fcvhr-secondary-20260518t2113z%2Fsupersplat_bundle%2Fbackground_skybox.webp`
+  - `skybox=none` URL: `https://agent-73910482-cvhr-parallel.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing.s3.amazonaws.com%2Fcompressed%2Fcvhr-secondary-20260518t2113z%2Fsupersplat_bundle%2Fmeta.json&skybox=none`
+  - skybox screenshot stats: `1280x800`, `bright=1016326`, `alpha=1024000`
+  - `skybox=none` screenshot stats: `1280x800`, `bright=981793`, `alpha=1024000`
+  - all required viewer, SOGS proxy, WebP texture, and skybox requests returned `200`
+  - serious browser console/page errors: none
+- Hosted proof files:
+  - `logs/cvhr-parallel/cvhr-hosted-skybox-viewer-20260520.png`
+  - `logs/cvhr-parallel/cvhr-hosted-skybox-viewer-20260520.json`
+  - `logs/cvhr-parallel/cvhr-hosted-nosky-viewer-20260520.png`
+  - `logs/cvhr-parallel/cvhr-hosted-nosky-viewer-20260520.json`
+  - `logs/cvhr-parallel/cvhr-hosted-viewer-proof-20260520.json`
+- Acceptance:
+  - CV-HR secondary run is visually accepted on the hosted preview with skybox and no-sky modes.
+  - No further SageMaker work is required for `cvhr-secondary-20260518t2113z`.
