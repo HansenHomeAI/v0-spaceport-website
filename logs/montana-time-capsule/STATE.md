@@ -3584,3 +3584,31 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
 - Evidence files:
   - `logs/montana-time-capsule/gh-run-list-exact-head-ebffa1ee-20260520T2246Z.json`
   - `logs/montana-time-capsule/gh-run-list-branch-latest-20260520T2246Z.json`
+
+## 2026-05-20T23:16Z HMC Monitor Pass (No Launch)
+
+- Git:
+  - Branch head: `6268e3e7d01c4a54a7e2ad5f7e0f1472cc40e895` (`[skip ci]`)
+- AWS identity:
+  - `arn:aws:iam::975050048887:root` (account `975050048887`, region `us-west-2`)
+- Proven HMC archive (do not re-upload):
+  - `s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip` (`LastModified=2026-05-16T17:35:27Z`, `Size=8646557673`)
+  - `s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.manifest.json` (`LastModified=2026-05-16T17:49:54Z`)
+  - Confirmed missing in `s3://spaceport-uploads-staging/` (`404` HeadObject; empty prefix list).
+- SageMaker:
+  - `hmc-mtc-20260520T2015Z-sfm` remains `InProgress` (pinned SfM image sha256: `8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811`).
+  - Output remains `EndOfJob` (S3 prefix still empty as expected while job is running).
+- GitHub workflows:
+  - Exact-head `gh run list` returned `[]` (expected for `[skip ci]` head); evidence saved.
+- Runner:
+  - Refreshed `logs/montana-time-capsule/hmc-state.json` using `cv_hr_time_capsule.py` without `--launch` (no new jobs created).
+- Evidence files (this pass):
+  - `logs/montana-time-capsule/aws-sts-get-caller-identity-20260520T231643Z.json`
+  - `logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260520T231643Z.json`
+  - `logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260520T231643Z.json`
+  - `logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.manifest.json-20260520T231643Z.json`
+  - `logs/montana-time-capsule/s3-list-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-20260520T231643Z.json`
+  - `logs/montana-time-capsule/gh-run-list-exact-head-6268e3e7-20260520T231643Z.json`
+  - `logs/montana-time-capsule/gh-run-list-branch-latest-20260520T231643Z.json`
+  - `logs/montana-time-capsule/runner-hmc-20260520T231547Z.log`
+- Next unblocked step: keep polling until SfM becomes `Completed`; immediately after completion, run `python3 scripts/montana_time_capsule/hmc_time_capsule.py --launch` once to start pinned 3DGS (avoid duplicates).

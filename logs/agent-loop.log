@@ -1,0 +1,21 @@
+[2026-05-18T17:54:55Z] verify+launch -> sfm still running (491/1710 observed), no duplicate job -> poll SfM completion and re-run --launch once
+[2026-05-18T18:00:48Z] commit+push -> ledger evidence published at dfd66f05 ([skip ci]); exact-head workflows [] -> continue SfM polling
+[2026-05-18T18:14:42Z] poll sfm -> InProgress (1011/1710), guarded --launch no-op -> wait for SfM completion then launch 3DGS
+[2026-05-18T18:17:50Z] poll sfm -> InProgress (1099/1710), guarded --launch no-op -> continue waiting
+[2026-05-18T18:33:59Z] poll sfm -> InProgress (1522/1710 observed), guarded --launch no-op -> continue waiting for SfM completion then launch 3DGS
+[2026-05-18T19:14:28Z] poll sfm -> InProgress (chunked COLMAP progressing), guarded --launch no-op -> continue waiting for SfM completion then launch 3DGS
+[2026-05-18T19:15:37Z] commit+push -> ledger evidence published at 8370c2ec ([skip ci]); exact-head workflows []
+[2026-05-18T19:15:37Z] post-push poll -> sfm InProgress, guarded --launch no-op -> continue polling until completion
+[2026-05-18T19:35:58Z] extended sfm polling -> 20x InProgress, no duplicate launch -> keep polling completion then run one guarded --launch for 3DGS
+[2026-05-18T19:37:06Z] commit+push -> extended sfm poll evidence published at b8c77ada ([skip ci]); exact-head workflows [] -> continue sfm polling gate
+[2026-05-18T19:38:15Z] exact-head verify -> f482381b has no exact-head workflows (expected [skip ci]); sfm gate still in progress
+[2026-05-20T20:43:35Z] monitor pass -> HMC SfM InProgress (no duplicate launch; S3 object proven May16) -> continue polling until Completed then launch 3DGS once
+[2026-05-20T20:55Z] hmc poll -> sfm InProgress (processed 831/2063) -> wait
+[2026-05-20T21:16:30Z] hmc poll -> sfm InProgress (pinned image; S3 archive+manifest proven; staging upload bucket negative) -> wait
+[2026-05-20T21:35:38Z] poll_sfm -> hmc-mtc-20260520T2015Z-sfm InProgress (feature_extractor 1919/2063) -> sleep+repoll
+[2026-05-20T21:37:53Z] hmc sfm poll -> InProgress (feature_extractor ~1983/2063) -> wait
+[2026-05-20T21:41:07Z] hmc sfm poll -> InProgress (feature_extractor done 2063/2063; moving to next phase) -> wait
+[2026-05-20T21:55Z] hmc sfm poll -> InProgress (chunk mapper registering; HMC S3 archive+manifest proven) -> wait
+[2026-05-20T22:15Z] hmc monitor -> sfm InProgress (chunk_03 mapper initial model registered 142/142; S3 archive+manifest re-proven; outputs empty) -> wait
+[2026-05-20T22:43:51Z] hmc monitor -> sfm InProgress (mapping chunk_07); verified archive only in spaceport-uploads; next poll until Completed then launch 3DGS once
+[2026-05-20T23:16Z] verify+refresh -> sfm still InProgress; exact-head workflows []; archive+manifest re-proven -> continue polling until Completed then launch 3DGS once
