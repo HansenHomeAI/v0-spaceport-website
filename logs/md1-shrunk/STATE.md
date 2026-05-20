@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-20T06:54:10Z
+updated: 2026-05-20T07:05:12Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -9031,3 +9031,12 @@ skybox, compression, artifact handoff, and visual gates.
   - output: `logs/md1-shrunk/polls/20260520T064811Z-unit/unittest.txt`
 - GitHub Actions snapshot (head is not deployed; exact-head runs remain the last green Pages+CDK pair):
   - `logs/md1-shrunk/polls/20260520T064811Z-ci/summary.txt`
+- Commit/push + exact-head CI:
+  - `feat: automate md1-shrunk heartbeat verification` -> `4f3aa301`
+  - CDK Deploy: `26146671471` -> `success`
+  - Deploy Next.js to Cloudflare Pages: `26146671467` -> `success`
+  - Preview alias: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+  - Hash URL: `https://0167e947.v0-spaceport-website-preview2.pages.dev`
+  - Postpush artifacts:
+    - `logs/md1-shrunk/polls/20260520T064811Z-ci-postpush/postpush-final.txt`
+    - `logs/md1-shrunk/polls/20260520T064811Z-ci-postpush/pages-preview-url.txt`

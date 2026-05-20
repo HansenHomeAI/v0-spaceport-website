@@ -1,0 +1,134 @@
+1888:deploy	Resolve latest deployment URLs (preview alias + hash URL)	﻿2026-05-20T07:04:06.2998095Z ##[group]Run set -euo pipefail
+1889:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.2998479Z ^[[36;1mset -euo pipefail^[[0m
+1890:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.2998803Z ^[[36;1mBRANCH="agent-113647-md1-baseline-e2e"^[[0m
+1891:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.2999279Z ^[[36;1m# Get most recent deployment for the selected project (includes preview)^[[0m
+1892:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.2999938Z ^[[36;1mJSON=$(curl -fsSL -H "Authorization: ***" \^[[0m
+1893:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3000667Z ^[[36;1m  "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${CF_PAGES_PROJECT}/deployments?per_page=1")^[[0m
+1894:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3001386Z ^[[36;1mHASH_URL=$(echo "$JSON" | jq -r '.result[0].url')^[[0m
+1895:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3001846Z ^[[36;1mDEPLOY_ID=$(echo "$JSON" | jq -r '.result[0].id')^[[0m
+1896:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3002277Z ^[[36;1m# Fetch aliases for that deployment (branch alias if any)^[[0m
+1897:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3003401Z ^[[36;1mDETAIL=$(curl -fsSL -H "Authorization: ***" \^[[0m
+1898:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3004099Z ^[[36;1m  "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${CF_PAGES_PROJECT}/deployments/${DEPLOY_ID}")^[[0m
+1899:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3004848Z ^[[36;1mALIAS=$(echo "$DETAIL" | jq -r '.result.aliases[0] // empty')^[[0m
+1900:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3005281Z ^[[36;1mecho "hash_url=$HASH_URL" >> $GITHUB_OUTPUT^[[0m
+1901:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3005658Z ^[[36;1mecho "alias_url=$ALIAS" >> $GITHUB_OUTPUT^[[0m
+1902:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3006059Z ^[[36;1mecho "Resolved: HASH=$HASH_URL ALIAS=${ALIAS:-<none>}"^[[0m
+1903:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3006454Z ^[[36;1mPREVIEW_URL="${ALIAS:-$HASH_URL}"^[[0m
+1904:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3006786Z ^[[36;1mecho "PREVIEW_URL=$PREVIEW_URL"^[[0m
+1905:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3042645Z shell: /usr/bin/bash -e {0}
+1906:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3043124Z env:
+1907:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3043427Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+1908:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3043829Z   AWS_DEFAULT_REGION: ***
+1909:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3044116Z   AWS_REGION: ***
+1910:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3044400Z   AWS_ACCESS_KEY_ID: ***
+1911:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3044770Z   AWS_SECRET_ACCESS_KEY: ***
+1912:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3045067Z   DEPLOYMENT_CLASS: branch-preview
+1913:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3045409Z   BRANCH_NAME: agent-113647-md1-baseline-e2e
+1914:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3045734Z   BRANCH_ID: 8abcbd5662
+1915:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3046003Z   RESOURCE_SUFFIX: br-8abcbd5662
+1916:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3046299Z   STACK_LABEL: Preview8ABCBD5662
+1917:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3046635Z   SPACEPORT_STACK_NAME: SpaceportPreview8ABCBD5662Stack
+1918:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3047050Z   ML_STACK_NAME: SpaceportMLPreview8ABCBD5662Stack
+1919:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3047423Z   AUTH_STACK_NAME: SpaceportAuthStagingStack
+1920:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3047743Z   CDK_ENVIRONMENT_NAME: staging
+1921:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3048238Z   ENVIRONMENT_NAME: branch-preview
+1922:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3048547Z   REUSE_SHARED_PREVIEW_RESOURCES: true
+1923:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3048866Z   SHARED_PREVIEW_RESOURCE_SUFFIX: staging
+1924:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3049175Z   REUSE_SHARED_AUTH: true
+1925:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3049444Z   REUSE_SHARED_ECR: true
+1926:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3049721Z   ALLOW_FALLBACK_IMPORTS: false
+1927:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3049999Z   DEPLOY_AUTH_STACK: false
+1928:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3050472Z   PROJECTS_API_URL: https://mca9yf1vgl.execute-api.***.amazonaws.com/prod/projects
+1929:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3050963Z   COGNITO_USER_POOL_ID: ***_VuNwiNkPC
+1930:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3051324Z   COGNITO_USER_POOL_CLIENT_ID: 3jkpruge76lbjl1254m1l2ut6l
+1931:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3051845Z   SUBSCRIPTION_API_URL: https://xduxbyklm1.execute-api.***.amazonaws.com/prod/
+1932:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3052427Z   BETA_ACCESS_API_URL: https://y5fej7zgx8.execute-api.***.amazonaws.com/prod/
+1933:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3053262Z   MODEL_DELIVERY_ADMIN_API_URL: https://tbzxbstibh.execute-api.***.amazonaws.com/prod/
+1934:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3053902Z   EXPLORE_API_URL: https://sojczv7cqh.execute-api.***.amazonaws.com/prod/explore
+1935:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3054489Z   DRONE_PATH_API_URL: https://yhpjmfhdxf.execute-api.***.amazonaws.com/prod
+1936:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3055049Z   FILE_UPLOAD_API_URL: https://xv4bpkwlb8.execute-api.***.amazonaws.com/prod
+1937:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3055603Z   WAITLIST_API_URL: https://h6ogvocgk4.execute-api.***.amazonaws.com/prod
+1938:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3056133Z   FEEDBACK_API_URL: https://42l1g4mmkk.execute-api.***.amazonaws.com/prod
+1939:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3056881Z   ML_PIPELINE_API_URL: https://l9qbitq5v1.execute-api.***.amazonaws.com/prod/
+1940:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3057303Z   ML_DELIVERY_BUCKET_NAME: 
+1941:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3057663Z   CLOUDFLARE_ACCOUNT_ID: ***
+1942:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3058049Z   CLOUDFLARE_API_TOKEN: ***
+1943:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.3058321Z ##[endgroup]
+1944:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.9887918Z Resolved: HASH=https://0167e947.v0-spaceport-website-preview2.pages.dev ALIAS=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev
+1945:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-20T07:04:06.9889802Z PREVIEW_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev
+1946:deploy	Verify preview alias and hash URL with retries	﻿2026-05-20T07:04:06.9917428Z ##[group]Run set -e
+1947:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9917749Z ^[[36;1mset -e^[[0m
+1948:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9917996Z ^[[36;1murls=""^[[0m
+1949:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9918318Z ^[[36;1mif [ -n "$ALIAS_URL" ]; then urls="$urls $ALIAS_URL"; fi^[[0m
+1950:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9918754Z ^[[36;1mif [ -n "$HASH_URL" ]; then urls="$urls $HASH_URL"; fi^[[0m
+1951:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9919129Z ^[[36;1mecho "Checking URLs: $urls"^[[0m
+1952:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9919434Z ^[[36;1mfor URL in $urls; do^[[0m
+1953:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9919729Z ^[[36;1m  echo "Probing $URL ..."^[[0m
+1954:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9920021Z ^[[36;1m  for i in $(seq 1 12); do^[[0m
+1955:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9920321Z ^[[36;1m    echo "Attempt $i"^[[0m
+1956:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9920781Z ^[[36;1m    if curl -fsS "$URL/health.txt" >/dev/null; then echo "OK $URL/health.txt"; break; fi^[[0m
+1957:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9921249Z ^[[36;1m    sleep 5^[[0m
+1958:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9921517Z ^[[36;1m    if [ $i -eq 12 ]; then^[[0m
+1959:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9921886Z ^[[36;1m      if [ -n "$HASH_URL" ] && [ "$URL" = "$HASH_URL" ]; then^[[0m
+1960:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9922318Z ^[[36;1m        echo "Timeout waiting for hash URL $URL; continuing"^[[0m
+1961:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9922951Z ^[[36;1m        break^[[0m
+1962:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9923221Z ^[[36;1m      fi^[[0m
+1963:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9923497Z ^[[36;1m      echo "Timeout waiting for $URL"^[[0m
+1964:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9923810Z ^[[36;1m      exit 1^[[0m
+1965:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9924063Z ^[[36;1m    fi^[[0m
+1966:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9924291Z ^[[36;1m  done^[[0m
+1967:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9924524Z ^[[36;1mdone^[[0m
+1968:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9959787Z shell: /usr/bin/bash -e {0}
+1969:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9960089Z env:
+1970:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9960390Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+1971:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9960803Z   AWS_DEFAULT_REGION: ***
+1972:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9961105Z   AWS_REGION: ***
+1973:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9961386Z   AWS_ACCESS_KEY_ID: ***
+1974:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9961762Z   AWS_SECRET_ACCESS_KEY: ***
+1975:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9962065Z   DEPLOYMENT_CLASS: branch-preview
+1976:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9962598Z   BRANCH_NAME: agent-113647-md1-baseline-e2e
+1977:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9963095Z   BRANCH_ID: 8abcbd5662
+1978:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9963389Z   RESOURCE_SUFFIX: br-8abcbd5662
+1979:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9963686Z   STACK_LABEL: Preview8ABCBD5662
+1980:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9964021Z   SPACEPORT_STACK_NAME: SpaceportPreview8ABCBD5662Stack
+1981:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9964430Z   ML_STACK_NAME: SpaceportMLPreview8ABCBD5662Stack
+1982:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9964798Z   AUTH_STACK_NAME: SpaceportAuthStagingStack
+1983:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9965125Z   CDK_ENVIRONMENT_NAME: staging
+1984:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9965432Z   ENVIRONMENT_NAME: branch-preview
+1985:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9965738Z   REUSE_SHARED_PREVIEW_RESOURCES: true
+1986:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9966063Z   SHARED_PREVIEW_RESOURCE_SUFFIX: staging
+1987:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9966377Z   REUSE_SHARED_AUTH: true
+1988:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9966647Z   REUSE_SHARED_ECR: true
+1989:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9966923Z   ALLOW_FALLBACK_IMPORTS: false
+1990:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9967203Z   DEPLOY_AUTH_STACK: false
+1991:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9967703Z   PROJECTS_API_URL: https://mca9yf1vgl.execute-api.***.amazonaws.com/prod/projects
+1992:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9968202Z   COGNITO_USER_POOL_ID: ***_VuNwiNkPC
+1993:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9968583Z   COGNITO_USER_POOL_CLIENT_ID: 3jkpruge76lbjl1254m1l2ut6l
+1994:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9969104Z   SUBSCRIPTION_API_URL: https://xduxbyklm1.execute-api.***.amazonaws.com/prod/
+1995:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9969699Z   BETA_ACCESS_API_URL: https://y5fej7zgx8.execute-api.***.amazonaws.com/prod/
+1996:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9970307Z   MODEL_DELIVERY_ADMIN_API_URL: https://tbzxbstibh.execute-api.***.amazonaws.com/prod/
+1997:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9970941Z   EXPLORE_API_URL: https://sojczv7cqh.execute-api.***.amazonaws.com/prod/explore
+1998:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9971558Z   DRONE_PATH_API_URL: https://yhpjmfhdxf.execute-api.***.amazonaws.com/prod
+1999:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9972124Z   FILE_UPLOAD_API_URL: https://xv4bpkwlb8.execute-api.***.amazonaws.com/prod
+2000:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9972813Z   WAITLIST_API_URL: https://h6ogvocgk4.execute-api.***.amazonaws.com/prod
+2001:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9973416Z   FEEDBACK_API_URL: https://42l1g4mmkk.execute-api.***.amazonaws.com/prod
+2002:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9973987Z   ML_PIPELINE_API_URL: https://l9qbitq5v1.execute-api.***.amazonaws.com/prod/
+2003:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9974649Z   ML_DELIVERY_BUCKET_NAME: 
+2004:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9975049Z   HASH_URL: https://0167e947.v0-spaceport-website-preview2.pages.dev
+2005:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9975646Z   ALIAS_URL: https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev
+2006:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:06.9976136Z ##[endgroup]
+2007:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:07.0038960Z Checking URLs:  https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev https://0167e947.v0-spaceport-website-preview2.pages.dev
+2008:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:07.0040125Z Probing https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev ...
+2009:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:07.0056317Z Attempt 1
+2010:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:07.2762621Z OK https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev/health.txt
+2011:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:07.2764344Z Probing https://0167e947.v0-spaceport-website-preview2.pages.dev ...
+2012:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:07.2779100Z Attempt 1
+2013:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:07.5202291Z curl: (22) The requested URL returned error: 404
+2014:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:12.5245726Z Attempt 2
+2015:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:12.6469301Z curl: (22) The requested URL returned error: 404
+2016:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:17.6511109Z Attempt 3
+2017:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:17.9036709Z curl: (22) The requested URL returned error: 404
+2018:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:22.9080371Z Attempt 4
+2019:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:23.1605819Z curl: (22) The requested URL returned error: 404
+2020:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:28.1648325Z Attempt 5
+2021:deploy	Verify preview alias and hash URL with retries	2026-05-20T07:04:28.5643831Z OK https://0167e947.v0-spaceport-website-preview2.pages.dev/health.txt
