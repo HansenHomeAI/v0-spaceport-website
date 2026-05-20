@@ -84,3 +84,4 @@
 [2026-05-20T04:19Z] md1-shrunk: heartbeat verify 20260520T041342Z -> Step Functions RUNNING=0 + SageMaker InProgress=0 + strict camera-suite PASS (20260520T041542Z; pose max_delta=0.0) + edge CORS validate PASS (20260520T041458Z) + bundle parity PASS (20260520T041439Z) -> next: commit/push (logs-only) then idle
 [2026-05-20T04:22Z] md1-shrunk: pushed 49178c42 (logs-only; [skip ci]); no new workflows for head; last Pages=26138455345 CDK=26138455344 -> idle
 [2026-05-20T04:50:29Z] md1-shrunk: heartbeat verify 20260520T044301Z -> preflight+bundle+edge-validate+camera-suite strict PASS + unit PASS + Step Functions RUNNING=0 -> next: commit/push logs evidence
+[2026-05-20T04:52:42Z] md1-shrunk: pushed 847ed7a6 + dcaf0d5a (heartbeat verify evidence + STATE) [skip ci]; postpush ci snapshot captured -> idle
