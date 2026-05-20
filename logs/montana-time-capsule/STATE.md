@@ -203,10 +203,10 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
 
 - Branch/head/status command:
   - `git rev-parse --abbrev-ref HEAD && git rev-parse HEAD && git status --short --branch`
-  - Result: branch `agent-40136728-montana-time-capsule`, head `2c51e1a89c3c4aa3f50e426169fdb414479bbd5b`, status clean (`## agent-40136728-montana-time-capsule...origin/agent-40136728-montana-time-capsule`).
+  - Result: branch `agent-40136728-montana-time-capsule`, head `d07bb6af43b6d0652ee035221c1be3572862ae0a`, status clean (`## agent-40136728-montana-time-capsule...origin/agent-40136728-montana-time-capsule`).
 - Exact-head workflows command:
-  - `gh run list --branch agent-40136728-montana-time-capsule --commit 2c51e1a89c3c4aa3f50e426169fdb414479bbd5b --json ...`
-  - Result: `[]` (expected for `[skip ci]` head); evidence saved under `logs/montana-time-capsule/gh-run-list-exact-head-*.json`.
+  - `gh run list --branch agent-40136728-montana-time-capsule --commit d07bb6af --json ...`
+  - Result: `[]` (expected for `[skip ci]` head); evidence saved under `logs/montana-time-capsule/gh-run-list-exact-head-*-postpush.json`.
 - AWS identity command: `/opt/homebrew/bin/aws sts get-caller-identity`
   - Result: account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
 - HMC archive proof (no re-upload):
