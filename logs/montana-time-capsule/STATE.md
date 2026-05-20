@@ -3330,18 +3330,29 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - Re-running the same HMC runner `--launch` command held at `status=sfm_running` and did not create a second job.
 - Evidence files:
   - `logs/montana-time-capsule/aws-sts-20260520T203433Z.json`
-  - `logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260520T203447Z.json`
-  - `logs/montana-time-capsule/sagemaker-list-processing-hmc-20260520T203447Z.json`
-  - `logs/montana-time-capsule/sagemaker-list-processing-hmc-active-20260520T203447Z.json`
-  - `logs/montana-time-capsule/sagemaker-list-training-hmc-20260520T203447Z.json`
-  - `logs/montana-time-capsule/sagemaker-list-training-hmc-active-20260520T203447Z.json`
-  - `logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260520T203500Z.log`
+  - `logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260520T203442Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-processing-hmc-20260520T203442Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-processing-hmc-active-20260520T203442Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-training-hmc-20260520T203442Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-training-hmc-active-20260520T203442Z.json`
+  - `logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260520T203450Z.log`
   - `logs/montana-time-capsule/hmc-sfm-poll-20260520T203613Z.log`
   - `logs/montana-time-capsule/s3-head-spaceport-uploads-20260520T203520Z.json`
   - `logs/montana-time-capsule/s3-head-spaceport-uploads-staging-20260520T203520Z.err`
   - `logs/montana-time-capsule/s3-list-spaceport-uploads-prefix-177895-20260520T203520Z.json`
   - `logs/montana-time-capsule/s3-list-spaceport-uploads-staging-prefix-177895-20260520T203520Z.json`
-  - `logs/montana-time-capsule/s3-list-hmc-sfm-output-20260520T203607Z.txt`
-  - `logs/montana-time-capsule/hmc-launch-20260520T204214Z.cmd.txt`
-  - `logs/montana-time-capsule/hmc-launch-20260520T204214Z.log`
+  - `logs/montana-time-capsule/s3-list-hmc-sfm-output-20260520T203606Z.txt`
+  - `logs/montana-time-capsule/hmc-launch-20260520T204232Z.cmd.txt`
+  - `logs/montana-time-capsule/hmc-launch-20260520T204232Z.log`
 - Next unblocked step: keep polling `hmc-mtc-20260520T2015Z-sfm` until `Completed`; then run the same HMC runner command with `--launch` once to launch pinned Montana 3DGS.
+
+## 2026-05-20T20:46Z Ledger Commit + Push
+
+- Commit: `73c34cb362ce0a780c3f2c2310f7c0bd680cbe95`
+- Message: `chore: record hmc sfm monitor pass [skip ci]`
+- Push: `git push origin agent-40136728-montana-time-capsule`
+- Exact-head workflow check:
+  - `gh run list --branch agent-40136728-montana-time-capsule ...` filtered to exact head returned `[]` (expected for `[skip ci]`).
+- Evidence files:
+  - `logs/montana-time-capsule/gh-run-list-agent-40136728-20260520T204452Z.json`
+  - `logs/montana-time-capsule/gh-run-list-exact-head-20260520T204452Z.json`
