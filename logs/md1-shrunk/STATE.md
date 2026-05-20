@@ -8605,6 +8605,8 @@ skybox, compression, artifact handoff, and visual gates.
   - `logs/md1-shrunk/polls/20260520T001435Z-bundle/bundle.txt`
 - GitHub Actions snapshot (exact-head is logs-only; `[skip ci]` -> typically no new runs):
   - `logs/md1-shrunk/polls/20260520T001435Z-ci/summary.txt`
+  - post-push snapshot:
+    - `logs/md1-shrunk/polls/20260520T001435Z-ci/postpush-final.txt`
 - Browser-readable public delivery automation (Lambda publish + strict browser header validation + HTML report):
   - command: `logs/md1-shrunk/polls/20260520T001435Z-edge-publish-report/run.cmd.txt`
   - report: `logs/md1-shrunk/polls/20260520T001435Z-edge-publish-report/publish-edge.report.html`
