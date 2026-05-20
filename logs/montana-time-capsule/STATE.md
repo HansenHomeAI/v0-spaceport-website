@@ -3575,3 +3575,12 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/s3-search-uploads-buckets-prefix-1778952912508-20260520T2222Z.txt`
   - `logs/montana-time-capsule/gh-run-list-exact-head-7cff0084-20260520T2223Z.json`
 - Next unblocked step: keep polling until SfM becomes `Completed`; immediately after completion, run `python3 scripts/montana_time_capsule/hmc_time_capsule.py --launch` once to start pinned 3DGS (avoid duplicates).
+
+## 2026-05-20T22:46Z Post-Push Exact-Head Workflow Proof
+
+- Branch head after ledger push: `ebffa1eea7d6c9a83c2e2fc8785b2cb15be8f2b4` (`[skip ci]`)
+- Exact-head `gh run list` result: `[]` (no workflows triggered by this logs-only push).
+- Latest successful branch workflows (for reference): `CDK Deploy` success on `8a536ba4`, and Pages deploy success on `4659864d` (see evidence JSON).
+- Evidence files:
+  - `logs/montana-time-capsule/gh-run-list-exact-head-ebffa1ee-20260520T2246Z.json`
+  - `logs/montana-time-capsule/gh-run-list-branch-latest-20260520T2246Z.json`
