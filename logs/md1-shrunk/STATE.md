@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-20T10:20:06Z
+updated: 2026-05-20T10:25:41Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -9270,5 +9270,8 @@ skybox, compression, artifact handoff, and visual gates.
   - GitHub Actions postpush snapshot (no new runs expected for `[skip ci]` head; last relevant CI is sha `4abff30c`):
     - `logs/md1-shrunk/polls/20260520T101455Z-ci-postpush-sha-e6650cee/postpush.txt`
   - `chore: record md1-shrunk postpush snapshot (20260520T101455Z) [skip ci]` -> `49e91597`
-  - GitHub Actions postpush snapshot for the final head (no new runs expected for `[skip ci]`):
+  - GitHub Actions postpush snapshot (no new runs expected for `[skip ci]`):
     - `logs/md1-shrunk/polls/20260520T101455Z-ci-postpush-sha-49e91597/postpush.txt`
+  - `chore: record md1-shrunk final postpush snapshot (20260520T101455Z) [skip ci]` -> `de8481ff`
+  - GitHub Actions postpush snapshot (no new runs expected for `[skip ci]`):
+    - `logs/md1-shrunk/polls/20260520T101455Z-ci-postpush-sha-de8481ff/postpush.txt`
