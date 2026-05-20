@@ -8622,3 +8622,7 @@ skybox, compression, artifact handoff, and visual gates.
 - Unit proof:
   - command: `logs/md1-shrunk/polls/20260520T001435Z-unit/run.cmd.txt`
   - output: `logs/md1-shrunk/polls/20260520T001435Z-unit/unittest.txt`
+- Commit/push:
+  - `chore: record md1-shrunk heartbeat verification (20260520T001435Z) [skip ci]` -> `af3573bc`
+  - `chore: record md1-shrunk postpush snapshot (20260520T001435Z) [skip ci]` -> `669ce107`
+  - `chore: refresh md1-shrunk CI head snapshot (20260520T001435Z) [skip ci]` -> `4dcf772f`
