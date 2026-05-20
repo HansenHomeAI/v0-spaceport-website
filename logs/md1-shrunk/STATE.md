@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-20T17:10:20Z
+updated: 2026-05-20T17:11:29Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -9766,3 +9766,14 @@ note: reran heartbeat after `20260520T144551Z` because bundle parity was skipped
   - `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
 - Evidence:
   - `logs/md1-shrunk/polls/20260520T170930Z-ci-postpush-sha-1359cb1a/postpush.txt`
+
+## 2026-05-20T17:11Z postpush CI snapshot (head is logs-only; no new runs expected)
+
+- exact-head commit: `03a1c38e` (`[skip ci]` head; exact-head workflows expected: none)
+- last relevant Pages + CDK success remains:
+  - commit: `1359cb1a`
+  - CDK Deploy run: `26177531892` -> success
+  - Deploy Next.js to Cloudflare Pages run: `26177531889` -> success
+  - PREVIEW_URL: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+- Evidence:
+  - `logs/md1-shrunk/polls/20260520T171116Z-ci-postpush-sha-03a1c38e/postpush.txt`
