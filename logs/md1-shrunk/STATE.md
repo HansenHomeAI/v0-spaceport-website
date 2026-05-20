@@ -1,6 +1,6 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-20T12:19:34Z
+updated: 2026-05-20T12:52:26Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
 
@@ -9420,3 +9420,35 @@ skybox, compression, artifact handoff, and visual gates.
   - `chore: md1-shrunk heartbeat verify 20260520T121434Z [skip ci]` -> `0e8b574e`
   - GitHub Actions postpush snapshot (no new runs expected for `[skip ci]` head; last relevant CI remains sha `4abff30c243b60464ef8ccf6218a4b166d33a5f2`):
     - `logs/md1-shrunk/polls/20260520T122042Z-ci-postpush-sha-0e8b574e/postpush.txt`
+
+## 2026-05-20T12:46Z heartbeat verify (scripted; strict gates PASS; no new jobs)
+
+- Heartbeat poll summary:
+  - `logs/md1-shrunk/polls/20260520T124603Z-summary.json`
+  - HEAD: `7795a5a5954814fae781255c2939ae07bb288af2` (`[skip ci]` head; no new workflows expected)
+  - PREVIEW_URL: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+  - edge meta.json: `https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+  - public S3 meta.json: `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+- Manual preflight snapshot (read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260520T124318Z-heartbeat-preflight/preflight.txt`
+- Preflight snapshot (scripted; read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260520T124603Z-preflight/preflight.txt`
+  - Step Functions RUNNING: `0` (staging + `SpaceportMLPipeline-br-8abcbd5662`)
+  - Known execution `execution-md1-shrunk-prodspine-wlight-202605190027` status: `SUCCEEDED`:
+    - `logs/md1-shrunk/polls/20260520T124603Z-preflight/stepfunctions-describe-known.json`
+  - SageMaker InProgress: `0` (processing + training)
+- Browser-readable public delivery validation (Origin CORS + cache headers for meta.json + referenced assets):
+  - command: `logs/md1-shrunk/polls/20260520T124603Z-edge-validate/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260520T124603Z-edge-validate/validate.txt`
+  - report: `logs/md1-shrunk/polls/20260520T124603Z-edge-validate/publish-edge.report.html`
+- Public bundle snapshot (S3-vs-edge meta.json parity):
+  - `logs/md1-shrunk/polls/20260520T124603Z-bundle/bundle.txt` (sha256 match)
+- Multi-camera input-vs-render checks (deployed preview; strict; baseline pose verification + sky/horizon gates):
+  - command: `logs/md1-shrunk/polls/20260520T124603Z-camera-suite/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260520T124603Z-camera-suite/suite-summary.json` -> `decision=pass` (`pose_verification.max_delta=0.0`; `artifacts_pruned=true`)
+  - report: `logs/md1-shrunk/polls/20260520T124603Z-camera-suite/report.html`
+- Unit proof:
+  - command: `logs/md1-shrunk/polls/20260520T124603Z-unit/run.cmd.txt`
+  - output: `logs/md1-shrunk/polls/20260520T124603Z-unit/unittest.txt`
+- GitHub Actions snapshot:
+  - `logs/md1-shrunk/polls/20260520T124603Z-ci/summary.txt`
