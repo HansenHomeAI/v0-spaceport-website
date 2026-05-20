@@ -121,3 +121,4 @@
 [2026-05-20T11:24:17Z] md1-shrunk: pushed e19e1b88 (postpush snapshot commit; [skip ci]); no new workflows expected for head; last Pages=26155418467 CDK=26155418466 -> next: record final postpush snapshot then idle
 [2026-05-20T11:24:17Z] md1-shrunk: recorded ci postpush snapshot for e19e1b88 -> idle
 [2026-05-20T11:52:24Z] md1-shrunk: heartbeat verify 20260520T114431Z -> strict PASS (camera-suite decision=pass pose max_delta=0.0 artifacts_pruned=true) + edge-validate OK + bundle parity PASS (S3==edge) + unit PASS + Step Functions RUNNING=0 + SageMaker InProgress=0 -> next: commit/push (logs+STATE) then record postpush CI snapshot
+[2026-05-20T11:53:26Z] md1-shrunk: pushed d5f97973 (heartbeat verify 20260520T114431Z) [skip ci]; no new workflows expected; recorded postpush snapshot logs/md1-shrunk/polls/20260520T115258Z-ci-postpush-sha-d5f97973/postpush.txt -> idle
