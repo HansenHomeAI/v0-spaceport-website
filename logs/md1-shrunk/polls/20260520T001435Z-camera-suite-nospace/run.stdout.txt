@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/Users/gabrielhansen/MD1-Baseline/scripts/sfm/run_md1_shrunk_camera_suite.py", line 597, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/Users/gabrielhansen/MD1-Baseline/scripts/sfm/run_md1_shrunk_camera_suite.py", line 352, in main
+    derive_log.write_text(run(derive_cmd), encoding="utf-8")
+                          ~~~^^^^^^^^^^^^
+  File "/Users/gabrielhansen/MD1-Baseline/scripts/sfm/run_md1_shrunk_camera_suite.py", line 230, in run
+    result = subprocess.run(
+        cmd,
+    ...<5 lines>...
+        text=True,
+    )
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['/opt/homebrew/bin/python3', '/Users/gabrielhansen/MD1-Baseline/scripts/sfm/derive_viewer_camera_poses_from_colmap.py', '--images-txt', 's3://spaceport-ml-processing-staging/manual-validations/md1-shrunk-prodspine-sfm-20260518T1826Z/colmap/sparse/0/images.txt', '--output', '/Users/gabrielhansen/MD1-Baseline/logs/md1-shrunk/polls/20260520T001435Z-camera-suite/camera-poses.json', '--distance-to-target', '0.3', '--sample-count', '6']' returned non-zero exit status 1.

@@ -1,0 +1,2 @@
+json_equal True
+keys ['means', 'quats', 'scales', 'sh0', 'shN']

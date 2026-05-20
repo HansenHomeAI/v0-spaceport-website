@@ -8590,3 +8590,33 @@ skybox, compression, artifact handoff, and visual gates.
   - GitHub Actions postpush snapshot (no new runs for `[skip ci]` head):
     - `logs/md1-shrunk/polls/20260519T235355Z-ci/postpush-final.txt`
     - `logs/md1-shrunk/polls/20260519T235355Z-ci/summary.txt`
+
+## 2026-05-20T00:14Z heartbeat verify (strict gates still PASS; no new jobs)
+
+- Preflight snapshot (read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260520T001435Z-preflight/preflight.txt`
+  - Step Functions (staging + `SpaceportMLPipeline-br-8abcbd5662`) RUNNING: `0`
+  - Known execution `execution-md1-shrunk-prodspine-wlight-202605190027` status: `SUCCEEDED`:
+    - `logs/md1-shrunk/polls/20260520T001435Z-preflight/stepfunctions-describe-execution-md1-shrunk-prodspine-wlight-202605190027.json`
+  - Public S3 meta.json HEAD -> `200` + Edge meta.json HEAD -> `200` (see preflight file)
+  - SageMaker InProgress: external processing jobs present; left untouched
+  - Local dev server listeners: `port 3000 LISTEN` (see preflight file)
+- Public bundle snapshot (S3 listing + S3-vs-edge meta.json parity):
+  - `logs/md1-shrunk/polls/20260520T001435Z-bundle/bundle.txt`
+- GitHub Actions snapshot (exact-head is logs-only; `[skip ci]` -> typically no new runs):
+  - `logs/md1-shrunk/polls/20260520T001435Z-ci/summary.txt`
+- Browser-readable public delivery automation (Lambda publish + strict browser header validation + HTML report):
+  - command: `logs/md1-shrunk/polls/20260520T001435Z-edge-publish-report/run.cmd.txt`
+  - report: `logs/md1-shrunk/polls/20260520T001435Z-edge-publish-report/publish-edge.report.html`
+  - output: `logs/md1-shrunk/polls/20260520T001435Z-edge-publish-report/publish-edge.json`
+- Multi-camera input-vs-render checks (deployed preview; strict; baseline pose verification):
+  - command: `logs/md1-shrunk/polls/20260520T001435Z-camera-suite/run.cmd.txt`
+  - result: `logs/md1-shrunk/polls/20260520T001435Z-camera-suite/suite-summary.json` -> `decision=pass`
+  - report: `logs/md1-shrunk/polls/20260520T001435Z-camera-suite/report.html`
+  - reusable camera-pose verification: `pose_verification.max_delta=0.0` (baseline: `logs/md1-shrunk/polls/20260519T163352Z-camera-suite`)
+  - note: first attempt failed due to disk full while downloading COLMAP `images.txt`:
+    - `logs/md1-shrunk/polls/20260520T001435Z-camera-suite-nospace/run.stdout.txt`
+    - remediation: removed local `web/.next` build output to free disk, then reran strict suite PASS
+- Unit proof:
+  - command: `logs/md1-shrunk/polls/20260520T001435Z-unit/run.cmd.txt`
+  - output: `logs/md1-shrunk/polls/20260520T001435Z-unit/unittest.txt`

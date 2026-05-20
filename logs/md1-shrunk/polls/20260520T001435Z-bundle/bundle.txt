@@ -1,0 +1,35 @@
+timestamp_utc=20260520T001435Z
+
+## aws s3api head-object (public bucket)
+{
+    "AcceptRanges": "bytes",
+    "LastModified": "2026-05-19T03:14:11+00:00",
+    "ContentLength": 1421,
+    "ETag": "\"948345d6cf5eca623bfe32fe46aa4f99\"",
+    "VersionId": "lwCX4ptdSjx.9.5LMjn4a8Ervrln8HMA",
+    "ContentType": "application/octet-stream",
+    "ServerSideEncryption": "AES256",
+    "Metadata": {}
+}
+
+## aws s3 ls (top-level compressed prefix)
+2026-05-18 21:14:10        977 background_manifest.json
+2026-05-18 21:14:10      48554 background_skybox.webp
+2026-05-18 21:14:10        950 export_manifest.json
+2026-05-18 21:14:10    2875402 means_l.webp
+2026-05-18 21:14:11    1909702 means_u.webp
+2026-05-18 21:14:11       1421 meta.json
+2026-05-18 21:14:11    3042496 quats.webp
+2026-05-18 21:14:11    1714072 scales.webp
+2026-05-18 21:14:11        242 settings.json
+2026-05-18 21:14:11    2307560 sh0.webp
+2026-05-18 21:14:11     733814 shN_centroids.webp
+2026-05-18 21:14:11    1903638 shN_labels.webp
+2026-05-18 21:14:11       1489 training_metadata.json
+
+## meta parity (sha256)
+s3  : f3ec9c95a0a6208f3ef9cae6a181e3cbc529ee20701252b91022efe1af02b02e
+edge: f3ec9c95a0a6208f3ef9cae6a181e3cbc529ee20701252b91022efe1af02b02e
+
+json_equal True
+keys ['means', 'quats', 'scales', 'sh0', 'shN']
