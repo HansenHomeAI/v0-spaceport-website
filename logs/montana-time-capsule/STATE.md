@@ -3668,4 +3668,37 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
 ## Next unblocked step
 
 - Keep polling `hmc-mtc-20260520T2015Z-sfm` until `Completed`.
+
+## 2026-05-20T23:55Z Monitor Pass (HMC)
+
+- Branch/head/status:
+  - `git rev-parse --abbrev-ref HEAD && git rev-parse HEAD && git status --short --branch`
+  - Result: branch `agent-40136728-montana-time-capsule`, head `76803c8ed74224e6b1aa3eb7431d8ff7ca1cbdf5`, status clean.
+- AWS identity:
+  - `aws sts get-caller-identity`
+  - Result: account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+- Proven HMC archive (do not re-upload):
+  - `aws s3api head-object --bucket spaceport-uploads --key 1778952912508-hmc-high-mountain-camp-images-flat.zip`
+  - Result: `LastModified=2026-05-16T17:35:27Z`, `ContentLength=8646557673`, `ETag=ed86661a82b28856997a09f129ce6bec-1031`.
+- SageMaker SfM state:
+  - `aws sagemaker describe-processing-job --processing-job-name hmc-mtc-20260520T2015Z-sfm`
+  - Result: `ProcessingJobStatus=InProgress` (no failure).
+  - CloudWatch tail (mapping still active): `aws logs tail /aws/sagemaker/ProcessingJobs --since 20m --log-stream-name-prefix hmc-mtc-20260520T2015Z-sfm --format short`
+    - Sample: `chunk_14_mapper_initial` registering images; retriangulation + global bundle adjustment observed.
+- Output S3 prefix (EndOfJob upload; still empty):
+  - `aws s3 ls s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/ --recursive --human-readable --summarize`
+  - Result: `Total Objects: 0` (expected until job completion).
+- Runner refresh (NO launch):
+  - `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --dataset-id HMC --run-prefix hmc-mtc-20260520T2015Z --profile brass-chunked --input-s3-uri s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip --state-file logs/montana-time-capsule/hmc-state.json --search-prefix HMC --search-token hmc`
+  - Result: `status=sfm_running`, `sfm_status=InProgress` (no new jobs created).
+- Evidence files:
+  - `logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260520T235433Z.json`
+  - `logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260520T235438Z.log`
+  - `logs/montana-time-capsule/s3-list-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-20260520T235457Z.txt`
+  - `logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260520T235502Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-hmc-mtc-20260520T2015Z-20260520T235507Z.json`
+  - `logs/montana-time-capsule/gh-run-list-agent-40136728-20260520T235521Z.json`
+  - `logs/montana-time-capsule/gh-run-list-exact-head-20260520T235526Z.json`
+  - `logs/montana-time-capsule/refresh-hmc-state-20260520T235539Z.log`
+- Next unblocked step: keep polling until `hmc-mtc-20260520T2015Z-sfm` becomes `Completed`, then run the same runner command with `--launch` exactly once to launch pinned Montana 3DGS.
 - Then run the runner exactly once with `--launch` to start the pinned Montana 3DGS stage.
