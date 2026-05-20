@@ -1,0 +1,18 @@
+# postpush ci snapshot 20260520T231549Z
+
+branch=agent-113647-md1-baseline-e2e
+head=25402648a6c802e255b027cd1688b8f5d6225c9c
+
+## gh run list --commit 25402648
+
+## gh run list --branch agent-113647-md1-baseline-e2e
+completed	success	chore: trigger pages build	CDK Deploy	agent-113647-md1-baseline-e2e	push	26177531892	4m4s	2026-05-20T17:01:17Z
+completed	success	chore: trigger pages build	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26177531889	7m31s	2026-05-20T17:01:17Z
+completed	success	chore: md1-shrunk heartbeat verify 20260520T165016Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	26177304296	4m3s	2026-05-20T16:56:52Z
+completed	success	chore: trigger pages build	CDK Deploy	agent-113647-md1-baseline-e2e	push	26176189124	3m35s	2026-05-20T16:34:40Z
+completed	success	chore: trigger pages build	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26176189057	7m19s	2026-05-20T16:34:40Z
+completed	success	fix: avoid huge colmap images.txt temp downloads	CDK Deploy	agent-113647-md1-baseline-e2e	push	26175961282	3m53s	2026-05-20T16:30:13Z
+completed	success	fix: prune md1-shrunk camera artifacts on pass	CDK Deploy	agent-113647-md1-baseline-e2e	push	26155418466	4m1s	2026-05-20T10:00:49Z
+completed	success	fix: prune md1-shrunk camera artifacts on pass	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26155418467	7m46s	2026-05-20T10:00:49Z
+completed	success	chore: trigger pages build	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26153004935	7m43s	2026-05-20T09:12:07Z
+completed	success	chore: trigger pages build	CDK Deploy	agent-113647-md1-baseline-e2e	push	26153004933	4m6s	2026-05-20T09:12:07Z
