@@ -3443,3 +3443,27 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - Exact-head `gh run list ... --commit a1c549ce` returned `[]` (expected for `[skip ci]` head).
 - Evidence files:
   - `logs/montana-time-capsule/gh-run-list-exact-head-20260520T211854Z-postpush.json`
+
+## 2026-05-20T21:55Z Monitor Pass (HMC Archive Proven; SfM Still Running)
+
+- Git:
+  - Branch: `agent-40136728-montana-time-capsule`
+  - Head: `edbd99f36618102e1917ed2e34a00fb02d0dc661` (`[skip ci]`)
+- AWS identity:
+  - `arn:aws:iam::975050048887:root` (account `975050048887`, region `us-west-2`)
+- HMC archive proof (no upload performed):
+  - S3 URI: `s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip`
+  - LastModified: `2026-05-16T17:35:27Z`
+  - Size: `8,646,557,673` bytes
+  - ETag: `ed86661a82b28856997a09f129ce6bec-1031`
+  - Metadata: `sha256=8ac35927d5c90969f5e10f1fa011333e6065140924986c75f18fc81f899b1df2`, `photo-count=2063`, `source=dropbox`
+  - Manifest: `s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.manifest.json` (LastModified `2026-05-16T17:49:54Z`, size `352,691` bytes)
+- SageMaker:
+  - Job: `hmc-mtc-20260520T2015Z-sfm`
+  - Status: `InProgress` (output is `EndOfJob`, so S3 prefix stays empty until completion)
+  - Pinned image: `.../spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811`
+  - CloudWatch proof: chunk mapper is actively registering images (see tail log)
+- Evidence files:
+  - `logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260520T215420Z.log`
+  - `logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260520T215452Z.json`
+- Next unblocked step: keep polling until SfM `Completed` (or `Failed`); if `Completed`, launch the pinned Montana 3DGS stage exactly once (no duplicates).
