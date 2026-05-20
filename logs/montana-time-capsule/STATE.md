@@ -3231,3 +3231,56 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/sagemaker-list-processing-cvhr-active-20260519T2346Z.json`
   - `logs/montana-time-capsule/sagemaker-list-training-cvhr-active-20260519T2346Z.json`
   - `logs/montana-time-capsule/sagemaker-describe-cvhr-secondary-20260518t2113z-compression-20260519T2346Z.json`
+
+## 2026-05-20T20:16Z HMC Cloud Object Found + SfM Launched
+
+- User clarification: HMC should already be in the cloud, likely uploaded Friday/Saturday. No new HMC upload was performed.
+- Branch/head/status preflight:
+  - Branch: `agent-40136728-montana-time-capsule`
+  - Head at launch: `c6e9377759144d46d4b4ee74b75bcf35b30eb3e1`
+  - AWS identity: account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+- Existing cloud object found:
+  - ZIP: `s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip`
+  - Manifest: `s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.manifest.json`
+  - Upload proof from S3 head: ZIP `LastModified=2026-05-16T17:35:27+00:00`, `ContentLength=8646557673`, ETag `"ed86661a82b28856997a09f129ce6bec-1031"`, metadata `dataset=hmc`, `photo-count=2063`, SHA-256 `8ac35927d5c90969f5e10f1fa011333e6065140924986c75f18fc81f899b1df2`.
+  - Manifest proof: `photoCount=2063`, `flatZipBytes=8646557673`, same SHA-256, first flat image `hmc_0001_DJI_0661.JPG`, last flat image `hmc_2063_DJI_0717.JPG`.
+  - Runner ZIP central-directory validation: `2063` entries, `2063` images, first five `hmc_0001_DJI_0661.JPG` through `hmc_0005_DJI_0665.JPG`, last five `hmc_2059_DJI_0715.JPG` through `hmc_2063_DJI_0717.JPG`.
+- Duplicate-job guards before launch:
+  - `aws sagemaker list-processing-jobs --name-contains hmc --max-results 50`: no matching processing jobs.
+  - `aws sagemaker list-training-jobs --name-contains hmc --max-results 50`: no matching training jobs.
+  - `aws sagemaker list-processing-jobs --name-contains hmc-mtc --max-results 50`: no matching processing jobs.
+  - `aws sagemaker list-training-jobs --name-contains hmc-mtc --max-results 50`: no matching training jobs.
+- Runner change:
+  - `scripts/montana_time_capsule/cv_hr_time_capsule.py` is now dataset-parameterized while preserving CV-HR defaults.
+  - Validation: `python3 -m py_compile scripts/montana_time_capsule/cv_hr_time_capsule.py`.
+- Dry run/state init:
+  - Command: `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --dataset-id HMC --run-prefix hmc-mtc --subset-strategy hmc_full_2063_montana_time_capsule --input-s3-uri s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip --expected-image-count 2063 --state-file logs/montana-time-capsule/hmc-state.json --search-prefix HMC --search-token hmc`
+  - Result: `last_action=ready_to_launch_sfm`, run id `hmc-mtc-20260520T2015Z`.
+- Launch command:
+  - `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --dataset-id HMC --run-prefix hmc-mtc --subset-strategy hmc_full_2063_montana_time_capsule --input-s3-uri s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip --expected-image-count 2063 --state-file logs/montana-time-capsule/hmc-state.json --search-prefix HMC --search-token hmc --launch`
+- Current active stage:
+  - SfM processing job: `hmc-mtc-20260520T2015Z-sfm`
+  - SfM ARN: `arn:aws:sagemaker:us-west-2:975050048887:processing-job/hmc-mtc-20260520T2015Z-sfm`
+  - Status at launch verification: `InProgress`
+  - Input: `s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip`
+  - Output: `s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/colmap`
+  - Image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811`
+  - Environment: `COLMAP_ENABLE_SPATIAL_CHUNKING=1`, `COLMAP_CHUNK_MIN_CORE_REGISTERED_RATIO=0.90`, `SFM_BENCHMARK_SUBSET_STRATEGY=hmc_full_2063_montana_time_capsule`.
+  - Instance: `ml.g4dn.xlarge`, volume `100` GB, max runtime `86400` seconds.
+  - Initial CloudWatch tail: no log events yet immediately after launch.
+  - Initial S3 output listing: empty as expected until EndOfJob upload.
+- Post-launch duplicate guard:
+  - Re-running the HMC runner with the same `--launch` command at `2026-05-20T20:18Z` returned `last_action=sfm_running`, `sfm_status=InProgress`, and did not create a second job.
+- Automation:
+  - Existing monitor `cv-hr-montana-time-capsule-monitor` was repointed to HMC and remains active every 20 minutes in this chat/worktree.
+- Evidence files:
+  - `logs/montana-time-capsule/hmc-head-zip-20260520T0025Z.json`
+  - `logs/montana-time-capsule/hmc-head-manifest-20260520T0025Z.json`
+  - `logs/montana-time-capsule/hmc-manifest-summary-20260520T0026Z.txt`
+  - `logs/montana-time-capsule/hmc-state.json`
+  - `logs/montana-time-capsule/hmc-launch-20260520T0028Z.log`
+  - `logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260520T0029Z.json`
+  - `logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260520T0029Z.log`
+  - `logs/montana-time-capsule/s3-sfm-output-hmc-mtc-20260520T2015Z-20260520T0029Z.txt`
+  - `logs/montana-time-capsule/hmc-runner-hold-20260520T0032Z.json`
+- Next unblocked step: poll `hmc-mtc-20260520T2015Z-sfm` until it reaches `Completed`; then run the same HMC runner command with `--launch` exactly once to launch the pinned Montana 3DGS job.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Monitor CV-HR upload and run the Montana-era training stack.
+"""Monitor an upload and run the Montana-era training stack.
 
 This runner intentionally launches SageMaker jobs directly instead of using the
 current Step Functions stack. The historical Montana SfM jobs depended on
@@ -250,8 +250,8 @@ def utc_now() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
-def run_id_now() -> str:
-    return datetime.now(timezone.utc).strftime("cvhr-mtc-%Y%m%dT%H%MZ")
+def run_id_now(prefix: str) -> str:
+    return f"{prefix}-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%MZ')}"
 
 
 def git_value(*args: str) -> str:
@@ -358,10 +358,11 @@ def candidate_objects(
     *,
     bucket: str,
     prefixes: list[str],
+    search_tokens: list[str],
     max_scan_objects: int,
 ) -> list[dict[str, Any]]:
     candidates: dict[str, dict[str, Any]] = {}
-    wanted = {"cvhr", "cvhrupload", "cvhrphotos"}
+    wanted = {normalize_key(token) for token in search_tokens if token}
     for prefix in prefixes:
         paginator = s3.get_paginator("list_objects_v2")
         scanned = 0
@@ -400,6 +401,7 @@ def find_ready_upload(args: argparse.Namespace, s3: Any) -> dict[str, Any] | Non
             bucket=args.upload_bucket,
             prefixes=args.search_prefix,
             max_scan_objects=args.max_scan_objects,
+            search_tokens=args.search_token,
         )
         for item in candidates:
             item["Bucket"] = args.upload_bucket
@@ -456,7 +458,7 @@ def create_sfm_job(
     environment = {
         "AWS_DEFAULT_REGION": REGION,
         "PYTHONUNBUFFERED": "1",
-        "SFM_BENCHMARK_SUBSET_STRATEGY": "cv_hr_full_1710_montana_time_capsule",
+        "SFM_BENCHMARK_SUBSET_STRATEGY": args.subset_strategy,
         "SFM_BRANCH_NAME": branch,
         "SFM_GIT_HEAD": head,
         "SFM_INPUT_URI": state["input_s3_uri"],
@@ -509,7 +511,7 @@ def create_sfm_job(
             {"Key": "Project", "Value": "Spaceport"},
             {"Key": "Component", "Value": "SfM"},
             {"Key": "Profile", "Value": "montana-time-capsule"},
-            {"Key": "Dataset", "Value": "CV-HR"},
+            {"Key": "Dataset", "Value": args.dataset_id},
         ],
         "RoleArn": args.role_arn,
     }
@@ -560,7 +562,7 @@ def create_3dgs_job(sm: Any, *, state: dict[str, Any], args: argparse.Namespace)
             {"Key": "Project", "Value": "Spaceport"},
             {"Key": "Component", "Value": "3DGS"},
             {"Key": "Profile", "Value": "montana-time-capsule"},
-            {"Key": "Dataset", "Value": "CV-HR"},
+            {"Key": "Dataset", "Value": args.dataset_id},
         ],
         "Environment": MONTANA_3DGS_ENV,
     }
@@ -628,7 +630,7 @@ def create_compression_job(sm: Any, *, state: dict[str, Any], args: argparse.Nam
             {"Key": "Project", "Value": "Spaceport"},
             {"Key": "Component", "Value": "Compression"},
             {"Key": "Profile", "Value": "montana-time-capsule"},
-            {"Key": "Dataset", "Value": "CV-HR"},
+            {"Key": "Dataset", "Value": args.dataset_id},
         ],
         "RoleArn": args.role_arn,
     }
@@ -712,13 +714,37 @@ def advance_pipeline(args: argparse.Namespace, state: dict[str, Any], profile: S
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--launch", action="store_true", help="Create the next SageMaker job when ready.")
-    parser.add_argument("--input-s3-uri", default=os.environ.get("CV_HR_INPUT_S3_URI", ""))
+    parser.add_argument(
+        "--dataset-id",
+        default="CV-HR",
+        help="Short dataset label for state and SageMaker tags.",
+    )
+    parser.add_argument(
+        "--run-prefix",
+        default="cvhr-mtc",
+        help="Prefix for newly-created SageMaker job names.",
+    )
+    parser.add_argument(
+        "--subset-strategy",
+        default="cv_hr_full_1710_montana_time_capsule",
+        help="SfM provenance label passed through SFM_BENCHMARK_SUBSET_STRATEGY.",
+    )
+    parser.add_argument(
+        "--input-s3-uri",
+        default=os.environ.get("TIME_CAPSULE_INPUT_S3_URI", os.environ.get("CV_HR_INPUT_S3_URI", "")),
+    )
     parser.add_argument("--upload-bucket", default=UPLOAD_BUCKET)
     parser.add_argument(
         "--search-prefix",
         action="append",
         default=["CV-HR", "cv-hr", "cv_hr", "cvhr"],
-        help="Repeatable S3 prefix to scan for the CV-HR zip.",
+        help="Repeatable S3 prefix to scan for the dataset zip.",
+    )
+    parser.add_argument(
+        "--search-token",
+        action="append",
+        default=["cvhr", "cvhrupload", "cvhrphotos"],
+        help="Repeatable normalized token used to identify candidate zip keys.",
     )
     parser.add_argument("--max-scan-objects", type=int, default=5000)
     parser.add_argument("--expected-image-count", type=int, default=1710)
@@ -750,6 +776,7 @@ def main() -> int:
         if not upload or not upload.get("ready"):
             result = {
                 "status": "waiting_for_upload",
+                "dataset": args.dataset_id,
                 "profile": profile.name,
                 "profile_note": profile.note,
                 "checked": upload.get("checked", []) if isinstance(upload, dict) else [],
@@ -761,8 +788,8 @@ def main() -> int:
             return 0
         state = {
             "status": "upload_ready",
-            "run_id": run_id_now(),
-            "dataset": "CV-HR",
+            "run_id": run_id_now(args.run_prefix),
+            "dataset": args.dataset_id,
             "profile": profile.name,
             "profile_note": profile.note,
             "input_s3_uri": upload["s3_uri"],

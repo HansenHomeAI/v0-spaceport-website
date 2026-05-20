@@ -1,0 +1,121 @@
+{
+  "created_at": "2026-05-20T20:15:32Z",
+  "dataset": "HMC",
+  "first_images": [
+    "hmc_0001_DJI_0661.JPG",
+    "hmc_0002_DJI_0660.JPG",
+    "hmc_0003_DJI_0662.JPG",
+    "hmc_0004_DJI_0666.JPG",
+    "hmc_0005_DJI_0665.JPG"
+  ],
+  "input_etag": "ed86661a82b28856997a09f129ce6bec-1031",
+  "input_image_count": 2063,
+  "input_s3_uri": "s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip",
+  "input_size_bytes": 8646557673,
+  "last_action": "sfm_running",
+  "last_images": [
+    "hmc_2059_DJI_0715.JPG",
+    "hmc_2060_DJI_0724.JPG",
+    "hmc_2061_DJI_0716.JPG",
+    "hmc_2062_DJI_0722.JPG",
+    "hmc_2063_DJI_0717.JPG"
+  ],
+  "profile": "brass-chunked",
+  "profile_note": "Exact Brass Lantern chunked SfM image; default reproducible Montana profile.",
+  "run_id": "hmc-mtc-20260520T2015Z",
+  "sfm_environment": {
+    "AWS_DEFAULT_REGION": "us-west-2",
+    "COLMAP_CHUNK_MIN_CORE_REGISTERED_RATIO": "0.90",
+    "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+    "PYTHONUNBUFFERED": "1",
+    "SFM_BENCHMARK_SUBSET_STRATEGY": "hmc_full_2063_montana_time_capsule",
+    "SFM_BRANCH_NAME": "agent-40136728-montana-time-capsule",
+    "SFM_GIT_HEAD": "c6e9377759144d46d4b4ee74b75bcf35b30eb3e1",
+    "SFM_INPUT_URI": "s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip",
+    "SFM_JOB_NAME": "hmc-mtc-20260520T2015Z-sfm",
+    "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/colmap"
+  },
+  "sfm_image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811",
+  "sfm_job_name": "hmc-mtc-20260520T2015Z-sfm",
+  "sfm_output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/colmap",
+  "sfm_payload": {
+    "AppSpecification": {
+      "ContainerEntrypoint": [
+        "/opt/ml/code/run_sfm.sh"
+      ],
+      "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811"
+    },
+    "Environment": {
+      "AWS_DEFAULT_REGION": "us-west-2",
+      "COLMAP_CHUNK_MIN_CORE_REGISTERED_RATIO": "0.90",
+      "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+      "PYTHONUNBUFFERED": "1",
+      "SFM_BENCHMARK_SUBSET_STRATEGY": "hmc_full_2063_montana_time_capsule",
+      "SFM_BRANCH_NAME": "agent-40136728-montana-time-capsule",
+      "SFM_GIT_HEAD": "c6e9377759144d46d4b4ee74b75bcf35b30eb3e1",
+      "SFM_INPUT_URI": "s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip",
+      "SFM_JOB_NAME": "hmc-mtc-20260520T2015Z-sfm",
+      "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/colmap"
+    },
+    "ProcessingInputs": [
+      {
+        "InputName": "sfm-input",
+        "S3Input": {
+          "LocalPath": "/opt/ml/processing/input",
+          "S3CompressionType": "None",
+          "S3DataDistributionType": "FullyReplicated",
+          "S3DataType": "S3Prefix",
+          "S3InputMode": "File",
+          "S3Uri": "s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip"
+        }
+      }
+    ],
+    "ProcessingJobName": "hmc-mtc-20260520T2015Z-sfm",
+    "ProcessingOutputConfig": {
+      "Outputs": [
+        {
+          "AppManaged": false,
+          "OutputName": "colmap-output",
+          "S3Output": {
+            "LocalPath": "/opt/ml/processing/output",
+            "S3UploadMode": "EndOfJob",
+            "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/colmap"
+          }
+        }
+      ]
+    },
+    "ProcessingResources": {
+      "ClusterConfig": {
+        "InstanceCount": 1,
+        "InstanceType": "ml.g4dn.xlarge",
+        "VolumeSizeInGB": 100
+      }
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "StoppingCondition": {
+      "MaxRuntimeInSeconds": 86400
+    },
+    "Tags": [
+      {
+        "Key": "Project",
+        "Value": "Spaceport"
+      },
+      {
+        "Key": "Component",
+        "Value": "SfM"
+      },
+      {
+        "Key": "Profile",
+        "Value": "montana-time-capsule"
+      },
+      {
+        "Key": "Dataset",
+        "Value": "HMC"
+      }
+    ]
+  },
+  "sfm_status": "InProgress",
+  "status": "sfm_running",
+  "updated_at": "2026-05-20T20:18:50Z",
+  "zip_entries": 2063
+}

@@ -1,0 +1,11 @@
+{
+  "dataset": "High Mountain Camp (HMC)",
+  "createdAt": "2026-05-16T17:34:40Z",
+  "flatZipBytes": 8646557673,
+  "flatZipSha256": "8ac35927d5c90969f5e10f1fa011333e6065140924986c75f18fc81f899b1df2",
+  "photoCount": 2063,
+  "photoBytes": 8646295625,
+  "naming": "All photos are at ZIP root as hmc_####_<original basename>; sourcePath maps the original folder path."
+}
+first {"bytes": 4785731, "crc32": "c40059d1", "flatPath": "hmc_0001_DJI_0661.JPG", "index": 1, "sourcePath": "Folder2/DJI_0661.JPG"}
+last {"bytes": 4404433, "crc32": "0f1bc1ad", "flatPath": "hmc_2063_DJI_0717.JPG", "index": 2063, "sourcePath": "Folder1/DJI_0717.JPG"}
