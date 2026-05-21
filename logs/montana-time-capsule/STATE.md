@@ -247,6 +247,32 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
 - Next unblocked step:
   - Keep polling until `hmc-mtc-20260520T2015Z-sfm` becomes `Completed`, then run `python3 scripts/montana_time_capsule/hmc_time_capsule.py --launch` exactly once to launch pinned 3DGS.
 
+## 2026-05-21T01:19Z HMC Monitor Pass (SfM Still Running)
+
+- Branch/head/status:
+  - `git rev-parse --abbrev-ref HEAD && git rev-parse HEAD && git status --short --branch`
+  - Result: branch `agent-40136728-montana-time-capsule`, head `b5c5ea0bd3b41b56dd09128a14c190c304dadfc5`, clean.
+- Exact-head workflow list (branch-level evidence only; recent commits are `[skip ci]`):
+  - `gh run list --branch agent-40136728-montana-time-capsule --limit 20`
+  - Result: most recent `CDK Deploy` run id `26187619621` `success` (2026-05-20T20:19:47Z).
+- AWS identity: `aws sts get-caller-identity` (evidence: `logs/montana-time-capsule/aws-sts-20260521T011412Z.json`)
+  - Result: account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+- HMC archive proof (no re-upload):
+  - ZIP: `s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip`
+    - `LastModified=2026-05-16T17:35:27Z`, `ContentLength=8646557673`, ETag `"ed86661a82b28856997a09f129ce6bec-1031"` (evidence: `logs/montana-time-capsule/s3-head-spaceport-uploads-hmc-20260521T011510Z.json`).
+  - Manifest: `s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.manifest.json`
+    - `LastModified=2026-05-16T17:49:54Z`, `ContentLength=352691` (evidence: `logs/montana-time-capsule/s3-head-spaceport-uploads-hmc-manifest-20260521T011558Z.json`).
+- SageMaker status: `aws sagemaker describe-processing-job --processing-job-name hmc-mtc-20260520T2015Z-sfm`
+  - Result: `ProcessingJobStatus=InProgress` (evidence: `logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T011412Z.json`, `logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T011843Z.json`).
+  - CloudWatch tail proof: chunked COLMAP advanced into `chunk_15_spatial_matcher_recovery` and vocab-tree build retries (evidence: `logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260521T011437Z.log`).
+- S3 outputs (EndOfJob upload still pending):
+  - `aws s3 ls s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/ --recursive --summarize`
+  - Result: 0 objects (evidence: `logs/montana-time-capsule/s3-ls-hmc-mtc-20260520T2015Z-20260521T011551Z.log`).
+- Runner poll (no launch):
+  - `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --dataset-id HMC --run-prefix hmc-mtc --subset-strategy hmc_full_2063_montana_time_capsule --input-s3-uri s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip --expected-image-count 2063 --state-file logs/montana-time-capsule/hmc-state.json --search-prefix HMC --search-token hmc`
+  - Result: `status=sfm_running`, `sfm_status=InProgress`, updated state at `2026-05-21T01:19:08Z` (evidence: `logs/montana-time-capsule/hmc-runner-20260521T011908Z.json`).
+- Next unblocked step: continue 60–300s polling until SfM becomes `Completed`; once `Completed`, verify the SfM output prefix is populated, then run the same runner command with `--launch` exactly once to start pinned Montana 3DGS.
+
 ## 2026-05-18T18:49Z Ledger Commit + Push
 
 - Commit: `4cd3ed8be671d9f1b6796375c5df67ac9250722d`

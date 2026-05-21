@@ -25,3 +25,4 @@
 [2026-05-21T00:17:31Z] poll_sfm -> InProgress -> wait_sfm_completed
 [2026-05-21T00:36:37Z] poll_sfm -> InProgress (chunk_15 spatial matcher recovery + vocab tree building) -> wait_sfm_completed; do not launch
 [2026-05-21T00:56:13Z] monitor_hmc -> } -> next: wait_sfm
+[2026-05-21T01:19:08Z] hmc runner poll -> sfm InProgress; outputs empty; no launch -> next: wait_sfm_completed then run one guarded --launch for 3DGS
