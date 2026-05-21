@@ -46,6 +46,8 @@ Next: keep polling until SfM becomes Completed and S3 output exists; do not laun
 - CI: exact head is [skip ci] so no workflow runs for fbd7541f; refreshed run lists:
   - branch: logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T071412Z.json
   - exact: logs/montana-time-capsule/gh-run-list-exact-head-20260521T071412Z.json
+  - post-push branch: logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-postpush-20260521T071640Z.json
+  - post-push exact: logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T071640Z.json
 
 Next: keep polling until SfM becomes Completed and S3 output exists; do not launch 3DGS yet.
 
