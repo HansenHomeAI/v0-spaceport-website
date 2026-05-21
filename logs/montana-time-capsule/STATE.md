@@ -23,6 +23,11 @@
 
 Next: keep polling until `describe-training-job` is Completed; do not launch compression until 3DGS is Completed.
 
+## 2026-05-21T17:38:10Z Post-push CI proof (HMC)
+
+- Git head pushed: 921c33e45c380c92ac2956e9cfba798f3455d94d ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T173810Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260521T173810Z.json)
+
 ## 2026-05-21T17:18:00Z Monitor tick (HMC) - 3DGS still InProgress
 
 - Git: agent-40136728-montana-time-capsule @ 3489fef6ec6d32fa983d755d12259e2e26685e08 (status=logs/montana-time-capsule/git-status-20260521T171800Z.txt)
