@@ -5,6 +5,20 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-21T15:36:52Z Monitor tick (HMC)
+
+- Git: agent-40136728-montana-time-capsule @ 7a416db7052f1e6c8f116b66a25e0d88a26d9595 (`chore: record post-push ci proof 20260521T1519Z [skip ci]`)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T153446Z.json (acct 975050048887)
+- SageMaker SfM:
+  - job: hmc-mtc-20260520T2015Z-sfm
+  - status: InProgress (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T153446Z.json; list=logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T153446Z.json)
+  - CloudWatch newest tail still shows COLMAP linear solver failure warning at 2026-05-21T15:29:56Z: logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T153518Z-tail50.json (streams=logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T153506Z.json; best=logs/montana-time-capsule/cloudwatch-best-stream-hmc-mtc-20260520T2015Z-sfm-20260521T153506Z.txt)
+  - output prefix still empty (S3UploadMode=EndOfJob; KeyCount=0): logs/montana-time-capsule/s3api-list-objects-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T153506Z-max5.json (ls=logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T153506Z-tail50.txt)
+- Runner state refreshed (no launch): logs/montana-time-capsule/hmc-state-refresh-20260521T153550Z.log (state file logs/montana-time-capsule/hmc-state.json; sfm_status=InProgress; last_cloudwatch_event_at=2026-05-21T15:29:56.196Z)
+- CI: exact head is [skip ci] (branch=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T153423Z.json; exact-head=logs/montana-time-capsule/gh-run-list-exact-head-20260521T153423Z.json)
+
+Next: keep polling until SfM becomes Completed and the S3 output prefix is non-empty; do not launch 3DGS yet.
+
 ## 2026-05-21T15:16:53Z Monitor tick (HMC)
 
 - Git: agent-40136728-montana-time-capsule @ 85126f21be33b571e3904dc09a2d31027f254b35 (`chore: record post-push ci proof 20260521T143613Z [skip ci]`)

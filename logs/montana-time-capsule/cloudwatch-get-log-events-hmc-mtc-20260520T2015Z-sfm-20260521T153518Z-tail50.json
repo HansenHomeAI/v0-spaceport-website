@@ -1,0 +1,76 @@
+{
+    "events": [
+        {
+            "timestamp": 1779370662219,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260521 13:37:41.818405  8201 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779370667470
+        },
+        {
+            "timestamp": 1779371408395,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260521 13:50:07.969565  8201 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779371413933
+        },
+        {
+            "timestamp": 1779371780593,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260521 13:56:20.043792  8201 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779371786001
+        },
+        {
+            "timestamp": 1779373173551,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260521 14:19:32.626470  8201 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779373179320
+        },
+        {
+            "timestamp": 1779373782471,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260521 14:29:42.322297  8201 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779373787995
+        },
+        {
+            "timestamp": 1779374020503,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260521 14:33:40.364987  8201 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779374026086
+        },
+        {
+            "timestamp": 1779374258503,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260521 14:37:38.332396  8201 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779374264508
+        },
+        {
+            "timestamp": 1779374617395,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260521 14:43:37.198688  8201 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779374622977
+        },
+        {
+            "timestamp": 1779375097379,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260521 14:51:37.352676  8201 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779375103018
+        },
+        {
+            "timestamp": 1779375456855,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260521 14:57:36.411768  8201 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779375463101
+        },
+        {
+            "timestamp": 1779375694955,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260521 15:01:34.750312  8201 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779375700423
+        },
+        {
+            "timestamp": 1779376193503,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260521 15:09:52.503240  8201 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779376199619
+        },
+        {
+            "timestamp": 1779376795247,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260521 15:19:54.525537  8201 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779376801180
+        },
+        {
+            "timestamp": 1779377396196,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260521 15:29:55.967314  8201 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779377402370
+        }
+    ],
+    "nextForwardToken": "f/39681441924591869292906303241279816103683460679789641728/s",
+    "nextBackwardToken": "b/39681291751886619527256264330013823652950405921417265152/s"
+}
