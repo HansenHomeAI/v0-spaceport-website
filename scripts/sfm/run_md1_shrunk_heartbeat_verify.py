@@ -192,6 +192,14 @@ def main() -> int:
     ts = utc_timestamp()
     polls_root = Path(args.polls_root).resolve()
 
+    # Capture git state before creating any poll directories (which would make the repo
+    # appear dirty due to new untracked files under logs/).
+    branch = run(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=REPO_ROOT).strip()
+    head = run(["git", "rev-parse", "HEAD"], cwd=REPO_ROOT).strip()
+    head_subject = run(["git", "log", "-1", "--pretty=%s"], cwd=REPO_ROOT).strip()
+    status = run(["git", "status", "--porcelain=v1"], cwd=REPO_ROOT)
+    gh_branch = args.gh_branch.strip() or branch
+
     pre_dir = polls_root / f"{ts}-preflight"
     bundle_dir = polls_root / f"{ts}-bundle"
     edge_dir = polls_root / f"{ts}-edge-validate"
@@ -201,11 +209,6 @@ def main() -> int:
 
     for directory in [pre_dir, bundle_dir, edge_dir, cam_dir, unit_dir, ci_dir]:
         directory.mkdir(parents=True, exist_ok=True)
-
-    branch = run(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=REPO_ROOT).strip()
-    head = run(["git", "rev-parse", "HEAD"], cwd=REPO_ROOT).strip()
-    status = run(["git", "status", "--porcelain=v1"], cwd=REPO_ROOT)
-    gh_branch = args.gh_branch.strip() or branch
 
     aws = resolve_aws()
     py = resolve_python()
@@ -300,12 +303,16 @@ def main() -> int:
         )
     )
 
+    exact_head_runs = [entry for entry in gh_runs if entry.get("headSha") == head]
+    exact_head_expected = 0 if "skip ci" in head_subject.lower() else None
+
     write_json(pre_dir / "aws-sts-get-caller-identity.json", sts_json)
     write_json(pre_dir / "stepfunctions-running-staging.json", staging_running)
     write_json(pre_dir / "stepfunctions-running-branch.json", branch_running)
     write_json(pre_dir / "sagemaker-processing-inprogress.json", processing_inprogress)
     write_json(pre_dir / "sagemaker-training-inprogress.json", training_inprogress)
     write_json(pre_dir / "gh-run-list.json", gh_runs)
+    write_json(pre_dir / "gh-run-list-exact-head.json", exact_head_runs)
 
     if args.known_execution_arn.strip():
         known_exec = json.loads(
@@ -344,6 +351,11 @@ def main() -> int:
         "",
         "## gh runs (branch)",
         json.dumps(gh_runs, indent=2),
+        "",
+        f"## gh runs (exact head: {head})",
+        f"expected={exact_head_expected}" if exact_head_expected is not None else "expected=unknown",
+        f"count={len(exact_head_runs)}",
+        json.dumps(exact_head_runs, indent=2),
     ]
     if s3_head:
         preflight_txt += ["", "## public S3 meta.json HEAD (with Origin)", s3_head.strip()]
