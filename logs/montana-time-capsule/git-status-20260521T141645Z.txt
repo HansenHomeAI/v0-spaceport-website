@@ -1,0 +1,22 @@
+branch=agent-40136728-montana-time-capsule
+head=fd5693e88186e2161459579ed1d4b73445d491c1
+ M logs/montana-time-capsule/hmc-state.json
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T141425Z.json
+?? logs/montana-time-capsule/cloudwatch-best-stream-hmc-mtc-20260520T2015Z-sfm-20260521T141457Z.txt
+?? logs/montana-time-capsule/cloudwatch-best-stream-hmc-mtc-20260520T2015Z-sfm-20260521T141514Z.txt
+?? logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T141425Z.json
+?? logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T141442Z.json
+?? logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T141457Z.json
+?? logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T141514Z.json
+?? logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T141457Z-tail50.json
+?? logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T141514Z-tail50.json
+?? logs/montana-time-capsule/cloudwatch-last-event-hmc-mtc-20260520T2015Z-sfm-20260521T141514Z.txt
+?? logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T141555Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-20260521T141555Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T135904Z.json
+?? logs/montana-time-capsule/git-status-20260521T141645Z.txt
+?? logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T141531Z-tail25.txt
+?? logs/montana-time-capsule/s3api-list-objects-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T141531Z.json
+?? logs/montana-time-capsule/s3api-list-objects-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T141546Z.json
+?? logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-status-20260521T141425Z.json
+?? logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T141425Z.json
