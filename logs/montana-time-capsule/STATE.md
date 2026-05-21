@@ -5,6 +5,21 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-21T10:16:01Z Monitor tick (HMC)
+
+- Git: agent-40136728-montana-time-capsule @ 682c76791c4ec34365ada433a203193d245ca151 (`chore: record post-push ci proof 20260521T0957Z [skip ci]`)
+  - status: logs/montana-time-capsule/git-status-20260521T101403Z.txt
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T101403Z.json (acct 975050048887)
+- SageMaker SfM:
+  - job: hmc-mtc-20260520T2015Z-sfm
+  - status: InProgress (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T101403Z.json; list=logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T101403Z.json)
+  - CloudWatch newest stream last event still 2026-05-21T00:01:36.365Z (streams=logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T101403Z.json; tail=logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T101403Z-tail.json; last=logs/montana-time-capsule/cloudwatch-last-event-hmc-mtc-20260520T2015Z-sfm-20260521T101403Z.tsv)
+  - output prefix still empty (KeyCount=0): logs/montana-time-capsule/s3api-list-objects-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T101403Z.json
+- Runner state refreshed (no launch): logs/montana-time-capsule/hmc-state-refresh-20260521T101403Z.log (state file logs/montana-time-capsule/hmc-state.json; sfm_status=InProgress; updated_at=2026-05-21T10:16:01Z)
+- CI: exact head is [skip ci] (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-20260521T101403Z.json; branch=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T101403Z.json)
+
+Next: keep polling until SfM becomes Completed and the S3 output prefix is non-empty; do not launch 3DGS yet.
+
 ## 2026-05-21T08:53:52Z Monitor tick (HMC)
 
 - Git: agent-40136728-montana-time-capsule @ 734cea93965e920f4364186dd23c1f1a52576224 (`chore: record post-push ci proof 20260521T0837Z [skip ci]`)
