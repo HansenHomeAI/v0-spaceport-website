@@ -139,3 +139,4 @@
 [2026-05-21T21:39:01Z] montana-time-capsule monitor -> terminal reconfirmed (no launches); logs captured @ 20260521T213536Z -> commit+push
 [2026-05-21T21:40:22Z] post-push CI proof -> exact-head runs 0 (skip ci) -> next: idle
 [2026-05-21T21:56:52Z] heartbeat -> terminal reconfirm (sfm+3dgs+compression Completed; S3 meta head-object ok; exact-head GH runs=0 [skip ci]) -> next: await promotion gate
+[2026-05-21T21:58:06Z] post-push CI proof -> pushed 83f7f13f ([skip ci]); exact-head runs 0 -> next: idle

@@ -24,6 +24,11 @@
 
 Next: remain idle; only proceed if a new explicit acceptance gate is requested (promotion/registry, etc.).
 
+## 2026-05-21T21:58:06Z Post-push CI proof (HMC)
+
+- Git head pushed: 83f7f13f9b2c3315193d59c123b330f08b2c05b1 ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T215806Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260521T215806Z.json)
+
 ## 2026-05-21T20:39:50Z Monitor tick (HMC) - 3DGS+compression Completed; hosted viewer validated (skybox + no-sky)
 
 - Git: agent-40136728-montana-time-capsule @ 274e9112fd7fcc7a9d414c18f07fc6041c623535 (clean)
