@@ -1,0 +1,14 @@
+test_baseline_comparison_populates_deltas (tests.unit.test_sfm_heldout_panel_diagnostics.HeldoutPanelDiagnosticsTest.test_baseline_comparison_populates_deltas) ... ok
+test_exact_side_by_side_panel_passes (tests.unit.test_sfm_heldout_panel_diagnostics.HeldoutPanelDiagnosticsTest.test_exact_side_by_side_panel_passes) ... ok
+test_soft_render_warns_on_detail_loss (tests.unit.test_sfm_heldout_panel_diagnostics.HeldoutPanelDiagnosticsTest.test_soft_render_warns_on_detail_loss) ... ok
+test_choose_samples_even_spacing (tests.unit.test_viewer_camera_pose_derivation.ViewerCameraPoseDerivationTest.test_choose_samples_even_spacing) ... ok
+test_derives_up_aligned_pose_strings (tests.unit.test_viewer_camera_pose_derivation.ViewerCameraPoseDerivationTest.test_derives_up_aligned_pose_strings) ... ok
+test_parses_frames_txt_with_explicit_names (tests.unit.test_viewer_camera_pose_derivation.ViewerCameraPoseDerivationTest.test_parses_frames_txt_with_explicit_names) ... ok
+test_parses_images_txt (tests.unit.test_viewer_camera_pose_derivation.ViewerCameraPoseDerivationTest.test_parses_images_txt) ... ok
+test_copies_bundle_with_expected_headers_and_url (tests.unit.test_ml_publish_bundle.PublishBundleLambdaTests.test_copies_bundle_with_expected_headers_and_url) ... ok
+test_raises_when_meta_json_is_missing (tests.unit.test_ml_publish_bundle.PublishBundleLambdaTests.test_raises_when_meta_json_is_missing) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.017s
+
+OK
