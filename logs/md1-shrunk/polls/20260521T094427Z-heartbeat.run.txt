@@ -1,0 +1,14 @@
+heartbeat verify 20260521T094427Z
+
+- summary: logs/md1-shrunk/polls/20260521T094427Z-summary.json
+- preflight: logs/md1-shrunk/polls/20260521T094427Z-preflight/preflight.txt
+- edge validate: logs/md1-shrunk/polls/20260521T094427Z-edge-validate/validate.txt
+- bundle parity: logs/md1-shrunk/polls/20260521T094427Z-bundle/bundle.txt
+- camera suite: logs/md1-shrunk/polls/20260521T094427Z-camera-suite/suite-summary.json (decision=pass)
+- camera suite report: logs/md1-shrunk/polls/20260521T094427Z-camera-suite/report.html
+- edge publish report: logs/md1-shrunk/polls/20260521T094427Z-edge-validate/publish-edge.report.html
+- unit proof: logs/md1-shrunk/polls/20260521T094427Z-unit/unittest.txt
+
+Manual verification (extra):
+- logs/md1-shrunk/polls/20260521T094335Z-manual-verify/verify.txt
+- logs/md1-shrunk/polls/20260521T094335Z-manual-verify/s3-edge-headers.txt

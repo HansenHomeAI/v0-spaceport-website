@@ -11405,3 +11405,50 @@ note: reran heartbeat after `20260520T144551Z` because bundle parity was skipped
   - `logs/md1-shrunk/polls/20260521T092209Z-ci-postpush-sha-bd67470f/gh-run-list-exact-head.json`
 
 - Next: idle (no spend; heartbeat-only).
+
+## 2026-05-21T09:44Z heartbeat verify (scripted; strict gates PASS; no new jobs launched)
+
+- Manual verification (git/AWS/StepFunctions/SageMaker/S3/edge/listeners/GH):
+  - `logs/md1-shrunk/polls/20260521T094335Z-manual-verify/verify.txt`
+  - `logs/md1-shrunk/polls/20260521T094335Z-manual-verify/s3-edge-headers.txt`
+
+- Heartbeat command:
+  - `logs/md1-shrunk/polls/20260521T094427Z-heartbeat.cmd.txt`
+- Heartbeat run note:
+  - `logs/md1-shrunk/polls/20260521T094427Z-heartbeat.run.txt`
+- Heartbeat poll summary:
+  - `logs/md1-shrunk/polls/20260521T094427Z-summary.json`
+  - HEAD: `d00237965b33ba070a786c5c9b07331b6a9ba271` (`[skip ci]` head; exact-head workflows expected: none)
+  - PREVIEW_URL: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+  - edge meta.json: `https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+  - public S3 meta.json: `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+
+- Preflight snapshot (scripted; read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260521T094427Z-preflight/preflight.txt` (`status_porcelain=dirty` due to new local poll artifacts)
+  - Step Functions RUNNING: `0` (staging + `SpaceportMLPipeline-br-8abcbd5662`)
+  - Known execution `execution-md1-shrunk-prodspine-wlight-202605190027` status: `SUCCEEDED`
+    - `logs/md1-shrunk/polls/20260521T094427Z-preflight/stepfunctions-describe-known.json`
+  - SageMaker InProgress:
+    - processing: `1` (external / not owned by this run): `hmc-mtc-20260520T2015Z-sfm` (left untouched)
+    - training: `0`
+  - exact-head workflows:
+    - `logs/md1-shrunk/polls/20260521T094427Z-preflight/gh-run-list-exact-head.json` (`count=0`)
+
+- Browser-readable public delivery validation (automation; Origin/CORS + cache headers + referenced assets):
+  - result: `logs/md1-shrunk/polls/20260521T094427Z-edge-validate/validate.txt`
+  - report: `logs/md1-shrunk/polls/20260521T094427Z-edge-validate/publish-edge.report.html`
+
+- Public bundle snapshot (S3-vs-edge meta.json parity):
+  - `logs/md1-shrunk/polls/20260521T094427Z-bundle/bundle.txt` (sha256 match)
+
+- Multi-camera input-vs-render checks (deployed preview; strict; pose drift verification + sky/horizon gates):
+  - result: `logs/md1-shrunk/polls/20260521T094427Z-camera-suite/suite-summary.json` -> `decision=pass` (`pose_verification.max_delta=0.0`; `artifacts_pruned=true`; `skybox.decision=pass`; `nosky.decision=pass`)
+  - report: `logs/md1-shrunk/polls/20260521T094427Z-camera-suite/report.html`
+
+- Unit proof:
+  - output: `logs/md1-shrunk/polls/20260521T094427Z-unit/unittest.txt`
+
+- GitHub Actions snapshot:
+  - `logs/md1-shrunk/polls/20260521T094427Z-ci/summary.txt` (note: no new exact-head runs expected for `[skip ci]`)
+
+- Next: commit/push (poll logs + STATE + agent-loop), then record postpush CI snapshot.
