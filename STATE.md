@@ -1,5 +1,5 @@
 reason: SfM-only visibility-cell proof completed on MD1 and pressure-tested on CV-HR, then follow-up no-spend reducer hardening implemented seam_graph_sim3_v1 to address observed leaf scale and duplicate-surface risk. Real no-spend replay now passes MD1 strict seam graph but blocks the prior CV-HR full merge because weak-core leaves cannot connect under the 15% scale-drift gate. The current patch prevents that failure mode by merging visibility cells with too few core cameras before fanout and by blocking weak-core manifests in the fanout contract. Downstream 3DGS/SOGS render and AI visual gates are separate and are not part of this SfM-stage proof.
-last_step: 2026-05-21T23:14Z: Isolated the CV-HR seam blocker to weak core support: old CV-HR leaves 00 and 10 had only 15 and 11 core cameras, and leaf 10 was mostly overlap (11 core / 125 overlap), which explains the scale-drift seams. Patched visibility_cell_v1 planning with COLMAP_VISIBILITY_CELL_MIN_CORE_IMAGES weak-cell merging and added a fanout contract --min-core-images gate. Existing CV-HR manifest now fails the no-spend contract instead of being launchable; py_compile passed, 138 focused planner/reducer/quality tests passed, JSON ledgers validate, npm web build passed with pre-existing warnings, and AWS shows no in-progress MD1/CV-HR processing/training jobs. A local no-copy CV-HR patched planner replay was attempted but stopped cleanly after EXIF reads stalled on Desktop/iCloud-backed source files without emitting artifacts.
+last_step: 2026-05-21T23:18Z: Committed and pushed seam_graph_sim3_v1 merge hardening plus weak-core visibility-cell repair patch as 626346baf71cf76ccd820517bbee5fac665d2115. Prior step isolated the CV-HR seam blocker to weak core support: old CV-HR leaves 00 and 10 had only 15 and 11 core cameras, and leaf 10 was mostly overlap (11 core / 125 overlap), which explains the scale-drift seams. Patched visibility_cell_v1 planning with COLMAP_VISIBILITY_CELL_MIN_CORE_IMAGES weak-cell merging and added a fanout contract --min-core-images gate. Existing CV-HR manifest now fails the no-spend contract instead of being launchable; py_compile passed, 138 focused planner/reducer/quality tests passed, JSON ledgers validate, npm web build passed with pre-existing warnings, and AWS shows no in-progress MD1/CV-HR processing/training jobs. A local no-copy CV-HR patched planner replay was attempted but stopped cleanly after EXIF reads stalled on Desktop/iCloud-backed source files without emitting artifacts.
 next_unblocked_step: Re-run patched CV-HR planner/manifest proof from a hydrated local archive or as the smallest bounded SageMaker planner-only job with the blocker/budget reason recorded, then run the smallest CV-HR repair canary only if the patched manifest passes static gates. Do not claim the new strict seam-graph path production-ready across datasets until CV-HR reconnects under the gates.
 owner_action_needed: none
 active_jobs: []
@@ -9,7 +9,7 @@ failed_jobs: ["md1-viscell-full-l06-1779150311"]
 held_jobs: []
 unrelated_active_jobs: []
 branch: agent-73948216-sfm-production-spine
-head: 01b872a43618ba84d3f386a0d5fe662005819a44
+head: 626346baf71cf76ccd820517bbee5fac665d2115
 current_rung: SFM_SEAM_GRAPH_SIM3_V1_CVHR_WEAK_CORE_REPAIR_PATCHED_NEEDS_PATCHED_PLANNER_REPLAY
 project_final_decision: md1_strict_seam_graph_replay_passed_cvhr_strict_seam_graph_replay_blocked_and_patched_for_replay
 project_level_unresolved_caveats: ["Downstream 3DGS/SOGS render and AI visual gates are separate from this SfM-only deliverable", "prior global sparse double-surface grid had warning cells", "CV-HR prior 11-leaf output passed older gates but fails new seam_graph_sim3_v1 strict replay because accepted seam graph is disconnected; weak-core leaves 00/10 and scale-blocked leaves 02/10 require patched planner replay before production promotion"]
@@ -72,7 +72,7 @@ sfm_stage_metrics:
 updated: 2026-05-20T01:15Z
 
 sfm_seam_graph_sim3_v1_hardening:
-  updated: 2026-05-21T22:56:00Z
+  updated: 2026-05-21T23:18:00Z
   scope: SfM reducer/viewer hardening only; no SageMaker jobs launched.
   status: no_spend_implementation_tests_and_real_md1_replay_passed_cvhr_replay_blocked_weak_core_repair_patched
   accountability_automation:
@@ -80,6 +80,7 @@ sfm_seam_graph_sim3_v1_hardening:
     kind: heartbeat
     cadence: every 30 minutes
     status: ACTIVE
+  pushed_commit: 626346baf71cf76ccd820517bbee5fac665d2115
   proof: logs/sfm-production-spine/seam_graph_sim3_v1_no_spend_proof_20260521T215008Z.json
   weak_core_repair:
     proof: logs/sfm-production-spine/seam_graph_sim3_v1_weak_core_repair_no_spend_proof_20260521T2251Z.json

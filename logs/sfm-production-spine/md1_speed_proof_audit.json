@@ -137,7 +137,7 @@
     "md1-tile03-h1i1lod-r41-1778982714",
     "md1-tile04-h1i1lod-r41-1778982715"
   ],
-  "current_branch_head": "01b872a43618ba84d3f386a0d5fe662005819a44",
+  "current_branch_head": "626346baf71cf76ccd820517bbee5fac665d2115",
   "current_rung": "SFM_SEAM_GRAPH_SIM3_V1_CVHR_WEAK_CORE_REPAIR_PATCHED_NEEDS_PATCHED_PLANNER_REPLAY",
   "dataset": "MD1 full 2157-image DJI dataset",
   "decision": "md1_strict_seam_graph_replay_passed_cvhr_strict_seam_graph_replay_blocked_and_patched_for_replay",
@@ -171,7 +171,7 @@
     "sogsViewerProof": "logs/sfm-production-spine/md1_r41_deployed_first_chunk_readiness_preview_proof_20260517T0520Z.json",
     "unresolvedCaveats": []
   },
-  "head": "01b872a43618ba84d3f386a0d5fe662005819a44",
+  "head": "626346baf71cf76ccd820517bbee5fac665d2115",
   "historical_nonblocking_notes": [
     "r24/r25 full-MD1 monolithic 3DGS failed and were not used as the production proof path.",
     "r29 worst447 ds1000 49152 passed only as bounded proof.",
@@ -179,7 +179,7 @@
     "r38/r39 compressor/viewer paths failed and were superseded by the r40/r41 H1 -i1 LOD path with visible deployed browser proof."
   ],
   "input_uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
-  "last_step": "2026-05-21T23:14Z: Patched weak-core visibility-cell merging and fanout --min-core-images gating are verified locally. Existing CV-HR manifest now blocks before fanout because chunks 00/10 have only 15/11 core images. A no-copy local patched CV-HR planner replay was attempted against /Users/gabrielhansen/Desktop/CV-HR, but exiftool remained in slow Desktop/iCloud-backed reads for about 16 minutes and emitted no planner artifacts, so it was stopped cleanly with no process left running.",
+  "last_step": "2026-05-21T23:18Z: Committed and pushed seam_graph_sim3_v1 merge hardening plus weak-core visibility-cell repair patch as 626346baf71cf76ccd820517bbee5fac665d2115. Current project remains not production-ready across CV-HR until patched planner replay and smallest repair canary pass.",
   "latest_artifacts": {
     "seam_graph_sim3_v1_weak_core_repair_no_spend_proof": "logs/sfm-production-spine/seam_graph_sim3_v1_weak_core_repair_no_spend_proof_20260521T2251Z.json"
   },
@@ -654,8 +654,8 @@
     "prior global sparse double-surface grid had warning cells",
     "CV-HR prior 11-leaf output passed older gates but fails new seam_graph_sim3_v1 strict replay because accepted seam graph is disconnected; weak-core leaves 00/10 and scale-blocked leaves 02/10 require patched planner replay before production promotion"
   ],
-  "updated": "2026-05-21T23:14:00Z",
-  "updated_at": "2026-05-21T23:14:00Z",
+  "updated": "2026-05-21T23:18:00Z",
+  "updated_at": "2026-05-21T23:18:00Z",
   "cvhr_visibility_cell_v1_pressure_test": {
     "updated": "2026-05-20T01:15Z",
     "status": "full_sfm_pressure_test_passed",
@@ -721,7 +721,7 @@
     ]
   },
   "seam_graph_sim3_v1_hardening": {
-    "updated": "2026-05-21T23:14:00Z",
+    "updated": "2026-05-21T23:18:00Z",
     "scope": "SfM reducer/viewer/planner hardening only; no SageMaker jobs launched for this weak-core repair patch.",
     "status": "no_spend_implementation_tests_and_real_md1_replay_passed_cvhr_replay_blocked_weak_core_repair_patched",
     "accountability_automation": {
@@ -825,7 +825,8 @@
       "seam-local BA is wired as an interface flag/report field but not yet executed by the local text reducer",
       "spatial jurisdiction bounds are not re-applied after Sim3 unless the planner/root COLMAP coordinate relationship is available; core-track ownership is enforced when manifest core names are supplied",
       "CV-HR needs a patched planner replay and smallest-leaf repair canary before the strict seam graph can be promoted across both datasets"
-    ]
+    ],
+    "pushed_commit": "626346baf71cf76ccd820517bbee5fac665d2115"
   },
   "proof_artifacts_extra": {
     "seam_graph_sim3_v1_weak_core_repair_no_spend_proof": "logs/sfm-production-spine/seam_graph_sim3_v1_weak_core_repair_no_spend_proof_20260521T2251Z.json"
