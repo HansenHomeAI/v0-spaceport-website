@@ -5180,3 +5180,8 @@ Next: commit/push this tick's evidence logs; no further stage is unblocked witho
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260521T225522Z.json
 
 Next: remain idle; do not re-launch HMC unless a new explicit acceptance gate is requested.
+
+## 2026-05-21T22:57:25Z Post-push CI proof (HMC)
+
+- Git head pushed: 533dc970a2b408c7e938b6ebcb30c8d8c6d85be5 ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T225724Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260521T225724Z.json)
