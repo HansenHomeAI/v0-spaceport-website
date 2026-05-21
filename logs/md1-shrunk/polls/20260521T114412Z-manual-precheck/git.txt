@@ -1,0 +1,9 @@
+timestamp_utc=20260521T114412Z
+git_branch=agent-113647-md1-baseline-e2e
+git_head=c004c88c942636b7f006944bca17ac76af0c989a
+## agent-113647-md1-baseline-e2e...origin/agent-113647-md1-baseline-e2e
+?? logs/md1-shrunk/polls/20260521T114302Z-bundle/
+?? logs/md1-shrunk/polls/20260521T114302Z-camera-suite/
+?? logs/md1-shrunk/polls/20260521T114302Z-edge-validate/
+?? logs/md1-shrunk/polls/20260521T114302Z-preflight/
+?? logs/md1-shrunk/polls/20260521T114412Z-manual-precheck/
