@@ -85,3 +85,4 @@
 [2026-05-21T10:36:48Z] poll sfm -> InProgress/KeyCount0 -> next poll
 [2026-05-21T10:37:43Z] push ledger -> head f1505ef9 -> postpush gh runs 0
 [2026-05-21T10:57:10Z] poll_sfm -> InProgress (cw_last=2026-05-21T00:01:36.365Z keycount=0) -> wait
+[2026-05-21T11:16:09Z] hmc sfm poll -> InProgress (cw last event 2026-05-21T00:01:36Z; s3=empty) -> continue polling
