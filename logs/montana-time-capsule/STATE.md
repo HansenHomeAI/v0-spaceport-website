@@ -5,6 +5,11 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-21T18:39:17Z Post-push CI proof (HMC)
+
+- Git head pushed: a3da53fbb91990b815217c894ccb4884f34fdd0f ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T183909Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260521T183909Z.json)
+
 ## 2026-05-21T18:37:57Z Monitor tick (HMC) - 3DGS still InProgress
 
 - Git: agent-40136728-montana-time-capsule @ 8252b2f21781ccd35e0c4d9b97214a91c5067c83 (status=logs/montana-time-capsule/git-status-20260521T183757Z.txt)
