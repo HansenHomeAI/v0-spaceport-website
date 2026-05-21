@@ -3993,3 +3993,8 @@ Poll `hmc-mtc-20260520T2015Z-sfm` until `Completed`, then run the time-capsule r
   - output prefix still empty (EndOfJob upload): logs/montana-time-capsule/s3-ls-colmap-output-hmc-mtc-20260520T2015Z-20260521T033608Z.txt
 - CI proof remains from last non-[skip ci] heads: gh run list (CDK success + Pages success) captured previously; no new run for 5a94a671.
 - Next: continue polling until SfM completes; only then run pinned 3DGS stage once.
+
+## 2026-05-21T03:41Z CI proof (post-push)
+- head pushed: 0e4faf83f05eb49a22d8864b2bbb0441c9abcdb6 ([skip ci])
+- gh run list: logs/montana-time-capsule/gh-run-list-agent-40136728-20260521T034108Z.json
+- runs for head: 0 (expected due to [skip ci]); last relevant green runs remain Pages 26200368328 + CDK 26202111411.
