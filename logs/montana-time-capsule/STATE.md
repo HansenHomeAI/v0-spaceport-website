@@ -4960,3 +4960,24 @@ Next: keep polling until SfM becomes Completed and the S3 output prefix is non-e
   - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260521T143454Z.json (count=0; [skip ci] expected)
 
 Next: keep polling until SfM becomes Completed and the S3 output prefix is non-empty; do not launch 3DGS yet.
+
+## 2026-05-21T20:17:42Z Monitor tick (HMC) - 3DGS Completed; compression launched
+
+- Repo: /Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule
+- Git: agent-40136728-montana-time-capsule @ c1c71fe7
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T201512Z.json (acct 975050048887)
+- SageMaker 3DGS:
+  - job: hmc-mtc-20260520T2015Z-3dgs
+  - status: Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T201512Z.json)
+  - output object present: logs/montana-time-capsule/s3-ls-spaceport-ml-processing-staging-3dgs-hmc-mtc-20260520T2015Z--20260521T201529Z-recursive-head200.txt
+- Runner:
+  - refreshed: logs/montana-time-capsule/hmc-state-refresh-20260521T201630Z.log (state=logs/montana-time-capsule/hmc-state.json; status=ready_for_compression)
+  - launched compression: logs/montana-time-capsule/hmc-launch-compress-20260521T201655Z.log (state status=compression_started)
+- SageMaker compression:
+  - job: hmc-mtc-20260520T2015Z-compression status=InProgress (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260521T201711Z.json)
+  - output prefix still empty (expected while InProgress): logs/montana-time-capsule/s3api-list-objects-v2-spaceport-ml-processing-staging-compressed-hmc-mtc-20260520T2015Z--20260521T201718Z-maxkeys20.json
+- CI:
+  - branch runs: logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T201553Z.json
+  - exact-head runs: 0 (expected due to [skip ci]) logs/montana-time-capsule/gh-run-list-exact-head-20260521T201553Z.json
+
+Next: poll `aws sagemaker describe-processing-job --processing-job-name hmc-mtc-20260520T2015Z-compression` until Completed and the compressed S3 prefix is non-empty; then advance to public bundle + viewer gates.

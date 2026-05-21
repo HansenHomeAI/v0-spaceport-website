@@ -1,0 +1,20 @@
+{
+    "IsTruncated": false,
+    "Contents": [
+        {
+            "Key": "3dgs/hmc-mtc-20260520T2015Z/hmc-mtc-20260520T2015Z-3dgs/output/model.tar.gz",
+            "LastModified": "2026-05-21T20:11:56+00:00",
+            "ETag": "\"4cfd36d6923cfff3f41f9f621a8132da-12\"",
+            "ChecksumAlgorithm": [
+                "CRC32"
+            ],
+            "Size": 96757222,
+            "StorageClass": "STANDARD"
+        }
+    ],
+    "Name": "spaceport-ml-processing-staging",
+    "Prefix": "3dgs/hmc-mtc-20260520T2015Z/",
+    "MaxKeys": 50,
+    "EncodingType": "url",
+    "KeyCount": 1
+}
