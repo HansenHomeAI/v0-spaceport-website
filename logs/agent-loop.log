@@ -106,3 +106,4 @@
 [2026-05-21T14:16:45Z] tick -> sfm=InProgress cw_last=2026-05-21T13:56:20Z s3_keycount=0 -> next=poll
 [2026-05-21T14:17:53Z] post-push-proof -> exact-head-runs=0
 [2026-05-21T14:35:35Z] poll sfm -> InProgress (CloudWatch linear solver failure line; KeyCount=0) -> continue polling
+[2026-05-21T14:36:25Z] push -> head 24dd7c63 pushed; exact-head GH runs=0 ([skip ci] expected)
