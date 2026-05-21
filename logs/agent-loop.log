@@ -107,3 +107,4 @@
 [2026-05-21T14:17:53Z] post-push-proof -> exact-head-runs=0
 [2026-05-21T14:35:35Z] poll sfm -> InProgress (CloudWatch linear solver failure line; KeyCount=0) -> continue polling
 [2026-05-21T14:36:25Z] push -> head 24dd7c63 pushed; exact-head GH runs=0 ([skip ci] expected)
+[2026-05-21T15:18:30Z] tick -> sfm=InProgress cw_tail=logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T151504Z-tail50.json s3_keycount=0 -> next=poll
