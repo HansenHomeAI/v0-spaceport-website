@@ -62,3 +62,4 @@
 [2026-05-21T06:37:09Z] poll_sfm -> hmc-mtc-20260520T2015Z-sfm still InProgress; CW lastEvent=2026-05-21T00:01:36.365Z; output empty -> next: wait/poll
 [2026-05-21T06:55:45Z] poll_sfm -> hmc-mtc-20260520T2015Z-sfm still InProgress; CW lastEvent=2026-05-21T00:01:36.365Z; output empty -> next: wait/poll
 [2026-05-21T07:15:59Z] HMC SfM poll -> InProgress (no output keys) -> poll again later
+[2026-05-21T07:37:39Z] poll sfm -> InProgress (no new CloudWatch since 2026-05-21T00:01:36Z; S3 KeyCount=0) -> wait
