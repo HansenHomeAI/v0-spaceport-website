@@ -19,6 +19,23 @@
 
 Next: keep polling until SfM becomes Completed and the S3 output prefix is non-empty; do not launch 3DGS yet.
 
+## 20260521T155623Z Monitor tick (HMC)
+
+- Git: agent-40136728-montana-time-capsule @ 2eceea3a6897f40e31bd02964aaeb9da665bca2b (`chore: record post-push ci proof 20260521T1538Z [skip ci]`)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T155452Z.json (acct 975050048887)
+- SageMaker SfM:
+  - job: hmc-mtc-20260520T2015Z-sfm
+  - status: InProgress (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T155503Z.json; list=logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T155509Z.json)
+  - CloudWatch best stream: logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T155515Z.json (tail=logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T155525Z-tail50.json; last event 2026-05-21T15:54:16Z is linear solver failure warning)
+  - output prefix still empty (S3UploadMode=EndOfJob; KeyCount=0): logs/montana-time-capsule/s3api-list-objects-v2-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T155543Z-max20.json (ls=logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T155535Z-tail50.txt)
+- Input zip head: logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat-20260521T155623Z.json (etag=ed86661a82b28856997a09f129ce6bec-1031; size=8646557673)
+- Runner state refreshed (no launch): logs/montana-time-capsule/hmc-state-refresh-20260521T155552Z.log (state file logs/montana-time-capsule/hmc-state.json; sfm_status=InProgress)
+- CI:
+  - branch runs: logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T155623Z.json (latest Pages + CDK green are on non-[skip ci] heads; see gh-run-26200368328-pages.txt for PREVIEW_URL)
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260521T155623Z.json (count=0; [skip ci] expected)
+
+Next: keep polling until SfM becomes Completed and the S3 output prefix is non-empty; do not launch 3DGS yet.
+
 ## 2026-05-21T15:37:59Z Post-push CI proof (HMC)
 
 - Git head pushed: 58ccf7af2e1f219cc5d184724fa5b6d497f54582 ([skip ci])

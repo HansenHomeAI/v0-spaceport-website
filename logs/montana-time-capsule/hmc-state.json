@@ -143,6 +143,7 @@
   },
   "sfm_poll": {
     "aws_sts_path": "logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T153446Z.json",
+    "cloudwatch_best_stream_path": "logs/montana-time-capsule/cloudwatch-best-stream-hmc-mtc-20260520T2015Z-sfm-20260521T153506Z.txt",
     "cloudwatch_describe_log_streams_path": "logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T153506Z.json",
     "cloudwatch_get_log_events_head_path": "logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T083442Z-head.json",
     "cloudwatch_get_log_events_since2h_path": "logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm_algo-1-1779308230-20260521T055435Z.json",
@@ -155,11 +156,10 @@
     "s3_ls_sfm_output_path": "logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T153506Z-tail50.txt",
     "s3api_list_objects_sfm_output_path": "logs/montana-time-capsule/s3api-list-objects-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T153506Z-max5.json",
     "sagemaker_describe_path": "logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T153446Z.json",
-    "sagemaker_list_processing_jobs_path": "logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T153446Z.json",
-    "cloudwatch_best_stream_path": "logs/montana-time-capsule/cloudwatch-best-stream-hmc-mtc-20260520T2015Z-sfm-20260521T153506Z.txt"
+    "sagemaker_list_processing_jobs_path": "logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T153446Z.json"
   },
   "sfm_status": "InProgress",
   "status": "sfm_running",
-  "updated_at": "2026-05-21T15:36:43.745417Z",
+  "updated_at": "2026-05-21T15:55:53Z",
   "zip_entries": 2063
 }
