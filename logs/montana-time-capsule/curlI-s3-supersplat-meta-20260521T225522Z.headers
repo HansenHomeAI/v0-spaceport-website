@@ -1,0 +1,14 @@
+HTTP/1.1 200 OK
+x-amz-id-2: HfOAZ3YuSrhjAlDTFGeMSK74+FSN8Rj8yGVcTYKfL5PkKeq4zIn2BSRwsccoAPWnb1377otlPiXlZx3U75MMfg==
+x-amz-request-id: TVWYHB2GDH5W0990
+Date: Thu, 21 May 2026 22:56:15 GMT
+Last-Modified: Thu, 21 May 2026 20:25:10 GMT
+ETag: "994e5d57f052e552b8cce2e05d4debf4"
+x-amz-server-side-encryption: aws:kms
+x-amz-server-side-encryption-aws-kms-key-id: arn:aws:kms:us-west-2:975050048887:key/e498a88e-6b23-44e3-90bd-f35b25d6e420
+x-amz-version-id: .DMI48S5bbpRJy04I8F2SEJ85.ppT_Ev
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1359
+Server: AmazonS3
+
