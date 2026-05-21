@@ -1,0 +1,5 @@
+# postpush CI snapshot
+timestamp=20260521T062034Z
+head=a010ac365415428db4bd0591ba249df62ad73a72
+exact_head_run_count=0
+note=expected for [skip ci]
