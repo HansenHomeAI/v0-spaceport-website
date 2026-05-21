@@ -5214,3 +5214,22 @@ Next: remain idle; do not re-launch HMC unless a new explicit acceptance gate is
 
 - Git head pushed: 533dc970a2b408c7e938b6ebcb30c8d8c6d85be5 ([skip ci])
 - Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T225724Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260521T225724Z.json)
+
+## 2026-05-21T23:35:37Z HEARTBEAT monitor (HMC) - terminal reconfirmed + viewer still HTTP 200 (no launches)
+
+- Git: agent-40136728-montana-time-capsule @ 5288521fec868bf7788d9ba6234c6302afad2825 ([skip ci]) (status=logs/montana-time-capsule/git-status-20260521T233537Z.txt)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T233537Z.json (acct 975050048887)
+- SageMaker:
+  - SfM processing job: hmc-mtc-20260520T2015Z-sfm status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T233537Z.json)
+  - 3DGS training job: hmc-mtc-20260520T2015Z-3dgs status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T233537Z.json)
+  - compression processing job: hmc-mtc-20260520T2015Z-compression status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260521T233537Z.json)
+- S3:
+  - supersplat bundle listing: logs/montana-time-capsule/s3-ls-supersplat_bundle-20260521T233537Z.txt
+- Hosted preview viewer reachability:
+  - skybox URL: logs/montana-time-capsule/heartbeat-viewer-skybox-url-20260521T233537Z.txt (headers=logs/montana-time-capsule/curlI-viewer-skybox-20260521T233537Z.headers; HTTP 200)
+  - no-sky URL: logs/montana-time-capsule/heartbeat-viewer-nosky-url-20260521T233537Z.txt (headers=logs/montana-time-capsule/curlI-viewer-nosky-20260521T233537Z.headers; HTTP 200)
+- CI:
+  - branch runs: logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T233537Z.json
+  - exact-head run count: logs/montana-time-capsule/gh-exact-head-run-count-20260521T233537Z.txt (0; expected due to [skip ci] head)
+
+Next: remain idle; do not re-launch HMC unless a new explicit acceptance gate is requested.
