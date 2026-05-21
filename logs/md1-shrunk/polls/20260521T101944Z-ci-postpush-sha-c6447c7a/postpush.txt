@@ -1,0 +1,10 @@
+# postpush CI snapshot
+
+timestamp_utc=20260521T101944Z
+branch=agent-113647-md1-baseline-e2e
+head=c6447c7a9ae4e43bd5db330bb3a8ef537b746948
+head_subject=chore: md1-shrunk heartbeat verify 20260521T101526Z [skip ci]
+exact_head_run_count=0
+
+## gh run list (exact head)
+[]
