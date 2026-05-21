@@ -1,4 +1,7 @@
 {
+  "ci": {
+    "gh_run_list_path": "logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T055517Z.json"
+  },
   "created_at": "2026-05-20T20:15:32Z",
   "dataset": "HMC",
   "first_images": [
@@ -128,18 +131,18 @@
       }
     ]
   },
+  "sfm_poll": {
+    "aws_sts_path": "logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T055407Z.json",
+    "cloudwatch_describe_log_streams_path": "logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T055427Z.json",
+    "cloudwatch_get_log_events_since2h_path": "logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm_algo-1-1779308230-20260521T055435Z.json",
+    "cloudwatch_get_log_events_since6h_path": "logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T053439Z-since6h.json",
+    "s3_ls_sfm_output_path": "logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T055505Z.txt",
+    "s3api_list_objects_sfm_output_path": "logs/montana-time-capsule/s3api-list-objects-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T055505Z.json",
+    "sagemaker_describe_path": "logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T055420Z.json",
+    "sagemaker_list_processing_jobs_path": "logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T055420Z.json"
+  },
   "sfm_status": "InProgress",
   "status": "sfm_running",
-  "updated_at": "2026-05-21T05:39:02Z",
-  "zip_entries": 2063,
-  "sfm_poll": {
-    "aws_sts_path": "logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T053414Z.json",
-    "sagemaker_describe_path": "logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T053844Z.json",
-    "cloudwatch_describe_log_streams_path": "logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T053844Z.json",
-    "cloudwatch_get_log_events_since6h_path": "logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T053439Z-since6h.json",
-    "cloudwatch_get_log_events_since2h_path": "logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T053844Z-since2h.json"
-  },
-  "ci": {
-    "gh_run_list_path": "logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T053511Z.json"
-  }
+  "updated_at": "2026-05-21T05:56:01Z",
+  "zip_entries": 2063
 }
