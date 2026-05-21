@@ -103,6 +103,29 @@ Next: keep polling until `describe-processing-job` reports Completed; do not lau
 
 Next: keep polling until SfM becomes Completed and the S3 output prefix is non-empty; do not launch 3DGS yet.
 
+## 2026-05-21T17:58:35Z Monitor tick (HMC)
+
+- Git: agent-40136728-montana-time-capsule @ c438fc7a83f75ff84a43cef925c89c44063c773a (`chore: record post-push proof 20260521T1738Z [skip ci]`)
+  - status: logs/montana-time-capsule/git-status-20260521T175835Z.txt
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T175459Z.json (acct 975050048887)
+- Input archive (no re-upload):
+  - s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip (head=logs/montana-time-capsule/s3api-head-object-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260521T175645Z.json; ContentLength=8646557673; ETag=ed86661a82b28856997a09f129ce6bec-1031)
+- SageMaker SfM:
+  - job: hmc-mtc-20260520T2015Z-sfm
+  - status: Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T175534Z.json)
+  - output prefix non-empty: logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T175459Z-tail50.txt (database.db + sfm_metadata.json + images/ + sparse/)
+- SageMaker 3DGS (pinned sha256:482c1789…):
+  - job: hmc-mtc-20260520T2015Z-3dgs
+  - status: InProgress (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T175541Z.json)
+  - CloudWatch tail: logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-3dgs-20260521T175621Z-tail80.json (training started; COLMAP->transforms validated; 2022/2063 images have poses)
+  - S3 output prefix still empty (expected while InProgress): logs/montana-time-capsule/s3-ls-ml-processing-staging-3dgs-hmc-mtc-20260520T2015Z-20260521T175628Z-recursive-head200.txt
+- Runner state updated: logs/montana-time-capsule/hmc-state.json (status=3dgs_running; sfm_status=Completed; 3dgs_status=InProgress; updated_at=2026-05-21T17:58:05Z)
+- CI:
+  - exact head is [skip ci] -> no exact-head workflow runs (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-20260521T175459Z.json)
+  - last known successful runs on this branch: Pages run 26200368328 (headSha 88b1848) + CDK run 26223584298 (headSha 0e48d07) (branch list=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T175459Z.json)
+
+Next: keep polling until 3DGS becomes Completed and output artifacts appear; then launch compression (pinned sha256:a0784727…).
+
 ## 20260521T155623Z Monitor tick (HMC)
 
 - Git: agent-40136728-montana-time-capsule @ 2eceea3a6897f40e31bd02964aaeb9da665bca2b (`chore: record post-push ci proof 20260521T1538Z [skip ci]`)

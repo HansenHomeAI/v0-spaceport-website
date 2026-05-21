@@ -1,0 +1,22 @@
+## agent-40136728-montana-time-capsule...origin/agent-40136728-montana-time-capsule
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T175459Z.json
+?? logs/montana-time-capsule/cloudwatch-best-stream-hmc-mtc-20260520T2015Z-3dgs-20260521T175607Z.txt
+?? logs/montana-time-capsule/cloudwatch-best-stream-hmc-mtc-20260520T2015Z-3dgs-20260521T175621Z.txt
+?? logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-3dgs-20260521T175556Z.json
+?? logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-3dgs-20260521T175607Z.json
+?? logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-3dgs-20260521T175621Z.json
+?? logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-3dgs-20260521T175607Z-tail80.json
+?? logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-3dgs-20260521T175621Z-tail80.json
+?? logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T175459Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-20260521T175459Z.json
+?? logs/montana-time-capsule/git-status-20260521T175835Z.txt
+?? logs/montana-time-capsule/s3-ls-ml-processing-staging-3dgs-hmc-mtc-20260520T2015Z-20260521T175500Z-head200.txt
+?? logs/montana-time-capsule/s3-ls-ml-processing-staging-3dgs-hmc-mtc-20260520T2015Z-20260521T175628Z-recursive-head200.txt
+?? logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T175459Z-tail50.txt
+?? logs/montana-time-capsule/s3api-head-object-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260521T175637Z.json
+?? logs/montana-time-capsule/s3api-head-object-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260521T175645Z.json
+?? logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T175459Z.json
+?? logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T175541Z.json
+?? logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T175459Z.json
+?? logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T175534Z.json
+c438fc7a (HEAD -> agent-40136728-montana-time-capsule, origin/agent-40136728-montana-time-capsule) chore: record post-push proof 20260521T1738Z [skip ci]
