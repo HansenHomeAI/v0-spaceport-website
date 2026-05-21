@@ -42,6 +42,20 @@ Next: keep polling until SfM becomes Completed and the S3 output prefix is non-e
 - CI: exact head is [skip ci] (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T091802Z.json; branch=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-postpush-20260521T091802Z.json)
 - CI: verified current exact head is also [skip ci] (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T091833Z.json; branch=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-postpush-20260521T091833Z.json)
 
+## 2026-05-21T09:36:33Z Monitor tick (HMC)
+
+- Git: agent-40136728-montana-time-capsule @ 980465cb31fe3be8b273ae722ede2e9bdd3c4b92 (`chore: update ci proof 20260521T0918Z [skip ci]`)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T093519Z.json (acct 975050048887)
+- SageMaker SfM:
+  - job: hmc-mtc-20260520T2015Z-sfm
+  - status: InProgress (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T093430Z.json; list=logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T093430Z.json)
+  - CloudWatch newest stream still lastEvent=2026-05-21T00:01:36.365Z (streams=logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T093440Z.json; newest=logs/montana-time-capsule/cloudwatch-newest-stream-hmc-mtc-20260520T2015Z-sfm-20260521T093440Z.txt; tail=logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T093440Z-tail.json)
+  - output prefix still empty (KeyCount=0): logs/montana-time-capsule/s3api-list-objects-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T093431Z.json
+- Runner state refreshed (no launch): logs/montana-time-capsule/hmc-state-refresh-20260521T093610Z.log (state file logs/montana-time-capsule/hmc-state.json; sfm_status=InProgress; updated_at=2026-05-21T09:36:11Z)
+- CI: exact head is [skip ci] (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-20260521T093624Z.json; branch=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T093624Z.json)
+
+Next: keep polling until SfM becomes Completed and the S3 output prefix is non-empty; do not launch 3DGS yet.
+
 ## 2026-05-21T08:14:10Z Monitor tick (HMC)
 
 - Git: agent-40136728-montana-time-capsule @ b632f75e6554e0664525b189ada46127492a763f (`chore: monitor HMC Montana SfM 20260521T0754Z [skip ci]`)
