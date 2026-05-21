@@ -1,0 +1,1 @@
+sfm_status=InProgress last_cloudwatch_event_ms=n/a s3_keycount=0
