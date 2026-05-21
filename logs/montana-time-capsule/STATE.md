@@ -3823,3 +3823,62 @@ Poll `hmc-mtc-20260520T2015Z-sfm` until `Completed`, then run the time-capsule r
 - s3 outputs listing: s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/colmap/ empty (expected until EndOfJob)
 - gh run list evidence: logs/montana-time-capsule/gh-run-list-20260521T005449Z.txt (latest CDK Deploy success 2026-05-20T20:19:47Z)
 - next: wait for SFM Completed; then run runner once with `--launch` to start pinned Montana 3DGS (sha256:482c1789...)
+
+## 2026-05-21T01:58Z Monitor Pass (HMC)
+
+- Repo/worktree: /Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule
+- Git branch/head/status:
+  - `agent-40136728-montana-time-capsule`
+  - head `81f08fbcbf1b32713cf040ae8cbbc79c6b9076ba`
+  - status clean (`## agent-40136728-montana-time-capsule...origin/agent-40136728-montana-time-capsule`)
+- AWS identity: account `975050048887`, arn `arn:aws:iam::975050048887:root` (region `us-west-2`)
+
+### HMC archive proof (do not re-upload; staging search exhausted)
+
+- Confirmed object exists in staging account in bucket `spaceport-uploads`:
+  - `s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip`
+  - Head proof: LastModified `2026-05-16T17:35:27Z`, Size `8646557673` (~8.65GB), ETag `ed86661a82b28856997a09f129ce6bec-1031`
+  - Timestamp proof: key prefix `1778952912508` decodes to `2026-05-16T17:35:12.508Z`
+- Confirmed manifest exists and matches the zip:
+  - `s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.manifest.json`
+  - Manifest proof: `photoCount=2063`, `flatZipBytes=8646557673`, `flatZipSha256=8ac35927d5c90969f5e10f1fa011333e6065140924986c75f18fc81f899b1df2`
+  - Source zip size (original Dropbox zip): `8831871811` (~8.83GB) recorded in the manifest.
+- Exhaustive search result (by name tokens + May epoch prefixes): no matching HMC artifacts discovered in `spaceport-uploads-staging`.
+
+### SageMaker (SfM)
+
+- Job: `hmc-mtc-20260520T2015Z-sfm`
+- Status: `InProgress` (pinned image sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811)
+- CloudWatch evidence (last 6h): spatial matcher recovery + vocab tree builder fallback observed at ~`2026-05-21T00:01Z`.
+- Output prefix still empty (expected until `S3UploadMode=EndOfJob`):
+  - `s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/colmap`
+
+### GitHub Actions (exact head)
+
+- Latest branch runs are green:
+  - Deploy Next.js to Cloudflare Pages run `26200368328` succeeded (alias + hash URLs captured in log).
+  - CDK Deploy run `26200368245` succeeded.
+- Preview URLs (from the Pages job log):
+  - Alias: `https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev`
+  - Hash: `https://9480e9f2.v0-spaceport-website-preview2.pages.dev`
+
+### Runner refresh (no launch)
+
+- Refreshed `logs/montana-time-capsule/hmc-state.json` using `cv_hr_time_capsule.py` without `--launch` (no new jobs created).
+
+### Evidence files (this pass)
+
+- `logs/montana-time-capsule/verify-basics-20260521T015341Z.log`
+- `logs/montana-time-capsule/gh-run-26200368328-pages.log`
+- `logs/montana-time-capsule/gh-run-26200368245-cdk.log`
+- `logs/montana-time-capsule/s3-search-hmc-20260521T015611Z.json`
+- `logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260521T015611Z.json`
+- `logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.manifest.json-20260521T015611Z.json`
+- `logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T015445Z.json`
+- `logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260521T015510Z-since6h.log`
+- `logs/montana-time-capsule/hmc-state-refresh-20260521T015726Z.json`
+
+### Next unblocked step
+
+- Keep polling until SfM becomes `Completed`; immediately after completion, run once (and only once) to launch pinned 3DGS:
+  - `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --dataset-id HMC --run-prefix hmc-mtc --subset-strategy hmc_full_2063_montana_time_capsule --expected-image-count 2063 --state-file logs/montana-time-capsule/hmc-state.json --launch`
