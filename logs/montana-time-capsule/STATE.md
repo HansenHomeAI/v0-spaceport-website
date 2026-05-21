@@ -218,6 +218,37 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
 - CloudWatch progress sample:
   - Latest sampled: `Processed file [831/2063]` (feature extraction); log captured in `logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260520T205433Z.log`.
 - S3 outputs:
+  - (SfM uses `S3UploadMode=EndOfJob`; prefix is empty while `InProgress`.)
+
+## 2026-05-21T01:35Z Monitor Pass (HMC)
+
+- Branch/head/status:
+  - `git rev-parse --abbrev-ref HEAD && git rev-parse HEAD && git status --short --branch`
+  - Result: branch `agent-40136728-montana-time-capsule`, head `15774b8e377c749455feeec68b3d269458d9795b`, status clean.
+- AWS identity:
+  - `/opt/homebrew/bin/aws sts get-caller-identity`
+  - Result: account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
+- GitHub workflows (exact-head):
+  - `gh run list --branch agent-40136728-montana-time-capsule --limit 20`
+  - Result: latest `CDK Deploy` run `26187619621` succeeded for `chore: launch hmc time capsule sfm`.
+- HMC input archive proof (do not upload):
+  - `/opt/homebrew/bin/aws s3api head-object --bucket spaceport-uploads --key 1778952912508-hmc-high-mountain-camp-images-flat.zip`
+  - Proof: `ContentLength=8646557673` (~8.65 GB), `ETag="ed86661a82b28856997a09f129ce6bec-1031"`, `LastModified=2026-05-16T17:35:27Z` (Saturday May 16, 2026). Evidence: `logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260521T001534Z.json`.
+  - Staging upload bucket check: `aws s3api list-objects-v2 --bucket spaceport-uploads-staging --prefix 1778952912508-hmc-high-mountain-camp-images-flat.zip` returned no objects.
+- SageMaker status:
+  - `/opt/homebrew/bin/aws sagemaker describe-processing-job --processing-job-name hmc-mtc-20260520T2015Z-sfm`
+  - Result: `ProcessingJobStatus=InProgress`. Evidence: `logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T013435Z.json`.
+  - Duplicate-job guard: `aws sagemaker list-processing-jobs --name-contains hmc-mtc-20260520T2015Z` returned only `hmc-mtc-20260520T2015Z-sfm` (`InProgress`).
+- CloudWatch progress snapshot (most recent within last 6h window):
+  - `aws logs tail /aws/sagemaker/ProcessingJobs --since 6h --log-stream-name-prefix hmc-mtc-20260520T2015Z-sfm --format short`
+  - Last captured lines show chunk matcher recovery finishing and vocab tree build continuing; includes expected retry when `colmap vocab_tree_builder` rejects `--max_num_images`. Evidence: `logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260521T013456Z-since6h.log`.
+- S3 outputs:
+  - `aws s3 ls s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/ --recursive`
+  - Result: empty (expected until end-of-job upload).
+
+### Next unblocked step
+
+Poll `hmc-mtc-20260520T2015Z-sfm` until `Completed`, then run the time-capsule runner once to advance exactly one stage to 3DGS (using pinned 3DGS image sha256 `482c1789...`).
   - Prefix currently empty (EndOfJob upload): `s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/colmap/`.
 - Next unblocked step:
   - Keep polling until `hmc-mtc-20260520T2015Z-sfm` becomes `Completed`, then run `python3 scripts/montana_time_capsule/hmc_time_capsule.py --launch` once to launch pinned 3DGS.

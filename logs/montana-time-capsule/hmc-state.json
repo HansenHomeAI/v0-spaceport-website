@@ -21,8 +21,10 @@
     "hmc_2063_DJI_0717.JPG"
   ],
   "monitor": {
-    "checked_at": "2026-05-21T00:17:41Z",
-    "sagemaker_describe_path": "logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T001418Z.json",
+    "checked_at": "2026-05-21T01:35:50Z",
+    "s3_head_input_path": "logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260521T001534Z.json",
+    "sagemaker_describe_path": "logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T013435Z.json",
+    "cloudwatch_tail_since6h_path": "logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260521T013456Z-since6h.log",
     "sfm_status": "InProgress"
   },
   "profile": "brass-chunked",
@@ -121,6 +123,6 @@
   },
   "sfm_status": "InProgress",
   "status": "sfm_running",
-  "updated_at": "2026-05-21T01:19:08Z",
+  "updated_at": "2026-05-21T01:35:50Z",
   "zip_entries": 2063
 }
