@@ -5,6 +5,25 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-21T18:37:57Z Monitor tick (HMC) - 3DGS still InProgress
+
+- Git: agent-40136728-montana-time-capsule @ 8252b2f21781ccd35e0c4d9b97214a91c5067c83 (status=logs/montana-time-capsule/git-status-20260521T183757Z.txt)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T183556Z.json (acct 975050048887)
+- SageMaker:
+  - SfM job: hmc-mtc-20260520T2015Z-sfm status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T183556Z.json)
+  - 3DGS job: hmc-mtc-20260520T2015Z-3dgs status=InProgress (SecondaryStatus=Training) (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T183556Z.json)
+  - CloudWatch streams: logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-3dgs-20260521T183612Z.json (best=hmc-mtc-20260520T2015Z-3dgs/algo-1-1779381402)
+  - CloudWatch tail: logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-3dgs-20260521T183612Z-tail120.json (last event appears 2026-05-21T16:46:58Z)
+- S3:
+  - SfM prefix non-empty: logs/montana-time-capsule/s3api-list-objects-v2-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T183648Z-max20.json (KeyCount=20; truncated)
+  - 3DGS output prefix still empty: logs/montana-time-capsule/s3api-list-objects-v2-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-3dgs-20260521T183648Z-max50.json (KeyCount=0)
+- Runner state refreshed (no launch): logs/montana-time-capsule/hmc-state-refresh-20260521T183747Z.log (state file logs/montana-time-capsule/hmc-state.json; status=3dgs_running; sfm_status=Completed; 3dgs_status=InProgress)
+- CI:
+  - exact-head runs: 0 (expected due to [skip ci]) logs/montana-time-capsule/gh-run-list-exact-head-20260521T183718Z.json
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260521T183718Z.json
+
+Next: keep polling until `describe-training-job` is Completed; do not launch compression until 3DGS is Completed.
+
 ## 2026-05-21T17:36:40Z Monitor tick (HMC) - 3DGS still InProgress
 
 - Git: agent-40136728-montana-time-capsule @ 8b199e9b4c07c2020a7da0b7a00488856fcf9032 (status=logs/montana-time-capsule/git-status-20260521T173640Z.txt)

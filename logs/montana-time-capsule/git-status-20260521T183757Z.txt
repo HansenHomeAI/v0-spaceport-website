@@ -1,0 +1,18 @@
+ M logs/montana-time-capsule/hmc-state.json
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T183538Z.json
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T183556Z.json
+?? logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-3dgs-20260521T183556Z.json
+?? logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-3dgs-20260521T183612Z.json
+?? logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-3dgs-20260521T183612Z-tail120.json
+?? logs/montana-time-capsule/gh-run-list-branch-20260521T183705Z.json
+?? logs/montana-time-capsule/gh-run-list-branch-20260521T183718Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-20260521T183718Z.json
+?? logs/montana-time-capsule/git-status-20260521T183757Z.txt
+?? logs/montana-time-capsule/s3-ls-ml-processing-staging-3dgs-hmc-mtc-20260520T2015Z-20260521T183648Z-head80.txt
+?? logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T183633Z-head60.txt
+?? logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T183648Z-head60.txt
+?? logs/montana-time-capsule/s3api-list-objects-v2-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-3dgs-20260521T183648Z-max50.json
+?? logs/montana-time-capsule/s3api-list-objects-v2-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T183633Z-max20.json
+?? logs/montana-time-capsule/s3api-list-objects-v2-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T183648Z-max20.json
+?? logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T183556Z.json
+?? logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T183556Z.json
