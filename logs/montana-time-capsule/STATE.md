@@ -10,6 +10,11 @@
 - Git head pushed: bf33d0e2ea4a07e47449c3c8ef1c27cf666e8229 ([skip ci])
 - Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T185911Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260521T185911Z.json)
 
+## 2026-05-21T19:18:43Z Post-push CI proof (HMC)
+
+- Git head pushed: daded081f4fc8c21601ae010df6fae693de0ff58 ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T191843Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260521T191843Z.json)
+
 ## 2026-05-21T19:16:59Z Monitor tick (HMC) - 3DGS still InProgress
 
 - Git: agent-40136728-montana-time-capsule @ 3ff7c291a30f7c4ea87352cbd48e93046e48c20b (status=logs/montana-time-capsule/git-status-20260521T191454Z.txt)
