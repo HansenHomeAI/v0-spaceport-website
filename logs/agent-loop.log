@@ -115,3 +115,4 @@
 [20260521T163601Z] hmc 3dgs launched -> status check
 [20260521T163756Z] post-push-proof -> head a0e92de0 pushed; exact-head GH runs=0 ([skip ci] expected); proof=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T163814Z.json
 [2026-05-21T17:18:24Z] hmc 3dgs poll -> InProgress (no outputs yet) -> next: wait for Completed then launch compression
+[2026-05-21T17:37:13Z] poll-3dgs -> InProgress (S3 KeyCount=0) -> wait

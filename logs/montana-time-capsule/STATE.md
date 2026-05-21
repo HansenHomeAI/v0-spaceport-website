@@ -5,6 +5,24 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-21T17:36:40Z Monitor tick (HMC) - 3DGS still InProgress
+
+- Git: agent-40136728-montana-time-capsule @ 8b199e9b4c07c2020a7da0b7a00488856fcf9032 (status=logs/montana-time-capsule/git-status-20260521T173640Z.txt)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T173439Z.json (acct 975050048887)
+- SageMaker:
+  - SfM job: hmc-mtc-20260520T2015Z-sfm status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T173439Z.json)
+  - 3DGS job: hmc-mtc-20260520T2015Z-3dgs status=InProgress (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T173439Z.json)
+  - CloudWatch stream discovery: logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-3dgs-20260521T173640Z.json (best=logs/montana-time-capsule/cloudwatch-best-stream-hmc-mtc-20260520T2015Z-3dgs-20260521T173640Z.txt)
+  - CloudWatch tail (since2h): logs/montana-time-capsule/cloudwatch-filter-log-events-hmc-mtc-20260520T2015Z-3dgs-20260521T173640Z-since2h-limit120.json
+- S3:
+  - 3DGS output prefix still empty (KeyCount=0): logs/montana-time-capsule/s3api-list-objects-v2-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-3dgs-20260521T173439Z-maxkeys10.json
+  - 3DGS s3 ls: logs/montana-time-capsule/s3-ls-ml-processing-staging-3dgs-hmc-mtc-20260520T2015Z-20260521T173439Z-tail20.txt
+- CI:
+  - exact-head runs: 0 (expected due to [skip ci]) logs/montana-time-capsule/gh-run-list-exact-head-20260521T173602Z.json
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260521T173602Z.json
+
+Next: keep polling until `describe-training-job` is Completed; do not launch compression until 3DGS is Completed.
+
 ## 2026-05-21T17:18:00Z Monitor tick (HMC) - 3DGS still InProgress
 
 - Git: agent-40136728-montana-time-capsule @ 3489fef6ec6d32fa983d755d12259e2e26685e08 (status=logs/montana-time-capsule/git-status-20260521T171800Z.txt)
