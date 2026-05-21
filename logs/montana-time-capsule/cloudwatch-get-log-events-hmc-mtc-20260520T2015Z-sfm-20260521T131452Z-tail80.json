@@ -1,0 +1,406 @@
+{
+    "events": [
+        {
+            "timestamp": 1779367116991,
+            "message": "COLMAP[chunk_model_merger_10] I20260521 12:38:36.227167  8107 model.cc:790] --- Merged reconstruction ---",
+            "ingestionTime": 1779367122418
+        },
+        {
+            "timestamp": 1779367116991,
+            "message": "COLMAP[chunk_model_merger_10] I20260521 12:38:36.227174  8107 model.cc:791] Images: 1331",
+            "ingestionTime": 1779367122418
+        },
+        {
+            "timestamp": 1779367116991,
+            "message": "COLMAP[chunk_model_merger_10] I20260521 12:38:36.227185  8107 model.cc:792] Points: 963213",
+            "ingestionTime": 1779367122418
+        },
+        {
+            "timestamp": 1779367118991,
+            "message": "2026-05-21 12:38:38,210 - INFO - [chunk_model_merger_11] colmap model_merger --input_path1 /tmp/colmap_sfm_kvb56gze/merged_chunk_model_10 --input_path2 /tmp/colmap_sfm_kvb56gze/chunk_11/sparse_initial/0 --output_path /tmp/colmap_sfm_kvb56gze/merged_chunk_model_11 --max_reproj_error 64",
+            "ingestionTime": 1779367122418
+        },
+        {
+            "timestamp": 1779367120992,
+            "message": "COLMAP[chunk_model_merger_11] I20260521 12:38:40.379132  8122 model.cc:776] --- Reconstruction 1 ---",
+            "ingestionTime": 1779367122418
+        },
+        {
+            "timestamp": 1779367120992,
+            "message": "COLMAP[chunk_model_merger_11] I20260521 12:38:40.379427  8122 model.cc:777] Images: 1331",
+            "ingestionTime": 1779367122418
+        },
+        {
+            "timestamp": 1779367120992,
+            "message": "COLMAP[chunk_model_merger_11] I20260521 12:38:40.379444  8122 model.cc:778] Points: 963213",
+            "ingestionTime": 1779367122418
+        },
+        {
+            "timestamp": 1779367120992,
+            "message": "COLMAP[chunk_model_merger_11] I20260521 12:38:40.600409  8122 model.cc:782] --- Reconstruction 2 ---",
+            "ingestionTime": 1779367122418
+        },
+        {
+            "timestamp": 1779367120992,
+            "message": "COLMAP[chunk_model_merger_11] I20260521 12:38:40.600453  8122 model.cc:783] Images: 141",
+            "ingestionTime": 1779367122418
+        },
+        {
+            "timestamp": 1779367120992,
+            "message": "COLMAP[chunk_model_merger_11] I20260521 12:38:40.600467  8122 model.cc:784] Points: 91971",
+            "ingestionTime": 1779367122418
+        },
+        {
+            "timestamp": 1779367120992,
+            "message": "COLMAP[chunk_model_merger_11] I20260521 12:38:40.600476  8122 model.cc:786] --- Merging reconstructions ---",
+            "ingestionTime": 1779367122418
+        },
+        {
+            "timestamp": 1779367123993,
+            "message": "COLMAP[chunk_model_merger_11] I20260521 12:38:43.306653  8122 model.cc:789] => Merge succeeded",
+            "ingestionTime": 1779367129459
+        },
+        {
+            "timestamp": 1779367123993,
+            "message": "COLMAP[chunk_model_merger_11] I20260521 12:38:43.306705  8122 model.cc:790] --- Merged reconstruction ---",
+            "ingestionTime": 1779367129459
+        },
+        {
+            "timestamp": 1779367123993,
+            "message": "COLMAP[chunk_model_merger_11] I20260521 12:38:43.306715  8122 model.cc:791] Images: 1442",
+            "ingestionTime": 1779367129459
+        },
+        {
+            "timestamp": 1779367123993,
+            "message": "COLMAP[chunk_model_merger_11] I20260521 12:38:43.306728  8122 model.cc:792] Points: 1029420",
+            "ingestionTime": 1779367129459
+        },
+        {
+            "timestamp": 1779367125994,
+            "message": "2026-05-21 12:38:45,276 - INFO - [chunk_model_merger_12] colmap model_merger --input_path1 /tmp/colmap_sfm_kvb56gze/merged_chunk_model_11 --input_path2 /tmp/colmap_sfm_kvb56gze/chunk_12/sparse_initial/0 --output_path /tmp/colmap_sfm_kvb56gze/merged_chunk_model_12 --max_reproj_error 64",
+            "ingestionTime": 1779367129459
+        },
+        {
+            "timestamp": 1779367127994,
+            "message": "COLMAP[chunk_model_merger_12] I20260521 12:38:47.583766  8138 model.cc:776] --- Reconstruction 1 ---",
+            "ingestionTime": 1779367129459
+        },
+        {
+            "timestamp": 1779367127994,
+            "message": "COLMAP[chunk_model_merger_12] I20260521 12:38:47.584235  8138 model.cc:777] Images: 1442",
+            "ingestionTime": 1779367129459
+        },
+        {
+            "timestamp": 1779367127994,
+            "message": "COLMAP[chunk_model_merger_12] I20260521 12:38:47.584250  8138 model.cc:778] Points: 1029420",
+            "ingestionTime": 1779367129459
+        },
+        {
+            "timestamp": 1779367127994,
+            "message": "COLMAP[chunk_model_merger_12] I20260521 12:38:47.821599  8138 model.cc:782] --- Reconstruction 2 ---",
+            "ingestionTime": 1779367129459
+        },
+        {
+            "timestamp": 1779367127994,
+            "message": "COLMAP[chunk_model_merger_12] I20260521 12:38:47.821643  8138 model.cc:783] Images: 157",
+            "ingestionTime": 1779367129459
+        },
+        {
+            "timestamp": 1779367127994,
+            "message": "COLMAP[chunk_model_merger_12] I20260521 12:38:47.821653  8138 model.cc:784] Points: 98892",
+            "ingestionTime": 1779367129459
+        },
+        {
+            "timestamp": 1779367127994,
+            "message": "COLMAP[chunk_model_merger_12] I20260521 12:38:47.821659  8138 model.cc:786] --- Merging reconstructions ---",
+            "ingestionTime": 1779367129459
+        },
+        {
+            "timestamp": 1779367130995,
+            "message": "COLMAP[chunk_model_merger_12] I20260521 12:38:50.757158  8138 model.cc:789] => Merge succeeded",
+            "ingestionTime": 1779367136505
+        },
+        {
+            "timestamp": 1779367130995,
+            "message": "COLMAP[chunk_model_merger_12] I20260521 12:38:50.757208  8138 model.cc:790] --- Merged reconstruction ---",
+            "ingestionTime": 1779367136505
+        },
+        {
+            "timestamp": 1779367130995,
+            "message": "COLMAP[chunk_model_merger_12] I20260521 12:38:50.757215  8138 model.cc:791] Images: 1569",
+            "ingestionTime": 1779367136505
+        },
+        {
+            "timestamp": 1779367130995,
+            "message": "COLMAP[chunk_model_merger_12] I20260521 12:38:50.757225  8138 model.cc:792] Points: 1101329",
+            "ingestionTime": 1779367136505
+        },
+        {
+            "timestamp": 1779367132996,
+            "message": "2026-05-21 12:38:52,909 - INFO - [chunk_model_merger_13] colmap model_merger --input_path1 /tmp/colmap_sfm_kvb56gze/merged_chunk_model_12 --input_path2 /tmp/colmap_sfm_kvb56gze/chunk_13/sparse_initial/0 --output_path /tmp/colmap_sfm_kvb56gze/merged_chunk_model_13 --max_reproj_error 64",
+            "ingestionTime": 1779367136505
+        },
+        {
+            "timestamp": 1779367135997,
+            "message": "COLMAP[chunk_model_merger_13] I20260521 12:38:55.393198  8146 model.cc:776] --- Reconstruction 1 ---",
+            "ingestionTime": 1779367141699
+        },
+        {
+            "timestamp": 1779367135997,
+            "message": "COLMAP[chunk_model_merger_13] I20260521 12:38:55.393510  8146 model.cc:777] Images: 1569",
+            "ingestionTime": 1779367141699
+        },
+        {
+            "timestamp": 1779367135997,
+            "message": "COLMAP[chunk_model_merger_13] I20260521 12:38:55.393528  8146 model.cc:778] Points: 1101329",
+            "ingestionTime": 1779367141699
+        },
+        {
+            "timestamp": 1779367135997,
+            "message": "COLMAP[chunk_model_merger_13] I20260521 12:38:55.615513  8146 model.cc:782] --- Reconstruction 2 ---",
+            "ingestionTime": 1779367141699
+        },
+        {
+            "timestamp": 1779367135997,
+            "message": "COLMAP[chunk_model_merger_13] I20260521 12:38:55.615556  8146 model.cc:783] Images: 148",
+            "ingestionTime": 1779367141699
+        },
+        {
+            "timestamp": 1779367135997,
+            "message": "COLMAP[chunk_model_merger_13] I20260521 12:38:55.615567  8146 model.cc:784] Points: 94821",
+            "ingestionTime": 1779367141699
+        },
+        {
+            "timestamp": 1779367135997,
+            "message": "COLMAP[chunk_model_merger_13] I20260521 12:38:55.615573  8146 model.cc:786] --- Merging reconstructions ---",
+            "ingestionTime": 1779367141699
+        },
+        {
+            "timestamp": 1779367138998,
+            "message": "COLMAP[chunk_model_merger_13] I20260521 12:38:58.806209  8146 model.cc:789] => Merge succeeded",
+            "ingestionTime": 1779367141699
+        },
+        {
+            "timestamp": 1779367138998,
+            "message": "COLMAP[chunk_model_merger_13] I20260521 12:38:58.806264  8146 model.cc:790] --- Merged reconstruction ---",
+            "ingestionTime": 1779367141699
+        },
+        {
+            "timestamp": 1779367138998,
+            "message": "COLMAP[chunk_model_merger_13] I20260521 12:38:58.806272  8146 model.cc:791] Images: 1687",
+            "ingestionTime": 1779367141699
+        },
+        {
+            "timestamp": 1779367138998,
+            "message": "COLMAP[chunk_model_merger_13] I20260521 12:38:58.806281  8146 model.cc:792] Points: 1169889",
+            "ingestionTime": 1779367141699
+        },
+        {
+            "timestamp": 1779367141999,
+            "message": "2026-05-21 12:39:01,095 - INFO - [chunk_model_merger_14] colmap model_merger --input_path1 /tmp/colmap_sfm_kvb56gze/merged_chunk_model_13 --input_path2 /tmp/colmap_sfm_kvb56gze/chunk_14/sparse_initial/0 --output_path /tmp/colmap_sfm_kvb56gze/merged_chunk_model_14 --max_reproj_error 64",
+            "ingestionTime": 1779367147742
+        },
+        {
+            "timestamp": 1779367143999,
+            "message": "COLMAP[chunk_model_merger_14] I20260521 12:39:03.795071  8154 model.cc:776] --- Reconstruction 1 ---",
+            "ingestionTime": 1779367147742
+        },
+        {
+            "timestamp": 1779367144000,
+            "message": "COLMAP[chunk_model_merger_14] I20260521 12:39:03.795409  8154 model.cc:777] Images: 1687",
+            "ingestionTime": 1779367147742
+        },
+        {
+            "timestamp": 1779367144000,
+            "message": "COLMAP[chunk_model_merger_14] I20260521 12:39:03.795423  8154 model.cc:778] Points: 1169889",
+            "ingestionTime": 1779367147742
+        },
+        {
+            "timestamp": 1779367145000,
+            "message": "COLMAP[chunk_model_merger_14] I20260521 12:39:04.015746  8154 model.cc:782] --- Reconstruction 2 ---",
+            "ingestionTime": 1779367147742
+        },
+        {
+            "timestamp": 1779367145000,
+            "message": "COLMAP[chunk_model_merger_14] I20260521 12:39:04.015790  8154 model.cc:783] Images: 162",
+            "ingestionTime": 1779367147742
+        },
+        {
+            "timestamp": 1779367145000,
+            "message": "COLMAP[chunk_model_merger_14] I20260521 12:39:04.015805  8154 model.cc:784] Points: 98134",
+            "ingestionTime": 1779367147742
+        },
+        {
+            "timestamp": 1779367145000,
+            "message": "COLMAP[chunk_model_merger_14] I20260521 12:39:04.015813  8154 model.cc:786] --- Merging reconstructions ---",
+            "ingestionTime": 1779367147742
+        },
+        {
+            "timestamp": 1779367148001,
+            "message": "COLMAP[chunk_model_merger_14] I20260521 12:39:07.299850  8154 model.cc:789] => Merge succeeded",
+            "ingestionTime": 1779367153790
+        },
+        {
+            "timestamp": 1779367148001,
+            "message": "COLMAP[chunk_model_merger_14] I20260521 12:39:07.299906  8154 model.cc:790] --- Merged reconstruction ---",
+            "ingestionTime": 1779367153790
+        },
+        {
+            "timestamp": 1779367148001,
+            "message": "COLMAP[chunk_model_merger_14] I20260521 12:39:07.299912  8154 model.cc:791] Images: 1819",
+            "ingestionTime": 1779367153790
+        },
+        {
+            "timestamp": 1779367148001,
+            "message": "COLMAP[chunk_model_merger_14] I20260521 12:39:07.299922  8154 model.cc:792] Points: 1248555",
+            "ingestionTime": 1779367153790
+        },
+        {
+            "timestamp": 1779367150001,
+            "message": "2026-05-21 12:39:09,722 - INFO - [chunk_model_merger_15] colmap model_merger --input_path1 /tmp/colmap_sfm_kvb56gze/merged_chunk_model_14 --input_path2 /tmp/colmap_sfm_kvb56gze/chunk_15/sparse_recovery/0 --output_path /tmp/colmap_sfm_kvb56gze/merged_chunk_model_15 --max_reproj_error 64",
+            "ingestionTime": 1779367153790
+        },
+        {
+            "timestamp": 1779367153002,
+            "message": "COLMAP[chunk_model_merger_15] I20260521 12:39:12.544334  8177 model.cc:776] --- Reconstruction 1 ---",
+            "ingestionTime": 1779367158809
+        },
+        {
+            "timestamp": 1779367153002,
+            "message": "COLMAP[chunk_model_merger_15] I20260521 12:39:12.544654  8177 model.cc:777] Images: 1819",
+            "ingestionTime": 1779367158809
+        },
+        {
+            "timestamp": 1779367153002,
+            "message": "COLMAP[chunk_model_merger_15] I20260521 12:39:12.544668  8177 model.cc:778] Points: 1248555",
+            "ingestionTime": 1779367158809
+        },
+        {
+            "timestamp": 1779367153002,
+            "message": "COLMAP[chunk_model_merger_15] I20260521 12:39:12.745729  8177 model.cc:782] --- Reconstruction 2 ---",
+            "ingestionTime": 1779367158809
+        },
+        {
+            "timestamp": 1779367153002,
+            "message": "COLMAP[chunk_model_merger_15] I20260521 12:39:12.745771  8177 model.cc:783] Images: 144",
+            "ingestionTime": 1779367158809
+        },
+        {
+            "timestamp": 1779367153002,
+            "message": "COLMAP[chunk_model_merger_15] I20260521 12:39:12.745781  8177 model.cc:784] Points: 94181",
+            "ingestionTime": 1779367158809
+        },
+        {
+            "timestamp": 1779367153002,
+            "message": "COLMAP[chunk_model_merger_15] I20260521 12:39:12.745787  8177 model.cc:786] --- Merging reconstructions ---",
+            "ingestionTime": 1779367158809
+        },
+        {
+            "timestamp": 1779367157004,
+            "message": "COLMAP[chunk_model_merger_15] I20260521 12:39:16.144377  8177 model.cc:789] => Merge succeeded",
+            "ingestionTime": 1779367158809
+        },
+        {
+            "timestamp": 1779367157004,
+            "message": "COLMAP[chunk_model_merger_15] I20260521 12:39:16.144431  8177 model.cc:790] --- Merged reconstruction ---",
+            "ingestionTime": 1779367158809
+        },
+        {
+            "timestamp": 1779367157004,
+            "message": "COLMAP[chunk_model_merger_15] I20260521 12:39:16.144438  8177 model.cc:791] Images: 1933",
+            "ingestionTime": 1779367158809
+        },
+        {
+            "timestamp": 1779367157004,
+            "message": "COLMAP[chunk_model_merger_15] I20260521 12:39:16.144448  8177 model.cc:792] Points: 1326882",
+            "ingestionTime": 1779367158809
+        },
+        {
+            "timestamp": 1779367159004,
+            "message": "2026-05-21 12:39:18,716 - INFO - [chunk_model_merger_16] colmap model_merger --input_path1 /tmp/colmap_sfm_kvb56gze/merged_chunk_model_15 --input_path2 /tmp/colmap_sfm_kvb56gze/chunk_16/sparse_initial/0 --output_path /tmp/colmap_sfm_kvb56gze/merged_chunk_model_16 --max_reproj_error 64",
+            "ingestionTime": 1779367165101
+        },
+        {
+            "timestamp": 1779367162005,
+            "message": "COLMAP[chunk_model_merger_16] I20260521 12:39:21.699137  8185 model.cc:776] --- Reconstruction 1 ---",
+            "ingestionTime": 1779367165101
+        },
+        {
+            "timestamp": 1779367162005,
+            "message": "COLMAP[chunk_model_merger_16] I20260521 12:39:21.699447  8185 model.cc:777] Images: 1933",
+            "ingestionTime": 1779367165101
+        },
+        {
+            "timestamp": 1779367162005,
+            "message": "COLMAP[chunk_model_merger_16] I20260521 12:39:21.699461  8185 model.cc:778] Points: 1326882",
+            "ingestionTime": 1779367165101
+        },
+        {
+            "timestamp": 1779367162005,
+            "message": "COLMAP[chunk_model_merger_16] I20260521 12:39:21.859616  8185 model.cc:782] --- Reconstruction 2 ---",
+            "ingestionTime": 1779367165101
+        },
+        {
+            "timestamp": 1779367162005,
+            "message": "COLMAP[chunk_model_merger_16] I20260521 12:39:21.859656  8185 model.cc:783] Images: 119",
+            "ingestionTime": 1779367165101
+        },
+        {
+            "timestamp": 1779367162005,
+            "message": "COLMAP[chunk_model_merger_16] I20260521 12:39:21.859666  8185 model.cc:784] Points: 74389",
+            "ingestionTime": 1779367165101
+        },
+        {
+            "timestamp": 1779367162005,
+            "message": "COLMAP[chunk_model_merger_16] I20260521 12:39:21.859673  8185 model.cc:786] --- Merging reconstructions ---",
+            "ingestionTime": 1779367165101
+        },
+        {
+            "timestamp": 1779367166006,
+            "message": "COLMAP[chunk_model_merger_16] I20260521 12:39:25.376528  8185 model.cc:789] => Merge succeeded",
+            "ingestionTime": 1779367171352
+        },
+        {
+            "timestamp": 1779367166006,
+            "message": "COLMAP[chunk_model_merger_16] I20260521 12:39:25.376579  8185 model.cc:790] --- Merged reconstruction ---",
+            "ingestionTime": 1779367171352
+        },
+        {
+            "timestamp": 1779367166006,
+            "message": "COLMAP[chunk_model_merger_16] I20260521 12:39:25.376586  8185 model.cc:791] Images: 2022",
+            "ingestionTime": 1779367171352
+        },
+        {
+            "timestamp": 1779367166006,
+            "message": "COLMAP[chunk_model_merger_16] I20260521 12:39:25.376596  8185 model.cc:792] Points: 1384232",
+            "ingestionTime": 1779367171352
+        },
+        {
+            "timestamp": 1779367169007,
+            "message": "2026-05-21 12:39:28,057 - INFO - [chunk_bundle_adjuster] colmap bundle_adjuster --input_path /tmp/colmap_sfm_kvb56gze/merged_chunk_model_16 --output_path /tmp/colmap_sfm_kvb56gze/chunk_bundle_adjuster --BundleAdjustment.refine_principal_point 0 --BundleAdjustment.use_gpu 1",
+            "ingestionTime": 1779367171352
+        },
+        {
+            "timestamp": 1779367169007,
+            "message": "COLMAP[chunk_bundle_adjuster] E20260521 12:39:28.207971  8193 base_option_manager.cc:264] Failed to parse options - unrecognised option '--BundleAdjustment.use_gpu'.",
+            "ingestionTime": 1779367171352
+        },
+        {
+            "timestamp": 1779367169007,
+            "message": "2026-05-21 12:39:28,219 - WARNING - bundle_adjuster rejected BundleAdjustment.use_gpu; retrying with older COLMAP-compatible flags",
+            "ingestionTime": 1779367171352
+        },
+        {
+            "timestamp": 1779367169007,
+            "message": "2026-05-21 12:39:28,220 - INFO - [chunk_bundle_adjuster] colmap bundle_adjuster --input_path /tmp/colmap_sfm_kvb56gze/merged_chunk_model_16 --output_path /tmp/colmap_sfm_kvb56gze/chunk_bundle_adjuster --BundleAdjustment.refine_principal_point 0",
+            "ingestionTime": 1779367171352
+        },
+        {
+            "timestamp": 1779367172008,
+            "message": "COLMAP[chunk_bundle_adjuster] I20260521 12:39:31.522957  8201 bundle_adjustment.cc:70] === Global bundle adjustment ===",
+            "ingestionTime": 1779367177389
+        }
+    ],
+    "nextForwardToken": "f/39681213917580419418491534668244042164139853874396528640/s",
+    "nextBackwardToken": "b/39681212690660320830932241223917792868358243192173428737/s"
+}
