@@ -1,0 +1,5 @@
+timestamp_utc=20260521T105027Z
+branch=agent-113647-md1-baseline-e2e
+head=cd6aa004963022b92fc74bc776fe190c338f2e68
+exact_head_run_count=0
+note=expected 0 for [skip ci]
