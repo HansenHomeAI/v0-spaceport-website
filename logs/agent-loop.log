@@ -102,3 +102,4 @@
 [2026-05-21T13:37:30Z] montana-time-capsule tick -> sfm InProgress (CloudWatch 2026-05-21T13:33:35Z; S3 KeyCount=0) -> next poll
 [2026-05-21T13:38:36Z] push -> head ec13ae76 pushed; exact-head GH runs=0 ([skip ci] expected); proof=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T133819Z.json
 [2026-05-21T13:57:02Z] montana-time-capsule tick -> sfm InProgress (CloudWatch ~2026-05-21T13:50:08Z; S3 KeyCount=0) -> continue polling
+[2026-05-21T13:59:11Z] push -> head 2d331e60 pushed; exact-head GH runs=0 ([skip ci] expected); proof=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T135911Z.json

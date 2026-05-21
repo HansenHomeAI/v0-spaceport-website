@@ -37,6 +37,11 @@ Next: keep polling until SfM becomes Completed and the S3 output prefix is non-e
 
 Next: keep polling until SfM becomes Completed and the S3 output prefix is non-empty; do not launch 3DGS yet.
 
+## 2026-05-21T13:59:11Z Post-push CI proof (HMC)
+
+- Git head pushed: 2d331e6049dc291da2f3302a40bf6140bdb69192 ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T135911Z.json)
+
 ## 2026-05-21T13:38:27Z Post-push CI proof (HMC)
 
 - Git head pushed: ec13ae76c4f88e286c18d7670bf9c951c469c80b ([skip ci])
