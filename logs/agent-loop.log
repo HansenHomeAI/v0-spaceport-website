@@ -35,3 +35,4 @@
 [2026-05-21T02:36:30Z] monitor_hmc -> aws sts ok; CI exact-head green; SfM InProgress; last CW event still 2026-05-21T00:01:36Z; HMC zip+manifest re-HEADed in spaceport-uploads -> next poll until SfM Completed
 [2026-05-21T02:41:10Z] ci -> CDK Deploy 26202111411 success (head 7422efd9) -> next poll SfM
 [2026-05-21T02:44:05Z] monitor_hmc -> SfM still InProgress; CW lastEvent unchanged (2026-05-21T00:01:36Z) -> next poll
+[2026-05-21T02:56:41Z] monitor_hmc -> SfM still InProgress; CW lastEvent still 2026-05-21T00:01:36Z; outputs empty; HMC zip proven in spaceport-uploads (LastModified 2026-05-16) -> next poll for Completed then single guarded 3DGS launch

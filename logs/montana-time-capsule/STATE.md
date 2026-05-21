@@ -3954,3 +3954,12 @@ Poll `hmc-mtc-20260520T2015Z-sfm` until `Completed`, then run the time-capsule r
 - cloudwatch lastEvent: logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T023511Z.json (2026-05-21T00:01:36Z)
 - runner (NO launch): logs/montana-time-capsule/runner-hmc-20260521T023622Z.log (state refreshed; still sfm_running)
 - followup poll (NO launch): logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T024358Z.json + logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T024358Z.json (still stalled @ 2026-05-21T00:01:36Z)
+
+# 2026-05-21T02:56Z monitor tick
+- git: agent-40136728-montana-time-capsule @ 2456f84f811f723d6653b789b0b3314eb012ee99 (clean)
+- aws sts: logs/montana-time-capsule/aws-sts-20260521T025641Z.json (Account=975050048887, region=us-west-2)
+- s3 HMC zip HEAD: logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260521T025641Z.json (8,646,557,673 bytes; LastModified=2026-05-16T17:35:27Z; Metadata.sha256=8ac35927...)
+- sagemaker describe: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T025641Z.json (InProgress)
+- cloudwatch streams: logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T025641Z.json (lastEventTimestamp => 2026-05-21T00:01:36Z)
+- cloudwatch filter: logs/montana-time-capsule/cloudwatch-filter-hmc-mtc-20260520T2015Z-sfm-20260521T025641Z.json (latest log events; no new progress past 00:01:36Z)
+- output S3: logs/montana-time-capsule/s3-ls-processing-hmc-mtc-20260520T2015Z-20260521T025641Z.txt (Total Objects: 0; upload mode is EndOfJob)
