@@ -4077,3 +4077,19 @@ Next: continue polling until SfM becomes Completed; do not launch 3DGS until SfM
 
 - Git head pushed: 95016bdafbe2a494c60cd656c44af1a498904ded ([skip ci])
 - Exact-head workflow runs: 0 (expected due to [skip ci]) (logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-head-postpush-20260521T045724Z.json)
+
+## 2026-05-21T05:17:30Z Monitor tick
+
+- Git: agent-40136728-montana-time-capsule @ 83b5cbac5960d26b1d8a26c9d2ac26fdff3b3818 ([skip ci])
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T051438Z.json (acct 975050048887)
+- Input proven (no re-upload):
+  - s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip head=logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260521T051623Z.json (8,646,557,673 bytes; LastModified=2026-05-16T17:35:27Z; ETag ed86661a...-1031)
+  - s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.manifest.json head=logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.manifest.json-20260521T051623Z.json
+- SageMaker SfM:
+  - job: hmc-mtc-20260520T2015Z-sfm
+  - status: InProgress (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T051438Z.json; list=logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T051438Z.json)
+  - CloudWatch latest logs still end at 2026-05-21T00:01:36Z (tail=logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260521T051523Z-since12h.log; last line: Building index for visual words...)
+  - output prefix still empty (EndOfJob upload): logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T051623Z.txt (Total Objects: 0)
+- CI (exact head): 0 runs for this [skip ci] head (logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-head-20260521T051650Z.json)
+
+Next: continue polling until SfM becomes Completed; do not launch 3DGS until SfM output exists.
