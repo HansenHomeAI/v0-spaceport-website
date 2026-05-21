@@ -33,6 +33,23 @@ Next: HMC is at terminal output (compressed bundle + hosted viewer validated). I
 - Git head pushed: 03df0096ba1175c4b3524eb0cb50c6e66e7a9b63 ([skip ci])
 - Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T204113Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260521T204118Z.json)
 
+## 2026-05-21T20:56:51Z Monitor tick (HMC) - terminal state reconfirmed (no new launches)
+
+- Git: agent-40136728-montana-time-capsule @ 7fd899318c6d0fab44a9acb65640ef34d25c421d (clean)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T205505Z.json (acct 975050048887)
+- SageMaker:
+  - 3DGS job (training): hmc-mtc-20260520T2015Z-3dgs status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T205515Z.json)
+  - compression job (processing): hmc-mtc-20260520T2015Z-compression status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260521T205515Z.json)
+  - runner state refreshed (no launch): logs/montana-time-capsule/hmc-state-refresh-20260521T205651Z.log (state-file=logs/montana-time-capsule/hmc-state.json; status=completed; viewer_bundle_s3_uri=s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json)
+- S3:
+  - compressed outputs present: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-20260521T205515Z-head200.txt
+  - bundle meta head-object: logs/montana-time-capsule/s3api-head-object-supersplat-meta-20260521T205530Z.json
+- CI:
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260521T205551Z.json ([]; expected due to [skip ci] head)
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260521T205551Z.json (latest shows CDK Deploy success sha=0e48d07)
+
+Next: HMC remains at terminal output (compressed bundle + hosted viewer previously validated). No further stage is unblocked without an explicit new acceptance gate (e.g., promotion/publishing).
+
 ## 2026-05-21T19:58:16Z Post-push CI proof (HMC)
 
 - Git head pushed: 0882a830377a3cb26b6bca6dc975d0e838788545 ([skip ci])
