@@ -249,6 +249,12 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
 ### Next unblocked step
 
 Poll `hmc-mtc-20260520T2015Z-sfm` until `Completed`, then run the time-capsule runner once to advance exactly one stage to 3DGS (using pinned 3DGS image sha256 `482c1789...`).
+
+### Preview URL (exact-head Pages deploy)
+
+- Pages run log: `logs/montana-time-capsule/gh-run-26200368328-pages.txt`
+- Preview alias URL: `https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev`
+- Preview hash URL: `https://9480e9f2.v0-spaceport-website-preview2.pages.dev`
   - Prefix currently empty (EndOfJob upload): `s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/colmap/`.
 - Next unblocked step:
   - Keep polling until `hmc-mtc-20260520T2015Z-sfm` becomes `Completed`, then run `python3 scripts/montana_time_capsule/hmc_time_capsule.py --launch` once to launch pinned 3DGS.
