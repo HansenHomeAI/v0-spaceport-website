@@ -21,3 +21,5 @@
 [2026-05-20T23:16Z] verify+refresh -> sfm still InProgress; exact-head workflows []; archive+manifest re-proven -> continue polling until Completed then launch 3DGS once
 [2026-05-20 17:34:41 MDT] monitor -> sfm still InProgress; refreshed evidence; no launch -> next: poll until Completed
 [2026-05-20T23:56Z] poll hmc-mtc-20260520T2015Z-sfm -> InProgress (chunk_14 mapping active) -> keep polling; no launch
+[2026-05-21T00:17:10Z] poll_sfm -> unknown -> wait_sfm_completed
+[2026-05-21T00:17:31Z] poll_sfm -> InProgress -> wait_sfm_completed

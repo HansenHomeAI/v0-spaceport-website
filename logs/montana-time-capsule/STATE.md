@@ -3702,3 +3702,30 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - `logs/montana-time-capsule/refresh-hmc-state-20260520T235539Z.log`
 - Next unblocked step: keep polling until `hmc-mtc-20260520T2015Z-sfm` becomes `Completed`, then run the same runner command with `--launch` exactly once to launch pinned Montana 3DGS.
 - Then run the runner exactly once with `--launch` to start the pinned Montana 3DGS stage.
+
+## 2026-05-21T00:17:10Z monitor
+- git head: d2529186a46363719592367ff5671b47c8f0d7f7 (branch agent-40136728-montana-time-capsule)
+- aws sts: (missing)
+- sfm job: hmc-mtc-20260520T2015Z-sfm status=unknown (region us-west-2)
+- sagemaker describe: (missing)
+- cloudwatch tail: (missing)
+- proven input zip head: (missing)
+- proven manifest head: (missing)
+- s3 outputs listing: (missing)
+- gh runs branch list: (missing)
+- gh runs exact-head list: (missing) (expected empty due to [skip ci])
+- note: ListProcessingJobs throttled earlier; see logs/montana-time-capsule/aws-throttle-20260521T001438Z.log
+- next: wait for SFM Completed; then launch pinned 3DGS (sha256:482c1789...)
+
+## 2026-05-21T00:17:31Z monitor (corrected file pointers)
+- git head: d2529186a46363719592367ff5671b47c8f0d7f7 (branch agent-40136728-montana-time-capsule)
+- aws sts: logs/montana-time-capsule/aws-sts-20260521T001418Z.json
+- sfm job: hmc-mtc-20260520T2015Z-sfm status=InProgress (region us-west-2)
+- sagemaker describe: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T001418Z.json
+- cloudwatch tail: logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260521T001418Z.log
+- proven input zip head: logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260521T001534Z.json
+- proven manifest head: logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.manifest.json-20260521T001534Z.json
+- s3 outputs listing: logs/montana-time-capsule/s3-ls-spaceport-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-20260521T001534Z.txt
+- gh runs branch list: logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T001608Z.json
+- gh runs exact-head list: logs/montana-time-capsule/gh-run-list-exact-head-d2529186a46363719592367ff5671b47c8f0d7f7-20260521T001608Z.json (expected empty due to [skip ci])
+- next: wait for SFM Completed; then launch pinned 3DGS (sha256:482c1789...)

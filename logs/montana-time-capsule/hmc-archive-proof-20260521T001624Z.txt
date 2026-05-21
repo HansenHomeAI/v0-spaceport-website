@@ -1,0 +1,2 @@
+PROVEN_HMC_ARCHIVE=s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip
+PROVEN_HMC_MANIFEST=s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.manifest.json

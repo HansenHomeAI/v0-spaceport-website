@@ -1,0 +1,105 @@
+{
+    "logStreams": [
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "creationTime": 1779308515476,
+            "firstEventTimestamp": 1779308509299,
+            "lastEventTimestamp": 1779320258115,
+            "lastIngestionTime": 1779320259358,
+            "uploadSequenceToken": "49039859672830745673398148260544777904400047679625973657",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "cvhr-viscell-full-l09-1779233441/algo-1-1779233497",
+            "creationTime": 1779233717361,
+            "firstEventTimestamp": 1779233711411,
+            "lastEventTimestamp": 1779238154560,
+            "lastIngestionTime": 1779238160862,
+            "uploadSequenceToken": "49039859672721618054103112327892849104830393730007781237",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:cvhr-viscell-full-l09-1779233441/algo-1-1779233497",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "cvhr-viscell-full-l10-1779234178/algo-1-1779234218",
+            "creationTime": 1779234446079,
+            "firstEventTimestamp": 1779234428437,
+            "lastEventTimestamp": 1779235391387,
+            "lastIngestionTime": 1779235396818,
+            "uploadSequenceToken": "49039859672717944009436731005883844991922025655056945080",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:cvhr-viscell-full-l10-1779234178/algo-1-1779234218",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "cvhr-secondary-20260518t2113z-compression/algo-1-1779233795",
+            "creationTime": 1779233999882,
+            "firstEventTimestamp": 1779233993735,
+            "lastEventTimestamp": 1779234304226,
+            "lastIngestionTime": 1779234309453,
+            "uploadSequenceToken": "49039859672716498653437094340835705306567909899144220592",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:cvhr-secondary-20260518t2113z-compression/algo-1-1779233795",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "cvhr-viscell-full-l08-1779230706/algo-1-1779230748",
+            "creationTime": 1779230985552,
+            "firstEventTimestamp": 1779230965068,
+            "lastEventTimestamp": 1779233982563,
+            "lastIngestionTime": 1779233988846,
+            "uploadSequenceToken": "49039859672716072493637049726312441609460474873442946874",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:cvhr-viscell-full-l08-1779230706/algo-1-1779230748",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "cvhr-viscell-full-l07-1779229061/algo-1-1779229107",
+            "creationTime": 1779229333932,
+            "firstEventTimestamp": 1779229314712,
+            "lastEventTimestamp": 1779233279574,
+            "lastIngestionTime": 1779233285775,
+            "uploadSequenceToken": "49039859672715137951980825229724763596750409994169700267",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:cvhr-viscell-full-l07-1779229061/algo-1-1779229107",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "cvhr-mtc-secondary-20260518t2113z-compression/algo-1-1779231949",
+            "creationTime": 1779232162924,
+            "firstEventTimestamp": 1779232156757,
+            "lastEventTimestamp": 1779232436015,
+            "lastIngestionTime": 1779232441406,
+            "uploadSequenceToken": "49039859672714015593067252316094076019964786583744499610",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:cvhr-mtc-secondary-20260518t2113z-compression/algo-1-1779231949",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "cvhr-viscell-full-l05-1779224497/algo-1-1779224539",
+            "creationTime": 1779224741217,
+            "firstEventTimestamp": 1779224735283,
+            "lastEventTimestamp": 1779230473395,
+            "lastIngestionTime": 1779230478599,
+            "uploadSequenceToken": "49039859672711406575052529712724329663809303817919614961",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:cvhr-viscell-full-l05-1779224497/algo-1-1779224539",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "cvhr-viscell-full-l06-1779225051/algo-1-1779225090",
+            "creationTime": 1779225294580,
+            "firstEventTimestamp": 1779225288370,
+            "lastEventTimestamp": 1779228779759,
+            "lastIngestionTime": 1779228784888,
+            "uploadSequenceToken": "49039859672709155246974560847076318224970079510778302289",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:cvhr-viscell-full-l06-1779225051/algo-1-1779225090",
+            "storedBytes": 0
+        },
+        {
+            "logStreamName": "cvhr-viscell-full-l02-1779220672/algo-1-1779220710",
+            "creationTime": 1779220944199,
+            "firstEventTimestamp": 1779220938262,
+            "lastEventTimestamp": 1779224963735,
+            "lastIngestionTime": 1779224968437,
+            "uploadSequenceToken": "49039859672704082313460819509108258950084804420440379179",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:cvhr-viscell-full-l02-1779220672/algo-1-1779220710",
+            "storedBytes": 0
+        }
+    ],
+    "NextToken": "eyJuZXh0VG9rZW4iOiBudWxsLCAiYm90b190cnVuY2F0ZV9hbW91bnQiOiAxMH0="
+}

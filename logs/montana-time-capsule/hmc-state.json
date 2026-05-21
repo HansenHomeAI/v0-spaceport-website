@@ -116,6 +116,11 @@
   },
   "sfm_status": "InProgress",
   "status": "sfm_running",
-  "updated_at": "2026-05-20T23:55:40Z",
-  "zip_entries": 2063
+  "updated_at": "2026-05-21T00:17:41Z",
+  "zip_entries": 2063,
+  "monitor": {
+    "checked_at": "2026-05-21T00:17:41Z",
+    "sfm_status": "InProgress",
+    "sagemaker_describe_path": "logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T001418Z.json"
+  }
 }
