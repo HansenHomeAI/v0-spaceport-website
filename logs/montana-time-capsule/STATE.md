@@ -33,6 +33,11 @@ Next: keep polling until SfM becomes Completed and the S3 output prefix is non-e
 
 Next: keep polling until SfM becomes Completed and the S3 output prefix is non-empty; only then run ONE guarded runner invocation with `--launch` to advance to pinned 3DGS sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db.
 
+## 2026-05-21T13:16:08Z Post-push CI proof (HMC)
+
+- Git head pushed: 4206fb91b17c631f501dbb57b5be1b9a3ff7b697 ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T131608Z.json; branch=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-postpush-20260521T131608Z.json)
+
 ## 2026-05-21T12:34:07Z Monitor tick (HMC)
 
 - Git: agent-40136728-montana-time-capsule @ d4640c2d4e564145741200940c4b725b4591154b (`chore: record post-push ci proof 20260521T1217Z (2) [skip ci]`)
