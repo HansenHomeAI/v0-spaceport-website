@@ -1,0 +1,7 @@
+{
+    "TrainingJobStatus": "InProgress",
+    "SecondaryStatus": "Training",
+    "LastModifiedTime": "2026-05-21T10:40:55.794000-06:00",
+    "TrainingEndTime": null,
+    "TrainingStartTime": "2026-05-21T10:36:43.190000-06:00"
+}

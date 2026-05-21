@@ -5,6 +5,24 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-21T19:56:41Z Monitor tick (HMC) - 3DGS still InProgress (no new CloudWatch events)
+
+- Git: agent-40136728-montana-time-capsule @ e270efb69758977fe67d1b5a8ad1959c9770a3a1
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T195501Z.json (acct 975050048887)
+- SageMaker:
+  - SfM job (processing): hmc-mtc-20260520T2015Z-sfm status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T195506Z.json)
+  - 3DGS job (training): hmc-mtc-20260520T2015Z-3dgs status=InProgress (SecondaryStatus=Training; LastModifiedTime=2026-05-21T10:40:55-06:00) (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T195506Z.json; summary=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T195621Z-summary.json)
+- CloudWatch:
+  - Streams: logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-3dgs-20260521T195550Z.json (best=logs/montana-time-capsule/cloudwatch-best-stream-hmc-mtc-20260520T2015Z-3dgs-20260521T195550Z.txt)
+  - Tail: logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-3dgs-20260521T195550Z-tail200.json (last event timestamp ms=1779382018947; last message head shows 2026-05-21 16:46:58)
+- S3:
+  - 3DGS output prefix still empty: logs/montana-time-capsule/s3api-list-objects-v2-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-3dgs-20260521T195612Z-maxkeys50.json (KeyCount=0)
+- CI:
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260521T195636Z.json (0 runs; expected due to [skip ci] head)
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260521T195636Z.json (latest Pages deploy success is older head sha=88b1848)
+
+Next: keep polling until `describe-training-job` is Completed; do not launch compression until 3DGS is Completed.
+
 ## 2026-05-21T19:40:35Z Post-push CI proof (HMC)
 
 - Git head pushed: 786d645ab665c9b9b48f8c5bfe313b8b211fe2f9 ([skip ci])
