@@ -23,3 +23,4 @@
 [2026-05-20T23:56Z] poll hmc-mtc-20260520T2015Z-sfm -> InProgress (chunk_14 mapping active) -> keep polling; no launch
 [2026-05-21T00:17:10Z] poll_sfm -> unknown -> wait_sfm_completed
 [2026-05-21T00:17:31Z] poll_sfm -> InProgress -> wait_sfm_completed
+[2026-05-21T00:36:37Z] poll_sfm -> InProgress (chunk_15 spatial matcher recovery + vocab tree building) -> wait_sfm_completed; do not launch

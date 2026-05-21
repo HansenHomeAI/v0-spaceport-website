@@ -3729,3 +3729,19 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
 - gh runs branch list: logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T001608Z.json
 - gh runs exact-head list: logs/montana-time-capsule/gh-run-list-exact-head-d2529186a46363719592367ff5671b47c8f0d7f7-20260521T001608Z.json (expected empty due to [skip ci])
 - next: wait for SFM Completed; then launch pinned 3DGS (sha256:482c1789...)
+
+## 2026-05-21T00:36:37Z monitor (HMC)
+- git head: f5abcf8bc918b6e96166396fa102ffef499e6821 (branch agent-40136728-montana-time-capsule)
+- aws sts: (live) account 975050048887 arn arn:aws:iam::975050048887:root
+- proven input zip head: logs/montana-time-capsule/s3-head-spaceport-uploads-hmc-20260521T003533Z.json
+  - proof: spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip LastModified=2026-05-16T17:35:27Z ContentLength=8646557673 ETag=ed86661a82b28856997a09f129ce6bec-1031
+- staging upload-bucket sample scan (no hmc keys in first page): logs/montana-time-capsule/s3-list-spaceport-uploads-staging-sample-20260521T003533Z.json
+- sfm job: hmc-mtc-20260520T2015Z-sfm status=InProgress (region us-west-2)
+- sagemaker describe: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T003533Z.json
+- cloudwatch stream evidence: logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T003539Z.json
+  - sample: chunk_15_spatial_matcher_recovery + vocab_tree_builder started at 2026-05-21T00:01:34Z
+- runner refresh (NO launch): logs/montana-time-capsule/hmc-runner-20260521T003636Z.json
+  - result: status=sfm_running sfm_status=InProgress
+- gh runs branch list (last meaningful): `gh run list --branch agent-40136728-montana-time-capsule --limit 20`
+  - latest CDK Deploy success 2026-05-20T20:19:47Z; no exact-head runs expected for [skip ci] commit f5abcf8b
+- next: wait for SFM Completed; then run runner once with `--launch` to start pinned Montana 3DGS (sha256:482c1789...)

@@ -1,0 +1,430 @@
+{
+    "IsTruncated": false,
+    "Contents": [
+        {
+            "Key": "1748663920512-5nvr6q-Archive.zip",
+            "LastModified": "2025-09-02T21:23:19+00:00",
+            "ETag": "\"bedea854e0407d7e689c645585de217c\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 38895269,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "1748664812459-5woqcu-Archive.zip",
+            "LastModified": "2025-09-02T21:23:20+00:00",
+            "ETag": "\"bedea854e0407d7e689c645585de217c\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 38895269,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "1749575207099-4fanwl-Archive.zip",
+            "LastModified": "2025-09-02T21:23:21+00:00",
+            "ETag": "\"2fbdf6bb8c602dcc0b264dbea9d4372c\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 55839590,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "1750446097903-yvkqpa-Archive.zip",
+            "LastModified": "2025-09-02T21:23:22+00:00",
+            "ETag": "\"2fbdf6bb8c602dcc0b264dbea9d4372c\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 55839590,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "1751413909023-l2zkyj-Battery-1.zip",
+            "LastModified": "2025-09-02T21:23:24+00:00",
+            "ETag": "\"0af342970949cd716e836458974f796f\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 403160843,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "1752723924270-hzscla-Archive.zip",
+            "LastModified": "2025-09-02T21:23:34+00:00",
+            "ETag": "\"2fbdf6bb8c602dcc0b264dbea9d4372c\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 55839590,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "1755367398585-rapfad-(Processed)1749143234852-1h5air-Archive1-320.zip",
+            "LastModified": "2025-09-02T21:23:35+00:00",
+            "ETag": "\"506950ccaa9e4037aade30472acb5504\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 955436545,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "1755382220388-ud5eoa-10TEST.zip",
+            "LastModified": "2025-09-02T21:23:58+00:00",
+            "ETag": "\"49318b2efcff3866430e12025e5f3d81\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 682895775,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "1755383663705-7itopu-10TEST.zip",
+            "LastModified": "2025-09-02T21:24:15+00:00",
+            "ETag": "\"49318b2efcff3866430e12025e5f3d81\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 682895775,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "1757522555943-l32nce-Archive.zip",
+            "LastModified": "2025-09-10T16:42:36+00:00",
+            "ETag": "\"210d70b05860144566e25fdfc4f89376-1\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 4831877557,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "1757523202333-uw4cp7-Archive.zip",
+            "LastModified": "2025-09-10T16:53:23+00:00",
+            "ETag": "\"43e2a53084cddbbb41b29bd1818e3f1b-231\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 4831877557,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "1757525559455-6hnfaj-Archive.zip",
+            "LastModified": "2025-09-10T17:32:40+00:00",
+            "ETag": "\"9efb8036677b977c86b15f2a45ed6a51-73\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 4831877557,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "1757525968917-vpdsdi-Archive.zip",
+            "LastModified": "2025-09-10T17:39:29+00:00",
+            "ETag": "\"9efb8036677b977c86b15f2a45ed6a51-73\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 4831877557,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "1757529358028-1dk0eb-(Processed)1749143234852-1h5air-Archive1-320.zip",
+            "LastModified": "2025-09-10T18:35:59+00:00",
+            "ETag": "\"289c23b11743a472d32311d779ddd51d-15\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 955436545,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "1757530420793-w2felw-(Processed)1749143234852-1h5air-Archive1-320.zip",
+            "LastModified": "2025-09-10T18:53:41+00:00",
+            "ETag": "\"289c23b11743a472d32311d779ddd51d-15\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 955436545,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "1757531760891-yzpvx7-(Processed)1749143234852-1h5air-Archive1-320.zip",
+            "LastModified": "2025-09-10T19:16:01+00:00",
+            "ETag": "\"289c23b11743a472d32311d779ddd51d-15\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 955436545,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "1758041992036-6fm34w-DJI_202509111526_011_parktest.zip",
+            "LastModified": "2025-09-16T16:59:53+00:00",
+            "ETag": "\"a30d1fa5760f862bc742d710bbd1335c-22\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 1428764564,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "1771003523-red-arrow-ranch-archive/Archive.zip",
+            "LastModified": "2026-02-13T17:25:25+00:00",
+            "ETag": "\"ec2e5df6b1d369f9af238e2dc9bd753e-455\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 3810669691,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "1779123600000-cvhr-Archive.zip",
+            "LastModified": "2026-05-18T17:09:28+00:00",
+            "ETag": "\"3a18e20f13027204f59bd6f1df77b983-827\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 6931098350,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "manual-runs/1774490266-whitney-farm-full-archive.zip",
+            "LastModified": "2026-03-26T01:57:48+00:00",
+            "ETag": "\"27771750959c814f2f5bf8d53878558e-594\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 4977383355,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "manual-runs/1774490266-whitney-farm-subset-50.zip",
+            "LastModified": "2026-03-26T18:51:44+00:00",
+            "ETag": "\"906bd7e17c902760f1820f389c6b21e5-26\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 210939012,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "manual-runs/1774570260-whitney-farm-subset-60.zip",
+            "LastModified": "2026-03-26T18:50:41+00:00",
+            "ETag": "\"92b312a752d455449e15d8d17f243110-31\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 251788943,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "manual-runs/1774570261-whitney-farm-subset-200.zip",
+            "LastModified": "2026-03-26T19:03:00+00:00",
+            "ETag": "\"94c8af5bb0e962356e845fb4ae4dae81-100\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 832685104,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "manual-runs/1774660000-whitney-farm-subset-60-no-gps.zip",
+            "LastModified": "2026-03-28T16:55:33+00:00",
+            "ETag": "\"9bdf800e78fefdf12fc86c4b0dd66814-31\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 251735346,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "manual-runs/1774880779-whitney-farm-first-10-seq.zip",
+            "LastModified": "2026-03-30T17:15:07+00:00",
+            "ETag": "\"9da31eaed5f76918b9294ecbf78967e9-5\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 41322407,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "manual-runs/1774880779-whitney-farm-first-100-seq.zip",
+            "LastModified": "2026-03-30T17:29:44+00:00",
+            "ETag": "\"5b337c8def0bf27060dbd8baf581727b-50\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 412790057,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "manual-runs/1774880779-whitney-farm-first-200-seq.zip",
+            "LastModified": "2026-03-30T17:29:52+00:00",
+            "ETag": "\"20bdb3b562a525c37d5e3acf047b32b0-99\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 825026754,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "manual-runs/1774880779-whitney-farm-first-50-seq.zip",
+            "LastModified": "2026-03-30T14:27:21+00:00",
+            "ETag": "\"3ed8437204b40d1306c7364fc32f3560-25\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 206592048,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "manual-runs/1774898589-horsetail-first-100-seq.zip",
+            "LastModified": "2026-03-30T19:24:07+00:00",
+            "ETag": "\"fbf33c73502bf693a7f5caec796ca9af-50\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 413272925,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "manual-runs/1774898589-horsetail-first-200-seq.zip",
+            "LastModified": "2026-03-30T19:25:43+00:00",
+            "ETag": "\"6ddb44ed6b24d8ab32de33658d359017-100\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 832403917,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "manual-runs/1774898589-horsetail-first-400-seq.zip",
+            "LastModified": "2026-03-30T19:28:29+00:00",
+            "ETag": "\"38e0211c6f1971941139ec9f67ca9bc8-199\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 1669283480,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "manual-runs/20260324-172249-SpinTest-1-Archive.zip",
+            "LastModified": "2026-03-24T23:22:50+00:00",
+            "ETag": "\"bce4cfa90fbd0359438ae150b94b8d74-276\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 2311969858,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "pipeline/full-dataset-20251203-190854/Archive.zip",
+            "LastModified": "2025-12-03T19:08:56+00:00",
+            "ETag": "\"44608e27dcb1164d6c45d1545da363de-142\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 1184562236,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "test-data/direct-test-1750448434.ply",
+            "LastModified": "2025-09-02T21:24:33+00:00",
+            "ETag": "\"30a653f24672e0608d8286f5c7623410\"",
+            "ChecksumAlgorithm": [
+                "CRC32"
+            ],
+            "Size": 71599,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "test-data/direct-test-1750448633.ply",
+            "LastModified": "2025-09-02T21:24:34+00:00",
+            "ETag": "\"364e4095b8fa3c5d9a9d2aa1b6722af0\"",
+            "ChecksumAlgorithm": [
+                "CRC32"
+            ],
+            "Size": 71569,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "test-data/direct-test-1750448846.ply",
+            "LastModified": "2025-09-02T21:24:34+00:00",
+            "ETag": "\"df311a343f9902def43ad390de286641\"",
+            "ChecksumAlgorithm": [
+                "CRC32"
+            ],
+            "Size": 71574,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "test-data/production-test-1750447722.ply",
+            "LastModified": "2025-09-02T21:24:34+00:00",
+            "ETag": "\"4f276910236ee3b827e539fd47bcda0b\"",
+            "ChecksumAlgorithm": [
+                "CRC32"
+            ],
+            "Size": 707990,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "test-data/script-processor-test-1750449024.ply/tmpv67efxz_.ply",
+            "LastModified": "2025-09-02T21:24:34+00:00",
+            "ETag": "\"3a9f77320f930842fc72410e1572c0c7\"",
+            "ChecksumAlgorithm": [
+                "CRC32"
+            ],
+            "Size": 107184,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "test-data/script-processor-test-1750449056.ply",
+            "LastModified": "2025-09-02T21:24:34+00:00",
+            "ETag": "\"b1b068e046538954da66a22f6909d561\"",
+            "ChecksumAlgorithm": [
+                "CRC32"
+            ],
+            "Size": 107190,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "test-data/script-processor-test-1750449318.ply",
+            "LastModified": "2025-09-02T21:24:34+00:00",
+            "ETag": "\"266465d16e2a702ec4d014e6a93e49ab\"",
+            "ChecksumAlgorithm": [
+                "CRC32"
+            ],
+            "Size": 107191,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "test-data/script-processor-test-1750449544.ply",
+            "LastModified": "2025-09-02T21:24:35+00:00",
+            "ETag": "\"70770da3225cbe7ffe03bba41714eb8a\"",
+            "ChecksumAlgorithm": [
+                "CRC32"
+            ],
+            "Size": 107069,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "uploads/red-arrow-ranch/archive-20260210T181957Z-4539e266.zip",
+            "LastModified": "2026-02-10T18:19:58+00:00",
+            "ETag": "\"ec2e5df6b1d369f9af238e2dc9bd753e-455\"",
+            "ChecksumAlgorithm": [
+                "CRC64NVME"
+            ],
+            "Size": 3810669691,
+            "StorageClass": "STANDARD"
+        }
+    ],
+    "Name": "spaceport-uploads-staging",
+    "Prefix": "",
+    "MaxKeys": 1000,
+    "EncodingType": "url",
+    "KeyCount": 42
+}
