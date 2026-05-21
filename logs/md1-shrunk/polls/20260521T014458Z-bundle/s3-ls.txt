@@ -1,0 +1,16 @@
+2026-05-18 21:14:10  977 Bytes compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/background_manifest.json
+2026-05-18 21:14:10   47.4 KiB compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/background_skybox.webp
+2026-05-18 21:14:10  950 Bytes compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/export_manifest.json
+2026-05-18 21:14:10    2.7 MiB compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/means_l.webp
+2026-05-18 21:14:11    1.8 MiB compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/means_u.webp
+2026-05-18 21:14:11    1.4 KiB compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json
+2026-05-18 21:14:11    2.9 MiB compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/quats.webp
+2026-05-18 21:14:11    1.6 MiB compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/scales.webp
+2026-05-18 21:14:11  242 Bytes compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/settings.json
+2026-05-18 21:14:11    2.2 MiB compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/sh0.webp
+2026-05-18 21:14:11  716.6 KiB compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/shN_centroids.webp
+2026-05-18 21:14:11    1.8 MiB compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/shN_labels.webp
+2026-05-18 21:14:11    1.5 KiB compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/training_metadata.json
+
+Total Objects: 13
+   Total Size: 13.9 MiB
