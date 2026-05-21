@@ -1,0 +1,9 @@
+timestamp=20260521T104234Z
+cwd=/Users/gabrielhansen/MD1-Baseline
+branch=agent-113647-md1-baseline-e2e
+head=52c7ee72ca3266b96a5ba2723f4a80f8cf246fca
+head_subject=2026-05-21 04:20:18 -0600 52c7ee72  (HEAD -> agent-113647-md1-baseline-e2e, origin/agent-113647-md1-baseline-e2e) chore: md1-shrunk postpush snapshot 20260521T101944Z [skip ci]
+status_porcelain=1 files
+--- git status -sb ---
+## agent-113647-md1-baseline-e2e...origin/agent-113647-md1-baseline-e2e
+?? logs/md1-shrunk/polls/20260521T104234Z-manual-verify/

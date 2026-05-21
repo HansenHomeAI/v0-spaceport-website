@@ -1,0 +1,35 @@
+--- curl -I S3 meta.json ---
+HTTP/1.1 200 OK
+x-amz-id-2: X+ZeMQg2tD044H9jPmhl1NsB7jfojnOyXhBvYbfDin0W01CirI5jLkwQduybEFW6pQ/EYIqxtUY=
+x-amz-request-id: KDTKT6HAXB9QN4T6
+Date: Thu, 21 May 2026 10:45:01 GMT
+Last-Modified: Tue, 19 May 2026 03:14:11 GMT
+ETag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: lwCX4ptdSjx.9.5LMjn4a8Ervrln8HMA
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1421
+Server: AmazonS3
+
+
+--- curl -I edge meta.json ---
+HTTP/2 200 
+content-type: application/json
+content-length: 1421
+date: Wed, 20 May 2026 23:45:14 GMT
+last-modified: Wed, 20 May 2026 23:45:12 GMT
+etag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+cache-control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: ZKaaWL4B9J1f7ETyDblhCsMiTBAHLcxd
+accept-ranges: bytes
+server: AmazonS3
+x-cache: Hit from cloudfront
+via: 1.1 a27bd00ad99ea9b819b60a207b63be00.cloudfront.net (CloudFront)
+x-amz-cf-pop: SLC52-P2
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: pDTgDPpZNHLP6WPaMis-G9ZjRQr68Tn7LsPprmsAfMvEo2W8OeRiVg==
+age: 39587
+vary: Origin
+

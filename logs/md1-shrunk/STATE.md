@@ -11526,3 +11526,55 @@ note: reran heartbeat after `20260520T144551Z` because bundle parity was skipped
   - `logs/md1-shrunk/polls/20260521T101944Z-ci-postpush-sha-c6447c7a/gh-run-list-exact-head.json`
 
 - Next: commit/push (postpush snapshot + STATE), then idle (no spend; heartbeat-only).
+
+## 2026-05-21T10:42Z manual verification (git/AWS/StepFunctions/SageMaker/S3/edge/listeners/GH)
+
+- Evidence:
+  - `logs/md1-shrunk/polls/20260521T104234Z-manual-verify/verify.txt`
+  - `logs/md1-shrunk/polls/20260521T104234Z-manual-verify/aws-sts.json`
+  - `logs/md1-shrunk/polls/20260521T104234Z-manual-verify/stepfunctions-running-staging.json`
+  - `logs/md1-shrunk/polls/20260521T104234Z-manual-verify/stepfunctions-running-branch.json`
+  - `logs/md1-shrunk/polls/20260521T104234Z-manual-verify/stepfunctions-describe-known.json`
+  - `logs/md1-shrunk/polls/20260521T104234Z-manual-verify/sagemaker-processing-inprogress.json`
+  - `logs/md1-shrunk/polls/20260521T104234Z-manual-verify/sagemaker-training-inprogress.json`
+  - `logs/md1-shrunk/polls/20260521T104234Z-manual-verify/local-dev-server.txt`
+  - `logs/md1-shrunk/polls/20260521T104234Z-manual-verify/gh-run-list.json`
+  - `logs/md1-shrunk/polls/20260521T104234Z-manual-verify/s3-edge-headers.txt`
+
+## 2026-05-21T10:46Z heartbeat verify (scripted; strict gates PASS; no new jobs launched)
+
+- Heartbeat run log:
+  - `logs/md1-shrunk/polls/20260521T104600Z-heartbeat.run.txt`
+- Heartbeat poll summary:
+  - `logs/md1-shrunk/polls/20260521T104600Z-summary.json`
+  - HEAD: `52c7ee72` (`[skip ci]` head; exact-head workflows expected: none)
+  - PREVIEW_URL: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+  - edge meta.json: `https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+  - public S3 meta.json: `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+
+- Preflight snapshot (scripted; read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260521T104600Z-preflight/preflight.txt`
+  - Step Functions RUNNING: `0` (staging + `SpaceportMLPipeline-br-8abcbd5662`)
+  - Known execution `execution-md1-shrunk-prodspine-wlight-202605190027` status: `SUCCEEDED`
+    - `logs/md1-shrunk/polls/20260521T104600Z-preflight/stepfunctions-describe-known.json`
+  - SageMaker InProgress:
+    - processing: `1` (external / not owned by this run): `hmc-mtc-20260520T2015Z-sfm` (left untouched)
+    - training: `0`
+  - GitHub Actions snapshot (no new exact-head runs expected for `[skip ci]`):
+    - `logs/md1-shrunk/polls/20260521T104600Z-ci/summary.txt`
+
+- Browser-readable public delivery validation (automation; Origin/CORS + cache headers + referenced assets):
+  - result: `logs/md1-shrunk/polls/20260521T104600Z-edge-validate/validate.txt`
+  - report: `logs/md1-shrunk/polls/20260521T104600Z-edge-validate/publish-edge.report.html`
+
+- Public bundle snapshot (S3-vs-edge meta.json parity):
+  - `logs/md1-shrunk/polls/20260521T104600Z-bundle/bundle.txt` (sha256 match)
+
+- Multi-camera input-vs-render checks (deployed preview; strict; pose drift verification + sky/horizon gates):
+  - result: `logs/md1-shrunk/polls/20260521T104600Z-camera-suite/suite-summary.json` -> `decision=pass` (`pose_verification.max_delta=0.0`; `artifacts_pruned=true`; `skybox.decision=pass`; `nosky.decision=pass`)
+  - report: `logs/md1-shrunk/polls/20260521T104600Z-camera-suite/report.html`
+
+- Unit proof:
+  - output: `logs/md1-shrunk/polls/20260521T104600Z-unit/unittest.txt`
+
+- Next: commit/push (poll logs + STATE + agent-loop), then record postpush CI snapshot.
