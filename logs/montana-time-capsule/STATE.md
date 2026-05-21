@@ -29,6 +29,11 @@
 
 Next: remain idle; do not re-launch HMC unless a new explicit acceptance gate is requested.
 
+## 2026-05-21T23:20:30Z Post-push CI proof (HMC)
+
+- Git head pushed: b7fcaa5bcfdbca5f43b31ed39e8a33df464d2fdf ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T232030Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260521T232030Z.json)
+
 ## 2026-05-21T22:36:00Z HEARTBEAT monitor (HMC) - terminal state reconfirmed + viewer still HTTP 200 (no launches)
 
 - Git: agent-40136728-montana-time-capsule @ 275f8449f728f5b197b014ba6fece05d7d7307b6 ([skip ci]) (status=logs/montana-time-capsule/git-status-20260521T223600Z.txt)

@@ -147,3 +147,4 @@
 [2026-05-21T22:38:22Z] montana-time-capsule push -> [skip ci] head, exact-head runs 0 -> idle
 [2026-05-21T22:56:40Z] heartbeat -> terminal reconfirmed, viewer 200, no launches -> idle
 [2026-05-21T23:20:02Z] heartbeat(hmc-mtc-20260520T2015Z) -> terminal reconfirmed; viewer skybox/no-sky 200; proxy meta 200 -> idle
+[2026-05-21T23:20:48Z] montana-time-capsule push -> [skip ci] head, exact-head runs 0 -> idle
