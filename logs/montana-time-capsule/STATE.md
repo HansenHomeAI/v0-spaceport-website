@@ -5,6 +5,23 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-21T17:18:00Z Monitor tick (HMC) - 3DGS still InProgress
+
+- Git: agent-40136728-montana-time-capsule @ 3489fef6ec6d32fa983d755d12259e2e26685e08 (status=logs/montana-time-capsule/git-status-20260521T171800Z.txt)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T171456Z.json (acct 975050048887)
+- SageMaker 3DGS:
+  - job: hmc-mtc-20260520T2015Z-3dgs (pinned image sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db)
+  - status: InProgress (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T171456Z.json)
+  - CloudWatch stream discovery: logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-3dgs-20260521T171609Z.json (best=logs/montana-time-capsule/cloudwatch-best-stream-hmc-mtc-20260520T2015Z-3dgs-20260521T171609Z.txt)
+  - CloudWatch tail (no-start-from-head): logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-3dgs-20260521T171632Z-tail120.json (last log message timestamp appears 2026-05-21 16:46:58 UTC)
+  - output prefix currently empty (KeyCount=0): logs/montana-time-capsule/s3api-list-objects-v2-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-3dgs-20260521T171456Z-max10.json (ls=logs/montana-time-capsule/s3-ls-ml-processing-staging-3dgs-hmc-mtc-20260520T2015Z-20260521T171456Z-tail20.txt)
+- Runner state refreshed (no launch): logs/montana-time-capsule/hmc-state-refresh-20260521T171748Z.log (state file logs/montana-time-capsule/hmc-state.json; 3dgs_status=InProgress)
+- CI:
+  - exact-head runs: 0 (expected due to [skip ci]) logs/montana-time-capsule/gh-run-list-exact-head-20260521T171738Z.json
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260521T171738Z.json
+
+Next: keep polling until `describe-training-job` is Completed; do not launch compression until 3DGS is Completed.
+
 ## 2026-05-21T16:36:10Z Monitor tick (HMC) - launched 3DGS
 
 - Git: agent-40136728-montana-time-capsule @ 8fea5bef9ac498f49137311f5bd7774507194c39 (`chore: record post-push proof 20260521T1617Z [skip ci]`)

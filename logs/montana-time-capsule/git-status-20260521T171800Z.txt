@@ -1,0 +1,17 @@
+## agent-40136728-montana-time-capsule...origin/agent-40136728-montana-time-capsule
+ M logs/montana-time-capsule/hmc-state.json
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T171456Z.json
+?? logs/montana-time-capsule/cloudwatch-best-stream-hmc-mtc-20260520T2015Z-3dgs-20260521T171609Z.txt
+?? logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-3dgs-20260521T171456Z.json
+?? logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-3dgs-20260521T171548Z.json
+?? logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-3dgs-20260521T171558Z.json
+?? logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-3dgs-20260521T171609Z.json
+?? logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-3dgs-20260521T171609Z-tail80.json
+?? logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-3dgs-20260521T171622Z-tail120.json
+?? logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-3dgs-20260521T171632Z-tail120.json
+?? logs/montana-time-capsule/gh-run-list-branch-20260521T171738Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-20260521T171738Z.json
+?? logs/montana-time-capsule/git-status-20260521T171800Z.txt
+?? logs/montana-time-capsule/s3-ls-ml-processing-staging-3dgs-hmc-mtc-20260520T2015Z-20260521T171456Z-tail20.txt
+?? logs/montana-time-capsule/s3api-list-objects-v2-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-3dgs-20260521T171456Z-max10.json
+?? logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T171456Z.json
