@@ -4162,6 +4162,19 @@ Next: continue polling until SfM becomes Completed; only then run pinned 3DGS st
 
 Next: continue polling until SfM becomes Completed; do not launch 3DGS until SfM output exists.
 
+## 2026-05-21T08:34:42Z Monitor tick (HMC)
+
+- Git: agent-40136728-montana-time-capsule @ c78a1168e41d107bc7b6425f7e65a7743ca11aee (`chore: record post-push ci proof 20260521T0818Z [skip ci]`)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T083442Z.json (acct 975050048887)
+- SageMaker SfM:
+  - job: hmc-mtc-20260520T2015Z-sfm
+  - status: InProgress (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T083442Z.json; list=logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T083442Z.json)
+  - CloudWatch newest event still 2026-05-21T00:01:36.365Z (streams=logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T083442Z.json; tail=logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T083442Z-tail.json)
+  - output prefix still empty (EndOfJob upload): logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T083442Z.txt (Total Objects: 0)
+- CI (exact head): 0 runs for this [skip ci] head (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-20260521T083534Z.json; branch=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T083534Z.json)
+
+Next: continue polling until SfM becomes Completed and the colmap output prefix is non-empty; do not launch 3DGS until SfM output exists.
+
 ## 2026-05-21T05:57:07Z Post-push CI proof
 
 - Git head pushed: 640f02f4ade38eb6665448997a7705a984226bab ([skip ci])
