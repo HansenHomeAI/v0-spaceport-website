@@ -1,0 +1,12 @@
+# postpush ci snapshot 20260521T115044Z
+
+branch=agent-113647-md1-baseline-e2e
+head=2049419abeef652176d0f80f86e213ab10f79fe0
+subject=chore: md1-shrunk postpush snapshot 20260521T114938Z [skip ci]
+
+## gh run list (branch)
+exact_head_run_count=0
+
+## exact head runs
+- gh-run-list.json=logs/md1-shrunk/polls/20260521T115044Z-ci-postpush-sha-2049419a/gh-run-list.json
+- gh-run-list-exact-head.json=logs/md1-shrunk/polls/20260521T115044Z-ci-postpush-sha-2049419a/gh-run-list-exact-head.json
