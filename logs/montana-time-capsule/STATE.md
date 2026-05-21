@@ -17,7 +17,7 @@
   - output prefix still empty: logs/montana-time-capsule/s3api-list-objects-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T085352Z.json
 - Runner state refreshed (no launch): logs/montana-time-capsule/hmc-state-refresh-20260521T085352Z.log (state file logs/montana-time-capsule/hmc-state.json; sfm_status=InProgress; updated_at=2026-05-21T08:55:13Z)
 - CI: exact head is [skip ci] (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-20260521T085352Z.json; branch=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T085352Z.json)
-- Post-push CI proof: head is [skip ci] (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T085722Z.json; branch=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-postpush-20260521T085722Z.json)
+- Post-push CI proof: head is [skip ci] (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T085822Z.json; branch=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-postpush-20260521T085822Z.json)
 
 Next: keep polling until SfM becomes Completed and the S3 output prefix is non-empty; do not launch 3DGS yet.
 
