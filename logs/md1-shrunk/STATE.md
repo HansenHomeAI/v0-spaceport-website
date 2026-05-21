@@ -11406,6 +11406,16 @@ note: reran heartbeat after `20260520T144551Z` because bundle parity was skipped
 
 - Next: idle (no spend; heartbeat-only).
 
+## 2026-05-21T13:21:40Z postpush CI snapshot (head is logs-only; no new runs expected)
+
+- exact-head commit: `1bd1fa66` (`[skip ci]` head; exact-head workflows expected: none)
+- Evidence:
+  - `logs/md1-shrunk/polls/20260521T132140Z-ci-postpush-sha-1bd1fa66/postpush.txt`
+  - `logs/md1-shrunk/polls/20260521T132140Z-ci-postpush-sha-1bd1fa66/gh-run-list-exact-head.json`
+  - `logs/md1-shrunk/polls/20260521T132140Z-ci-postpush-sha-1bd1fa66/gh-run-list.json`
+
+- Next: idle (no spend; heartbeat-only).
+
 ## 2026-05-21T09:44Z heartbeat verify (scripted; strict gates PASS; no new jobs launched)
 
 - Manual verification (git/AWS/StepFunctions/SageMaker/S3/edge/listeners/GH):

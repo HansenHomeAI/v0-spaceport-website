@@ -1,0 +1,6 @@
+# postpush CI snapshot 20260521T132140Z
+
+branch=agent-113647-md1-baseline-e2e
+head=1bd1fa662e8c23a85785443dacd94d55890c92e0
+short=1bd1fa66
+exact_head_count= 0
