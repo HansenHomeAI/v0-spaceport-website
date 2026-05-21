@@ -5,6 +5,19 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-21T06:16:15Z Monitor tick (HMC)
+
+- Git: agent-40136728-montana-time-capsule @ 8ba09babe25fb55982c6ac64767b1f1feb4856d7 (`chore: record post-push ci proof 20260521T0557Z [skip ci]`)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T061427Z.json (acct 975050048887)
+- SageMaker SfM:
+  - job: hmc-mtc-20260520T2015Z-sfm
+  - status: InProgress (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T061427Z.json; list=logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T061427Z.json)
+  - CloudWatch lastEvent still 2026-05-21T00:01:36.365Z (streams=logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T061427Z-retry.json; tail=logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm_algo-1-1779308230-20260521T061427Z-tail.json)
+  - output prefix still empty (EndOfJob upload): logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T061427Z.txt (Total Objects: 0)
+- Runner state refreshed (no launch): logs/montana-time-capsule/hmc-state-refresh-20260521T061615Z.json (state file logs/montana-time-capsule/hmc-state.json; sfm_status=InProgress)
+
+Next: keep polling until SfM becomes Completed and S3 output exists; do not launch 3DGS yet.
+
 ## Runner
 
 - Command: `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --launch`
