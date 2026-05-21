@@ -1,0 +1,14 @@
+{
+    "logStreams": [
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-3dgs/algo-1-1779381402",
+            "creationTime": 1779381667502,
+            "firstEventTimestamp": 1779381661328,
+            "lastEventTimestamp": 1779382018947,
+            "lastIngestionTime": 1779382024560,
+            "uploadSequenceToken": "49039859672912845709061861431855044366434943057453676605",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/TrainingJobs:log-stream:hmc-mtc-20260520T2015Z-3dgs/algo-1-1779381402",
+            "storedBytes": 0
+        }
+    ]
+}

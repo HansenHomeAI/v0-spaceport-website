@@ -5,6 +5,25 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-21T19:38:46Z Monitor tick (HMC) - 3DGS still InProgress (no new logs since 16:46Z)
+
+- Git: agent-40136728-montana-time-capsule @ 6dde4d9e9f82b5e0f8d86bf63ad9b7e1c0b33b73 (status=logs/montana-time-capsule/git-status-20260521T193857Z.txt)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T193532Z.json (acct 975050048887)
+- SageMaker:
+  - SfM job (processing): hmc-mtc-20260520T2015Z-sfm status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T193640Z.json)
+  - 3DGS job (training): hmc-mtc-20260520T2015Z-3dgs status=InProgress (SecondaryStatus=Training; LastModifiedTime unchanged since 2026-05-21T10:40:55-06:00) (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T193722Z.json)
+  - CloudWatch streams: logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-3dgs-20260521T193724Z.json (best=logs/montana-time-capsule/cloudwatch-best-stream-hmc-mtc-20260520T2015Z-3dgs-20260521T193724Z.txt)
+  - CloudWatch tail: logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-3dgs-20260521T193724Z-tail200.json (last event timestamp ms=1779382018947; last message head shows 2026-05-21 16:46:58)
+- S3:
+  - 3DGS output prefix still empty: logs/montana-time-capsule/s3api-list-objects-v2-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-3dgs-20260521T193722Z-maxkeys50.json (KeyCount=0)
+- Runner:
+  - State refreshed (no launch): logs/montana-time-capsule/hmc-state-refresh-20260521T193846Z.log (updated_at=2026-05-21T19:38:46Z; status=3dgs_running)
+- CI:
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260521T193812Z.json (0 runs; expected due to [skip ci] head)
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260521T193812Z.json (latest Pages deploy success is older head sha=88b1848)
+
+Next: keep polling until `describe-training-job` is Completed; do not launch compression until 3DGS is Completed.
+
 ## 2026-05-21T18:59:11Z Post-push CI proof (HMC)
 
 - Git head pushed: bf33d0e2ea4a07e47449c3c8ef1c27cf666e8229 ([skip ci])
