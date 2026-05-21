@@ -4013,3 +4013,19 @@ Poll `hmc-mtc-20260520T2015Z-sfm` until `Completed`, then run the time-capsule r
 - head pushed: 373b0996c4c1612732d31935f0b32a90e752fd01 ([skip ci])
 - gh run list: logs/montana-time-capsule/gh-run-list-agent-40136728-postpush-20260521T034210Z.json
 - runs for head: 0 (expected due to [skip ci])
+
+## 2026-05-21T04:20:05Z Monitor Tick
+
+- Git head: 03b6c57b08ce1e2e26b8f2708e4b1b9f1d748c53
+- AWS identity: arn:aws:iam::975050048887:root
+- HMC input: s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip (LastModified 2026-05-16T17:35:27Z, size 8646557673)
+- SageMaker job: hmc-mtc-20260520T2015Z-sfm
+  - status: InProgress
+  - lastModified: 2026-05-20T14:18:53.916000-06:00
+- CloudWatch latest event: 2026-05-21T00:01:36.365000Z
+- Evidence:
+  - logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T041940Z.json
+  - logs/montana-time-capsule/cloudwatch-streams-hmc-mtc-20260520T2015Z-sfm-20260521T041940Z.json
+  - logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260521T041450Z-since12h.log
+  - logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260521T041605Z.json
+  - logs/montana-time-capsule/hmc-input-manifest-20260521T041617Z.json
