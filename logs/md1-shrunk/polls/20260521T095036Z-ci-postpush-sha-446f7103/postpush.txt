@@ -1,0 +1,5 @@
+ts=20260521T095036Z
+head=446f7103924f255b8564749fd530bcdbfec5b7fb
+short=446f7103
+exact_head_run_count=0
+note=if head contains [skip ci], exact_head_run_count is expected 0
