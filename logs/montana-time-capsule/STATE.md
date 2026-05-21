@@ -5,6 +5,21 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-21T16:14:37Z Monitor tick (HMC)
+
+- Git: agent-40136728-montana-time-capsule @ dbbdbbcdeaaf6eab47441127dcb17663e683a801 (`chore: record post-push proof 20260521T1557Z [skip ci]`)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T161437Z.json (acct 975050048887)
+- SageMaker SfM:
+  - job: hmc-mtc-20260520T2015Z-sfm
+  - status: InProgress (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T161437Z.json; list=logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T161437Z.json)
+  - CloudWatch best stream: logs/montana-time-capsule/cloudwatch-best-stream-hmc-mtc-20260520T2015Z-sfm-20260521T161437Z.txt (tail=logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T161437Z-tail50.json; message shows `Completed at: Thu May 21 16:02:11 UTC 2026`)
+  - output prefix now non-empty (Total Objects: 2070; Total Size: 12.0 GiB): logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T161437Z.txt (list-objects=logs/montana-time-capsule/s3api-list-objects-v2-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T161437Z-max50.json)
+- CI:
+  - branch runs: logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T161437Z.txt
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260521T161437Z.txt ([skip ci] expected)
+
+Next: keep polling until `describe-processing-job` reports Completed; do not launch 3DGS until SageMaker status flips.
+
 ## 2026-05-21T15:36:52Z Monitor tick (HMC)
 
 - Git: agent-40136728-montana-time-capsule @ 7a416db7052f1e6c8f116b66a25e0d88a26d9595 (`chore: record post-push ci proof 20260521T1519Z [skip ci]`)

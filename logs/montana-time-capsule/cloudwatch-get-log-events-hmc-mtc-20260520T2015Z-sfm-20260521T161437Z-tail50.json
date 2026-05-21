@@ -1,0 +1,256 @@
+{
+    "events": [
+        {
+            "timestamp": 1779379214068,
+            "message": "COLMAP[chunk_bundle_adjuster] I20260521 16:00:14.012377  8201 bundle_adjustment_ceres.cc:1137] Bundle adjustment report",
+            "ingestionTime": 1779379220051
+        },
+        {
+            "timestamp": 1779379214068,
+            "message": "COLMAP[chunk_bundle_adjuster]     Residuals : 15829358",
+            "ingestionTime": 1779379220051
+        },
+        {
+            "timestamp": 1779379214068,
+            "message": "COLMAP[chunk_bundle_adjuster]    Parameters : 4164823",
+            "ingestionTime": 1779379220051
+        },
+        {
+            "timestamp": 1779379214068,
+            "message": "COLMAP[chunk_bundle_adjuster]    Iterations : 101",
+            "ingestionTime": 1779379220051
+        },
+        {
+            "timestamp": 1779379214068,
+            "message": "COLMAP[chunk_bundle_adjuster]          Time : 12025.2 [s]",
+            "ingestionTime": 1779379220051
+        },
+        {
+            "timestamp": 1779379214068,
+            "message": "COLMAP[chunk_bundle_adjuster]  Initial cost : 1.80808 [px]",
+            "ingestionTime": 1779379220051
+        },
+        {
+            "timestamp": 1779379214068,
+            "message": "COLMAP[chunk_bundle_adjuster]    Final cost : 0.81687 [px]",
+            "ingestionTime": 1779379220051
+        },
+        {
+            "timestamp": 1779379214068,
+            "message": "COLMAP[chunk_bundle_adjuster]   Termination : NO_CONVERGENCE",
+            "ingestionTime": 1779379220051
+        },
+        {
+            "timestamp": 1779379214068,
+            "message": "COLMAP[chunk_bundle_adjuster] ",
+            "ingestionTime": 1779379220051
+        },
+        {
+            "timestamp": 1779379216068,
+            "message": "COLMAP[chunk_bundle_adjuster] I20260521 16:00:15.140259  8201 timer.cc:90] Elapsed time: 200.727 [minutes]",
+            "ingestionTime": 1779379220051
+        },
+        {
+            "timestamp": 1779379223070,
+            "message": "2026-05-21 16:00:22,662 - INFO - [chunk_bundle_adjuster_model_converter_chunk_bundle_adjuster] colmap model_converter --input_path /tmp/colmap_sfm_kvb56gze/chunk_bundle_adjuster --output_path /tmp/colmap_sfm_kvb56gze/text_models/chunk_bundle_adjuster/chunk_bundle_adjuster --output_type TXT",
+            "ingestionTime": 1779379228113
+        },
+        {
+            "timestamp": 1779379330094,
+            "message": "MEMORY_PROBE [after_python]:",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379330094,
+            "message": "MemTotal:       16081288 kB",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379330094,
+            "message": "MemFree:         9531228 kB",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379330094,
+            "message": "MemAvailable:   14970848 kB\n               total        used        free      shared  buff/cache   available",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379330094,
+            "message": "Mem:            15Gi       1.1Gi       9.1Gi       1.0Mi       5.5Gi        14Gi",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379330094,
+            "message": "Swap:             0B          0B          0B",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379330094,
+            "message": "============================================================",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379330094,
+            "message": "🔍 VALIDATING OUTPUT",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379330094,
+            "message": "============================================================",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379330094,
+            "message": "✅ /opt/ml/processing/output/sparse/0/cameras.txt (195 bytes)",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379330095,
+            "message": "✅ /opt/ml/processing/output/sparse/0/images.txt (814564705 bytes)",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379330095,
+            "message": "✅ /opt/ml/processing/output/sparse/0/points3D.txt (205291080 bytes)",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379330095,
+            "message": "✅ /opt/ml/processing/output/images (2063 files)",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379330095,
+            "message": "✅ /opt/ml/processing/output/database.db (3181797376 bytes)",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379330095,
+            "message": "✅ /opt/ml/processing/output/sfm_metadata.json (8599 bytes)",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332095,
+            "message": "✅ COLMAP format validation passed",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332095,
+            "message": "============================================================",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332095,
+            "message": "📊 PROCESSING STATISTICS",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332095,
+            "message": "============================================================",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332095,
+            "message": "📷 Cameras registered: 1",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332095,
+            "message": "🖼️ Images registered: 2022",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332095,
+            "message": "🖼️ Images copied for 3DGS: 2063",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332095,
+            "message": "🎯 3D points: 1384232",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332095,
+            "message": "⏱️ Processing time: 70821.23 seconds",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332095,
+            "message": "🛰️ GPS priors detected: 2063",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332095,
+            "message": "🔗 Matchers: chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_vocab_tree_matcher, chunk_spatial_matcher, chunk_sequential_matcher",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332095,
+            "message": "🧭 Match profile: P1",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332095,
+            "message": "➡️ Sequential matcher enabled: True",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332095,
+            "message": "↩️ Fallback reason: not_needed",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332095,
+            "message": "🎯 Vocab tree candidates: 40",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332095,
+            "message": "📌 SIFT max features: 8192",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332095,
+            "message": "============================================================",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332096,
+            "message": "🎉 SPACEPORT COLMAP GPU SfM COMPLETED SUCCESSFULLY!",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332096,
+            "message": "============================================================",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332096,
+            "message": "✅ GPU-accelerated COLMAP SfM completed",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332096,
+            "message": "📁 Output files ready for 3D Gaussian Splatting training",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332096,
+            "message": "🔗 COLMAP TXT handoff maintained",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332096,
+            "message": "📅 Completed at: Thu May 21 16:02:11 UTC 2026",
+            "ingestionTime": 1779379335359
+        },
+        {
+            "timestamp": 1779379332096,
+            "message": "============================================================",
+            "ingestionTime": 1779379335359
+        }
+    ],
+    "nextForwardToken": "f/39681485096604499128339645277117062355456814962206834726/s",
+    "nextBackwardToken": "b/39681482464492144836167256988540627992768775652100079616/s"
+}
