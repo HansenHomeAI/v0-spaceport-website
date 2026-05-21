@@ -20,6 +20,21 @@
 
 Next: keep polling until SfM becomes Completed and the S3 output prefix is non-empty; do not launch 3DGS yet.
 
+## 2026-05-21T12:34:07Z Monitor tick (HMC)
+
+- Git: agent-40136728-montana-time-capsule @ d4640c2d4e564145741200940c4b725b4591154b (`chore: record post-push ci proof 20260521T1217Z (2) [skip ci]`)
+  - status: logs/montana-time-capsule/git-status-20260521T123407Z.txt
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T123407Z.json (acct 975050048887)
+- SageMaker SfM:
+  - job: hmc-mtc-20260520T2015Z-sfm
+  - status: InProgress (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T123407Z.json; list=logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T123407Z.json)
+  - CloudWatch last event now 2026-05-21T12:33:25Z (streams=logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T123407Z.json; best=logs/montana-time-capsule/cloudwatch-best-stream-hmc-mtc-20260520T2015Z-sfm-20260521T123407Z.json; tail=logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T123407Z-tail50.json; last=logs/montana-time-capsule/cloudwatch-last-event-hmc-mtc-20260520T2015Z-sfm-20260521T123407Z.txt)
+  - output prefix still empty (KeyCount=0): logs/montana-time-capsule/s3api-list-objects-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T123407Z.json (ls=logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T123407Z-tail50.txt)
+- Runner state refreshed (no launch): logs/montana-time-capsule/hmc-state-refresh-20260521T123407Z.log (state file logs/montana-time-capsule/hmc-state.json; sfm_status=InProgress)
+- CI: exact head is [skip ci] (branch=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T123407Z.json; exact-head=logs/montana-time-capsule/gh-run-list-exact-head-20260521T123407Z.json)
+
+Next: keep polling until SfM becomes Completed and the S3 output prefix is non-empty; do not launch 3DGS yet.
+
 ## 2026-05-21T12:17:09Z Post-push CI proof (HMC)
 
 - Git head pushed: 89d6ed70767ba61bdeac519e52576f3df82f3348 ([skip ci])

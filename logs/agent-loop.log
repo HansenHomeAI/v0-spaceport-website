@@ -93,3 +93,4 @@
 [2026-05-21T12:14:10Z] poll_sfm -> hmc-mtc-20260520T2015Z-sfm InProgress; CW lastEvent=2026-05-21T00:01:36Z; S3 KeyCount=0; exact-head GH runs=0 ([skip ci]) -> next: wait/poll (no launch)
 [2026-05-21T12:17:09Z] push -> head 89d6ed70 pushed; 0 GH runs for exact head (expected [skip ci]); proof=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T121709Z.json
 [2026-05-21T12:17:55Z] push -> head f94987d7 pushed; 0 GH runs for exact head (expected [skip ci]); proof=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T121755Z.json
+[2026-05-21T12:34:07Z] poll_sfm -> hmc-mtc-20260520T2015Z-sfm InProgress; CW lastEvent=2026-05-21T12:33:25Z; S3 KeyCount=0; exact-head GH runs=0 ([skip ci]) -> next: wait/poll (no launch)

@@ -1,0 +1,1 @@
+1779366806451	2026-05-21 12:33:25,480 - INFO - chunk_15_mapper_recovery model 1 registered 18/162 images and 13551 points
