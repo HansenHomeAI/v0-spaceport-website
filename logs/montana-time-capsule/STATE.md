@@ -20,6 +20,20 @@
 
 Next: keep polling until SfM becomes Completed and the S3 output prefix is non-empty; do not launch 3DGS yet.
 
+## 2026-05-21T13:36:51Z Monitor tick (HMC)
+
+- Git: agent-40136728-montana-time-capsule @ e490877f5a14e2be38aeb4e9455a890b38fdd4bc (`chore: record post-push ci proof 20260521T1316Z [skip ci]`)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T133410Z.json (acct 975050048887)
+- SageMaker SfM:
+  - job: hmc-mtc-20260520T2015Z-sfm
+  - status: InProgress (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-status-20260521T133411Z.json; list=logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T133412Z.json)
+  - CloudWatch newest stream last event at 2026-05-21T13:33:35Z (streams=logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T133435Z.json; tail=logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T133435Z-tail50.json)
+  - output prefix still empty (S3UploadMode=EndOfJob; KeyCount=0): logs/montana-time-capsule/s3api-list-objects-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T133643Z.json
+- Runner state refreshed (no launch): logs/montana-time-capsule/hmc-state-refresh-20260521T133635Z.log (state file logs/montana-time-capsule/hmc-state.json; sfm_status=InProgress; updated_at=2026-05-21T13:36:36Z)
+- CI: exact head is [skip ci] (branch=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T133559Z.json; exact-head=logs/montana-time-capsule/gh-run-list-exact-head-20260521T133559Z.json)
+
+Next: keep polling until SfM becomes Completed and the S3 output prefix is non-empty; do not launch 3DGS yet.
+
 ## 2026-05-21T13:14:52Z Monitor tick (HMC)
 
 - Git: agent-40136728-montana-time-capsule @ 4754064be4c0f3d508f4528b8afa434eb387bf63 (`chore: montana time capsule sfm tick 20260521T1257Z [skip ci]`)
