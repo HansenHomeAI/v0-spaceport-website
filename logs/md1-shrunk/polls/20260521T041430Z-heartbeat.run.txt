@@ -1,0 +1,17 @@
+{
+  "timestamp_utc": "20260521T041431Z",
+  "branch": "agent-113647-md1-baseline-e2e",
+  "head": "08a2d2da332e985a26dd39a124212b73e2cafc97",
+  "viewer_url": "https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev",
+  "job_id": "md1-shrunk-prodspine-wlight-202605190027",
+  "compressed_output_s3_uri": "s3://spaceport-ml-processing/compressed/md1-shrunk-prodspine-wlight-202605190027/",
+  "edge_meta_url": "https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json",
+  "poll_dirs": {
+    "preflight": "/Users/gabrielhansen/MD1-Baseline/logs/md1-shrunk/polls/20260521T041431Z-preflight",
+    "bundle": "/Users/gabrielhansen/MD1-Baseline/logs/md1-shrunk/polls/20260521T041431Z-bundle",
+    "edge_validate": "/Users/gabrielhansen/MD1-Baseline/logs/md1-shrunk/polls/20260521T041431Z-edge-validate",
+    "camera_suite": "/Users/gabrielhansen/MD1-Baseline/logs/md1-shrunk/polls/20260521T041431Z-camera-suite",
+    "unit": "/Users/gabrielhansen/MD1-Baseline/logs/md1-shrunk/polls/20260521T041431Z-unit",
+    "ci": "/Users/gabrielhansen/MD1-Baseline/logs/md1-shrunk/polls/20260521T041431Z-ci"
+  }
+}

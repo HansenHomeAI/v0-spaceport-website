@@ -1,0 +1,99 @@
+timestamp_utc=20260521T041339Z
+
+# git
+branch=agent-113647-md1-baseline-e2e
+head=08a2d2da332e985a26dd39a124212b73e2cafc97
+status_porcelain:
+?? logs/md1-shrunk/polls/20260521T041339Z-manual-verify/
+
+# aws sts
+{
+    "UserId": "975050048887",
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root"
+}
+
+# stepfunctions running
+{
+    "executions": []
+}
+
+{
+    "executions": []
+}
+
+# sagemaker inprogress
+{
+    "ProcessingJobSummaries": [
+        {
+            "ProcessingJobName": "hmc-mtc-20260520T2015Z-sfm",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/hmc-mtc-20260520T2015Z-sfm",
+            "CreationTime": "2026-05-20T14:16:22.633000-06:00",
+            "LastModifiedTime": "2026-05-20T14:18:53.916000-06:00",
+            "ProcessingJobStatus": "InProgress"
+        }
+    ],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTRGREho3fQekrpmQGcHpQatiRioI3RFTbvpXqp/Yh+xuwnz4QuXq3VGkjy6VltzeghFdxO/OE0Aq2nNJaS1x5OBlJW5tCioH/HZCLo06VzUPBlkvbAshEgI6yMKqVLgS34U8zSnMgbsjUsYA0XB9iPaDDO8ljFY97lUD7w69Suimk7Mm5r70vm9iMQHcvO4NkgipojZiNg4venHJoKkxeQyFN4OSmdmmDi861edttsbyls0aoAmfbPIeFt/iZ52nNNZbKfC80nDLjkJEZWCuAChCkUgxgA6jTMkQs9zoqhvNd9kD25TpovYkaqN6997SrmsD7+rweTyMbeEUrgXtDoc6omAQ11Xf7ghSwQQB2jgRdnINb1r7BZrn8bQVxc8DKSKjqzoKXukG3JxE/pTwtSf9u4k58iQq8ttFL1nsusJ+nzoCeqmr5wlofto8dzLy4YGY/Gh166yibMx/1oznQ6zrmVTbUDxRlobSkdkUdi5wMLq2ISKflnp4+4/KMNWY="
+}
+
+{
+    "TrainingJobSummaries": [],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTRGREho3fQekrpmQGcHpQatiRioI3RFTbvpXqp/Yh+xuwnz4QuXq3VGkjy6VltzeghFdxO/OE0Aq2nNJaS1x5OBlJW5tCioH/HZCLo06VzUPBlkvbAshEgI6yMKqVLgS34U8zSnMgbsjUsYA0XB9iPaDDO8ljFY97lUD7w69Suimk7Mm5r70vm9iMQHcvO4NkgipojZiNg4venHJoKkxeQyFN4OSmdmmDi861edttsbyls0aoAmfbPIeFt/iZ52nNNZbKfC80nDLjkJEZWCuAChCkUgxgA6jTMkQs9zoqhvNd9kD25TpovYkaqN6997SrmsD7+rweTyMbeEUrgXtDoLAvHkD8tfhMWzL+ko95dO1G4Pp2avgip3w5SvR4+yHSwTolipLcI8EwMXf7ME2BwFkK7/vfSamRmMEw/tdUtrwPOkO3rpKGnmShTViBNDTO7/1GOYFyuZ/NHpc9USerawWvzQ6mle8UOnMdLfbZd2UNtFEFsl1uaNseciZqtb3mSyc="
+}
+
+# public s3 + edge meta HEAD
+HTTP/1.1 200 OK
+x-amz-id-2: NregBOJ6+xsgXqiKmw4Q5tXFlamwmfKWAuSZOM6X00DRbZCgTFg5mOqOpV9avdTpYnfRCFwpZuU=
+x-amz-request-id: GRVDSC2JJY8D275N
+Date: Thu, 21 May 2026 04:13:44 GMT
+Last-Modified: Tue, 19 May 2026 03:14:11 GMT
+ETag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: lwCX4ptdSjx.9.5LMjn4a8Ervrln8HMA
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1421
+Server: AmazonS3
+
+
+HTTP/2 200 
+content-type: application/json
+content-length: 1421
+date: Wed, 20 May 2026 23:45:14 GMT
+last-modified: Wed, 20 May 2026 23:45:12 GMT
+etag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+cache-control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: ZKaaWL4B9J1f7ETyDblhCsMiTBAHLcxd
+accept-ranges: bytes
+server: AmazonS3
+x-cache: Hit from cloudfront
+via: 1.1 d2afdd32bd98ff04d9198657218d7a24.cloudfront.net (CloudFront)
+x-amz-cf-pop: SLC52-P2
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: y5Lkke-Fs9ZlhRV52LfZV1nzXYbKHki6gBh3sBlT-HmM2q5fKqM_-Q==
+age: 16110
+vary: Origin
+
+
+# local listen ports (subset)
+2:rapportd    629 gabrielhansen   10u  IPv4 0xd43fe9904368dc77      0t0  TCP *:57108 (LISTEN)
+3:rapportd    629 gabrielhansen   11u  IPv6 0xe16a739ca4c9e001      0t0  TCP *:57108 (LISTEN)
+4:rapportd    629 gabrielhansen   20u  IPv6  0x9e31fe01f536617      0t0  TCP *:53106 (LISTEN)
+5:rapportd    629 gabrielhansen   23u  IPv6 0x440e221cb618b4b3      0t0  TCP *:53107 (LISTEN)
+6:ControlCe   671 gabrielhansen   10u  IPv4  0x1d6f516c03dbe78      0t0  TCP *:7000 (LISTEN)
+7:ControlCe   671 gabrielhansen   11u  IPv6 0x323b59c737344082      0t0  TCP *:7000 (LISTEN)
+8:ControlCe   671 gabrielhansen   12u  IPv4 0x15183ba995babbab      0t0  TCP *:5000 (LISTEN)
+9:ControlCe   671 gabrielhansen   13u  IPv6 0x74899407a6b44171      0t0  TCP *:5000 (LISTEN)
+10:sharingd    731 gabrielhansen   26u  IPv6 0xb8e1c62129f065f9      0t0  TCP *:8770 (LISTEN)
+11:node        990 gabrielhansen   15u  IPv4 0x3ba8349c576cb96a      0t0  TCP *:18789 (LISTEN)
+12:node        990 gabrielhansen   22u  IPv4 0xc30287d8799625c6      0t0  TCP 127.0.0.1:18792 (LISTEN)
+13:figma_age  1010 gabrielhansen    3u  IPv4  0x15caf79fc3a5872      0t0  TCP 127.0.0.1:44950 (LISTEN)
+14:figma_age  1010 gabrielhansen   14u  IPv4 0xa707bb1274999ca8      0t0  TCP 127.0.0.1:44960 (LISTEN)
+15:whisper-d 11840 gabrielhansen    3u  IPv4 0x54e8688f71e55e6c      0t0  TCP 127.0.0.1:44123 (LISTEN)
+16:whisper-s 11847 gabrielhansen    3u  IPv4 0x58134ae9f6f12888      0t0  TCP 127.0.0.1:8177 (LISTEN)
+17:node      42136 gabrielhansen   13u  IPv4 0x81bd7fef9702d453      0t0  TCP 127.0.0.1:3033 (LISTEN)
+18:Google    53437 gabrielhansen   30u  IPv6 0x7d6c05cbd748094b      0t0  TCP [::1]:7679 (LISTEN)
+
+# gh exact-head (branch)
+[{"conclusion":"success","createdAt":"2026-05-21T02:21:52Z","databaseId":26201635575,"headSha":"2a302b6012597821ec8d15a215e35a070572fcbb","status":"completed","updatedAt":"2026-05-21T02:26:00Z","url":"https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26201635575","workflowName":"CDK Deploy"},{"conclusion":"success","createdAt":"2026-05-21T02:21:52Z","databaseId":26201635538,"headSha":"2a302b6012597821ec8d15a215e35a070572fcbb","status":"completed","updatedAt":"2026-05-21T02:29:45Z","url":"https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26201635538","workflowName":"Deploy Next.js to Cloudflare Pages"},{"conclusion":"success","createdAt":"2026-05-20T17:01:17Z","databaseId":26177531892,"headSha":"1359cb1afde66c37098f6e2bf5f2cc8aa099ec53","status":"completed","updatedAt":"2026-05-20T17:05:21Z","url":"https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26177531892","workflowName":"CDK Deploy"},{"conclusion":"success","createdAt":"2026-05-20T17:01:17Z","databaseId":26177531889,"headSha":"1359cb1afde66c37098f6e2bf5f2cc8aa099ec53","status":"completed","updatedAt":"2026-05-20T17:08:48Z","url":"https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26177531889","workflowName":"Deploy Next.js to Cloudflare Pages"},{"conclusion":"success","createdAt":"2026-05-20T16:56:52Z","databaseId":26177304296,"headSha":"a5731689f53f6c4cd91d7efc591f92026a06ced3","status":"completed","updatedAt":"2026-05-20T17:00:55Z","url":"https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26177304296","workflowName":"CDK Deploy"},{"conclusion":"success","createdAt":"2026-05-20T16:34:40Z","databaseId":26176189124,"headSha":"74aed92646788e7de300b949d54b025c958d71d7","status":"completed","updatedAt":"2026-05-20T16:38:15Z","url":"https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26176189124","workflowName":"CDK Deploy"},{"conclusion":"success","createdAt":"2026-05-20T16:34:40Z","databaseId":26176189057,"headSha":"74aed92646788e7de300b949d54b025c958d71d7","status":"completed","updatedAt":"2026-05-20T16:41:59Z","url":"https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26176189057","workflowName":"Deploy Next.js to Cloudflare Pages"},{"conclusion":"success","createdAt":"2026-05-20T16:30:13Z","databaseId":26175961282,"headSha":"9a9369af6a113fdbf75cfc878ff4f3f8d4181dc9","status":"completed","updatedAt":"2026-05-20T16:34:06Z","url":"https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26175961282","workflowName":"CDK Deploy"},{"conclusion":"success","createdAt":"2026-05-20T10:00:49Z","databaseId":26155418466,"headSha":"4abff30c243b60464ef8ccf6218a4b166d33a5f2","status":"completed","updatedAt":"2026-05-20T10:04:50Z","url":"https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26155418466","workflowName":"CDK Deploy"},{"conclusion":"success","createdAt":"2026-05-20T10:00:49Z","databaseId":26155418467,"headSha":"4abff30c243b60464ef8ccf6218a4b166d33a5f2","status":"completed","updatedAt":"2026-05-20T10:08:35Z","url":"https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26155418467","workflowName":"Deploy Next.js to Cloudflare Pages"},{"conclusion":"success","createdAt":"2026-05-20T09:12:07Z","databaseId":26153004935,"headSha":"14f6eaf259c4310bf0d613d7c348a22acda4f38a","status":"completed","updatedAt":"2026-05-20T09:19:50Z","url":"https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26153004935","workflowName":"Deploy Next.js to Cloudflare Pages"},{"conclusion":"success","createdAt":"2026-05-20T09:12:07Z","databaseId":26153004933,"headSha":"14f6eaf259c4310bf0d613d7c348a22acda4f38a","status":"completed","updatedAt":"2026-05-20T09:16:13Z","url":"https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26153004933","workflowName":"CDK Deploy"},{"conclusion":"success","createdAt":"2026-05-20T09:07:30Z","databaseId":26152775602,"headSha":"8f922d210bc53db2cb8b16464d36ee98f7593547","status":"completed","updatedAt":"2026-05-20T09:11:30Z","url":"https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26152775602","workflowName":"CDK Deploy"},{"conclusion":"success","createdAt":"2026-05-20T07:42:06Z","databaseId":26148667948,"headSha":"641b0273632ac29e1d15b8c1084b105420c750f6","status":"completed","updatedAt":"2026-05-20T07:49:25Z","url":"https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26148667948","workflowName":"Deploy Next.js to Cloudflare Pages"},{"conclusion":"success","createdAt":"2026-05-20T07:42:06Z","databaseId":26148667959,"headSha":"641b0273632ac29e1d15b8c1084b105420c750f6","status":"completed","updatedAt":"2026-05-20T07:45:40Z","url":"https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26148667959","workflowName":"CDK Deploy"},{"conclusion":"success","createdAt":"2026-05-20T07:37:00Z","databaseId":26148433269,"headSha":"31d9bd7c3813bd39766950f634ba68883132f0b2","status":"completed","updatedAt":"2026-05-20T07:40:56Z","url":"https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26148433269","workflowName":"CDK Deploy"},{"conclusion":"success","createdAt":"2026-05-20T06:56:47Z","databaseId":26146671467,"headSha":"4f3aa3017c5252747f9292324d7bed7b8210c7cc","status":"completed","updatedAt":"2026-05-20T07:04:31Z","url":"https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26146671467","workflowName":"Deploy Next.js to Cloudflare Pages"},{"conclusion":"success","createdAt":"2026-05-20T06:56:47Z","databaseId":26146671471,"headSha":"4f3aa3017c5252747f9292324d7bed7b8210c7cc","status":"completed","updatedAt":"2026-05-20T07:00:26Z","url":"https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26146671471","workflowName":"CDK Deploy"},{"conclusion":"success","createdAt":"2026-05-20T02:57:26Z","databaseId":26138455344,"headSha":"13327ca311110b45bd068034822c491b6a791313","status":"completed","updatedAt":"2026-05-20T03:01:21Z","url":"https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26138455344","workflowName":"CDK Deploy"},{"conclusion":"success","createdAt":"2026-05-20T02:57:26Z","databaseId":26138455345,"headSha":"13327ca311110b45bd068034822c491b6a791313","status":"completed","updatedAt":"2026-05-20T03:04:59Z","url":"https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26138455345","workflowName":"Deploy Next.js to Cloudflare Pages"}]
