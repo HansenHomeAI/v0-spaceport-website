@@ -4008,3 +4008,8 @@ Poll `hmc-mtc-20260520T2015Z-sfm` until `Completed`, then run the time-capsule r
 - head pushed: fa44a59d60422e5eb86b17a324108b35c62121a0 ([skip ci])
 - gh run list: logs/montana-time-capsule/gh-run-list-agent-40136728-20260521T034129Z.json
 - runs for head: 0 (expected due to [skip ci])
+
+## 2026-05-21T03:43Z CI proof (exact head)
+- head pushed: 373b0996c4c1612732d31935f0b32a90e752fd01 ([skip ci])
+- gh run list: logs/montana-time-capsule/gh-run-list-agent-40136728-postpush-20260521T034210Z.json
+- runs for head: 0 (expected due to [skip ci])
