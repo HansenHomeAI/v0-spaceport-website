@@ -1,0 +1,200 @@
+completed	success	chore: trigger pages build	CDK Deploy	agent-113647-md1-baseline-e2e	push	26208289074	3m45s	2026-05-21T05:56:05Z
+completed	success	chore: trigger pages build	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26208289063	7m20s	2026-05-21T05:56:05Z
+completed	success	fix: heartbeat preflight exact-head checks	CDK Deploy	agent-113647-md1-baseline-e2e	push	26208153421	3m39s	2026-05-21T05:52:10Z
+completed	success	chore: md1-shrunk heartbeat verify 20260521T021710Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	26201635575	4m8s	2026-05-21T02:21:52Z
+completed	success	chore: md1-shrunk heartbeat verify 20260521T021710Z	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26201635538	7m53s	2026-05-21T02:21:52Z
+completed	success	chore: trigger pages build	CDK Deploy	agent-113647-md1-baseline-e2e	push	26177531892	4m4s	2026-05-20T17:01:17Z
+completed	success	chore: trigger pages build	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26177531889	7m31s	2026-05-20T17:01:17Z
+completed	success	chore: md1-shrunk heartbeat verify 20260520T165016Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	26177304296	4m3s	2026-05-20T16:56:52Z
+completed	success	chore: trigger pages build	CDK Deploy	agent-113647-md1-baseline-e2e	push	26176189124	3m35s	2026-05-20T16:34:40Z
+completed	success	chore: trigger pages build	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26176189057	7m19s	2026-05-20T16:34:40Z
+completed	success	fix: avoid huge colmap images.txt temp downloads	CDK Deploy	agent-113647-md1-baseline-e2e	push	26175961282	3m53s	2026-05-20T16:30:13Z
+completed	success	fix: prune md1-shrunk camera artifacts on pass	CDK Deploy	agent-113647-md1-baseline-e2e	push	26155418466	4m1s	2026-05-20T10:00:49Z
+completed	success	fix: prune md1-shrunk camera artifacts on pass	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26155418467	7m46s	2026-05-20T10:00:49Z
+completed	success	chore: trigger pages build	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26153004935	7m43s	2026-05-20T09:12:07Z
+completed	success	chore: trigger pages build	CDK Deploy	agent-113647-md1-baseline-e2e	push	26153004933	4m6s	2026-05-20T09:12:07Z
+completed	success	fix: harden md1-shrunk heartbeat parity	CDK Deploy	agent-113647-md1-baseline-e2e	push	26152775602	4m0s	2026-05-20T09:07:30Z
+completed	success	chore: trigger pages build	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26148667948	7m19s	2026-05-20T07:42:06Z
+completed	success	chore: trigger pages build	CDK Deploy	agent-113647-md1-baseline-e2e	push	26148667959	3m34s	2026-05-20T07:42:06Z
+completed	success	fix: auto-pick baseline for md1-shrunk heartbeat	CDK Deploy	agent-113647-md1-baseline-e2e	push	26148433269	3m56s	2026-05-20T07:37:00Z
+completed	success	feat: automate md1-shrunk heartbeat verification	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26146671467	7m44s	2026-05-20T06:56:47Z
+completed	success	feat: automate md1-shrunk heartbeat verification	CDK Deploy	agent-113647-md1-baseline-e2e	push	26146671471	3m39s	2026-05-20T06:56:47Z
+completed	success	fix: retry iframe screenshot for md1 camera-suite	CDK Deploy	agent-113647-md1-baseline-e2e	push	26138455344	3m55s	2026-05-20T02:57:26Z
+completed	success	fix: retry iframe screenshot for md1 camera-suite	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26138455345	7m33s	2026-05-20T02:57:26Z
+completed	success	chore: md1-shrunk heartbeat verify strict gates	CDK Deploy	agent-113647-md1-baseline-e2e	push	26127221994	3m59s	2026-05-19T21:45:18Z
+completed	success	feat: harden md1-shrunk camera suite baselines	CDK Deploy	agent-113647-md1-baseline-e2e	push	26111270602	3m56s	2026-05-19T16:38:50Z
+completed	success	feat: harden md1-shrunk camera suite baselines	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26111270702	7m46s	2026-05-19T16:38:50Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26109660239	7m48s	2026-05-19T16:09:14Z
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26109660240	4m12s	2026-05-19T16:09:14Z
+completed	success	fix: calibrate md1-shrunk camera-suite edge retention gate	CDK Deploy	agent-113647-md1-baseline-e2e	push	26109384090	4m13s	2026-05-19T16:04:19Z
+completed	success	fix: lighten md1 nosky background for camera gates	CDK Deploy	agent-113647-md1-baseline-e2e	push	26107587599	3m54s	2026-05-19T15:32:55Z
+completed	success	fix: lighten md1 nosky background for camera gates	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26107587902	7m35s	2026-05-19T15:32:55Z
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26106566149	3m32s	2026-05-19T15:15:28Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26106566140	7m23s	2026-05-19T15:15:28Z
+completed	success	feat: add md1-shrunk camera suite html report	CDK Deploy	agent-113647-md1-baseline-e2e	push	26106278926	4m9s	2026-05-19T15:10:35Z
+completed	success	chore: record md1-shrunk CI proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	26104689980	3m52s	2026-05-19T14:43:59Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26104135660	7m58s	2026-05-19T14:34:20Z
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26104135709	4m5s	2026-05-19T14:34:20Z
+completed	success	fix: harden edge bundle browser delivery checks	CDK Deploy	agent-113647-md1-baseline-e2e	push	26103861417	4m4s	2026-05-19T14:29:38Z
+completed	success	chore: record md1-shrunk ci proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	26081063367	3m38s	2026-05-19T06:46:13Z
+completed	success	chore: record md1-shrunk horizon gate repro	CDK Deploy	agent-113647-md1-baseline-e2e	push	26080845481	3m53s	2026-05-19T06:40:47Z
+completed	success	chore: record md1-shrunk horizon gate CI	CDK Deploy	agent-113647-md1-baseline-e2e	push	26080505088	3m36s	2026-05-19T06:32:09Z
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26080154676	3m55s	2026-05-19T06:23:16Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26080154687	7m42s	2026-05-19T06:23:16Z
+completed	cancelled	fix: harden md1-shrunk horizon camera gates	CDK Deploy	agent-113647-md1-baseline-e2e	push	26080036182	3m22s	2026-05-19T06:20:11Z
+completed	success	chore: record md1-shrunk camera-suite pass	CDK Deploy	agent-113647-md1-baseline-e2e	push	26079242637	3m45s	2026-05-19T05:58:45Z
+completed	success	chore: trigger pages deploy	CDK Deploy	agent-113647-md1-baseline-e2e	push	26078897888	3m49s	2026-05-19T05:49:02Z
+completed	success	chore: trigger pages deploy	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26078897872	7m28s	2026-05-19T05:49:02Z
+completed	success	fix: harden md1-shrunk multi-camera suite	CDK Deploy	agent-113647-md1-baseline-e2e	push	26078729691	4m14s	2026-05-19T05:44:12Z
+completed	success	fix: tune nosky background for camera checks	CDK Deploy	agent-113647-md1-baseline-e2e	push	26078491195	3m47s	2026-05-19T05:37:18Z
+completed	success	fix: tune nosky background for camera checks	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26078491191	7m28s	2026-05-19T05:37:18Z
+completed	success	feat: add md1-shrunk multi-camera readiness gate	CDK Deploy	agent-113647-md1-baseline-e2e	push	26078095786	4m6s	2026-05-19T05:25:53Z
+completed	success	feat: add md1-shrunk multi-camera readiness gate	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26078095765	7m51s	2026-05-19T05:25:53Z
+completed	success	fix: keep md1 viewer metrics while collapsed	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26075531894	7m19s	2026-05-19T04:06:10Z
+completed	success	fix: keep md1 viewer metrics while collapsed	CDK Deploy	agent-113647-md1-baseline-e2e	push	26075531870	3m40s	2026-05-19T04:06:10Z
+completed	success	fix: harden md1 shrunk viewer verification	CDK Deploy	agent-113647-md1-baseline-e2e	push	26074919486	4m8s	2026-05-19T03:46:16Z
+completed	success	fix: harden md1 shrunk viewer verification	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26074919465	7m53s	2026-05-19T03:46:16Z
+completed	success	chore: launch md1 shrunk production spine sfm	CDK Deploy	agent-113647-md1-baseline-e2e	push	26052859100	3m52s	2026-05-18T18:35:12Z
+completed	success	fix: allow sfm planner report completion	Trigger ML Container Build	agent-113647-md1-baseline-e2e	push	26050769102	19m58s	2026-05-18T17:54:17Z
+completed	success	fix: allow sfm planner report completion	CDK Deploy	agent-113647-md1-baseline-e2e	push	26050765145	3m51s	2026-05-18T17:54:12Z
+completed	success	fix: pin sfm colmap runtime for md1 shrunk	CDK Deploy	agent-113647-md1-baseline-e2e	push	26049408781	4m10s	2026-05-18T17:27:46Z
+completed	success	fix: pin sfm colmap runtime for md1 shrunk	Trigger ML Container Build	agent-113647-md1-baseline-e2e	push	26049408789	17m44s	2026-05-18T17:27:46Z
+completed	success	feat: integrate sfm production spine for md1 shrunk	Trigger ML Container Build	agent-113647-md1-baseline-e2e	push	26048240967	14m3s	2026-05-18T17:04:51Z
+completed	success	feat: integrate sfm production spine for md1 shrunk	CDK Deploy	agent-113647-md1-baseline-e2e	push	26048241011	3m49s	2026-05-18T17:04:51Z
+completed	success	feat: integrate sfm production spine for md1 shrunk	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26048240968	7m22s	2026-05-18T17:04:51Z
+completed	success	chore: record md1-shrunk postpages gates	CDK Deploy	agent-113647-md1-baseline-e2e	push	26015823873	3m54s	2026-05-18T05:44:18Z
+completed	success	chore: record md1-shrunk postpages gates	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26015823853	7m38s	2026-05-18T05:44:18Z
+completed	success	chore: retrigger Pages for md1-shrunk monitor	CDK Deploy	agent-113647-md1-baseline-e2e	push	26015520234	3m30s	2026-05-18T05:34:49Z
+completed	success	chore: retrigger Pages for md1-shrunk monitor	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26015520241	7m5s	2026-05-18T05:34:49Z
+completed	success	chore: record md1-shrunk exact-head preview gates	CDK Deploy	agent-113647-md1-baseline-e2e	push	26015356265	3m36s	2026-05-18T05:30:03Z
+completed	success	chore: trigger exact-head CI for md1-shrunk monitor	CDK Deploy	agent-113647-md1-baseline-e2e	push	26015026488	3m36s	2026-05-18T05:19:50Z
+completed	success	chore: trigger exact-head CI for md1-shrunk monitor	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26015026477	6m40s	2026-05-18T05:19:50Z
+completed	success	chore: trigger dev build for md1-shrunk poll	CDK Deploy	agent-113647-md1-baseline-e2e	push	26010398363	3m56s	2026-05-18T02:32:11Z
+completed	success	chore: trigger dev build for md1-shrunk poll	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	26010398341	7m41s	2026-05-18T02:32:11Z
+completed	success	chore: md1-shrunk monitor poll 20260518T022147Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	26010277892	3m53s	2026-05-18T02:27:56Z
+completed	success	chore: md1-shrunk monitor poll 20260517T154449Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25995408529	3m47s	2026-05-17T15:47:30Z
+completed	success	chore: md1-shrunk monitor poll 20260517T151433Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25994795154	3m49s	2026-05-17T15:21:50Z
+completed	success	chore: md1-shrunk monitor poll 20260517T151433Z	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	25994795144	7m35s	2026-05-17T15:21:50Z
+completed	success	chore: md1-shrunk monitor poll 20260517T144442Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25994017562	3m25s	2026-05-17T14:48:19Z
+completed	success	chore: md1-shrunk monitor poll 20260517T141510Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25993310264	3m42s	2026-05-17T14:17:31Z
+completed	success	chore: md1-shrunk monitor poll 20260517T135148Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25992784995	3m55s	2026-05-17T13:54:26Z
+completed	success	chore: md1-shrunk monitor poll 20260517T131549Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25992041635	3m39s	2026-05-17T13:21:33Z
+completed	success	chore: md1-shrunk CI proof 20260517T101756Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25988229244	3m39s	2026-05-17T10:23:33Z
+completed	success	chore: md1-shrunk poll 20260517T101200Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25988135800	3m39s	2026-05-17T10:19:04Z
+completed	success	chore: md1-shrunk CI proof 20260517T100309Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25987954545	3m37s	2026-05-17T10:09:50Z
+completed	success	chore: md1-shrunk CI proof 20260517T095458Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25987814334	3m36s	2026-05-17T10:02:59Z
+completed	success	chore: md1-shrunk CI proof 20260517T094916Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25987647314	3m49s	2026-05-17T09:54:52Z
+completed	success	chore: md1-shrunk poll 20260517T094627Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25987533412	3m56s	2026-05-17T09:49:07Z
+completed	success	chore: md1-shrunk poll 20260517T085052Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25986385371	3m47s	2026-05-17T08:53:30Z
+completed	success	chore: md1-shrunk poll 20260517T081403Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25985695259	3m38s	2026-05-17T08:19:51Z
+completed	success	chore: record md1-shrunk cdk run 25985134150	CDK Deploy	agent-113647-md1-baseline-e2e	push	25985228636	3m49s	2026-05-17T07:57:02Z
+completed	success	chore: record md1-shrunk cdk run 25985037939	CDK Deploy	agent-113647-md1-baseline-e2e	push	25985134150	3m42s	2026-05-17T07:52:26Z
+completed	success	chore: md1-shrunk poll 20260517T074536Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25985037939	3m36s	2026-05-17T07:47:46Z
+completed	success	chore: record md1-shrunk cdk run 25984436488	CDK Deploy	agent-113647-md1-baseline-e2e	push	25984520953	3m37s	2026-05-17T07:21:41Z
+completed	success	chore: md1-shrunk poll 20260517T071435Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25984436488	3m42s	2026-05-17T07:17:24Z
+completed	success	chore: md1-shrunk poll + viewer validation 20260517T065217Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25983995050	3m45s	2026-05-17T06:54:46Z
+completed	success	chore: md1-shrunk poll + viewer validation 20260517T065217Z	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	25983995070	7m21s	2026-05-17T06:54:46Z
+completed	success	chore: record md1-shrunk cdk run 25980125982	CDK Deploy	agent-113647-md1-baseline-e2e	push	25980223287	3m54s	2026-05-17T03:27:01Z
+completed	success	chore: record md1-shrunk cdk run 25980034407	CDK Deploy	agent-113647-md1-baseline-e2e	push	25980125982	3m54s	2026-05-17T03:21:52Z
+completed	success	chore: md1-shrunk poll 20260517T0315Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25980034407	3m43s	2026-05-17T03:17:13Z
+completed	success	chore: save md1-shrunk poll artifacts 20260517T0243Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25979577060	3m47s	2026-05-17T02:52:27Z
+completed	success	chore: md1-shrunk poll 20260517T0243Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25979478562	3m34s	2026-05-17T02:46:49Z
+completed	success	chore: record md1-shrunk cdk run 25979033472	CDK Deploy	agent-113647-md1-baseline-e2e	push	25979122466	3m44s	2026-05-17T02:27:27Z
+completed	success	chore: record md1-shrunk cdk run 25978941737	CDK Deploy	agent-113647-md1-baseline-e2e	push	25979033472	3m47s	2026-05-17T02:22:44Z
+completed	success	chore: md1-shrunk poll 20260517T0213Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25978941737	3m42s	2026-05-17T02:18:09Z
+completed	success	chore: record md1-shrunk cdk run 25978413482	CDK Deploy	agent-113647-md1-baseline-e2e	push	25978493986	3m56s	2026-05-17T01:55:17Z
+completed	success	chore: md1-shrunk poll 20260517T0149Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25978413482	3m36s	2026-05-17T01:50:52Z
+completed	success	chore: record md1-shrunk cdk run 25978125237	CDK Deploy	agent-113647-md1-baseline-e2e	push	25978199493	3m54s	2026-05-17T01:38:52Z
+completed	success	chore: record md1-shrunk cdk run 25978045732	CDK Deploy	agent-113647-md1-baseline-e2e	push	25978125237	3m31s	2026-05-17T01:34:46Z
+completed	success	chore: md1-shrunk poll 20260517T0128Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25978045732	3m39s	2026-05-17T01:30:21Z
+completed	success	chore: trigger pages preview for md1-shrunk	CDK Deploy	agent-113647-md1-baseline-e2e	push	25977807203	3m46s	2026-05-17T01:17:35Z
+completed	success	chore: trigger pages preview for md1-shrunk	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	25977807200	7m20s	2026-05-17T01:17:35Z
+completed	success	chore: record md1-shrunk cdk run 25977300236	CDK Deploy	agent-113647-md1-baseline-e2e	push	25977379755	3m30s	2026-05-17T00:54:38Z
+completed	success	chore: record md1-shrunk cdk run 25977225064	CDK Deploy	agent-113647-md1-baseline-e2e	push	25977300236	3m47s	2026-05-17T00:50:13Z
+completed	success	chore: md1-shrunk monitor 20260517T0043Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25977225064	3m27s	2026-05-17T00:45:58Z
+completed	success	chore: md1-shrunk monitor 20260517T0016Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25976710086	3m46s	2026-05-17T00:18:14Z
+completed	success	chore: record md1-shrunk cdk run 25976238312	CDK Deploy	agent-113647-md1-baseline-e2e	push	25976330184	3m49s	2026-05-16T23:58:25Z
+completed	success	chore: record md1-shrunk cdk run 25976152048	CDK Deploy	agent-113647-md1-baseline-e2e	push	25976238312	3m52s	2026-05-16T23:53:21Z
+completed	success	chore: md1-shrunk monitor 20260516T2347Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25976152048	3m28s	2026-05-16T23:48:36Z
+completed	success	chore: md1-shrunk monitor 20260516T2338Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25975963231	3m42s	2026-05-16T23:38:12Z
+completed	success	chore: record md1-shrunk cdk run 25975741726	CDK Deploy	agent-113647-md1-baseline-e2e	push	25975861192	3m18s	2026-05-16T23:32:43Z
+completed	success	chore: md1-shrunk extra camera checks	CDK Deploy	agent-113647-md1-baseline-e2e	push	25975741726	3m41s	2026-05-16T23:26:21Z
+completed	success	chore: md1-shrunk monitor 20260516T2240Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25974920914	3m24s	2026-05-16T22:42:54Z
+completed	success	chore: record md1-shrunk cdk run 25974379439	CDK Deploy	agent-113647-md1-baseline-e2e	push	25974479167	3m47s	2026-05-16T22:21:04Z
+completed	success	chore: record md1-shrunk cdk run 25974295345	CDK Deploy	agent-113647-md1-baseline-e2e	push	25974379439	3m57s	2026-05-16T22:16:16Z
+completed	success	chore: md1-shrunk poll 20260516T2206Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25974295345	3m32s	2026-05-16T22:12:05Z
+completed	success	chore: record md1-shrunk cdk run 25973762615	CDK Deploy	agent-113647-md1-baseline-e2e	push	25973855907	3m46s	2026-05-16T21:50:36Z
+completed	success	chore: record md1-shrunk cdk run 25973664131	CDK Deploy	agent-113647-md1-baseline-e2e	push	25973762615	3m40s	2026-05-16T21:45:56Z
+completed	success	chore: md1-shrunk monitor poll 20260516T2139Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25973664131	4m0s	2026-05-16T21:41:05Z
+completed	success	chore: record md1-shrunk cdk run 25973049886	CDK Deploy	agent-113647-md1-baseline-e2e	push	25973150154	3m55s	2026-05-16T21:16:19Z
+completed	success	chore: md1-shrunk poll 20260516T2110Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25973049886	3m45s	2026-05-16T21:11:25Z
+completed	success	chore: record md1-shrunk cdk run 25969258751	CDK Deploy	agent-113647-md1-baseline-e2e	push	25969341559	3m57s	2026-05-16T18:17:49Z
+completed	success	chore: record md1-shrunk cdk run 25969183994	CDK Deploy	agent-113647-md1-baseline-e2e	push	25969258751	3m51s	2026-05-16T18:12:52Z
+completed	success	chore: md1-shrunk idle poll 20260516T180627Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25969183994	3m35s	2026-05-16T18:08:18Z
+completed	success	chore: md1-shrunk idle poll 20260516T170642Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25967956287	3m45s	2026-05-16T17:10:29Z
+completed	success	chore: md1-shrunk idle poll 20260516T083516Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25957499805	3m54s	2026-05-16T08:37:28Z
+completed	success	chore: record md1-shrunk cdk run 25956893360	CDK Deploy	agent-113647-md1-baseline-e2e	push	25956977033	3m50s	2026-05-16T08:10:14Z
+completed	success	chore: md1-shrunk idle poll 20260516T080220Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25956893360	3m27s	2026-05-16T08:05:40Z
+completed	success	chore: record md1-shrunk cdk run 25956364292	CDK Deploy	agent-113647-md1-baseline-e2e	push	25956458592	3m24s	2026-05-16T07:43:40Z
+completed	success	chore: md1-shrunk idle poll 20260516T073220Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25956364292	3m52s	2026-05-16T07:38:59Z
+completed	success	chore: record md1-shrunk cdk run 25955750457	CDK Deploy	agent-113647-md1-baseline-e2e	push	25955832468	3m37s	2026-05-16T07:11:28Z
+completed	success	chore: md1-shrunk idle poll 20260516T070442Z	CDK Deploy	agent-113647-md1-baseline-e2e	push	25955750457	3m33s	2026-05-16T07:07:04Z
+completed	success	chore: record md1-shrunk cdk run 25955212907	CDK Deploy	agent-113647-md1-baseline-e2e	push	25955305585	3m30s	2026-05-16T06:44:20Z
+completed	success	chore: record md1-shrunk cdk run 25955126506	CDK Deploy	agent-113647-md1-baseline-e2e	push	25955212907	3m40s	2026-05-16T06:39:32Z
+completed	success	chore: record md1-shrunk cdk run 25955030362	CDK Deploy	agent-113647-md1-baseline-e2e	push	25955126506	3m32s	2026-05-16T06:34:48Z
+completed	success	chore: md1-shrunk resume verification poll	CDK Deploy	agent-113647-md1-baseline-e2e	push	25955030362	3m28s	2026-05-16T06:30:00Z
+completed	success	chore: record md1-shrunk cdk run 25954618549	CDK Deploy	agent-113647-md1-baseline-e2e	push	25954699584	3m19s	2026-05-16T06:12:24Z
+completed	success	chore: record md1-shrunk cdk run 25954503057	CDK Deploy	agent-113647-md1-baseline-e2e	push	25954618549	3m35s	2026-05-16T06:08:09Z
+completed	success	chore: record md1-shrunk cdk run 25954386683	CDK Deploy	agent-113647-md1-baseline-e2e	push	25954503057	3m47s	2026-05-16T06:02:07Z
+completed	cancelled	chore: md1-shrunk terminal revalidation poll	CDK Deploy	agent-113647-md1-baseline-e2e	push	25954479927	1m24s	2026-05-16T06:01:00Z
+completed	success	chore: record md1-shrunk cdk run 25954291186	CDK Deploy	agent-113647-md1-baseline-e2e	push	25954386683	4m12s	2026-05-16T05:56:03Z
+completed	success	chore: record md1-shrunk cdk run 25954200875	CDK Deploy	agent-113647-md1-baseline-e2e	push	25954291186	3m43s	2026-05-16T05:50:46Z
+completed	success	chore: record md1-shrunk cdk run 25954112211	CDK Deploy	agent-113647-md1-baseline-e2e	push	25954200875	3m50s	2026-05-16T05:45:43Z
+completed	success	chore: record md1-shrunk cdk run 25954025100	CDK Deploy	agent-113647-md1-baseline-e2e	push	25954112211	3m39s	2026-05-16T05:40:53Z
+completed	success	chore: md1-shrunk camera check evidence	CDK Deploy	agent-113647-md1-baseline-e2e	push	25954025100	3m40s	2026-05-16T05:36:08Z
+completed	success	chore: record md1-shrunk cdk run 25953500379	CDK Deploy	agent-113647-md1-baseline-e2e	push	25953582124	3m37s	2026-05-16T05:12:46Z
+completed	success	chore: record md1-shrunk cdk run 25953409986	CDK Deploy	agent-113647-md1-baseline-e2e	push	25953500379	3m35s	2026-05-16T05:08:28Z
+completed	success	chore: record md1-shrunk cdk run 25953324802	CDK Deploy	agent-113647-md1-baseline-e2e	push	25953409986	3m47s	2026-05-16T05:03:49Z
+completed	success	chore: md1-shrunk monitor poll	CDK Deploy	agent-113647-md1-baseline-e2e	push	25953324802	3m36s	2026-05-16T04:59:28Z
+completed	success	chore: record md1-shrunk cdk proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	25952803565	3m51s	2026-05-16T04:31:27Z
+completed	success	chore: record md1-shrunk ci proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	25952710604	3m37s	2026-05-16T04:26:41Z
+completed	success	chore: poll md1-shrunk terminal state	CDK Deploy	agent-113647-md1-baseline-e2e	push	25952623537	3m30s	2026-05-16T04:22:08Z
+completed	success	chore: record md1-shrunk cdk proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	25952186810	3m42s	2026-05-16T03:59:11Z
+completed	success	chore: record md1-shrunk monitor poll	CDK Deploy	agent-113647-md1-baseline-e2e	push	25952110252	3m49s	2026-05-16T03:54:50Z
+completed	success	chore: record md1-shrunk latest cdk proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	25951777522	3m46s	2026-05-16T03:36:41Z
+completed	success	chore: record md1-shrunk cdk proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	25951686568	3m47s	2026-05-16T03:32:01Z
+completed	success	chore: record md1-shrunk ci proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	25951592648	3m34s	2026-05-16T03:27:19Z
+completed	success	chore: poll md1-shrunk terminal state	CDK Deploy	agent-113647-md1-baseline-e2e	push	25951494919	3m38s	2026-05-16T03:22:06Z
+completed	success	chore: add md1-shrunk cdk run logs	CDK Deploy	agent-113647-md1-baseline-e2e	push	25951141528	3m37s	2026-05-16T03:04:01Z
+completed	success	chore: record md1-shrunk cdk proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	25951041445	3m52s	2026-05-16T02:59:05Z
+completed	success	chore: record md1-shrunk resume ci	CDK Deploy	agent-113647-md1-baseline-e2e	push	25950962972	3m34s	2026-05-16T02:54:47Z
+completed	success	chore: md1-shrunk resume verification	CDK Deploy	agent-113647-md1-baseline-e2e	push	25950885932	3m23s	2026-05-16T02:50:38Z
+completed	success	chore: record md1-shrunk reconfirm CI	CDK Deploy	agent-113647-md1-baseline-e2e	push	25950353090	3m42s	2026-05-16T02:23:01Z
+completed	success	chore: md1-shrunk terminal reconfirm	CDK Deploy	agent-113647-md1-baseline-e2e	push	25950271829	3m28s	2026-05-16T02:18:48Z
+completed	success	chore: record md1-shrunk final CI proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	25949937019	3m37s	2026-05-16T02:02:06Z
+completed	success	chore: record md1-shrunk CDK proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	25949845121	3m35s	2026-05-16T01:57:44Z
+completed	success	chore: record md1-shrunk CI proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	25949748079	3m45s	2026-05-16T01:53:01Z
+completed	success	chore: md1-shrunk monitor poll evidence	CDK Deploy	agent-113647-md1-baseline-e2e	push	25949650097	4m2s	2026-05-16T01:48:18Z
+completed	success	chore: record md1-shrunk CDK proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	25949287502	3m50s	2026-05-16T01:30:53Z
+completed	success	chore: record md1-shrunk CI proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	25949158184	3m32s	2026-05-16T01:25:04Z
+completed	success	chore: md1-shrunk terminal poll evidence	CDK Deploy	agent-113647-md1-baseline-e2e	push	25949052576	4m1s	2026-05-16T01:20:12Z
+completed	success	chore: record md1-shrunk final CI proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	25948732055	3m52s	2026-05-16T01:05:48Z
+completed	success	chore: record md1-shrunk CDK proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	25948604980	3m50s	2026-05-16T01:00:33Z
+completed	success	chore: record md1-shrunk camera compare CI	CDK Deploy	agent-113647-md1-baseline-e2e	push	25948493656	3m54s	2026-05-16T00:55:47Z
+completed	cancelled	chore: md1-shrunk monitor terminal reconfirm	CDK Deploy	agent-113647-md1-baseline-e2e	push	25948422328	3m15s	2026-05-16T00:52:41Z
+completed	success	chore: md1-shrunk camera compare proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	25948288204	3m45s	2026-05-16T00:46:53Z
+completed	success	chore: md1-shrunk camera compare proof	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	25948288202	7m18s	2026-05-16T00:46:53Z
+completed	success	chore: md1-shrunk record preview URL proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	25948058284	3m29s	2026-05-16T00:37:08Z
+completed	success	chore: verify migrated viewer skybox overrides	CDK Deploy	agent-113647-md1-baseline-e2e	push	25947847850	3m34s	2026-05-16T00:28:40Z
+completed	success	chore: verify migrated viewer skybox overrides	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	25947847852	7m25s	2026-05-16T00:28:40Z
+completed	success	chore: md1-shrunk 1456 terminal bundle proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	25947588089	3m36s	2026-05-16T00:17:40Z
+completed	success	chore: md1-shrunk 1456 terminal bundle proof	Deploy Next.js to Cloudflare Pages	agent-113647-md1-baseline-e2e	push	25947588088	7m11s	2026-05-16T00:17:40Z
+completed	success	chore: log md1-shrunk CI proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	25946458270	3m38s	2026-05-15T23:34:53Z
+completed	success	chore: confirm md1-shrunk CI green	CDK Deploy	agent-113647-md1-baseline-e2e	push	25946330775	3m37s	2026-05-15T23:30:25Z
+completed	success	chore: record md1-shrunk poll evidence	CDK Deploy	agent-113647-md1-baseline-e2e	push	25946189081	3m27s	2026-05-15T23:25:35Z
+completed	success	chore: poll md1-shrunk 3dgs state	CDK Deploy	agent-113647-md1-baseline-e2e	push	25946022661	3m23s	2026-05-15T23:20:13Z
+completed	success	chore: record md1-shrunk workflow proof	CDK Deploy	agent-113647-md1-baseline-e2e	push	25945475518	3m40s	2026-05-15T23:01:44Z
+completed	success	chore: poll md1-shrunk 3dgs progress	CDK Deploy	agent-113647-md1-baseline-e2e	push	25945333283	3m27s	2026-05-15T22:57:05Z
+completed	success	chore: record md1-shrunk stepfunctions poll	CDK Deploy	agent-113647-md1-baseline-e2e	push	25944450001	3m56s	2026-05-15T22:29:19Z
+completed	success	chore: record md1-shrunk 3dgs poll	CDK Deploy	agent-113647-md1-baseline-e2e	push	25944256429	3m43s	2026-05-15T22:23:34Z
+completed	success	chore: update md1-shrunk state	CDK Deploy	agent-113647-md1-baseline-e2e	push	25943603730	3m51s	2026-05-15T22:04:05Z
