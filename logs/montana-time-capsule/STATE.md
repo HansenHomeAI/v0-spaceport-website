@@ -3964,3 +3964,13 @@ Poll `hmc-mtc-20260520T2015Z-sfm` until `Completed`, then run the time-capsule r
 - cloudwatch streams: logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T025641Z.json (lastEventTimestamp => 2026-05-21T00:01:36Z)
 - cloudwatch filter: logs/montana-time-capsule/cloudwatch-filter-hmc-mtc-20260520T2015Z-sfm-20260521T025641Z.json (latest log events; no new progress past 00:01:36Z)
 - output S3: logs/montana-time-capsule/s3-ls-processing-hmc-mtc-20260520T2015Z-20260521T025641Z.txt (Total Objects: 0; upload mode is EndOfJob)
+
+# 2026-05-21T03:16Z monitor tick
+- git: agent-40136728-montana-time-capsule @ 52b387126f5a0b1d45abe074bcb400859e1177f7 (clean; tracking origin)
+- aws sts: logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T031420Z.json (Account=975050048887, region=us-west-2)
+- gh run list (branch): logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T031548Z.json (no runs for head=52b38712; last non-skip green remains 88b1848f)
+- s3 HMC archive list: logs/montana-time-capsule/s3-list-spaceport-uploads-1778952912508-hmc-flat-20260521T031605Z.json (zip+manifest only; LastModified 2026-05-16)
+- sagemaker describe: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T031422Z.json (InProgress; LastModifiedTime still 2026-05-20T20:18Z; no FailureReason)
+- cloudwatch tail: logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T031535Z.json (still stalled at 2026-05-21T00:01:36Z: vocab_tree_builder building index)
+- output S3: logs/montana-time-capsule/s3-list-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T031424Z.json (0 objects; EndOfJob upload)
+- runner refresh (NO launch): logs/montana-time-capsule/runner-hmc-20260521T031629Z.log (state refreshed; still sfm_running)
