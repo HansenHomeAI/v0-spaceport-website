@@ -141,3 +141,4 @@
 [2026-05-21T21:56:52Z] heartbeat -> terminal reconfirm (sfm+3dgs+compression Completed; S3 meta head-object ok; exact-head GH runs=0 [skip ci]) -> next: await promotion gate
 [2026-05-21T21:58:06Z] post-push CI proof -> pushed 83f7f13f ([skip ci]); exact-head runs 0 -> next: idle
 [2026-05-21T21:58:36Z] post-push follow-up -> exact-head runs 0 (skip ci) -> next: idle
+[2026-05-21T22:17:08Z] heartbeat -> terminal reconfirm + viewer reachability (skybox+nosky HTTP 200) -> next: await promotion gate

@@ -30,6 +30,27 @@ Next: remain idle; only proceed if a new explicit acceptance gate is requested (
 - Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T215806Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260521T215806Z.json)
 - Follow-up exact-head check after CI-proof commit: logs/montana-time-capsule/gh-run-list-exact-head-postpush2-20260521T215836Z.json ([]; expected)
 
+## 2026-05-21T22:17:08Z HEARTBEAT monitor (HMC) - viewer + bundle still reachable (no launches)
+
+- Git: agent-40136728-montana-time-capsule @ 5238a375453f111b86b8cd850b10b42079a5367c (clean) ([skip ci])
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T221534Z.json (acct 975050048887)
+- SageMaker:
+  - SfM processing job: hmc-mtc-20260520T2015Z-sfm status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T221534Z.json)
+  - 3DGS training job: hmc-mtc-20260520T2015Z-3dgs status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T221534Z.json)
+  - compression processing job: hmc-mtc-20260520T2015Z-compression status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260521T221534Z.json)
+  - InProgress lists: logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-inprogress-20260521T221534Z.json; logs/montana-time-capsule/sagemaker-list-training-jobs-hmc-mtc-20260520T2015Z-inprogress-20260521T221534Z.json (0 each)
+- S3:
+  - compressed supersplat bundle listing: logs/montana-time-capsule/s3-ls-supersplat-bundle-head200-20260521T221640Z.txt
+  - bundle meta head-object: logs/montana-time-capsule/s3api-head-object-supersplat-meta-20260521T221640Z.json
+- Hosted preview viewer reachability (alias):
+  - skybox URL: logs/montana-time-capsule/heartbeat-skybox-url-20260521T221640Z.txt (headers=logs/montana-time-capsule/curlI-hosted-viewer-skybox-20260521T221640Z.headers; HTTP 200)
+  - no-sky URL: logs/montana-time-capsule/heartbeat-nosky-url-20260521T221640Z.txt (headers=logs/montana-time-capsule/curlI-hosted-viewer-nosky-20260521T221640Z.headers; HTTP 200)
+- CI:
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260521T221708Z.json ([]; expected due to [skip ci] head)
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260521T221708Z.json
+
+Next: remain idle; do not re-launch HMC unless a new explicit acceptance gate is requested.
+
 ## 2026-05-21T20:39:50Z Monitor tick (HMC) - 3DGS+compression Completed; hosted viewer validated (skybox + no-sky)
 
 - Git: agent-40136728-montana-time-capsule @ 274e9112fd7fcc7a9d414c18f07fc6041c623535 (clean)
