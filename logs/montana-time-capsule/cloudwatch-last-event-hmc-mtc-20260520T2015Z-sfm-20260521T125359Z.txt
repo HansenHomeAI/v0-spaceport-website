@@ -1,0 +1,1 @@
+2026-05-21T12:39:32.008000+00:00 COLMAP[chunk_bundle_adjuster] I20260521 12:39:31.522957  8201 bundle_adjustment.cc:70] === Global bundle adjustment ===
