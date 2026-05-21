@@ -1,0 +1,3 @@
+1876:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T06:03:20.3108482Z ^[[36;1mPREVIEW_URL="${ALIAS:-$HASH_URL}"^[[0m
+1877:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T06:03:20.3108780Z ^[[36;1mecho "PREVIEW_URL=$PREVIEW_URL"^[[0m
+1918:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T06:03:20.8950481Z PREVIEW_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev

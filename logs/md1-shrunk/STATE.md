@@ -1,9 +1,9 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-21T05:26:30Z
+updated: 2026-05-21T06:04:59Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
-head: c4822c802df19cdedf84937ee11492d201e381a1
+head: 0a6e4739dccc9b5d0b8286edef212fdf51deef69
 
 ## Goal
 
@@ -10858,7 +10858,17 @@ note: reran heartbeat after `20260520T144551Z` because bundle parity was skipped
   - summary: `logs/md1-shrunk/polls/20260521T054657Z-ci/summary.txt`
   - raw: `logs/md1-shrunk/polls/20260521T054657Z-preflight/gh-run-list.json`
 
-- Next: commit/push (heartbeat script fix + new poll evidence), then watch exact-head CI.
+- Follow-up: pushed `0a6e4739` (`chore: trigger pages build`) and watched exact-head CI to green; see postpush snapshot below.
+
+## 2026-05-21T06:04Z postpush CI snapshot (exact-head Pages + CDK succeeded)
+
+- exact-head commit: `0a6e4739`
+- PREVIEW_URL:
+  - `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+- Evidence:
+  - `logs/md1-shrunk/polls/20260521T060400Z-ci-postpush-sha-0a6e4739/postpush.txt`
+  - `logs/md1-shrunk/polls/20260521T060400Z-ci-postpush-sha-0a6e4739/gh-run-list-exact-head.json`
+  - Pages PREVIEW_URL lines: `logs/md1-shrunk/polls/20260521T060400Z-ci-postpush-sha-0a6e4739/pages-preview-url-lines.txt`
 
 
 ## 2026-05-21T04:51Z postpush CI snapshot (head is logs-only; no new runs expected)
