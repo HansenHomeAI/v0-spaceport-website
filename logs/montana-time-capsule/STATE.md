@@ -5051,3 +5051,26 @@ Next: HMC remains at terminal output (compressed bundle + hosted viewer previous
 
 - Git head pushed: 5cfd21b0 ([skip ci])
 - Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T211733Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260521T211733Z.json)
+
+## 2026-05-21T21:38:40Z Monitor tick (HMC) - terminal state reconfirmed (no new launches)
+
+- Repo: /Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule
+- Git: agent-40136728-montana-time-capsule @ f4088db972fa03bcda71c69704146d1db97a505d (dirty; refreshed state + new poll logs)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T213536Z.json (acct 975050048887)
+- Runner:
+  - refreshed: logs/montana-time-capsule/hmc-state-refresh-20260521T213818Z.log (state=logs/montana-time-capsule/hmc-state.json; status=completed)
+- SageMaker:
+  - SfM processing job: hmc-mtc-20260520T2015Z-sfm status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T213536Z.json)
+  - 3DGS training job: hmc-mtc-20260520T2015Z-3dgs status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T213536Z.json)
+  - compression processing job: hmc-mtc-20260520T2015Z-compression status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260521T213536Z.json)
+  - no active HMC jobs: logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-inprogress-20260521T213536Z.json + logs/montana-time-capsule/sagemaker-list-training-jobs-hmc-mtc-20260520T2015Z-inprogress-20260521T213536Z.json
+- S3:
+  - SfM output prefix non-empty: logs/montana-time-capsule/s3-ls-sfm-output-hmc-mtc-20260520T2015Z-20260521T213536Z-head200.txt
+  - 3DGS output prefix non-empty: logs/montana-time-capsule/s3-ls-3dgs-output-hmc-mtc-20260520T2015Z-20260521T213536Z-head200.txt
+  - compressed supersplat bundle present (recursive listing): logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-20260521T213536Z-recursive-head200.txt
+  - supersplat bundle meta head-object: logs/montana-time-capsule/s3api-head-object-supersplat-bundle-meta-20260521T213536Z.json
+- CI:
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260521T213727Z.json ([]; expected due to [skip ci] head)
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260521T213727Z.json
+
+Next: commit/push this tick's evidence logs; no further stage is unblocked without an explicit new acceptance gate (e.g., public promotion / canonical registry entry).
