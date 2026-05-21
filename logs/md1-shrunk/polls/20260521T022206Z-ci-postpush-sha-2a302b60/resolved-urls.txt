@@ -1,0 +1,2 @@
+1896:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T02:29:41.4576880Z ^[[36;1mecho "Resolved: HASH=$HASH_URL ALIAS=${ALIAS:-<none>}"^[[0m
+1938:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T02:29:41.9549152Z Resolved: HASH=https://4f9487b7.v0-spaceport-website-preview2.pages.dev ALIAS=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev

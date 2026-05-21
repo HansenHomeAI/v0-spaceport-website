@@ -1,9 +1,9 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-21T02:17:10Z
+updated: 2026-05-21T02:30:36Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
-head: 054e0813fcb7e6c71cbadc9b619aed704d2e4117
+head: 2a302b6012597821ec8d15a215e35a070572fcbb
 
 ## Goal
 
@@ -10600,3 +10600,18 @@ note: reran heartbeat after `20260520T144551Z` because bundle parity was skipped
   - `logs/md1-shrunk/polls/20260521T021710Z-ci/summary.txt`
 
 - Next: bump `web/trigger-dev-build.txt`, push, watch exact-head Pages + CDK workflows, record `PREVIEW_URL`, and store a postpush snapshot.
+
+## 2026-05-21T02:22Z postpush CI snapshot (exact-head workflows succeeded)
+
+- exact-head commit: `2a302b60` (triggered Pages + CDK on push)
+- `Deploy Next.js to Cloudflare Pages` run `26201635538` -> success
+- `CDK Deploy` run `26201635575` -> success
+- PREVIEW_URL (from Pages log): `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+- Evidence:
+  - `logs/md1-shrunk/polls/20260521T022206Z-ci-postpush-sha-2a302b60/postpush.txt`
+  - `logs/md1-shrunk/polls/20260521T022206Z-ci-postpush-sha-2a302b60/watch-pages-26201635538.txt`
+  - `logs/md1-shrunk/polls/20260521T022206Z-ci-postpush-sha-2a302b60/watch-cdk-26201635575.txt`
+  - `logs/md1-shrunk/polls/20260521T022206Z-ci-postpush-sha-2a302b60/preview-url.txt`
+  - `logs/md1-shrunk/polls/20260521T022206Z-ci-postpush-sha-2a302b60/resolved-urls.txt`
+
+- Next: idle (no new MD1/MD1-Shrunk jobs launched; only external SageMaker processing remains in progress).

@@ -1,0 +1,12 @@
+# md1-shrunk postpush snapshot
+ts=20260521T022206Z
+branch=agent-113647-md1-baseline-e2e
+head=2a302b6012597821ec8d15a215e35a070572fcbb
+
+## runs
+- pages_run=26201635538 workflow=Deploy Next.js to Cloudflare Pages
+- cdk_run=26201635575 workflow=CDK Deploy
+
+## preview
+3:1939:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T02:29:41.9551155Z PREVIEW_URL=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev
+2:1938:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T02:29:41.9549152Z Resolved: HASH=https://4f9487b7.v0-spaceport-website-preview2.pages.dev ALIAS=https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev

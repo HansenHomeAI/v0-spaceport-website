@@ -1,0 +1,20 @@
+1882:deploy	Resolve latest deployment URLs (preview alias + hash URL)	﻿2026-05-21T02:29:41.4569818Z ##[group]Run set -euo pipefail
+1883:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T02:29:41.4570189Z ^[[36;1mset -euo pipefail^[[0m
+1884:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T02:29:41.4570501Z ^[[36;1mBRANCH="agent-113647-md1-baseline-e2e"^[[0m
+1885:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T02:29:41.4570960Z ^[[36;1m# Get most recent deployment for the selected project (includes preview)^[[0m
+1886:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T02:29:41.4571604Z ^[[36;1mJSON=$(curl -fsSL -H "Authorization: ***" \^[[0m
+1887:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T02:29:41.4572343Z ^[[36;1m  "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${CF_PAGES_PROJECT}/deployments?per_page=1")^[[0m
+1888:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T02:29:41.4573032Z ^[[36;1mHASH_URL=$(echo "$JSON" | jq -r '.result[0].url')^[[0m
+1889:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T02:29:41.4573424Z ^[[36;1mDEPLOY_ID=$(echo "$JSON" | jq -r '.result[0].id')^[[0m
+1890:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T02:29:41.4573830Z ^[[36;1m# Fetch aliases for that deployment (branch alias if any)^[[0m
+1891:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T02:29:41.4574340Z ^[[36;1mDETAIL=$(curl -fsSL -H "Authorization: ***" \^[[0m
+1892:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T02:29:41.4574998Z ^[[36;1m  "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${CF_PAGES_PROJECT}/deployments/${DEPLOY_ID}")^[[0m
+1893:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T02:29:41.4575716Z ^[[36;1mALIAS=$(echo "$DETAIL" | jq -r '.result.aliases[0] // empty')^[[0m
+1894:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T02:29:41.4576131Z ^[[36;1mecho "hash_url=$HASH_URL" >> $GITHUB_OUTPUT^[[0m
+1895:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T02:29:41.4576487Z ^[[36;1mecho "alias_url=$ALIAS" >> $GITHUB_OUTPUT^[[0m
+1896:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T02:29:41.4576880Z ^[[36;1mecho "Resolved: HASH=$HASH_URL ALIAS=${ALIAS:-<none>}"^[[0m
+1897:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T02:29:41.4577271Z ^[[36;1mPREVIEW_URL="${ALIAS:-$HASH_URL}"^[[0m
+1898:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T02:29:41.4577593Z ^[[36;1mecho "PREVIEW_URL=$PREVIEW_URL"^[[0m
+1899:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T02:29:41.4613392Z shell: /usr/bin/bash -e {0}
+1900:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T02:29:41.4613688Z env:
+1901:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-21T02:29:41.4613987Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
