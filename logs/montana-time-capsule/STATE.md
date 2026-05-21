@@ -4072,3 +4072,8 @@ Next: continue polling until SfM becomes Completed; only then run pinned 3DGS st
   - CDK: 26202111411 (sha 7422efd9f9c9e1de23f82a09f991435839a6c365)
 
 Next: continue polling until SfM becomes Completed; do not launch 3DGS until SfM output exists.
+
+## 2026-05-21T04:58:11Z Post-push CI proof
+
+- Git head pushed: 95016bdafbe2a494c60cd656c44af1a498904ded ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-head-postpush-20260521T045724Z.json)
