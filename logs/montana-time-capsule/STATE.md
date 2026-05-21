@@ -5,6 +5,24 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-21T18:56:34Z Monitor tick (HMC) - 3DGS still InProgress
+
+- Git: agent-40136728-montana-time-capsule @ 2546cd1456240efc218c032565e9852ad09bf55a (status=logs/montana-time-capsule/git-status-20260521T185634Z.txt)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T185634Z.json (acct 975050048887)
+- SageMaker:
+  - SfM job: hmc-mtc-20260520T2015Z-sfm status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T185634Z.json)
+  - 3DGS job: hmc-mtc-20260520T2015Z-3dgs status=InProgress (SecondaryStatus=Training) (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T185634Z.json)
+  - CloudWatch streams: logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-3dgs-20260521T185634Z.json (best=logs/montana-time-capsule/cloudwatch-best-stream-hmc-mtc-20260520T2015Z-3dgs-20260521T185634Z.txt)
+  - CloudWatch tail: logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-3dgs-20260521T185634Z-tail160.json (last event appears 2026-05-21T16:46:58.947Z)
+- S3:
+  - SfM prefix non-empty: logs/montana-time-capsule/s3api-list-objects-v2-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T185634Z-max20.json
+  - 3DGS output prefix still empty: logs/montana-time-capsule/s3api-list-objects-v2-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-3dgs-20260521T185634Z-max50.json (KeyCount=0)
+- CI:
+  - exact-head runs: 0 (expected due to no push) logs/montana-time-capsule/gh-run-list-exact-head-20260521T185655Z.json
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260521T185655Z.json
+
+Next: keep polling until `describe-training-job` is Completed; do not launch compression until 3DGS is Completed.
+
 ## 2026-05-21T18:39:17Z Post-push CI proof (HMC)
 
 - Git head pushed: a3da53fbb91990b815217c894ccb4884f34fdd0f ([skip ci])
