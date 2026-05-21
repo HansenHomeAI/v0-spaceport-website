@@ -246,3 +246,5 @@
 [2026-05-21T11:49:38Z] md1-shrunk: postpush CI snapshot head=d587419d -> recorded logs/md1-shrunk/polls/20260521T114938Z-ci-postpush-sha-d587419d/postpush.txt (exact_head_run_count=0 expected for [skip ci]) -> idle
 [2026-05-21T11:50:18Z] md1-shrunk: pushed 2049419a (postpush snapshot 20260521T114938Z + STATE + agent-loop) [skip ci]; no new workflows expected for head; last Pages=26208289063 CDK=26208289074 -> next: record postpush snapshot then idle
 [2026-05-21T11:50:44Z] md1-shrunk: postpush CI snapshot head=2049419a -> recorded logs/md1-shrunk/polls/20260521T115044Z-ci-postpush-sha-2049419a/postpush.txt (exact_head_run_count=0 expected for [skip ci]) -> idle
+[2026-05-21T11:50:59Z] md1-shrunk: pushed 88b2523e (postpush snapshot 20260521T115044Z + STATE + agent-loop) [skip ci]; no new workflows expected for head; last Pages=26208289063 CDK=26208289074 -> next: record postpush snapshot then idle
+[2026-05-21T11:52:09Z] md1-shrunk: postpush CI snapshot head=88b2523e -> recorded logs/md1-shrunk/polls/20260521T115209Z-ci-postpush-sha-88b2523e/postpush.txt (exact_head_run_count=0 expected for [skip ci]) -> idle
