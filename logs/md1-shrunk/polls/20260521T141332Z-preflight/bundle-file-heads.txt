@@ -1,0 +1,8 @@
+file_count 7
+means_l.webp
+means_u.webp
+quats.webp
+scales.webp
+sh0.webp
+shN_centroids.webp
+shN_labels.webp

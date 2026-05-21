@@ -1,0 +1,5 @@
+timestamp_utc=20260521T141332Z
+branch=agent-113647-md1-baseline-e2e
+head=b528049a32e6d6d7785acc107e9661628ebaf66c
+aws_identity={    "UserId": "975050048887",    "Account": "975050048887",    "Arn": "arn:aws:iam::975050048887:root"}
+execution_arn=arn:aws:states:us-west-2:975050048887:execution:SpaceportMLPipeline-br-8abcbd5662:execution-md1-shrunk-prodspine-wlight-202605190027
