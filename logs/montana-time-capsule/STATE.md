@@ -5,6 +5,29 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-21T20:39:50Z Monitor tick (HMC) - 3DGS+compression Completed; hosted viewer validated (skybox + no-sky)
+
+- Git: agent-40136728-montana-time-capsule @ 274e9112fd7fcc7a9d414c18f07fc6041c623535 (clean)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T203507Z.json (acct 975050048887)
+- SageMaker:
+  - 3DGS job (training): hmc-mtc-20260520T2015Z-3dgs status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T203520Z.json)
+  - compression job (processing): hmc-mtc-20260520T2015Z-compression status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260521T203524Z.json)
+  - runner state refreshed (no launch): logs/montana-time-capsule/hmc-state-refresh-20260521T203812Z.log (state-file=logs/montana-time-capsule/hmc-state.json; status=completed; viewer_bundle_s3_uri=s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json)
+- S3:
+  - compressed outputs present (includes `supersplat_bundle/meta.json` + `background_skybox.webp`): logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-20260521T203552Z-head200.txt
+- Hosted preview viewer (alias): https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev
+  - proxy meta: logs/montana-time-capsule/hosted-proxy-url-hmc-meta-20260521T203633Z.txt (curl=logs/montana-time-capsule/curl-hosted-proxy-hmc-meta-20260521T203633Z.json)
+  - proxy skybox: logs/montana-time-capsule/hosted-proxy-url-hmc-skybox-20260521T203633Z.txt (headers=logs/montana-time-capsule/curl-hosted-proxy-hmc-skybox-20260521T203633Z.headers)
+  - viewer URL (skybox): logs/montana-time-capsule/hosted-viewer-url-hmc-skybox-20260521T203643Z.txt
+  - viewer URL (no-sky): logs/montana-time-capsule/hosted-viewer-url-hmc-nosky-20260521T203643Z.txt
+  - automated smoke (skybox): logs/montana-time-capsule/test-sogs-migrated-viewer-hmc-skybox-20260521T203730Z.txt (screenshot=logs/montana-time-capsule/sogs-migrated-viewer-smoke.png)
+  - automated smoke (no-sky): logs/montana-time-capsule/test-sogs-migrated-viewer-hmc-nosky-20260521T203744Z.txt (screenshot=logs/montana-time-capsule/sogs-migrated-viewer-nosky.png)
+- CI:
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260521T203618Z.json ([]; expected due to [skip ci] head)
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260521T203612Z.json (last Pages deploy success sha=88b1848)
+
+Next: HMC is at terminal output (compressed bundle + hosted viewer validated). If/when a new acceptance gate requires public promotion or publishing to a canonical bundle registry, do that as a separate, explicit stage.
+
 ## 2026-05-21T19:58:16Z Post-push CI proof (HMC)
 
 - Git head pushed: 0882a830377a3cb26b6bca6dc975d0e838788545 ([skip ci])
