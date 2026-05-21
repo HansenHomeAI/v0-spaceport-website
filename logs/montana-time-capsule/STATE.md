@@ -20,6 +20,11 @@
 
 Next: keep polling until SfM becomes Completed and the S3 output prefix is non-empty; do not launch 3DGS yet.
 
+## 2026-05-21T11:16:36Z Post-push CI proof (HMC)
+
+- Git head pushed: 25bd3c0fa299e53c68a69f4ac5cbfa58c6dcae74 ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T111636Z.txt; branch=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-postpush-20260521T111636Z.txt)
+
 ## 2026-05-21T10:56:20Z Monitor tick (HMC)
 
 - Git: agent-40136728-montana-time-capsule @ da4ef63c9a5bbe26ca0d05066172125c304dce01 (`chore: record post-push ci proof 20260521T1037Z [skip ci]`)
