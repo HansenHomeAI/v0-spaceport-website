@@ -5,9 +5,14 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-21T19:40:35Z Post-push CI proof (HMC)
+
+- Git head pushed: 4da631d681793d3857f52e9455a592921d2af940 ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T194035Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260521T194035Z.json)
+
 ## 2026-05-21T19:38:46Z Monitor tick (HMC) - 3DGS still InProgress (no new logs since 16:46Z)
 
-- Git: agent-40136728-montana-time-capsule @ 6dde4d9e9f82b5e0f8d86bf63ad9b7e1c0b33b73 (status=logs/montana-time-capsule/git-status-20260521T193857Z.txt)
+- Git: agent-40136728-montana-time-capsule @ 4da631d681793d3857f52e9455a592921d2af940 (status=logs/montana-time-capsule/git-status-20260521T194011Z.txt)
 - AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T193532Z.json (acct 975050048887)
 - SageMaker:
   - SfM job (processing): hmc-mtc-20260520T2015Z-sfm status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T193640Z.json)
