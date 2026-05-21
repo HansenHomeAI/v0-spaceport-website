@@ -1,0 +1,8 @@
+# postpush CI snapshot 20260521T131945Z
+
+branch=agent-113647-md1-baseline-e2e
+head=7df2f3d5c8f79f847b2e2145c9f9222968ced4e3
+short=7df2f3d5
+
+## gh run list (branch)
+exact_head_count= 0
