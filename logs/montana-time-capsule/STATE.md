@@ -33,6 +33,22 @@ Next: keep polling until SfM becomes Completed and S3 output exists; do not laun
 
 Next: keep polling until SfM becomes Completed and S3 output exists; do not launch 3DGS yet.
 
+## 2026-05-21T07:15:21Z Monitor tick (HMC)
+
+- Git: agent-40136728-montana-time-capsule @ fbd7541f82848f77692734d98264a71f3bc90340 (`chore: record HMC poll artifacts 20260521T0655Z [skip ci]`)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T071412Z.json (acct 975050048887)
+- SageMaker SfM:
+  - job: hmc-mtc-20260520T2015Z-sfm
+  - status: InProgress (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T071412Z.json; list=logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T071412Z.json)
+  - CloudWatch lastEvent still 2026-05-21T00:01:36.365Z (streams=logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T071412Z.json; tail=logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T071412Z-tail.json)
+  - output prefix still empty (EndOfJob upload): logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T071412Z.txt (KeyCount=0 in logs/montana-time-capsule/s3api-list-objects-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T071412Z.json)
+- Runner state refreshed (no launch): logs/montana-time-capsule/hmc-state-refresh-20260521T071503Z.json (state file logs/montana-time-capsule/hmc-state.json; sfm_status=InProgress)
+- CI: exact head is [skip ci] so no workflow runs for fbd7541f; refreshed run lists:
+  - branch: logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T071412Z.json
+  - exact: logs/montana-time-capsule/gh-run-list-exact-head-20260521T071412Z.json
+
+Next: keep polling until SfM becomes Completed and S3 output exists; do not launch 3DGS yet.
+
 ## Runner
 
 - Command: `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --launch`

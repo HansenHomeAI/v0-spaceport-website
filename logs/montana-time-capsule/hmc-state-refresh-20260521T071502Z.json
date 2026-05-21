@@ -25,8 +25,8 @@
     "hmc_2063_DJI_0717.JPG"
   ],
   "monitor": {
-    "checked_at": "2026-05-21T07:15:21Z",
-    "cloudwatch_describe_log_streams_path": "logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T071412Z.json",
+    "checked_at": "2026-05-21T04:56:25Z",
+    "cloudwatch_describe_log_streams_path": "logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T045458Z.json",
     "cloudwatch_get_log_events_since6h_path": "logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T045458Z-since6h.json",
     "cloudwatch_tail_since6h_path": "logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260521T013456Z-since6h.log",
     "last_cloudwatch_event_at": "2026-05-21T00:01:36.365000Z",
@@ -34,15 +34,9 @@
     "pages_preview_hash_url": "https://9480e9f2.v0-spaceport-website-preview2.pages.dev",
     "pages_run_log_path": "logs/montana-time-capsule/gh-run-26200368328-pages.txt",
     "s3_head_input_path": "logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260521T045510Z.json",
-    "s3_ls_sfm_output_path": "logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T071412Z.txt",
-    "sagemaker_describe_path": "logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T071412Z.json",
-    "sfm_status": "InProgress",
-    "aws_sts_path": "logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T071412Z.json",
-    "sagemaker_list_processing_jobs_path": "logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T071412Z.json",
-    "cloudwatch_get_log_events_tail_path": "logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T071412Z-tail.json",
-    "s3api_list_objects_sfm_output_path": "logs/montana-time-capsule/s3api-list-objects-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T071412Z.json",
-    "gh_run_list_path": "logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T071412Z.json",
-    "gh_run_list_exact_head_path": "logs/montana-time-capsule/gh-run-list-exact-head-20260521T071412Z.json"
+    "s3_ls_sfm_output_path": "logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T045430Z.txt",
+    "sagemaker_describe_path": "logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T045430Z.json",
+    "sfm_status": "InProgress"
   },
   "profile": "brass-chunked",
   "profile_note": "Exact Brass Lantern chunked SfM image; default reproducible Montana profile.",
