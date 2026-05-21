@@ -1,0 +1,19 @@
+HTTP/2 200 
+content-type: application/json
+content-length: 1421
+date: Wed, 20 May 2026 23:45:14 GMT
+last-modified: Wed, 20 May 2026 23:45:12 GMT
+etag: "948345d6cf5eca623bfe32fe46aa4f99"
+x-amz-server-side-encryption: AES256
+cache-control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: ZKaaWL4B9J1f7ETyDblhCsMiTBAHLcxd
+accept-ranges: bytes
+server: AmazonS3
+x-cache: Hit from cloudfront
+via: 1.1 60c63084baf21ba2b7d3dcd4a053e770.cloudfront.net (CloudFront)
+x-amz-cf-pop: SLC52-P2
+alt-svc: h3=":443"; ma=86400
+x-amz-cf-id: j4mzKKvJW4_omKN3ZxMQ4SwMpA0BiMG1TDCgt4JnYfld5C9WBhSJVQ==
+age: 5494
+access-control-allow-origin: *
+

@@ -1,0 +1,42 @@
+# preflight 20260521T011359Z
+date_utc=2026-05-21T01:13:59Z
+cwd=/Users/gabrielhansen/MD1-Baseline
+head=6840a4ebf5d04bb995f18fda569375f938a0a307
+branch=agent-113647-md1-baseline-e2e
+
+## aws sts
+{
+    "UserId": "975050048887",
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root"
+}
+
+## stepfunctions running staging
+{
+    "executions": []
+}
+
+## stepfunctions running br-8abcbd5662
+{
+    "executions": []
+}
+
+## sagemaker processing InProgress
+{
+    "ProcessingJobSummaries": [
+        {
+            "ProcessingJobName": "hmc-mtc-20260520T2015Z-sfm",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/hmc-mtc-20260520T2015Z-sfm",
+            "CreationTime": "2026-05-20T14:16:22.633000-06:00",
+            "LastModifiedTime": "2026-05-20T14:18:53.916000-06:00",
+            "ProcessingJobStatus": "InProgress"
+        }
+    ],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTRGREho3fQekrpmQGcHpQatiRioI3RFTbvpXqp/Yh+xuwnz4QuXq3VGkjy6VltzeghFdxO/OE0Aq2nNJaS1x5OBlJW5tCioH/HZCLo06VzUPBlkvbAshEgI6yMKqVLgS34U8zSnMgbsjUsYA0XB9iPaDDO8ljFY97lUD7w69Suimk7Mm5r70vm9iMQHcvO4NkgipojZiNg4venHJoKkxeQyFN4OSmdmmDi861edttsbyls0aoAmfbPIeFt/iZ52nNNZbKfC80nDLjkJEZWCuAChCkUgxgA6jTMkQs9zoqhvNd9kD25TpovYkaqN6997SrmsD7+rweTyMbeEUrgXtDoc6omAQ11Xf7ghSwQQB2jgRdnINb1r7BZrn8bQVxc8DKSKjqzoKXukG3JxE/pTwtSf9u4k58iQq8ttFL1nsusJ+nzoCeqmr5wlofto8dzLy4YGY/Gh166yibMx/1oznQ6zrmVTbUDxRlobSkdkUdi5wMLq2ISKflnp4+4/KMNWY="
+}
+
+## sagemaker training InProgress
+{
+    "TrainingJobSummaries": [],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTRGREho3fQekrpmQGcHpQatiRioI3RFTbvpXqp/Yh+xuwnz4QuXq3VGkjy6VltzeghFdxO/OE0Aq2nNJaS1x5OBlJW5tCioH/HZCLo06VzUPBlkvbAshEgI6yMKqVLgS34U8zSnMgbsjUsYA0XB9iPaDDO8ljFY97lUD7w69Suimk7Mm5r70vm9iMQHcvO4NkgipojZiNg4venHJoKkxeQyFN4OSmdmmDi861edttsbyls0aoAmfbPIeFt/iZ52nNNZbKfC80nDLjkJEZWCuAChCkUgxgA6jTMkQs9zoqhvNd9kD25TpovYkaqN6997SrmsD7+rweTyMbeEUrgXtDoLAvHkD8tfhMWzL+ko95dO1G4Pp2avgip3w5SvR4+yHSwTolipLcI8EwMXf7ME2BwFkK7/vfSamRmMEw/tdUtrwPOkO3rpKGnmShTViBNDTO7/1GOYFyuZ/NHpc9USerawWvzQ6mle8UOnMdLfbZd2UNtFEFsl1uaNseciZqtb3mSyc="
+}

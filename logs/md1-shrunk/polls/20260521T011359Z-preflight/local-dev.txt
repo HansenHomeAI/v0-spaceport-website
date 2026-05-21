@@ -1,0 +1,186 @@
+# local dev 20260521T011359Z
+ports_3000:
+none
+ports_5173:
+none
+ports_5180:
+none
+ports_5181:
+none
+
+processes:
+5:gabrielhansen    94760   4.4  0.0 442205088   2432   ??  Ss    7:15PM   0:00.03 /bin/zsh -c cd /Users/gabrielhansen/MD1-Baseline && TS=$(cat /tmp/md1_ts.txt) && {\012  echo "# local dev $TS";\012  echo "ports_3000:"; lsof -nP -iTCP:3000 -sTCP:LISTEN 2>/dev/null || echo none;\012  echo "ports_5173:"; lsof -nP -iTCP:5173 -sTCP:LISTEN 2>/dev/null || echo none;\012  echo "ports_5180:"; lsof -nP -iTCP:5180 -sTCP:LISTEN 2>/dev/null || echo none;\012  echo "ports_5181:"; lsof -nP -iTCP:5181 -sTCP:LISTEN 2>/dev/null || echo none;\012  echo;\012  echo "processes:";\012  ps aux | rg -n "(next dev|next start|vite|playwright|http.server|python3 -m http|node .*dev|wrangler dev)" || true;\012} > "logs/md1-shrunk/polls/${TS}-preflight/local-dev.txt"
+120:gabrielhansen    52374   0.0  0.2 442819648  37008   ??  S     5:13PM   0:01.08 npm exec @playwright/mcp@latest --headless    
+128:gabrielhansen    51827   0.0  0.2 453249504  30480   ??  S     5:12PM   0:00.55 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+129:gabrielhansen    51498   0.0  0.2 442819344  37008   ??  S     5:12PM   0:01.13 npm exec @playwright/mcp@latest --headless    
+137:gabrielhansen    43209   0.0  0.2 453244832  30464   ??  S     4:42PM   0:00.53 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+141:gabrielhansen    42896   0.0  0.2 442819664  36992   ??  S     4:42PM   0:01.17 npm exec @playwright/mcp@latest --headless    
+142:gabrielhansen    40912   0.0  0.2 453246720  30464   ??  S     4:33PM   0:00.58 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+143:gabrielhansen    40460   0.0  0.2 442815216  36992   ??  S     4:33PM   0:01.21 npm exec @playwright/mcp@latest --headless    
+147:gabrielhansen    33513   0.0  0.1 453254112  26896   ??  S     4:13PM   0:00.55 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+148:gabrielhansen    33207   0.0  0.2 442815616  32528   ??  S     4:13PM   0:01.20 npm exec @playwright/mcp@latest --headless    
+153:gabrielhansen    32794   0.0  0.1 453250864  26896   ??  S     4:12PM   0:00.53 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+154:gabrielhansen    32483   0.0  0.2 442819744  32336   ??  S     4:12PM   0:01.23 npm exec @playwright/mcp@latest --headless    
+159:gabrielhansen    28277   0.0  0.1 453249728  18112   ??  S     3:53PM   0:00.53 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+160:gabrielhansen    27969   0.0  0.1 442815264  22512   ??  S     3:53PM   0:01.31 npm exec @playwright/mcp@latest --headless    
+164:gabrielhansen    22501   0.0  0.1 453249056  17648   ??  S     3:42PM   0:00.52 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+166:gabrielhansen    22180   0.0  0.1 442819072  22240   ??  S     3:42PM   0:01.26 npm exec @playwright/mcp@latest --headless    
+170:gabrielhansen    20397   0.0  0.1 453246816  17648   ??  S     3:33PM   0:00.53 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+172:gabrielhansen    20089   0.0  0.1 442814800  22240   ??  S     3:33PM   0:01.34 npm exec @playwright/mcp@latest --headless    
+184:gabrielhansen    12151   0.0  0.1 453249792  17616   ??  S     3:13PM   0:00.53 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+185:gabrielhansen    11853   0.0  0.1 442814608  21984   ??  S     3:13PM   0:01.18 npm exec @playwright/mcp@latest --headless    
+197:gabrielhansen    11335   0.0  0.1 453245680  17616   ??  S     3:12PM   0:00.53 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+199:gabrielhansen    11023   0.0  0.1 442819728  21792   ??  S     3:12PM   0:01.35 npm exec @playwright/mcp@latest --headless    
+202:gabrielhansen     7355   0.0  0.1 453249280  17616   ??  S     2:53PM   0:00.52 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+203:gabrielhansen     7051   0.0  0.1 442814864  21792   ??  S     2:53PM   0:01.24 npm exec @playwright/mcp@latest --headless    
+207:gabrielhansen      558   0.0  0.1 453245504  17616   ??  S     2:42PM   0:00.54 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+208:gabrielhansen      163   0.0  0.1 442811200  21792   ??  S     2:42PM   0:01.22 npm exec @playwright/mcp@latest --headless    
+212:gabrielhansen    98192   0.0  0.1 453253328  17616   ??  S     2:33PM   0:00.51 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+213:gabrielhansen    97901   0.0  0.1 442814864  21792   ??  S     2:33PM   0:01.21 npm exec @playwright/mcp@latest --headless    
+219:gabrielhansen    87021   0.0  0.1 453245952  16992   ??  S     2:12PM   0:00.60 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+222:gabrielhansen    86727   0.0  0.1 442815552  20048   ??  S     2:12PM   0:01.60 npm exec @playwright/mcp@latest --headless    
+226:gabrielhansen    66196   0.0  0.1 453254352  12608   ??  S     1:42PM   0:00.56 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+227:gabrielhansen    65877   0.0  0.1 442814944  14624   ??  S     1:42PM   0:01.37 npm exec @playwright/mcp@latest --headless    
+232:gabrielhansen    55968   0.0  0.1 453245200  12608   ??  S     1:12PM   0:00.54 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+234:gabrielhansen    55657   0.0  0.1 442814720  14608   ??  S     1:12PM   0:01.36 npm exec @playwright/mcp@latest --headless    
+238:gabrielhansen    45645   0.0  0.1 453246144  12608   ??  S    12:42PM   0:00.54 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+239:gabrielhansen    45342   0.0  0.1 442814768  14624   ??  S    12:42PM   0:01.34 npm exec @playwright/mcp@latest --headless    
+243:gabrielhansen    35129   0.0  0.1 453249648  12144   ??  S    12:12PM   0:00.53 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+245:gabrielhansen    34809   0.0  0.1 442815088  14160   ??  S    12:12PM   0:01.34 npm exec @playwright/mcp@latest --headless    
+248:gabrielhansen    25629   0.0  0.1 453246112  12144   ??  S    11:42AM   0:00.53 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+252:gabrielhansen    25322   0.0  0.1 442815184  14160   ??  S    11:42AM   0:01.44 npm exec @playwright/mcp@latest --headless    
+254:gabrielhansen    15463   0.0  0.1 453249936  12064   ??  S    11:12AM   0:00.53 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+256:gabrielhansen    15123   0.0  0.1 442815072  14080   ??  S    11:12AM   0:01.35 npm exec @playwright/mcp@latest --headless    
+260:gabrielhansen    99939   0.0  0.1 453250112  12064   ??  S    10:42AM   0:00.53 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+261:gabrielhansen    99643   0.0  0.1 442818816  14064   ??  S    10:42AM   0:01.34 npm exec @playwright/mcp@latest --headless    
+266:gabrielhansen    88010   0.0  0.1 453245712  12064   ??  S    10:12AM   0:00.54 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+267:gabrielhansen    87691   0.0  0.1 442814704  14064   ??  S    10:12AM   0:01.35 npm exec @playwright/mcp@latest --headless    
+271:gabrielhansen    79007   0.0  0.1 453245648  12064   ??  S     9:42AM   0:00.53 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+273:gabrielhansen    78700   0.0  0.1 442815056  14064   ??  S     9:42AM   0:01.44 npm exec @playwright/mcp@latest --headless    
+277:gabrielhansen    69713   0.0  0.0 453241440   4208   ??  S     9:12AM   0:00.53 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+279:gabrielhansen    69421   0.0  0.0 442814928   9376   ??  S     9:12AM   0:01.37 npm exec @playwright/mcp@latest --headless    
+282:gabrielhansen    59143   0.0  0.0 453253168   4208   ??  S     8:42AM   0:00.53 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+284:gabrielhansen    58813   0.0  0.0 442810768   6160   ??  S     8:42AM   0:01.35 npm exec @playwright/mcp@latest --headless    
+289:gabrielhansen    49717   0.0  0.0 453245200   4208   ??  S     8:12AM   0:00.55 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+291:gabrielhansen    49409   0.0  0.0 442814592   6064   ??  S     8:12AM   0:01.33 npm exec @playwright/mcp@latest --headless    
+294:gabrielhansen    40599   0.0  0.0 453253360   4208   ??  S     7:42AM   0:00.54 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+297:gabrielhansen    40277   0.0  0.0 442818976   6064   ??  S     7:42AM   0:01.40 npm exec @playwright/mcp@latest --headless    
+299:gabrielhansen    31436   0.0  0.0 453249328   3840   ??  S     7:12AM   0:00.52 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+303:gabrielhansen    31129   0.0  0.0 442815328   5728   ??  S     7:12AM   0:01.34 npm exec @playwright/mcp@latest --headless    
+304:gabrielhansen    21289   0.0  0.0 453246256   3840   ??  S     6:42AM   0:00.52 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+307:gabrielhansen    20982   0.0  0.0 442815008   5616   ??  S     6:42AM   0:01.35 npm exec @playwright/mcp@latest --headless    
+309:gabrielhansen    12458   0.0  0.0 453249600   3840   ??  S     6:12AM   0:00.54 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+311:gabrielhansen    12142   0.0  0.0 442819024   5632   ??  S     6:12AM   0:01.38 npm exec @playwright/mcp@latest --headless    
+314:gabrielhansen     2352   0.0  0.0 453253056   3840   ??  S     5:42AM   0:00.54 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+315:gabrielhansen     2036   0.0  0.0 442814816   5616   ??  S     5:42AM   0:01.38 npm exec @playwright/mcp@latest --headless    
+319:gabrielhansen    91012   0.0  0.0 453245344   3824   ??  S     5:12AM   0:00.53 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+322:gabrielhansen    90703   0.0  0.0 442811168   5600   ??  S     5:12AM   0:01.31 npm exec @playwright/mcp@latest --headless    
+324:gabrielhansen    80389   0.0  0.0 453254144   3824   ??  S     4:42AM   0:00.53 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+325:gabrielhansen    80086   0.0  0.0 442815328   5408   ??  S     4:41AM   0:01.33 npm exec @playwright/mcp@latest --headless    
+329:gabrielhansen    70687   0.0  0.0 453250096   3824   ??  S     4:12AM   0:00.52 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+330:gabrielhansen    70365   0.0  0.0 442819344   5600   ??  S     4:12AM   0:01.38 npm exec @playwright/mcp@latest --headless    
+334:gabrielhansen    56712   0.0  0.0 453249904   3824   ??  S     3:42AM   0:00.52 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+336:gabrielhansen    56407   0.0  0.0 442815232   5600   ??  S     3:41AM   0:01.36 npm exec @playwright/mcp@latest --headless    
+339:gabrielhansen    44295   0.0  0.0 453250448   3824   ??  S     3:12AM   0:00.55 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+341:gabrielhansen    43989   0.0  0.0 442818992   5600   ??  S     3:12AM   0:01.35 npm exec @playwright/mcp@latest --headless    
+344:gabrielhansen    30905   0.0  0.0 453245920   3824   ??  S     2:42AM   0:00.53 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+345:gabrielhansen    30525   0.0  0.0 442857280   5408   ??  S     2:41AM   0:02.38 npm exec @playwright/mcp@latest --headless    
+349:gabrielhansen    20373   0.0  0.0 453245232   3824   ??  S     2:12AM   0:00.55 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+350:gabrielhansen    20070   0.0  0.0 442818784   5600   ??  S     2:11AM   0:01.31 npm exec @playwright/mcp@latest --headless    
+354:gabrielhansen     5744   0.0  0.0 453254480   3824   ??  S     1:42AM   0:00.57 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+355:gabrielhansen     5466   0.0  0.0 442819968   5600   ??  S     1:41AM   0:01.51 npm exec @playwright/mcp@latest --headless    
+359:gabrielhansen    92059   0.0  0.0 453249840   3824   ??  S     1:12AM   0:00.59 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+362:gabrielhansen    91764   0.0  0.0 442819776   5600   ??  S     1:11AM   0:01.52 npm exec @playwright/mcp@latest --headless    
+364:gabrielhansen    81001   0.0  0.0 453245888   3824   ??  S    12:42AM   0:00.54 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+366:gabrielhansen    80684   0.0  0.0 442815680   5600   ??  S    12:41AM   0:01.34 npm exec @playwright/mcp@latest --headless    
+369:gabrielhansen    69015   0.0  0.0 453245344   3824   ??  S    12:11AM   0:00.54 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+370:gabrielhansen    68724   0.0  0.0 442815072   5600   ??  S    12:11AM   0:01.26 npm exec @playwright/mcp@latest --headless    
+374:gabrielhansen    68545   0.0  0.0 453254896   3824   ??  S    12:11AM   0:00.54 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+375:gabrielhansen    68241   0.0  0.0 442811088   5600   ??  S    12:11AM   0:01.34 npm exec @playwright/mcp@latest --headless    
+380:gabrielhansen    58985   0.0  0.0 453249712   3824   ??  S    11:41PM   0:00.52 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+384:gabrielhansen    58678   0.0  0.0 442815360   5408   ??  S    11:41PM   0:01.37 npm exec @playwright/mcp@latest --headless    
+385:gabrielhansen    49105   0.0  0.0 453249952   3824   ??  S    11:11PM   0:00.54 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+389:gabrielhansen    48798   0.0  0.0 442815328   5600   ??  S    11:11PM   0:01.34 npm exec @playwright/mcp@latest --headless    
+390:gabrielhansen    39341   0.0  0.0 453249248   3824   ??  S    10:41PM   0:00.54 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+393:gabrielhansen    39011   0.0  0.0 442819168   5408   ??  S    10:41PM   0:01.40 npm exec @playwright/mcp@latest --headless    
+395:gabrielhansen    29747   0.0  0.0 453249072   3824   ??  S    10:11PM   0:00.53 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+396:gabrielhansen    29442   0.0  0.0 442814960   5600   ??  S    10:11PM   0:01.34 npm exec @playwright/mcp@latest --headless    
+400:gabrielhansen    19815   0.0  0.0 453242016   3824   ??  S     9:41PM   0:00.53 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+401:gabrielhansen    19511   0.0  0.0 442815184   5600   ??  S     9:41PM   0:01.32 npm exec @playwright/mcp@latest --headless    
+405:gabrielhansen     8673   0.0  0.0 453254048   3824   ??  S     9:11PM   0:00.51 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+406:gabrielhansen     8369   0.0  0.0 442815296   5600   ??  S     9:11PM   0:01.29 npm exec @playwright/mcp@latest --headless    
+410:gabrielhansen    95134   0.0  0.0 453249504   3824   ??  S     8:41PM   0:00.52 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+412:gabrielhansen    94814   0.0  0.0 442810800   5600   ??  S     8:41PM   0:01.32 npm exec @playwright/mcp@latest --headless    
+415:gabrielhansen    85298   0.0  0.0 453249760   3824   ??  S     8:11PM   0:00.54 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+416:gabrielhansen    84995   0.0  0.0 442819184   5600   ??  S     8:11PM   0:01.32 npm exec @playwright/mcp@latest --headless    
+420:gabrielhansen    76271   0.0  0.0 453250288   3824   ??  S     7:41PM   0:00.55 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+421:gabrielhansen    75968   0.0  0.0 442819120   5408   ??  S     7:41PM   0:01.35 npm exec @playwright/mcp@latest --headless    
+425:gabrielhansen    66776   0.0  0.0 453253296   3824   ??  S    Tue07PM   0:00.56 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+426:gabrielhansen    66472   0.0  0.0 442815408   5408   ??  S    Tue07PM   0:01.40 npm exec @playwright/mcp@latest --headless    
+430:gabrielhansen    56672   0.0  0.0 453245760   3824   ??  S    Tue06PM   0:00.53 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+431:gabrielhansen    56367   0.0  0.0 442811568   5600   ??  S    Tue06PM   0:01.37 npm exec @playwright/mcp@latest --headless    
+438:gabrielhansen    42135   0.0  0.0 453254448   3824   ??  S    Tue06PM   0:00.38 node /Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule/web/node_modules/.bin/next dev --hostname 127.0.0.1 --port 3033
+440:gabrielhansen    41323   0.0  0.0 453245568   3824   ??  S    Tue06PM   0:00.59 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+442:gabrielhansen    41008   0.0  0.0 442810992   5600   ??  S    Tue06PM   0:01.40 npm exec @playwright/mcp@latest --headless    
+448:gabrielhansen    25032   0.0  0.0 453254464   3824   ??  S    Tue05PM   0:00.54 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+451:gabrielhansen    24725   0.0  0.0 442815312   5600   ??  S    Tue05PM   0:01.34 npm exec @playwright/mcp@latest --headless    
+453:gabrielhansen    11517   0.0  0.0 453245552   3824   ??  S    Tue05PM   0:00.53 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+454:gabrielhansen    11199   0.0  0.0 442819728   5600   ??  S    Tue05PM   0:01.33 npm exec @playwright/mcp@latest --headless    
+458:gabrielhansen     1410   0.0  0.0 453245504   3824   ??  S    Tue04PM   0:00.57 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+459:gabrielhansen     1068   0.0  0.0 442814880   5600   ??  S    Tue04PM   0:01.36 npm exec @playwright/mcp@latest --headless    
+463:gabrielhansen    90228   0.0  0.0 453244864   3824   ??  S    Tue04PM   0:00.56 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+465:gabrielhansen    89928   0.0  0.0 442819344   5600   ??  S    Tue04PM   0:01.32 npm exec @playwright/mcp@latest --headless    
+468:gabrielhansen    79737   0.0  0.0 453245680   3824   ??  S    Tue03PM   0:00.58 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+469:gabrielhansen    79418   0.0  0.0 442815568   5600   ??  S    Tue03PM   0:01.40 npm exec @playwright/mcp@latest --headless    
+473:gabrielhansen    68980   0.0  0.0 453249952   3824   ??  S    Tue03PM   0:00.57 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+474:gabrielhansen    68678   0.0  0.0 442815008   5600   ??  S    Tue03PM   0:01.46 npm exec @playwright/mcp@latest --headless    
+478:gabrielhansen    53762   0.0  0.0 453254112   3824   ??  S    Tue02PM   0:00.54 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+479:gabrielhansen    53449   0.0  0.0 442815488   5408   ??  S    Tue02PM   0:01.36 npm exec @playwright/mcp@latest --headless    
+483:gabrielhansen    43207   0.0  0.0 453253760   3824   ??  S    Tue02PM   0:00.55 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+485:gabrielhansen    42914   0.0  0.0 442810960   5408   ??  S    Tue02PM   0:01.30 npm exec @playwright/mcp@latest --headless    
+488:gabrielhansen    30684   0.0  0.0 453250000   3824   ??  S    Tue01PM   0:00.55 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+489:gabrielhansen    30362   0.0  0.0 442815088   5408   ??  S    Tue01PM   0:01.31 npm exec @playwright/mcp@latest --headless    
+493:gabrielhansen    18621   0.0  0.0 453245136   3824   ??  S    Tue12PM   0:00.52 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+494:gabrielhansen    18329   0.0  0.0 442811456   5600   ??  S    Tue12PM   0:01.24 npm exec @playwright/mcp@latest --headless    
+498:gabrielhansen     8395   0.0  0.0 453250160   3824   ??  S    Tue12PM   0:00.54 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+502:gabrielhansen     8100   0.0  0.0 442815680   5600   ??  S    Tue12PM   0:01.32 npm exec @playwright/mcp@latest --headless    
+504:gabrielhansen    94821   0.0  0.0 453249424   3824   ??  S    Tue11AM   0:00.52 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+506:gabrielhansen    94510   0.0  0.0 442815840   5600   ??  S    Tue11AM   0:01.22 npm exec @playwright/mcp@latest --headless    
+509:gabrielhansen    84910   0.0  0.0 453253552   3824   ??  S    Tue11AM   0:00.51 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+510:gabrielhansen    84618   0.0  0.0 442815024   5408   ??  S    Tue11AM   0:01.21 npm exec @playwright/mcp@latest --headless    
+514:gabrielhansen    74391   0.0  0.0 453245120   3824   ??  S    Tue10AM   0:00.56 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+516:gabrielhansen    74088   0.0  0.0 442814752   5600   ??  S    Tue10AM   0:01.31 npm exec @playwright/mcp@latest --headless    
+519:gabrielhansen    61696   0.0  0.0 453245216   3824   ??  S    Tue10AM   0:00.54 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+523:gabrielhansen    61392   0.0  0.0 442815072   5600   ??  S    Tue10AM   0:01.38 npm exec @playwright/mcp@latest --headless    
+524:gabrielhansen    46522   0.0  0.0 453246064   3824   ??  S    Tue09AM   0:00.49 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+526:gabrielhansen    46231   0.0  0.0 442815632   5600   ??  S    Tue09AM   0:01.23 npm exec @playwright/mcp@latest --headless    
+529:gabrielhansen    30734   0.0  0.0 453246112   3776   ??  S    Tue09AM   0:00.52 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+530:gabrielhansen    30443   0.0  0.0 442814592   5488   ??  S    Tue09AM   0:01.27 npm exec @playwright/mcp@latest --headless    
+534:gabrielhansen    17422   0.0  0.0 453249584   3776   ??  S    Tue08AM   0:00.54 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+535:gabrielhansen    17106   0.0  0.0 442815168   5488   ??  S    Tue08AM   0:01.20 npm exec @playwright/mcp@latest --headless    
+539:gabrielhansen     6706   0.0  0.0 453246032   3776   ??  S    Tue08AM   0:00.55 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+543:gabrielhansen     6533   0.0  0.0 442819776   5488   ??  S    Tue08AM   0:01.42 npm exec @playwright/mcp@latest --headless    
+548:gabrielhansen    84147   0.0  0.0 453249152   3776   ??  S    Tue08AM   0:00.71 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+549:gabrielhansen    83487   0.0  0.0 442819600   5280   ??  S    Tue08AM   0:01.75 npm exec @playwright/mcp@latest --headless    
+739:gabrielhansen    94771   0.0  0.0 416634144    176   ??  R     7:15PM   0:00.00 rg -n (next dev|next start|vite|playwright|http.server|python3 -m http|node .*dev|wrangler dev)
+852:gabrielhansen    93387   0.0  0.5 453242720  93712   ??  S     7:13PM   0:00.50 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+853:gabrielhansen    93084   0.0  0.5 442810848  85216   ??  S     7:13PM   0:01.11 npm exec @playwright/mcp@latest --headless    
+860:gabrielhansen    92704   0.0  0.2 453249264  32112   ??  S     7:12PM   0:00.55 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+861:gabrielhansen    92401   0.0  0.2 442811568  38304   ??  S     7:12PM   0:01.17 npm exec @playwright/mcp@latest --headless    
+894:gabrielhansen    88805   0.0  0.2 453249168  30640   ??  S     6:53PM   0:00.49 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+898:gabrielhansen    88497   0.0  0.2 442814480  37568   ??  S     6:53PM   0:01.09 npm exec @playwright/mcp@latest --headless    
+920:gabrielhansen    82532   0.0  0.2 453245360  30656   ??  S     6:42PM   0:00.54 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+921:gabrielhansen    82221   0.0  0.2 442814800  37552   ??  S     6:42PM   0:01.20 npm exec @playwright/mcp@latest --headless    
+928:gabrielhansen    80190   0.0  0.2 453246000  30640   ??  S     6:33PM   0:00.48 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+930:gabrielhansen    79879   0.0  0.2 442815280  37344   ??  S     6:33PM   0:01.08 npm exec @playwright/mcp@latest --headless    
+934:gabrielhansen    71909   0.0  0.2 453249184  30640   ??  S     6:13PM   0:00.48 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+938:gabrielhansen    71613   0.0  0.2 442811664  37520   ??  S     6:13PM   0:01.05 npm exec @playwright/mcp@latest --headless    
+941:gabrielhansen    71191   0.0  0.2 453250960  30640   ??  S     6:12PM   0:00.48 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+944:gabrielhansen    70884   0.0  0.2 442815040  37328   ??  S     6:12PM   0:01.09 npm exec @playwright/mcp@latest --headless    
+946:gabrielhansen    67322   0.0  0.2 453245264  30512   ??  S     5:53PM   0:00.46 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+947:gabrielhansen    67018   0.0  0.2 442814944  37136   ??  S     5:53PM   0:01.08 npm exec @playwright/mcp@latest --headless    
+954:gabrielhansen    60703   0.0  0.2 453245280  30512   ??  S     5:42PM   0:00.53 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+955:gabrielhansen    60383   0.0  0.2 442811104  37136   ??  S     5:42PM   0:01.21 npm exec @playwright/mcp@latest --headless    
+959:gabrielhansen    58565   0.0  0.2 453253312  30496   ??  S     5:33PM   0:00.50 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
+961:gabrielhansen    58255   0.0  0.2 442815104  37024   ??  S     5:33PM   0:01.16 npm exec @playwright/mcp@latest --headless    
+964:gabrielhansen    52667   0.0  0.2 453249504  30480   ??  S     5:13PM   0:00.46 node /Users/gabrielhansen/.npm/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp --headless
