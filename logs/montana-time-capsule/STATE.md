@@ -5,6 +5,25 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-21T16:36:10Z Monitor tick (HMC) - launched 3DGS
+
+- Git: agent-40136728-montana-time-capsule @ 8fea5bef9ac498f49137311f5bd7774507194c39 (`chore: record post-push proof 20260521T1617Z [skip ci]`)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T163428Z.json (acct 975050048887)
+- SageMaker SfM:
+  - job: hmc-mtc-20260520T2015Z-sfm
+  - status: Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T163428Z.json)
+  - output prefix non-empty: logs/montana-time-capsule/s3api-list-objects-v2-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T163428Z-max5.json (KeyCount=5); logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T163428Z-tail5.txt (Total Objects: 2070; Total Size: 12.0 GiB)
+- CI:
+  - exact-head runs: 0 (expected due to [skip ci]) logs/montana-time-capsule/gh-run-list-exact-head-20260521T163442Z.json
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260521T163442Z.json
+- SageMaker 3DGS:
+  - runner launch: logs/montana-time-capsule/hmc-launch-20260521T163544Z.log
+  - job: hmc-mtc-20260520T2015Z-3dgs (pinned image sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db)
+  - status: InProgress (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T163601Z.json)
+  - output prefix currently empty (KeyCount=0): logs/montana-time-capsule/s3api-list-objects-v2-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-3dgs-20260521T163601Z-max5.json
+
+Next: poll until 3DGS becomes Completed; do not launch compression until `describe-training-job` is Completed.
+
 ## 2026-05-21T16:14:37Z Monitor tick (HMC)
 
 - Git: agent-40136728-montana-time-capsule @ dbbdbbcdeaaf6eab47441127dcb17663e683a801 (`chore: record post-push proof 20260521T1557Z [skip ci]`)

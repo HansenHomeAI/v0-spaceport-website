@@ -1,0 +1,61 @@
+{
+    "IsTruncated": true,
+    "Contents": [
+        {
+            "Key": "manual-validations/hmc-mtc-20260520T2015Z/colmap/database.db",
+            "LastModified": "2026-05-21T16:02:35+00:00",
+            "ETag": "\"6f3f6c5926a820cb4c48b7ac12800975-607\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 3181797376,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "manual-validations/hmc-mtc-20260520T2015Z/colmap/images/hmc_0001_DJI_0661.JPG",
+            "LastModified": "2026-05-21T16:02:35+00:00",
+            "ETag": "\"cf729a5b76608b5caf0ca1c7647d963b\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 4785731,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "manual-validations/hmc-mtc-20260520T2015Z/colmap/images/hmc_0002_DJI_0660.JPG",
+            "LastModified": "2026-05-21T16:02:35+00:00",
+            "ETag": "\"c776b04944ebb372b11013e9605bb55a\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 4337878,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "manual-validations/hmc-mtc-20260520T2015Z/colmap/images/hmc_0003_DJI_0662.JPG",
+            "LastModified": "2026-05-21T16:02:35+00:00",
+            "ETag": "\"0a598e29c268ab03ccf4ec48e4d65485\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 4907123,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "manual-validations/hmc-mtc-20260520T2015Z/colmap/images/hmc_0004_DJI_0666.JPG",
+            "LastModified": "2026-05-21T16:02:35+00:00",
+            "ETag": "\"22c03af7619966fc167dbc97b0d256ce\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 4085419,
+            "StorageClass": "STANDARD"
+        }
+    ],
+    "Name": "spaceport-ml-processing-staging",
+    "Prefix": "manual-validations/hmc-mtc-20260520T2015Z/colmap/",
+    "MaxKeys": 5,
+    "EncodingType": "url",
+    "KeyCount": 5,
+    "NextContinuationToken": "1rhKu4yek/jogSqVHKqiEM6VnnXIiDqoDi3ccKtaYWo8KyLN9MFt0wXSvi3rPogxLx0LbOQmSTvtdnZpvk44QjdILSsy4HIBrkIpIxbU25Un/XNeUue8yVOQYSwsy/qG81q/bo4xqYuxS4TbOWU/ZHWn/EY5u8sWR"
+}
