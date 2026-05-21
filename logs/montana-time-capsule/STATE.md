@@ -37,8 +37,8 @@ Next: keep polling until SfM becomes Completed and the S3 output prefix is non-e
 
 ## 2026-05-21T12:34:07Z Post-push CI proof (HMC)
 
-- Git head pushed: 6525e49764a802f9b5c88311f4a0d7b7dd8745ab ([skip ci])
-- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T123407Z.json)
+- Git head pushed: 95a8457e1bb5c1c317172fae09a4d707b053a7bc ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T123450Z.json)
 
 ## 2026-05-21T12:17:09Z Post-push CI proof (HMC)
 
