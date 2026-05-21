@@ -3936,3 +3936,10 @@ Poll `hmc-mtc-20260520T2015Z-sfm` until `Completed`, then run the time-capsule r
 
 - Poll until `hmc-mtc-20260520T2015Z-sfm` reaches `Completed` (or `Failed/Stopped`); if `Completed`, run exactly once to launch pinned 3DGS via:
   - `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --dataset-id HMC --run-prefix hmc-mtc --subset-strategy hmc_full_2063_montana_time_capsule --expected-image-count 2063 --state-file logs/montana-time-capsule/hmc-state.json --launch`
+
+## 2026-05-21T02:25Z CI confirmation (post-monitor commit)
+
+- Head: `a2b8f4fb6e8ebe88d704c87f827b18510bd198cd`
+- CDK Deploy: run `26201626086` succeeded (triggered by push of `chore: monitor HMC time capsule SfM`).
+- Evidence:
+  - `logs/montana-time-capsule/gh-run-26201626086-cdk.json`
