@@ -90,3 +90,4 @@
 [2026-05-21T11:42:22Z] ci -> CDK Deploy 26223584298 success -> next: wait on sfm
 [2026-05-21T11:57:26Z] poll_sfm -> hmc-mtc-20260520T2015Z-sfm InProgress; CW lastEvent=2026-05-21T00:01:36.365Z; S3 KeyCount=0; exact-head GH runs=0 ([skip ci]) -> next: wait/poll (no launch)
 [2026-05-21T11:58:43Z] push -> head 906770a4 pushed; 0 GH runs for exact head (expected [skip ci]); proof=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T115837Z.json
+[2026-05-21T12:14:10Z] poll_sfm -> hmc-mtc-20260520T2015Z-sfm InProgress; CW lastEvent=2026-05-21T00:01:36Z; S3 KeyCount=0; exact-head GH runs=0 ([skip ci]) -> next: wait/poll (no launch)
