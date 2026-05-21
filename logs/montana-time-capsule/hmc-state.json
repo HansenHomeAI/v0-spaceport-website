@@ -1,6 +1,7 @@
 {
   "ci": {
-    "gh_run_list_path": "logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T055517Z.json"
+    "gh_run_list_path": "logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T055517Z.json",
+    "gh_run_list_postpush_path": "logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-postpush-20260521T055707Z.json"
   },
   "created_at": "2026-05-20T20:15:32Z",
   "dataset": "HMC",
@@ -143,6 +144,6 @@
   },
   "sfm_status": "InProgress",
   "status": "sfm_running",
-  "updated_at": "2026-05-21T05:56:01Z",
+  "updated_at": "2026-05-21T05:57:24Z",
   "zip_entries": 2063
 }

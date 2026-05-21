@@ -4073,6 +4073,11 @@ Next: continue polling until SfM becomes Completed; only then run pinned 3DGS st
 
 Next: continue polling until SfM becomes Completed; do not launch 3DGS until SfM output exists.
 
+## 2026-05-21T05:57:07Z Post-push CI proof
+
+- Git head pushed: 640f02f4ade38eb6665448997a7705a984226bab ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-postpush-20260521T055707Z.json)
+
 ## 2026-05-21T05:56:01Z Monitor tick (HMC)
 
 - Git: agent-40136728-montana-time-capsule @ 6ed27b4db887bf4ff2c3a8a3f3fb5828a36f5f39 (`chore: record sfm poll 20260521T0539Z [skip ci]`)

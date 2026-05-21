@@ -56,3 +56,4 @@
 [2026-05-21T05:19:43Z] poll -> SfM hmc-mtc-20260520T2015Z-sfm still InProgress -> next: wait/poll
 [2026-05-21T05:39:05Z] poll sfm -> InProgress (no CW events since 00:01Z) -> wait
 [2026-05-21T05:56:38Z] poll sfm -> hmc-mtc-20260520T2015Z-sfm still InProgress; CW lastEvent=2026-05-21T00:01:36.365Z; output empty -> next: wait/poll
+[2026-05-21T05:57:19Z] push -> head 640f02f4 pushed; 0 GH runs for exact head (expected [skip ci]) -> next: poll SfM
