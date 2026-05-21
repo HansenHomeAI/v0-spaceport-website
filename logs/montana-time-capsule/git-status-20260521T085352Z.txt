@@ -1,0 +1,5 @@
+# git
+agent-40136728-montana-time-capsule
+734cea93965e920f4364186dd23c1f1a52576224
+?? logs/montana-time-capsule/git-status-20260521T085352Z.txt
+734cea93 chore: record post-push ci proof 20260521T0837Z [skip ci]

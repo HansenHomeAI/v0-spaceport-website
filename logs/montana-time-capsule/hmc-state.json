@@ -17,6 +17,7 @@
   "input_s3_uri": "s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip",
   "input_size_bytes": 8646557673,
   "last_action": "sfm_running",
+  "last_cloudwatch_event_at": "2026-05-21T00:01:36.365Z",
   "last_images": [
     "hmc_2059_DJI_0715.JPG",
     "hmc_2060_DJI_0724.JPG",
@@ -143,22 +144,21 @@
   "sfm_poll": {
     "aws_sts_path": "logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T083442Z.json",
     "cloudwatch_describe_log_streams_path": "logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T083442Z.json",
+    "cloudwatch_get_log_events_head_path": "logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T083442Z-head.json",
     "cloudwatch_get_log_events_since2h_path": "logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm_algo-1-1779308230-20260521T055435Z.json",
     "cloudwatch_get_log_events_since6h_path": "logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T053439Z-since6h.json",
+    "cloudwatch_get_log_events_tail_path": "logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T083442Z-tail.json",
+    "gh_run_list_branch_path": "logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T083442Z.json",
+    "gh_run_list_branch_postpush_path": "logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-postpush-20260521T083710Z.json",
+    "gh_run_list_exact_head_path": "logs/montana-time-capsule/gh-run-list-exact-head-20260521T083442Z.json",
+    "gh_run_list_exact_head_postpush_path": "logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T083710Z.json",
     "s3_ls_sfm_output_path": "logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T083442Z.txt",
     "s3api_list_objects_sfm_output_path": "logs/montana-time-capsule/s3api-list-objects-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T083442Z.json",
     "sagemaker_describe_path": "logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T083442Z.json",
-    "sagemaker_list_processing_jobs_path": "logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T083442Z.json",
-    "cloudwatch_get_log_events_head_path": "logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T083442Z-head.json",
-    "cloudwatch_get_log_events_tail_path": "logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T083442Z-tail.json",
-    "gh_run_list_branch_path": "logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T083442Z.json",
-    "gh_run_list_exact_head_path": "logs/montana-time-capsule/gh-run-list-exact-head-20260521T083442Z.json",
-    "gh_run_list_exact_head_postpush_path": "logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T083710Z.json",
-    "gh_run_list_branch_postpush_path": "logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-postpush-20260521T083710Z.json"
+    "sagemaker_list_processing_jobs_path": "logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T083442Z.json"
   },
   "sfm_status": "InProgress",
   "status": "sfm_running",
-  "updated_at": "2026-05-21T08:16:31Z",
-  "zip_entries": 2063,
-  "last_cloudwatch_event_at": "2026-05-21T00:01:36.365Z"
+  "updated_at": "2026-05-21T08:55:13Z",
+  "zip_entries": 2063
 }
