@@ -3978,3 +3978,18 @@ Poll `hmc-mtc-20260520T2015Z-sfm` until `Completed`, then run the time-capsule r
 # 2026-05-21T03:18Z post-push workflow check
 - git: agent-40136728-montana-time-capsule @ c656f775a22cf750801a4d04caf0bb57a8a33d1d
 - gh run list evidence (no runs for this [skip ci] head): logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-postpush-20260521T031745Z.json
+
+## 2026-05-21T03:36Z monitor tick
+- git head: agent-40136728-montana-time-capsule @ 5a94a67162623694262de7b2483d92a402b22863 ([skip ci] head; no new GH runs expected)
+- AWS: sts=logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T033426Z.json (acct 975050048887, us-west-2)
+- Input proven (no re-upload):
+  - s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip head=logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260521T033557Z.json
+  - manifest head=logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.manifest.json-20260521T033557Z.json
+- SageMaker SfM:
+  - job: hmc-mtc-20260520T2015Z-sfm
+  - status: InProgress (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T033432Z.json; re-poll=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T033818Z.json)
+  - CloudWatch stream lastEventTimestamp still 2026-05-21T00:01:36Z (logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T033432Z.json)
+  - last log lines (vocab_tree_builder building index) captured: logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260521T033939Z-window15m.txt (raw JSON: logs/montana-time-capsule/cloudwatch-filter-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T033939Z-window15m.json)
+  - output prefix still empty (EndOfJob upload): logs/montana-time-capsule/s3-ls-colmap-output-hmc-mtc-20260520T2015Z-20260521T033608Z.txt
+- CI proof remains from last non-[skip ci] heads: gh run list (CDK success + Pages success) captured previously; no new run for 5a94a671.
+- Next: continue polling until SfM completes; only then run pinned 3DGS stage once.

@@ -37,3 +37,4 @@
 [2026-05-21T02:44:05Z] monitor_hmc -> SfM still InProgress; CW lastEvent unchanged (2026-05-21T00:01:36Z) -> next poll
 [2026-05-21T02:56:41Z] monitor_hmc -> SfM still InProgress; CW lastEvent still 2026-05-21T00:01:36Z; outputs empty; HMC zip proven in spaceport-uploads (LastModified 2026-05-16) -> next poll for Completed then single guarded 3DGS launch
 [2026-05-21T03:00:00Z] push -> ledger evidence commit pushed; exact-head gh runs empty due to [skip ci] -> next poll SfM
+[2026-05-21T03:39:12Z] poll_sfm -> hmc-mtc-20260520T2015Z-sfm still InProgress; CloudWatch lastEvent=2026-05-21T00:01:36Z; output prefix empty -> next: keep polling until Completed (do not launch 3DGS yet)
