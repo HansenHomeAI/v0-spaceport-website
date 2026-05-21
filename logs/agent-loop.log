@@ -142,3 +142,4 @@
 [2026-05-21T21:58:06Z] post-push CI proof -> pushed 83f7f13f ([skip ci]); exact-head runs 0 -> next: idle
 [2026-05-21T21:58:36Z] post-push follow-up -> exact-head runs 0 (skip ci) -> next: idle
 [2026-05-21T22:17:08Z] heartbeat -> terminal reconfirm + viewer reachability (skybox+nosky HTTP 200) -> next: await promotion gate
+[2026-05-21T22:18:59Z] post-push CI proof -> pushed fac5e2bb ([skip ci]); exact-head runs 0 -> next: idle

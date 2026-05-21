@@ -51,6 +51,11 @@ Next: remain idle; only proceed if a new explicit acceptance gate is requested (
 
 Next: remain idle; do not re-launch HMC unless a new explicit acceptance gate is requested.
 
+## 2026-05-21T22:18:59Z Post-push CI proof (HMC)
+
+- Git head pushed: fac5e2bb5bc062351b559a8fef99a9ad4394e442 ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T221859Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260521T221859Z.json)
+
 ## 2026-05-21T20:39:50Z Monitor tick (HMC) - 3DGS+compression Completed; hosted viewer validated (skybox + no-sky)
 
 - Git: agent-40136728-montana-time-capsule @ 274e9112fd7fcc7a9d414c18f07fc6041c623535 (clean)
