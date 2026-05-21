@@ -15,6 +15,7 @@
   - CloudWatch lastEvent still 2026-05-21T00:01:36.365Z (streams=logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T061427Z-retry.json; tail=logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm_algo-1-1779308230-20260521T061427Z-tail.json)
   - output prefix still empty (EndOfJob upload): logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T061427Z.txt (Total Objects: 0)
 - Runner state refreshed (no launch): logs/montana-time-capsule/hmc-state-refresh-20260521T061615Z.json (state file logs/montana-time-capsule/hmc-state.json; sfm_status=InProgress)
+- CI: exact head is [skip ci]; latest branch run list refreshed at logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T061810Z.json (last green Pages+CDK unchanged).
 
 Next: keep polling until SfM becomes Completed and S3 output exists; do not launch 3DGS yet.
 
