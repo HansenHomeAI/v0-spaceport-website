@@ -10370,3 +10370,42 @@ note: reran heartbeat after `20260520T144551Z` because bundle parity was skipped
   - `logs/md1-shrunk/polls/20260520T234501Z-ci/summary.txt`
 
 - Next: commit/push (poll logs + STATE) then record postpush snapshot.
+
+## 2026-05-21T00:15Z heartbeat verify (scripted; strict gates PASS; no new jobs launched)
+
+- Heartbeat command:
+  - `logs/md1-shrunk/polls/20260521T001550Z-heartbeat.cmd.txt`
+- Heartbeat poll summary:
+  - `logs/md1-shrunk/polls/20260521T001550Z-summary.json`
+  - HEAD: `f77ca9ce2088dd499da1e50428830c9c113a246e` (`[skip ci]` head; exact-head workflows expected: none)
+  - PREVIEW_URL: `https://agent-113647-md1-baseline-e2.v0-spaceport-website-preview2.pages.dev`
+  - edge meta.json: `https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+  - public S3 meta.json: `https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json`
+
+- Preflight snapshot (scripted; read-only; cost bounded):
+  - `logs/md1-shrunk/polls/20260521T001550Z-preflight/preflight.txt`
+  - Step Functions RUNNING: `0` (staging + `SpaceportMLPipeline-br-8abcbd5662`)
+  - Known execution `execution-md1-shrunk-prodspine-wlight-202605190027` status: `SUCCEEDED`:
+    - `logs/md1-shrunk/polls/20260521T001550Z-preflight/stepfunctions-describe-known.json`
+  - SageMaker InProgress:
+    - processing: `1` (external / not owned by this run): `hmc-mtc-20260520T2015Z-sfm` (left untouched)
+    - training: `0`
+
+- Browser-readable public delivery validation (automation; Origin/CORS + cache headers + referenced assets):
+  - result: `logs/md1-shrunk/polls/20260521T001550Z-edge-validate/validate.txt`
+  - report: `logs/md1-shrunk/polls/20260521T001550Z-edge-validate/publish-edge.report.html`
+
+- Public bundle snapshot (S3-vs-edge meta.json parity):
+  - `logs/md1-shrunk/polls/20260521T001550Z-bundle/bundle.txt` (sha256 match)
+
+- Multi-camera input-vs-render checks (deployed preview; strict; pose drift verification + sky/horizon gates):
+  - result: `logs/md1-shrunk/polls/20260521T001550Z-camera-suite/suite-summary.json` -> `decision=pass` (`pose_verification.max_delta=0.0`; `artifacts_pruned=true`; `skybox.decision=pass`; `nosky.decision=pass`)
+  - report: `logs/md1-shrunk/polls/20260521T001550Z-camera-suite/report.html`
+
+- Unit proof:
+  - output: `logs/md1-shrunk/polls/20260521T001550Z-unit/unittest.txt`
+
+- GitHub Actions snapshot (head is logs-only; no new runs expected):
+  - `logs/md1-shrunk/polls/20260521T001550Z-ci/summary.txt`
+
+- Next: commit/push (poll logs + STATE) then record postpush snapshot.
