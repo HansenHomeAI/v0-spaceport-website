@@ -130,3 +130,4 @@
 [2026-05-21T19:57:34Z] monitor 3dgs -> InProgress (LastModifiedTime=2026-05-21T10:40:55-06:00; cw last=2026-05-21T16:46:58.947Z; S3 KeyCount=0) -> next poll
 [2026-05-21T19:58:28Z] push-heartbeat -> head 0882a830 pushed; exact-head GH runs=0 ([skip ci] expected); proof=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T195812Z.json
 [2026-05-21T20:18:14Z] hmc-mtc: 3dgs completed -> launched compression -> poll compression
+[2026-05-21T20:19:13Z] push-heartbeat -> head 37e4eb7a pushed; exact-head GH runs=0 ([skip ci] expected); proof=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T201913Z.json
