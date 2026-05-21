@@ -1,0 +1,2 @@
+last_event_ts_ms=1779374020503
+last_event=COLMAP[chunk_bundle_adjuster] W20260521 14:33:40.364987  8201 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.

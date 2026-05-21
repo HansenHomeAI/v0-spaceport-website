@@ -4627,3 +4627,18 @@ Next: keep polling until SfM becomes Completed and the S3 output prefix is non-e
 
 - Git head pushed: 9197f0d89b98c376d2f96061ed8f93a51d202b32 ([skip ci])
 - Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T141752Z.json)
+
+## 20260521T143442Z Monitor tick (HMC)
+
+- Git: agent-40136728-montana-time-capsule @ f4f73fbbb1f43772a5a634f59f374195fd865fed (`chore: record post-push ci proof 20260521T141752Z [skip ci]`)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T143442Z.json
+- SageMaker SfM:
+  - job: hmc-mtc-20260520T2015Z-sfm
+  - status: InProgress (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T143442Z.json; list=logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T143442Z.json)
+  - CloudWatch last event: logs/montana-time-capsule/cloudwatch-last-event-hmc-mtc-20260520T2015Z-sfm-20260521T143442Z.txt (contains linear solver failure line @ ~2026-05-21T14:33:40Z)
+  - output prefix still empty (S3UploadMode=EndOfJob; KeyCount=0): logs/montana-time-capsule/s3api-list-objects-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T143442Z.json (ls=logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T143442Z-tail50.txt)
+- CI:
+  - branch runs: logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T143454Z.json
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260521T143454Z.json (count=0; [skip ci] expected)
+
+Next: keep polling until SfM becomes Completed and the S3 output prefix is non-empty; do not launch 3DGS yet.
