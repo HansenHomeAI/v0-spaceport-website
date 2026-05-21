@@ -3974,3 +3974,7 @@ Poll `hmc-mtc-20260520T2015Z-sfm` until `Completed`, then run the time-capsule r
 - cloudwatch tail: logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T031535Z.json (still stalled at 2026-05-21T00:01:36Z: vocab_tree_builder building index)
 - output S3: logs/montana-time-capsule/s3-list-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T031424Z.json (0 objects; EndOfJob upload)
 - runner refresh (NO launch): logs/montana-time-capsule/runner-hmc-20260521T031629Z.log (state refreshed; still sfm_running)
+
+# 2026-05-21T03:18Z post-push workflow check
+- git: agent-40136728-montana-time-capsule @ c656f775a22cf750801a4d04caf0bb57a8a33d1d
+- gh run list evidence (no runs for this [skip ci] head): logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-postpush-20260521T031745Z.json
