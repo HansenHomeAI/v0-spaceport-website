@@ -3943,3 +3943,12 @@ Poll `hmc-mtc-20260520T2015Z-sfm` until `Completed`, then run the time-capsule r
 - CDK Deploy: run `26201626086` succeeded (triggered by push of `chore: monitor HMC time capsule SfM`).
 - Evidence:
   - `logs/montana-time-capsule/gh-run-26201626086-cdk.json`
+# 2026-05-21T02:36Z monitor tick
+- git: agent-40136728-montana-time-capsule @ 71d2f2fae3b00c99e4d6d336321dc817e0adba2a (clean)
+- aws sts: logs/montana-time-capsule/aws-sts-20260521T023409Z.json (Account=975050048887, region=us-west-2)
+- gh runs (exact head): logs/montana-time-capsule/gh-run-list-agent-40136728-20260521T023544Z.json (CDK Deploy + Pages green)
+- s3 HMC zip HEAD: logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260521T023726Z.json (8,646,557,673 bytes; LastModified=2026-05-16T17:35:27Z)
+- s3 HMC manifest HEAD: logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.manifest.json-20260521T023726Z.json (photoCount=2063; flatZipSha256=8ac35927...)
+- sagemaker describe: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T023423Z.json (InProgress)
+- cloudwatch lastEvent: logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T023511Z.json (2026-05-21T00:01:36Z)
+- runner (NO launch): logs/montana-time-capsule/runner-hmc-20260521T023622Z.log (state refreshed; still sfm_running)

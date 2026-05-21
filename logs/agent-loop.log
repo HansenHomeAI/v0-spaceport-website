@@ -32,3 +32,4 @@
 [2026-05-21T02:03:44Z] push -> CDK Deploy 26200937278 success; Pages latest 26200368328 success -> next poll SfM
 [2026-05-21T02:19:00Z] monitor_hmc -> SfM InProgress; last CW event 2026-05-21T00:01:36Z; output prefix empty -> next poll for Completed then guarded 3DGS launch
 [2026-05-21T02:25:30Z] push_monitor_commit -> CDK Deploy 26201626086 success (head a2b8f4fb) -> next poll SfM
+[2026-05-21T02:36:30Z] monitor_hmc -> aws sts ok; CI exact-head green; SfM InProgress; last CW event still 2026-05-21T00:01:36Z; HMC zip+manifest re-HEADed in spaceport-uploads -> next poll until SfM Completed
