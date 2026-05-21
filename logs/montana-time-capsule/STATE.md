@@ -7,8 +7,8 @@
 
 ## 2026-05-21T19:40:35Z Post-push CI proof (HMC)
 
-- Git head pushed: 4da631d681793d3857f52e9455a592921d2af940 ([skip ci])
-- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T194035Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260521T194035Z.json)
+- Git head pushed: 786d645ab665c9b9b48f8c5bfe313b8b211fe2f9 ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T193954Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260521T193954Z.json)
 
 ## 2026-05-21T19:38:46Z Monitor tick (HMC) - 3DGS still InProgress (no new logs since 16:46Z)
 
