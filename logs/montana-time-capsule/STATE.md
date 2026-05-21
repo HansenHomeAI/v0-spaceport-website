@@ -255,6 +255,7 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
 - Exact-head workflow list (branch-level evidence only; recent commits are `[skip ci]`):
   - `gh run list --branch agent-40136728-montana-time-capsule --limit 20`
   - Result: most recent `CDK Deploy` run id `26187619621` `success` (2026-05-20T20:19:47Z).
+  - Post-push run list evidence: `logs/montana-time-capsule/gh-run-list-agent-40136728-20260521T012106Z.json` (exact head `e2b73877…` has 0 runs, expected for `[skip ci]`).
 - AWS identity: `aws sts get-caller-identity` (evidence: `logs/montana-time-capsule/aws-sts-20260521T011412Z.json`)
   - Result: account `975050048887`, ARN `arn:aws:iam::975050048887:root`.
 - HMC archive proof (no re-upload):
