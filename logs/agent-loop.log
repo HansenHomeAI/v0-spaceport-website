@@ -252,3 +252,4 @@
 [2026-05-21T12:20:31Z] md1-shrunk: pushed fee82e19 (heartbeat verify 20260521T121506Z + STATE + agent-loop) [skip ci]; no new workflows expected for head; last Pages=26208289063 CDK=26208289074 -> next: record postpush snapshot then idle
 [2026-05-21T12:21:13Z] md1-shrunk: postpush CI snapshot head=fee82e19 -> recorded logs/md1-shrunk/polls/20260521T122113Z-ci-postpush-sha-fee82e19/postpush.txt (exact_head_run_count=0 expected for [skip ci]) -> idle
 [20260521T125810Z] md1-shrunk heartbeat(strict) -> PASS (camera suite + edge delivery + parity + unit) -> commit/push logs-only
+[2026-05-21T13:00:02Z] md1-shrunk: postpush CI snapshot head=0154b098 -> recorded logs/md1-shrunk/polls/20260521T130002Z-ci-postpush-sha-0154b098/postpush.txt (exact_head_run_count=0 expected for [skip ci]) -> idle
