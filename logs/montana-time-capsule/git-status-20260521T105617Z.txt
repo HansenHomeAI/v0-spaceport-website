@@ -1,0 +1,24 @@
+On branch agent-40136728-montana-time-capsule
+Your branch is up to date with 'origin/agent-40136728-montana-time-capsule'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   logs/montana-time-capsule/hmc-state.json
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T105416Z.json
+	logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T105440Z.json
+	logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T105453Z.json
+	logs/montana-time-capsule/cloudwatch-filter-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T105522Z-around-last.json
+	logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T105453Z-tail.json
+	logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T105555Z.json
+	logs/montana-time-capsule/gh-run-list-exact-head-20260521T105555Z.json
+	logs/montana-time-capsule/git-status-20260521T105617Z.txt
+	logs/montana-time-capsule/s3-ls-spaceport-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T105538Z.txt
+	logs/montana-time-capsule/s3api-list-objects-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T105538Z.json
+	logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T105416Z.json
+	logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T105416Z.json
+
+no changes added to commit (use "git add" and/or "git commit -a")

@@ -1,0 +1,356 @@
+{
+    "events": [
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321107533,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:51:46.971858 16220 incremental_pipeline.cc:524] Registering image #1194 (num_reg_frames=93)",
+            "ingestionTime": 1779321113555,
+            "eventId": "39680186645460740334565041286929685359000427449725681664"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321107533,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:51:46.971918 16220 incremental_pipeline.cc:527] => Image sees 2295 / 5893 points",
+            "ingestionTime": 1779321113555,
+            "eventId": "39680186645460740334565041286929685359000427449725681665"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321108533,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:51:48.163909 16220 incremental_pipeline.cc:524] Registering image #993 (num_reg_frames=94)",
+            "ingestionTime": 1779321113555,
+            "eventId": "39680186667761485533095664428465403631648788955706097666"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321108533,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:51:48.163985 16220 incremental_pipeline.cc:527] => Image sees 2471 / 6496 points",
+            "ingestionTime": 1779321113555,
+            "eventId": "39680186667761485533095664428465403631648788955706097667"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321109533,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:51:49.354280 16220 incremental_pipeline.cc:524] Registering image #1139 (num_reg_frames=95)",
+            "ingestionTime": 1779321113555,
+            "eventId": "39680186690062230731626287570001121904297150461686513668"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321109534,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:51:49.354339 16220 incremental_pipeline.cc:527] => Image sees 2804 / 7187 points",
+            "ingestionTime": 1779321113555,
+            "eventId": "39680186690084531476824818193142657622569798823192494085"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321111534,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:51:50.617511 16220 incremental_pipeline.cc:524] Registering image #1026 (num_reg_frames=96)",
+            "ingestionTime": 1779321113555,
+            "eventId": "39680186734686021873886064476214094167866521835153326086"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321111534,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:51:50.617583 16220 incremental_pipeline.cc:527] => Image sees 3224 / 7660 points",
+            "ingestionTime": 1779321113555,
+            "eventId": "39680186734686021873886064476214094167866521835153326087"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321112534,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:51:51.788082 16220 incremental_pipeline.cc:524] Registering image #1084 (num_reg_frames=97)",
+            "ingestionTime": 1779321117577,
+            "eventId": "39680186756986767072416687622611890843942968685554761728"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321112535,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:51:51.788147 16220 incremental_pipeline.cc:527] => Image sees 3578 / 8116 points",
+            "ingestionTime": 1779321117577,
+            "eventId": "39680186757009067817615218245753426562215617047060742145"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321113538,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:51:53.075004 16220 incremental_pipeline.cc:524] Registering image #1085 (num_reg_frames=98)",
+            "ingestionTime": 1779321117577,
+            "eventId": "39680186779376715251741433256713751989681923637559099394"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321113538,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:51:53.075109 16220 incremental_pipeline.cc:527] => Image sees 4166 / 7974 points",
+            "ingestionTime": 1779321117577,
+            "eventId": "39680186779376715251741433256713751989681923637559099395"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321114539,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:51:54.534792 16220 incremental_pipeline.cc:524] Registering image #1212 (num_reg_frames=99)",
+            "ingestionTime": 1779321117577,
+            "eventId": "39680186801699761195470587021391005980602933505045495812"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321114539,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:51:54.534859 16220 incremental_pipeline.cc:527] => Image sees 2787 / 8248 points",
+            "ingestionTime": 1779321117577,
+            "eventId": "39680186801699761195470587021391005980602933505045495813"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321116540,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:51:55.837749 16220 incremental_pipeline.cc:524] Registering image #407 (num_reg_frames=100)",
+            "ingestionTime": 1779321117577,
+            "eventId": "39680186846323552337730363927603978244172304878512308230"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321116540,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:51:55.837816 16220 incremental_pipeline.cc:527] => Image sees 3472 / 8237 points",
+            "ingestionTime": 1779321117577,
+            "eventId": "39680186846323552337730363927603978244172304878512308231"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321117541,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:51:57.118366 16220 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1779321122612,
+            "eventId": "39680186868646598281459517698368241160027184482310619136"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321130572,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:09.923758 16220 incremental_pipeline.cc:524] Registering image #1125 (num_reg_frames=101)",
+            "ingestionTime": 1779321135678,
+            "eventId": "39680187159247608963512067871516257119818229911853400064"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321130572,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:09.923825 16220 incremental_pipeline.cc:527] => Image sees 2986 / 7186 points",
+            "ingestionTime": 1779321135678,
+            "eventId": "39680187159247608963512067871516257119818229911853400065"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321131573,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:11.324266 16220 incremental_pipeline.cc:524] Registering image #907 (num_reg_frames=102)",
+            "ingestionTime": 1779321135678,
+            "eventId": "39680187181570654907241221636193511110739239779339796482"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321131573,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:11.324328 16220 incremental_pipeline.cc:527] => Image sees 3800 / 6998 points",
+            "ingestionTime": 1779321135678,
+            "eventId": "39680187181570654907241221636193511110739239779339796483"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321133576,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:12.829017 16220 incremental_pipeline.cc:524] Registering image #638 (num_reg_frames=103)",
+            "ingestionTime": 1779321135678,
+            "eventId": "39680187226239047539898059788689554810853907875818569732"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321133577,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:12.829077 16220 incremental_pipeline.cc:527] => Image sees 2607 / 5723 points",
+            "ingestionTime": 1779321135678,
+            "eventId": "39680187226261348285096590411831090529126556237324550149"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321134579,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:14.171644 16220 incremental_pipeline.cc:524] Registering image #886 (num_reg_frames=104)",
+            "ingestionTime": 1779321135678,
+            "eventId": "39680187248606694974024274799649880238320214466316926982"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321134579,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:14.171695 16220 incremental_pipeline.cc:527] => Image sees 3029 / 5744 points",
+            "ingestionTime": 1779321135678,
+            "eventId": "39680187248606694974024274799649880238320214466316926983"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321135580,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:15.550300 16220 incremental_pipeline.cc:524] Registering image #2057 (num_reg_frames=105)",
+            "ingestionTime": 1779321140704,
+            "eventId": "39680187270929740917753428570402877950320320219020591104"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321135580,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:15.550370 16220 incremental_pipeline.cc:527] => Image sees 2660 / 4421 points",
+            "ingestionTime": 1779321140704,
+            "eventId": "39680187270929740917753428570402877950320320219020591105"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321137580,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:16.634805 16220 incremental_pipeline.cc:524] Registering image #2054 (num_reg_frames=106)",
+            "ingestionTime": 1779321140704,
+            "eventId": "39680187315531231314814674853474314495617043230981423106"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321137580,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:16.634872 16220 incremental_pipeline.cc:527] => Image sees 2768 / 4411 points",
+            "ingestionTime": 1779321140704,
+            "eventId": "39680187315531231314814674853474314495617043230981423107"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321138580,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:17.879362 16220 incremental_pipeline.cc:524] Registering image #2055 (num_reg_frames=107)",
+            "ingestionTime": 1779321140704,
+            "eventId": "39680187337831976513345297995010032768265404736961839108"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321138580,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:17.879416 16220 incremental_pipeline.cc:527] => Image sees 2491 / 4311 points",
+            "ingestionTime": 1779321140704,
+            "eventId": "39680187337831976513345297995010032768265404736961839109"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321139581,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:18.957602 16220 incremental_pipeline.cc:524] Registering image #539 (num_reg_frames=108)",
+            "ingestionTime": 1779321140704,
+            "eventId": "39680187360155022457074451759687286759186414604448235526"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321139581,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:18.957659 16220 incremental_pipeline.cc:527] => Image sees 2177 / 4745 points",
+            "ingestionTime": 1779321140704,
+            "eventId": "39680187360155022457074451759687286759186414604448235527"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321140581,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:19.993750 16220 incremental_pipeline.cc:524] Registering image #559 (num_reg_frames=109)",
+            "ingestionTime": 1779321145726,
+            "eventId": "39680187382455767655605074907294464809233663825021566976"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321140581,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:19.993810 16220 incremental_pipeline.cc:527] => Image sees 2157 / 4576 points",
+            "ingestionTime": 1779321145726,
+            "eventId": "39680187382455767655605074907294464809233663825021566977"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321141581,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:20.991590 16220 incremental_pipeline.cc:524] Registering image #2051 (num_reg_frames=110)",
+            "ingestionTime": 1779321145726,
+            "eventId": "39680187404756512854135698048830183081882025331001982978"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321141582,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:20.991649 16220 incremental_pipeline.cc:527] => Image sees 2311 / 4142 points",
+            "ingestionTime": 1779321145726,
+            "eventId": "39680187404778813599334228671971718800154673692507963395"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321142582,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:21.987718 16220 incremental_pipeline.cc:524] Registering image #1317 (num_reg_frames=111)",
+            "ingestionTime": 1779321145726,
+            "eventId": "39680187427079558797864851813507437072803035198488379396"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321142582,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:21.987782 16220 incremental_pipeline.cc:527] => Image sees 1943 / 3886 points",
+            "ingestionTime": 1779321145726,
+            "eventId": "39680187427079558797864851813507437072803035198488379397"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321143582,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:23.015228 16220 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+            "ingestionTime": 1779321145726,
+            "eventId": "39680187449380303996395474955043155345451396704468795398"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321161646,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:41.538578 16220 incremental_pipeline.cc:524] Registering image #2058 (num_reg_frames=112)",
+            "ingestionTime": 1779321166875,
+            "eventId": "39680187852220965262652651409312087832957567974894927872"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321161646,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:41.538663 16220 incremental_pipeline.cc:527] => Image sees 1984 / 3952 points",
+            "ingestionTime": 1779321166875,
+            "eventId": "39680187852220965262652651409312087832957567974894927873"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321162647,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:42.616534 16220 incremental_pipeline.cc:524] Registering image #602 (num_reg_frames=113)",
+            "ingestionTime": 1779321166875,
+            "eventId": "39680187874544011206381805173989341823878577842381324290"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321162647,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:42.616592 16220 incremental_pipeline.cc:527] => Image sees 1866 / 4110 points",
+            "ingestionTime": 1779321166875,
+            "eventId": "39680187874544011206381805173989341823878577842381324291"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321164647,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:43.651697 16220 incremental_pipeline.cc:524] Registering image #2059 (num_reg_frames=114)",
+            "ingestionTime": 1779321166875,
+            "eventId": "39680187919145501603443051457060778369175300854342156292"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321164647,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:43.651755 16220 incremental_pipeline.cc:527] => Image sees 1833 / 3886 points",
+            "ingestionTime": 1779321166875,
+            "eventId": "39680187919145501603443051457060778369175300854342156293"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321164647,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:44.638397 16220 incremental_pipeline.cc:524] Registering image #833 (num_reg_frames=115)",
+            "ingestionTime": 1779321166875,
+            "eventId": "39680187919145501603443051457060778369175300854342156294"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321164647,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:44.638463 16220 incremental_pipeline.cc:527] => Image sees 1564 / 4417 points",
+            "ingestionTime": 1779321166875,
+            "eventId": "39680187919145501603443051457060778369175300854342156295"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321165648,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:45.574913 16220 incremental_pipeline.cc:524] Registering image #986 (num_reg_frames=116)",
+            "ingestionTime": 1779321166875,
+            "eventId": "39680187941468547547172205221738032360096310721828552712"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779321165648,
+            "message": "COLMAP[chunk_14_mapper_initial] I20260520 23:52:45.574977 16220 incremental_pipeline.cc:527] => Image sees 1684 / 3616 points",
+            "ingestionTime": 1779321166875,
+            "eventId": "39680187941468547547172205221738032360096310721828552713"
+        }
+    ],
+    "searchedLogStreams": [],
+    "nextToken": "Bxkq6kVGFtq2y_MoigeqscPOdhXVbhiVtLoAmXb5jCqYOoe0M0bSXMCJQdq45UFukSCgRzM51aHFOaih8Tq356DiDUeDsdvUpCF8gEZjC830YmZUA4ED1eGe_VaoOvxtF1U3oTcgaRg2wufagX0u_rxikTEvn4oLrg6eLe6OFBr-F6uW6GbqiyAgBpflb1n8W-4Pv_DYqPubYmdG1Z9iHAuVmis_Rjj2d3EJGNOyPAy7LosaVjnBfn077v7f3h1mTT2Ov70-Cla19fPCc3p9rdi5F3t3EoDlfZizPRSHld4"
+}

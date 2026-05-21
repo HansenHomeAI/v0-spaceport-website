@@ -20,6 +20,21 @@
 
 Next: keep polling until SfM becomes Completed and the S3 output prefix is non-empty; do not launch 3DGS yet.
 
+## 2026-05-21T10:56:20Z Monitor tick (HMC)
+
+- Git: agent-40136728-montana-time-capsule @ da4ef63c9a5bbe26ca0d05066172125c304dce01 (`chore: record post-push ci proof 20260521T1037Z [skip ci]`)
+  - status: logs/montana-time-capsule/git-status-20260521T105617Z.txt
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T105416Z.json (acct 975050048887)
+- SageMaker SfM:
+  - job: hmc-mtc-20260520T2015Z-sfm
+  - status: InProgress (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T105416Z.json; list=logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T105416Z.json)
+  - CloudWatch newest stream last event timestamp still 2026-05-21T00:01:36.365Z (streams=logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T105453Z.json; around_last=logs/montana-time-capsule/cloudwatch-filter-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T105522Z-around-last.json)
+  - output prefix still empty (KeyCount=0): logs/montana-time-capsule/s3api-list-objects-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T105538Z.json (ls=logs/montana-time-capsule/s3-ls-spaceport-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T105538Z.txt)
+- Runner state refreshed (no launch): logs/montana-time-capsule/hmc-state-refresh-20260521T105612Z.log (state file logs/montana-time-capsule/hmc-state.json; sfm_status=InProgress; updated_at=2026-05-21T10:56:13Z)
+- CI: exact head is [skip ci] (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-20260521T105555Z.json; branch=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T105555Z.json)
+
+Next: keep polling until SfM becomes Completed and the S3 output prefix is non-empty; do not launch 3DGS yet.
+
 ## 2026-05-21T10:17:31Z Post-push CI proof (HMC)
 
 - Git head pushed: 7068a12a3f72c30d0cc469d09d5d8b8b614baa4b ([skip ci])
