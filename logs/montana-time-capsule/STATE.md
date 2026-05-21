@@ -4175,6 +4175,11 @@ Next: continue polling until SfM becomes Completed; do not launch 3DGS until SfM
 
 Next: continue polling until SfM becomes Completed and the colmap output prefix is non-empty; do not launch 3DGS until SfM output exists.
 
+## 2026-05-21T08:37:10Z Post-push CI proof
+
+- Git head pushed: 292eaecae258202b9976fee57da94dab1ee380a4 ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T083710Z.json)
+
 ## 2026-05-21T05:57:07Z Post-push CI proof
 
 - Git head pushed: 640f02f4ade38eb6665448997a7705a984226bab ([skip ci])

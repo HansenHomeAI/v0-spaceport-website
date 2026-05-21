@@ -152,7 +152,9 @@
     "cloudwatch_get_log_events_head_path": "logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T083442Z-head.json",
     "cloudwatch_get_log_events_tail_path": "logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T083442Z-tail.json",
     "gh_run_list_branch_path": "logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T083442Z.json",
-    "gh_run_list_exact_head_path": "logs/montana-time-capsule/gh-run-list-exact-head-20260521T083442Z.json"
+    "gh_run_list_exact_head_path": "logs/montana-time-capsule/gh-run-list-exact-head-20260521T083442Z.json",
+    "gh_run_list_exact_head_postpush_path": "logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T083710Z.json",
+    "gh_run_list_branch_postpush_path": "logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-postpush-20260521T083710Z.json"
   },
   "sfm_status": "InProgress",
   "status": "sfm_running",
