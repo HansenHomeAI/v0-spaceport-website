@@ -157,8 +157,8 @@
     "sagemaker_describe_path": "logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-status-20260520T205525Z.json",
     "sagemaker_list_processing_jobs_path": "logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T113416Z.json"
   },
-  "sfm_status": null,
+  "sfm_status": "InProgress",
   "status": "sfm_running",
-  "updated_at": "2026-05-21T11:36:13Z",
+  "updated_at": "2026-05-21T11:56:29Z",
   "zip_entries": 2063
 }
