@@ -1,0 +1,8 @@
+# bundle parity 20260521T051910Z
+
+S3_META=https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json
+EDGE_META=https://d385lt7fd3q07n.cloudfront.net/models/md1-shrunk-prodspine-wlight-202605190027/supersplat_bundle/meta.json
+
+## shasum
+s3 f3ec9c95a0a6208f3ef9cae6a181e3cbc529ee20701252b91022efe1af02b02e  -
+edge f3ec9c95a0a6208f3ef9cae6a181e3cbc529ee20701252b91022efe1af02b02e  -
