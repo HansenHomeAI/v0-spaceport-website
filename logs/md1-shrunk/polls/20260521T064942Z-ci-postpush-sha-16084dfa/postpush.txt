@@ -1,0 +1,12 @@
+# ci postpush snapshot
+ts_utc=20260521T064942Z
+branch=agent-113647-md1-baseline-e2e
+head=16084dfa2464ee7f7d24bd4758e76a646d4dc37e
+
+## gh run list (branch)
+exact_head_run_count=0
+
+Evidence:
+- logs/md1-shrunk/polls/20260521T064942Z-ci-postpush-sha-16084dfa/postpush.txt
+- logs/md1-shrunk/polls/20260521T064942Z-ci-postpush-sha-16084dfa/gh-run-list.json
+- logs/md1-shrunk/polls/20260521T064942Z-ci-postpush-sha-16084dfa/gh-run-list-exact-head.json

@@ -1,9 +1,9 @@
 # MD1-Shrunk E2E State
 
-updated: 2026-05-21T06:46:30Z
+updated: 2026-05-21T06:50:20Z
 branch: agent-113647-md1-baseline-e2e
 repo: HansenHomeAI/v0-spaceport-website
-head: 124ea1894f9bdade68e51e67da95e4029b825e01
+head: 16084dfa2464ee7f7d24bd4758e76a646d4dc37e
 
 ## Goal
 
@@ -10793,6 +10793,13 @@ note: reran heartbeat after `20260520T144551Z` because bundle parity was skipped
   - raw: `logs/md1-shrunk/polls/20260521T064404Z-preflight/gh-run-list.json`
 
 - Next: commit/push (poll logs + STATE + agent-loop), then record postpush CI snapshot.
+
+## 2026-05-21T06:49Z postpush CI snapshot (head is logs-only; no new runs expected)
+
+- exact-head commit: `16084dfa` (`[skip ci]` head; exact-head workflows expected: none)
+- Evidence:
+  - `logs/md1-shrunk/polls/20260521T064942Z-ci-postpush-sha-16084dfa/postpush.txt`
+  - `logs/md1-shrunk/polls/20260521T064942Z-ci-postpush-sha-16084dfa/gh-run-list-exact-head.json`
 
 ## 2026-05-21T06:20Z postpush CI snapshot (head is logs-only; no new runs expected)
 
