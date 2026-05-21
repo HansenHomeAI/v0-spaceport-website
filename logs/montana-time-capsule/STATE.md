@@ -3744,4 +3744,5 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - result: status=sfm_running sfm_status=InProgress
 - gh runs branch list (last meaningful): `gh run list --branch agent-40136728-montana-time-capsule --limit 20`
   - latest CDK Deploy success 2026-05-20T20:19:47Z; no exact-head runs expected for [skip ci] commit f5abcf8b
+- gh run list evidence: logs/montana-time-capsule/gh-run-list-agent-40136728-20260521T003731Z.json
 - next: wait for SFM Completed; then run runner once with `--launch` to start pinned Montana 3DGS (sha256:482c1789...)
