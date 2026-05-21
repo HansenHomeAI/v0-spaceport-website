@@ -4073,6 +4073,28 @@ Next: continue polling until SfM becomes Completed; only then run pinned 3DGS st
 
 Next: continue polling until SfM becomes Completed; do not launch 3DGS until SfM output exists.
 
+### 2026-05-21T05:39:05Z quick re-poll (120s later)
+- SageMaker describe: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T053844Z.json (still InProgress; LastModifiedTime unchanged)
+- CloudWatch (since 2h): logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T053844Z-since2h.json (0 events)
+
+## 2026-05-21T05:34:14Z Monitor tick
+
+- Git: agent-40136728-montana-time-capsule @ c752d273cd3b5ef683a527debdd0a009c938d148 ([skip ci])
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T053414Z.json (acct 975050048887)
+- Input proven (no re-upload):
+  - s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip head=logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260521T053504Z.json
+  - s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.manifest.json head=logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.manifest.json-20260521T053504Z.json
+- SageMaker SfM:
+  - job: hmc-mtc-20260520T2015Z-sfm
+  - status: InProgress (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T053414Z.json)
+  - CloudWatch latest event still 2026-05-21T00:01:36.365Z (streams=logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T053439Z.json; events=logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T053439Z-since6h.json)
+  - output prefix still empty (EndOfJob upload): s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/colmap
+- CI (exact head): 0 runs for this [skip ci] head (runs list=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T053511Z.json). Latest branch green runs remain:
+  - Pages: 26200368328 (sha 88b1848f5700cae039c8ea4dbda31a6790b6dc69)
+  - CDK: 26202111411 (sha 7422efd9f9c9e1de23f82a09f991435839a6c365)
+
+Next: continue polling until SfM becomes Completed; do not launch 3DGS until SfM output exists.
+
 ## 2026-05-21T05:19:05Z Post-push CI proof
 
 - Git head pushed: a690f2c1f102d523227ea1c6b008ef6bd1a75843 ([skip ci])

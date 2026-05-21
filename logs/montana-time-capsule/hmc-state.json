@@ -130,6 +130,16 @@
   },
   "sfm_status": "InProgress",
   "status": "sfm_running",
-  "updated_at": "2026-05-21T05:17:01Z",
-  "zip_entries": 2063
+  "updated_at": "2026-05-21T05:39:02Z",
+  "zip_entries": 2063,
+  "sfm_poll": {
+    "aws_sts_path": "logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T053414Z.json",
+    "sagemaker_describe_path": "logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T053844Z.json",
+    "cloudwatch_describe_log_streams_path": "logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T053844Z.json",
+    "cloudwatch_get_log_events_since6h_path": "logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T053439Z-since6h.json",
+    "cloudwatch_get_log_events_since2h_path": "logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T053844Z-since2h.json"
+  },
+  "ci": {
+    "gh_run_list_path": "logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T053511Z.json"
+  }
 }
