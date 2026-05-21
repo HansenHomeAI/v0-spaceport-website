@@ -5074,3 +5074,8 @@ Next: HMC remains at terminal output (compressed bundle + hosted viewer previous
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260521T213727Z.json
 
 Next: commit/push this tick's evidence logs; no further stage is unblocked without an explicit new acceptance gate (e.g., public promotion / canonical registry entry).
+
+## 2026-05-21T21:40:18Z Post-push CI proof (HMC)
+
+- Git head pushed: a1cd822d ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T214010Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260521T214010Z.json)
