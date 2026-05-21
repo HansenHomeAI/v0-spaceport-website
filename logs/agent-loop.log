@@ -134,3 +134,4 @@
 [2026-05-21T20:38:45Z] hmc-mtc: compression completed -> bundle+viewer validated (skybox+nosky) -> next gate: public promotion only if requested
 [2026-05-21T20:41:36Z] push-heartbeat -> head 03df0096 pushed; exact-head GH runs=0 ([skip ci] expected); proof=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T204113Z.json
 [2026-05-21T20:57:30Z] heartbeat -> terminal reconfirm (3dgs+compression Completed; meta head-object ok; exact-head GH runs=0 [skip ci]) -> next: await promotion gate
+[2026-05-21T21:16:10Z] hmc-mtc-20260520T2015Z terminal recheck -> all jobs Completed, bundle meta present, no new launches -> next: wait for new acceptance gate

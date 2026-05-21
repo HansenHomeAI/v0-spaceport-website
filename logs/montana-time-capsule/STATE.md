@@ -5026,3 +5026,23 @@ Next: keep polling until SfM becomes Completed and the S3 output prefix is non-e
   - exact-head runs: 0 (expected due to [skip ci]) logs/montana-time-capsule/gh-run-list-exact-head-20260521T201553Z.json
 
 Next: poll `aws sagemaker describe-processing-job --processing-job-name hmc-mtc-20260520T2015Z-compression` until Completed and the compressed S3 prefix is non-empty; then advance to public bundle + viewer gates.
+
+## 2026-05-21T21:15:54Z Monitor tick (HMC) - terminal state reconfirmed (no new launches)
+
+- Repo: /Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule
+- Git: agent-40136728-montana-time-capsule @ ddc172b5d5a36a581b7f392c1b9509a43b0e22f5 (clean)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T211554Z.json (acct 975050048887)
+- SageMaker:
+  - SfM processing job: hmc-mtc-20260520T2015Z-sfm status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T211554Z.json)
+  - 3DGS training job: hmc-mtc-20260520T2015Z-3dgs status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T211554Z.json)
+  - compression processing job: hmc-mtc-20260520T2015Z-compression status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260521T211554Z.json)
+  - no active HMC jobs: logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-inprogress-20260521T211554Z.json + logs/montana-time-capsule/sagemaker-list-training-jobs-hmc-mtc-20260520T2015Z-inprogress-20260521T211554Z.json
+- S3:
+  - SfM output prefix non-empty: logs/montana-time-capsule/s3-ls-sfm-output-hmc-mtc-20260520T2015Z-20260521T211554Z-head200.txt
+  - compressed supersplat bundle present: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-20260521T211554Z-head200.txt
+  - bundle meta head-object: logs/montana-time-capsule/s3api-head-object-supersplat-meta-20260521T211554Z.json
+- CI:
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260521T211521Z.json ([]; expected due to [skip ci] head)
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260521T211521Z.json
+
+Next: HMC remains at terminal output (compressed bundle + hosted viewer previously validated). No new stage is unblocked without an explicit new acceptance gate (e.g., public promotion / canonical registry entry).
