@@ -119,6 +119,11 @@ Next: keep polling until SfM becomes Completed and the S3 output prefix is non-e
 
 Next: keep polling until 3DGS is Completed and the S3 output prefix becomes non-empty; then run exactly one guarded `--launch` to start compression (pinned sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab).
 
+## 20260521T182000Z Post-push CI proof (HMC)
+
+- Git head pushed: 271f29f2b95c2337e2b2f7d0e2d1afadf57a5cd1 ([skip ci])
+- Exact-head workflow runs: 0 (expected due to `[skip ci]`) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T182000Z.json)
+
 ## 2026-05-21T17:58:35Z Monitor tick (HMC)
 
 - Git: agent-40136728-montana-time-capsule @ c438fc7a83f75ff84a43cef925c89c44063c773a (`chore: record post-push proof 20260521T1738Z [skip ci]`)
