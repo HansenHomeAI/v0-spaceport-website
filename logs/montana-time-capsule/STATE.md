@@ -4461,3 +4461,9 @@ Next: keep polling until SfM becomes Completed and the S3 output prefix is non-e
   - branch list: logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T113542Z.json
 
 Next: keep polling until SfM becomes Completed and the S3 output prefix is non-empty; do not launch 3DGS yet.
+
+## 2026-05-21T11:42:22Z Post-push CI proof (HMC)
+
+- Git head pushed: 0e48d07a38f1576910eb23cc4c36d5c27f6f5a2d
+- CDK Deploy: success (run 26223584298)
+- Pages: no run for this commit (logs-only change)

@@ -87,3 +87,4 @@
 [2026-05-21T10:57:10Z] poll_sfm -> InProgress (cw_last=2026-05-21T00:01:36.365Z keycount=0) -> wait
 [2026-05-21T11:16:09Z] hmc sfm poll -> InProgress (cw last event 2026-05-21T00:01:36Z; s3=empty) -> continue polling
 [2026-05-21T11:37:36Z] montana-time-capsule tick -> sfm InProgress (no new CW events since 2026-05-21T00:01:36Z) -> next: re-poll
+[2026-05-21T11:42:22Z] ci -> CDK Deploy 26223584298 success -> next: wait on sfm
