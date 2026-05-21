@@ -3953,3 +3953,4 @@ Poll `hmc-mtc-20260520T2015Z-sfm` until `Completed`, then run the time-capsule r
 - sagemaker describe: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T023423Z.json (InProgress)
 - cloudwatch lastEvent: logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T023511Z.json (2026-05-21T00:01:36Z)
 - runner (NO launch): logs/montana-time-capsule/runner-hmc-20260521T023622Z.log (state refreshed; still sfm_running)
+- followup poll (NO launch): logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T024358Z.json + logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T024358Z.json (still stalled @ 2026-05-21T00:01:36Z)
