@@ -10796,6 +10796,13 @@ note: reran heartbeat after `20260520T144551Z` because bundle parity was skipped
   - summary: `logs/md1-shrunk/polls/20260521T051910Z-ci/summary.txt`
   - raw: `logs/md1-shrunk/polls/20260521T051910Z-preflight/gh-run-list.json`
 
+## 2026-05-21T05:24Z postpush CI snapshot (head is logs-only; no new runs expected)
+
+- exact-head commit: `f4920320` (`[skip ci]` head; exact-head workflows expected: none)
+- Evidence:
+  - `logs/md1-shrunk/polls/20260521T052409Z-ci-postpush-sha-f4920320/postpush.txt`
+  - `logs/md1-shrunk/polls/20260521T052409Z-ci-postpush-sha-f4920320/gh-run-list-exact-head.json`
+
 
 ## 2026-05-21T04:51Z postpush CI snapshot (head is logs-only; no new runs expected)
 
