@@ -42,6 +42,12 @@ Next: keep polling until SfM becomes Completed and the S3 output prefix is non-e
 - CI: exact head is [skip ci] (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T091802Z.json; branch=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-postpush-20260521T091802Z.json)
 - CI: verified current exact head is also [skip ci] (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T091833Z.json; branch=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-postpush-20260521T091833Z.json)
 
+## 2026-05-21T09:38:31Z Post-push CI proof (HMC)
+
+- Git: agent-40136728-montana-time-capsule @ fbdfbd824ac24c8b3d67730ec3c242cf4a1df720 (`chore: monitor HMC sfm heartbeat 20260521T0936Z [skip ci]`)
+- Push: `git push origin agent-40136728-montana-time-capsule` (updated `980465cb..fbdfbd82`)
+- CI: exact head is [skip ci] (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T093831Z.json; branch=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-postpush-20260521T093831Z.json)
+
 ## 2026-05-21T09:36:33Z Monitor tick (HMC)
 
 - Git: agent-40136728-montana-time-capsule @ 980465cb31fe3be8b273ae722ede2e9bdd3c4b92 (`chore: update ci proof 20260521T0918Z [skip ci]`)
