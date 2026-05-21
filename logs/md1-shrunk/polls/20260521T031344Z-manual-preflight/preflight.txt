@@ -1,0 +1,37 @@
+# manual preflight
+ts=20260521T031344Z
+Thu May 21 03:14:22 UTC 2026
+
+## git
+agent-113647-md1-baseline-e2e
+15f6e1661555b245483b0400d993cf84afbcc9fd
+## agent-113647-md1-baseline-e2e...origin/agent-113647-md1-baseline-e2e
+?? logs/md1-shrunk/polls/20260521T031344Z-manual-preflight/
+
+## aws sts
+{
+    "UserId": "975050048887",
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root"
+}
+
+## stepfunctions state machines
+
+## stepfunctions running
+SpaceportMLPipeline-staging arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging
+running 0
+
+SpaceportMLPipeline-br-8abcbd5662 arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-8abcbd5662
+running 0
+
+## sagemaker inprogress
+
+## public bundle HEAD
+s3_meta_status=0 edge_meta_status=0
+
+## local dev server listen (best-effort)
+11:node        990 gabrielhansen   15u  IPv4 0x3ba8349c576cb96a      0t0  TCP *:18789 (LISTEN)
+12:node        990 gabrielhansen   22u  IPv4 0xc30287d8799625c6      0t0  TCP 127.0.0.1:18792 (LISTEN)
+17:node      42136 gabrielhansen   13u  IPv4 0x81bd7fef9702d453      0t0  TCP 127.0.0.1:3033 (LISTEN)
+
+## github runs (newest)

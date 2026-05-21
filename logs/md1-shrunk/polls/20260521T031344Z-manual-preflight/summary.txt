@@ -1,0 +1,17 @@
+dir logs/md1-shrunk/polls/20260521T031344Z-manual-preflight
+state_machine SpaceportMLPipeline-staging arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging
+ running_count 0
+state_machine SpaceportMLPipeline-br-8abcbd5662 arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-br-8abcbd5662
+ running_count 0
+sagemaker_processing_inprogress 1
+ - hmc-mtc-20260520T2015Z-sfm
+sagemaker_training_inprogress 0
+gh_runs_count 10
+ - 26201635575 CDK Deploy completed success 2a302b60 2026-05-21T02:21:52Z
+ - 26201635538 Deploy Next.js to Cloudflare Pages completed success 2a302b60 2026-05-21T02:21:52Z
+ - 26177531892 CDK Deploy completed success 1359cb1a 2026-05-20T17:01:17Z
+ - 26177531889 Deploy Next.js to Cloudflare Pages completed success 1359cb1a 2026-05-20T17:01:17Z
+ - 26177304296 CDK Deploy completed success a5731689 2026-05-20T16:56:52Z
+ - 26176189124 CDK Deploy completed success 74aed926 2026-05-20T16:34:40Z
+ - 26176189057 Deploy Next.js to Cloudflare Pages completed success 74aed926 2026-05-20T16:34:40Z
+ - 26175961282 CDK Deploy completed success 9a9369af 2026-05-20T16:30:13Z
