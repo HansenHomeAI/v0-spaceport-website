@@ -28,6 +28,7 @@ Next: remain idle; only proceed if a new explicit acceptance gate is requested (
 
 - Git head pushed: 83f7f13f9b2c3315193d59c123b330f08b2c05b1 ([skip ci])
 - Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T215806Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260521T215806Z.json)
+- Follow-up exact-head check after CI-proof commit: logs/montana-time-capsule/gh-run-list-exact-head-postpush2-20260521T215836Z.json ([]; expected)
 
 ## 2026-05-21T20:39:50Z Monitor tick (HMC) - 3DGS+compression Completed; hosted viewer validated (skybox + no-sky)
 
