@@ -30,6 +30,7 @@ Next: keep polling until SfM becomes Completed and S3 output exists; do not laun
   - output prefix still empty (EndOfJob upload): KeyCount=0 (logs/montana-time-capsule/s3api-list-objects-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T073600Z.json)
 - Runner state refreshed (no launch): logs/montana-time-capsule/hmc-state-refresh-20260521T073703Z.json (state file logs/montana-time-capsule/hmc-state.json; sfm_status=InProgress)
 - CI: exact head is [skip ci]; run lists refreshed (branch=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T073703Z.json; exact-head=logs/montana-time-capsule/gh-run-list-exact-head-20260521T073703Z.json)
+- Post-push CI check: exact head is [skip ci] so no workflow runs for this commit (branch=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-postpush-20260521T073822Z.json; exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T073822Z.json)
 
 Next: keep polling until SfM becomes Completed and S3 output exists; do not launch 3DGS yet.
 
