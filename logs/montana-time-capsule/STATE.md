@@ -5,6 +5,27 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-21T22:36:00Z HEARTBEAT monitor (HMC) - terminal state reconfirmed + viewer still HTTP 200 (no launches)
+
+- Git: agent-40136728-montana-time-capsule @ 275f8449f728f5b197b014ba6fece05d7d7307b6 ([skip ci]) (status=logs/montana-time-capsule/git-status-20260521T223600Z.txt)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T223600Z.json (acct 975050048887)
+- SageMaker:
+  - SfM processing job: hmc-mtc-20260520T2015Z-sfm status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T223600Z.json)
+  - 3DGS training job: hmc-mtc-20260520T2015Z-3dgs status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T223600Z.json)
+  - compression processing job: hmc-mtc-20260520T2015Z-compression status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260521T223600Z.json)
+  - InProgress lists: logs/montana-time-capsule/sagemaker-list-processing-inprogress-hmc-mtc-20260520T2015Z-20260521T223600Z.json; logs/montana-time-capsule/sagemaker-list-training-inprogress-hmc-mtc-20260520T2015Z-20260521T223600Z.json (0 each)
+- S3:
+  - bundle meta head-object: logs/montana-time-capsule/s3api-head-object-hmc-mtc-20260520T2015Z-supersplat-meta-20260521T223600Z.json
+  - bundle listing: logs/montana-time-capsule/s3-ls-hmc-mtc-20260520T2015Z-supersplat_bundle-20260521T223600Z-head200.txt
+- Hosted preview viewer reachability (alias):
+  - skybox+no-sky URLs: logs/montana-time-capsule/heartbeat-viewer-urls-20260521T223600Z.txt
+  - HTTP 200 headers: logs/montana-time-capsule/curlI-hosted-viewer-skybox-20260521T223600Z.headers; logs/montana-time-capsule/curlI-hosted-viewer-nosky-20260521T223600Z.headers
+- CI:
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260521T223600Z.json ([]; expected due to [skip ci] head)
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260521T223600Z.json
+
+Next: remain idle; do not re-launch HMC unless a new explicit acceptance gate is requested.
+
 ## 2026-05-21T21:56:52Z HEARTBEAT monitor (HMC) - terminal state reconfirmed (no new launches)
 
 - Git: agent-40136728-montana-time-capsule @ 33eb078bb2e7fdbbd1730c43b2cd7fa18cd296d1 (clean) ([skip ci])
