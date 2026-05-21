@@ -30,3 +30,4 @@
 [2026-05-21T01:49:28Z] pages_deploy -> alias=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev -> next wait_sfm_completed
 [2026-05-21T01:58:22Z] monitor -> verified HMC S3 archive+manifest; SfM still InProgress; CI green -> next poll
 [2026-05-21T02:03:44Z] push -> CDK Deploy 26200937278 success; Pages latest 26200368328 success -> next poll SfM
+[2026-05-21T02:19:00Z] monitor_hmc -> SfM InProgress; last CW event 2026-05-21T00:01:36Z; output prefix empty -> next poll for Completed then guarded 3DGS launch

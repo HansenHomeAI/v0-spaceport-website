@@ -3891,3 +3891,48 @@ Poll `hmc-mtc-20260520T2015Z-sfm` until `Completed`, then run the time-capsule r
 - Evidence:
   - `logs/montana-time-capsule/gh-run-26200937278-cdk.json`
   - `logs/montana-time-capsule/gh-run-list-branch-20260521T020329Z.txt`
+
+## 2026-05-21T02:19Z HMC monitor pass (SfM still running)
+
+- Branch/head/status:
+  - `git rev-parse --abbrev-ref HEAD && git rev-parse HEAD && git status --short --branch`
+  - Result: `agent-40136728-montana-time-capsule` @ `46b06e996fad0d106e95097eac905d7dd4bf216f` (clean; tracking origin).
+- AWS identity:
+  - `/opt/homebrew/bin/aws sts get-caller-identity`
+  - Result: account `975050048887` (staging), ARN `arn:aws:iam::975050048887:root`.
+- SageMaker:
+  - `/opt/homebrew/bin/aws sagemaker describe-processing-job --processing-job-name hmc-mtc-20260520T2015Z-sfm`
+  - Result: `ProcessingJobStatus=InProgress` (no FailureReason).
+  - Duplicate-job guard: only one `InProgress` job matching `hmc|mtc`: `hmc-mtc-20260520T2015Z-sfm`.
+- HMC archive proof (no re-upload):
+  - `/opt/homebrew/bin/aws s3api head-object --bucket spaceport-uploads --key 1778952912508-hmc-high-mountain-camp-images-flat.zip`
+  - Result: `LastModified=2026-05-16T17:35:27Z`, `ContentLength=8646557673`, `ETag=ed86661a82b28856997a09f129ce6bec-1031`.
+  - Confirmed **not** present in `spaceport-uploads-staging` (404).
+- CloudWatch:
+  - Latest log event observed at `2026-05-21T00:01:36Z` (no newer events in the `hmc-mtc-20260520T2015Z-sfm` stream during this pass).
+- Output S3:
+  - `s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/` currently empty (upload mode is `EndOfJob`).
+
+### Evidence files (this pass)
+
+- Canonical (UTC-stamped):
+  - `logs/montana-time-capsule/aws-sts-20260521T022041Z.json`
+  - `logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T022041Z.json`
+  - `logs/montana-time-capsule/sagemaker-list-processing-inprogress-20260521T022041Z.json`
+  - `logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260521T022041Z.json`
+  - `logs/montana-time-capsule/s3-list-processing-hmc-mtc-20260520T2015Z-20260521T022041Z.json`
+  - `logs/montana-time-capsule/cloudwatch-streams-hmc-mtc-20260520T2015Z-sfm-20260521T022041Z.json`
+- `logs/montana-time-capsule/aws-sts-20260521T1930Z.json`
+- `logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T1930Z.json`
+- `logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T1939Z.json`
+- `logs/montana-time-capsule/sagemaker-list-processing-inprogress-20260521T1930Z.json`
+- `logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260521T1931Z.json`
+- `logs/montana-time-capsule/s3-head-spaceport-uploads-staging-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260521T1931Z.json`
+- `logs/montana-time-capsule/cloudwatch-streams-hmc-mtc-20260520T2015Z-sfm-20260521T1936Z.json`
+- `logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260521T1932Z-since6h.log`
+- `logs/montana-time-capsule/s3-list-processing-hmc-mtc-20260520T2015Z-20260521T1934Z.json`
+
+### Next unblocked step
+
+- Poll until `hmc-mtc-20260520T2015Z-sfm` reaches `Completed` (or `Failed/Stopped`); if `Completed`, run exactly once to launch pinned 3DGS via:
+  - `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --dataset-id HMC --run-prefix hmc-mtc --subset-strategy hmc_full_2063_montana_time_capsule --expected-image-count 2063 --state-file logs/montana-time-capsule/hmc-state.json --launch`
