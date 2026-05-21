@@ -5,6 +5,25 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-21T21:56:52Z HEARTBEAT monitor (HMC) - terminal state reconfirmed (no new launches)
+
+- Git: agent-40136728-montana-time-capsule @ 33eb078bb2e7fdbbd1730c43b2cd7fa18cd296d1 (clean) ([skip ci])
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T215516Z.json (acct 975050048887)
+- SageMaker:
+  - SfM processing job: hmc-mtc-20260520T2015Z-sfm status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T215516Z.json)
+  - 3DGS training job: hmc-mtc-20260520T2015Z-3dgs status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T215516Z.json)
+  - compression processing job: hmc-mtc-20260520T2015Z-compression status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260521T215516Z.json)
+  - InProgress lists: logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-inprogress-20260521T215516Z.json; logs/montana-time-capsule/sagemaker-list-training-jobs-hmc-mtc-20260520T2015Z-inprogress-20260521T215516Z.json (0 each)
+- S3:
+  - SfM output tail: logs/montana-time-capsule/s3-ls-colmap-tail50-20260521T215614Z.txt
+  - compressed supersplat bundle listing: logs/montana-time-capsule/s3-ls-supersplat-bundle-head200-20260521T215614Z.txt
+  - bundle meta head-object: logs/montana-time-capsule/s3api-head-object-supersplat-meta-20260521T215614Z.json
+- CI:
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260521T215630Z.json ([]; expected due to [skip ci] head)
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260521T215630Z.json (latest success shows CDK Deploy on sha=0e48d07)
+
+Next: remain idle; only proceed if a new explicit acceptance gate is requested (promotion/registry, etc.).
+
 ## 2026-05-21T20:39:50Z Monitor tick (HMC) - 3DGS+compression Completed; hosted viewer validated (skybox + no-sky)
 
 - Git: agent-40136728-montana-time-capsule @ 274e9112fd7fcc7a9d414c18f07fc6041c623535 (clean)
