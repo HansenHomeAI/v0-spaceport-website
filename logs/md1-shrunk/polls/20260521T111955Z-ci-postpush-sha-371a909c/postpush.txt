@@ -1,0 +1,12 @@
+# postpush ci snapshot 20260521T111955Z
+
+branch=agent-113647-md1-baseline-e2e
+head=371a909c6dda3814baca83b0366de6a21c72d718
+subject=chore: md1-shrunk heartbeat verify 20260521T111353Z [skip ci]
+
+## gh run list (branch)
+exact_head_run_count=0
+
+## exact head runs
+- gh-run-list.json=logs/md1-shrunk/polls/20260521T111955Z-ci-postpush-sha-371a909c/gh-run-list.json
+- gh-run-list-exact-head.json=logs/md1-shrunk/polls/20260521T111955Z-ci-postpush-sha-371a909c/gh-run-list-exact-head.json
