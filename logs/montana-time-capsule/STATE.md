@@ -4049,3 +4049,8 @@ Poll `hmc-mtc-20260520T2015Z-sfm` until `Completed`, then run the time-capsule r
   - CDK: 26202111411 (gh run list=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T043555Z.json)
 
 Next: continue polling until SfM becomes Completed; only then run pinned 3DGS stage once.
+
+## 2026-05-21T04:38:47Z Post-push CI proof
+
+- Git head pushed: 4f706585b411dac50d3db3d8078570dcddbba4ff ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-head-postpush-20260521T043810Z.json)
