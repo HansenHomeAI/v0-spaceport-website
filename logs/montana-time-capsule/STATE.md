@@ -3882,3 +3882,12 @@ Poll `hmc-mtc-20260520T2015Z-sfm` until `Completed`, then run the time-capsule r
 
 - Keep polling until SfM becomes `Completed`; immediately after completion, run once (and only once) to launch pinned 3DGS:
   - `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --dataset-id HMC --run-prefix hmc-mtc --subset-strategy hmc_full_2063_montana_time_capsule --expected-image-count 2063 --state-file logs/montana-time-capsule/hmc-state.json --launch`
+
+## 2026-05-21T02:02Z CI confirmation (post-ledger push)
+
+- Head: `ea326957ebd0f742be6628b9bb2e4dda35b80256`
+- CDK Deploy: run `26200937278` succeeded (triggered by push of the ledger/evidence commit).
+- Pages: latest branch deploy run remains green: `26200368328` (no web changes in the ledger commit, so no new Pages run expected).
+- Evidence:
+  - `logs/montana-time-capsule/gh-run-26200937278-cdk.json`
+  - `logs/montana-time-capsule/gh-run-list-branch-20260521T020329Z.txt`
