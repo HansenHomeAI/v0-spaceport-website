@@ -4622,3 +4622,8 @@ Next: keep polling until SfM becomes Completed and the S3 output prefix is non-e
   - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260521T141555Z.json (count=0; [skip ci] expected)
 
 Next: keep polling until SfM becomes Completed and the S3 output prefix is non-empty; do not launch 3DGS yet.
+
+## 20260521T141752Z Post-push CI proof (HMC)
+
+- Git head pushed: 9197f0d89b98c376d2f96061ed8f93a51d202b32 ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T141752Z.json)
