@@ -1,0 +1,4 @@
+eventCount 1729
+firstTs 1779321302013
+lastTs 1779321696365
+lastMsgTail COLMAP[vocab_tree_builder] I20260521 00:01:36.016363 17470 vocab_tree.cc:94] Building index for visual words...

@@ -1,0 +1,2 @@
+streamCount 1
+latestLastEventTimestamp 1779321696365

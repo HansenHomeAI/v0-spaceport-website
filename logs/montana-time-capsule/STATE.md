@@ -4029,3 +4029,23 @@ Poll `hmc-mtc-20260520T2015Z-sfm` until `Completed`, then run the time-capsule r
   - logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260521T041450Z-since12h.log
   - logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260521T041605Z.json
   - logs/montana-time-capsule/hmc-input-manifest-20260521T041617Z.json
+
+## 2026-05-21T04:36:51Z Monitor Tick
+
+- Git: agent-40136728-montana-time-capsule @ 70edc8c1c3410eab935f8ca5e6e7f2e3c80ba2f4 ([skip ci])
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T043416Z.json (acct 975050048887)
+- Input proven (no re-upload):
+  - s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip head=logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260521T043540Z.json
+  - s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.manifest.json head=logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.manifest.json-20260521T043540Z.json
+- SageMaker SfM:
+  - job: hmc-mtc-20260520T2015Z-sfm
+  - status: InProgress (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T043428Z.json; list=logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T043428Z.json)
+  - CloudWatch stream lastEventTimestamp still 2026-05-21T00:01:36.365Z (streams=logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T043506Z.json; summary=logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T043506Z.summary.txt)
+  - Last log line captured: `Building index for visual words...` (events=logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T043610Z-since2355Z.json; summary=logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T043610Z-since2355Z.summary.txt)
+  - output prefix still empty (EndOfJob upload): logs/montana-time-capsule/s3-ls-colmap-output-hmc-mtc-20260520T2015Z-20260521T043540Z.txt (raw list=logs/montana-time-capsule/s3-list-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T043540Z.json)
+- Runner refresh (NO launch): logs/montana-time-capsule/runner-hmc-20260521T043651Z.json (still sfm_running)
+- CI (exact head): no runs for 70edc8c due to [skip ci] (head runs=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-head-20260521T043555Z.json). Latest branch green runs remain:
+  - Pages: 26200368328 (gh run list=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T043555Z.json)
+  - CDK: 26202111411 (gh run list=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T043555Z.json)
+
+Next: continue polling until SfM becomes Completed; only then run pinned 3DGS stage once.
