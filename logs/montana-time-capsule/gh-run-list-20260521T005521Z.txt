@@ -1,0 +1,5 @@
+completed	success	chore: launch hmc time capsule sfm	CDK Deploy	agent-40136728-montana-time-capsule	push	26187619621	3m13s	2026-05-20T20:19:47Z
+completed	success	Deploy Next.js to Cloudflare Pages	Deploy Next.js to Cloudflare Pages	agent-40136728-montana-time-capsule	workflow_dispatch	26131478855	4m30s	2026-05-19T23:26:29Z
+completed	success	fix: adopt verified cv-hr sfm handoff	CDK Deploy	agent-40136728-montana-time-capsule	push	26120469998	3m58s	2026-05-19T19:33:28Z
+completed	success	fix: point time capsule runner at staging uploads	CDK Deploy	agent-40136728-montana-time-capsule	push	26049509375	3m49s	2026-05-18T17:29:44Z
+completed	success	feat: add montana time capsule runner	CDK Deploy	agent-40136728-montana-time-capsule	push	26048862167	4m31s	2026-05-18T17:17:05Z

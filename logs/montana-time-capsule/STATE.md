@@ -3746,3 +3746,16 @@ Fallback profile: `horsetail-gps`, only after a proven default-profile failure.
   - latest CDK Deploy success 2026-05-20T20:19:47Z; no exact-head runs expected for [skip ci] commit f5abcf8b
 - gh run list evidence: logs/montana-time-capsule/gh-run-list-agent-40136728-20260521T003731Z.json
 - next: wait for SFM Completed; then run runner once with `--launch` to start pinned Montana 3DGS (sha256:482c1789...)
+
+## 2026-05-21T00:56:13Z monitor (HMC)
+- git head: bd49d09871ae7454163b442c044964320f0e02aa (branch agent-40136728-montana-time-capsule)
+- aws sts: account 975050048887 arn arn:aws:iam::975050048887:root (region us-west-2)
+- proven input zip head: logs/montana-time-capsule/s3-head-hmc-spaceport-uploads-20260521T005400Z.json
+  - proof: spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip LastModified=2026-05-16T17:35:27Z ContentLength=8646557673 ETag=ed86661a82b28856997a09f129ce6bec-1031
+- proven manifest list: aws s3api list-objects-v2 --bucket spaceport-uploads --prefix 177895 (shows .manifest.json + .zip)
+- sfm job: hmc-mtc-20260520T2015Z-sfm status=InProgress
+- sagemaker describe: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T005450Z.json
+- cloudwatch tail (last 20m): empty (no new events observed in this window)
+- s3 outputs listing: s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/colmap/ empty (expected until EndOfJob)
+- gh run list evidence: logs/montana-time-capsule/gh-run-list-20260521T005449Z.txt (latest CDK Deploy success 2026-05-20T20:19:47Z)
+- next: wait for SFM Completed; then run runner once with `--launch` to start pinned Montana 3DGS (sha256:482c1789...)
