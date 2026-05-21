@@ -152,7 +152,6 @@
     ],
     "TrainingJobName": "hmc-mtc-20260520T2015Z-3dgs"
   },
-  "3dgs_status": "InProgress",
   "3dgs_poll": {
     "aws_sts_path": "logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T175459Z.json",
     "cloudwatch_best_stream_path": "logs/montana-time-capsule/cloudwatch-best-stream-hmc-mtc-20260520T2015Z-3dgs-20260521T175621Z.txt",
@@ -161,6 +160,7 @@
     "s3_ls_3dgs_output_recursive_head_path": "logs/montana-time-capsule/s3-ls-ml-processing-staging-3dgs-hmc-mtc-20260520T2015Z-20260521T175628Z-recursive-head200.txt",
     "sagemaker_describe_path": "logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T175541Z.json"
   },
+  "3dgs_status": "InProgress",
   "ci": {
     "gh_run_list_exact_head_postpush_path": "logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T161719Z.txt",
     "gh_run_list_path": "logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T055517Z.json",
@@ -326,6 +326,6 @@
   },
   "sfm_status": "Completed",
   "status": "3dgs_running",
-  "updated_at": "2026-05-21T17:58:05Z",
+  "updated_at": "2026-05-21T18:17:47Z",
   "zip_entries": 2063
 }

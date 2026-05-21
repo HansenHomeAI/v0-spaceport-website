@@ -103,6 +103,22 @@ Next: keep polling until `describe-processing-job` reports Completed; do not lau
 
 Next: keep polling until SfM becomes Completed and the S3 output prefix is non-empty; do not launch 3DGS yet.
 
+## 20260521T181746Z Monitor tick (HMC) - 3DGS still InProgress
+
+- Git: agent-40136728-montana-time-capsule @ 08258b12f691d0714a89453fcd4dc6b652befe28 (status=logs/montana-time-capsule/git-status-20260521T181451Z.txt; `[skip ci]`)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T181451Z.json (acct 975050048887)
+- SageMaker:
+  - 3DGS job: hmc-mtc-20260520T2015Z-3dgs status=InProgress (SecondaryStatus=Training) (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T181523Z.json)
+  - CloudWatch best stream: logs/montana-time-capsule/cloudwatch-best-stream-hmc-mtc-20260520T2015Z-3dgs-20260521T181551Z.txt (streams=logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-3dgs-20260521T181551Z.json; tail=logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-3dgs-20260521T181551Z-tail80.json)
+- S3:
+  - 3DGS output prefix still empty (KeyCount=0): logs/montana-time-capsule/s3api-list-objects-v2-spaceport-ml-processing-staging-3dgs-hmc-mtc-20260520T2015Z--20260521T181534Z-maxkeys10.json (ls=logs/montana-time-capsule/s3-ls-spaceport-ml-processing-staging-3dgs-hmc-mtc-20260520T2015Z--20260521T181534Z-recursive-head200.txt)
+- Runner state refreshed (no launch): logs/montana-time-capsule/hmc-state-refresh-20260521T181746Z.log (state file logs/montana-time-capsule/hmc-state.json; status=3dgs_running)
+- CI:
+  - exact-head runs: 0 (expected due to `[skip ci]`) logs/montana-time-capsule/gh-run-list-exact-head-20260521T181640Z.json
+  - branch runs: logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T181640Z.json
+
+Next: keep polling until 3DGS is Completed and the S3 output prefix becomes non-empty; then run exactly one guarded `--launch` to start compression (pinned sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab).
+
 ## 2026-05-21T17:58:35Z Monitor tick (HMC)
 
 - Git: agent-40136728-montana-time-capsule @ c438fc7a83f75ff84a43cef925c89c44063c773a (`chore: record post-push proof 20260521T1738Z [skip ci]`)
