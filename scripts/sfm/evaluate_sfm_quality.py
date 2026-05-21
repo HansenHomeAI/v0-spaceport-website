@@ -327,7 +327,9 @@ def panel_diagnostics_stats(payload: dict[str, Any]) -> dict[str, Any]:
 
 def merge_stats(sfm_metadata: dict[str, Any], reducer_metadata: dict[str, Any]) -> dict[str, Any]:
     if reducer_metadata.get("artifact_kind") in {"sfm_reducer_canary_report", "sfm_fanout_reducer_report"}:
-        transforms = (reducer_metadata.get("fallback") or {}).get("transforms") or []
+        fallback = reducer_metadata.get("fallback") or {}
+        transforms = fallback.get("transforms") or []
+        seam_report = reducer_metadata.get("seam_merge_report") or fallback.get("seam_merge_report") or {}
         shared_counts = [int(item.get("shared_registered_images") or 0) for item in transforms]
         surface_overlaps = [
             item.get("surface_overlap")
@@ -346,6 +348,30 @@ def merge_stats(sfm_metadata: dict[str, Any], reducer_metadata: dict[str, Any]) 
         leaf_count = int(reducer_metadata.get("leaf_count") or 0)
         passed = reducer_metadata.get("decision") == "pass"
         blockers = reducer_metadata.get("promotion_blockers") or reducer_metadata.get("blockers") or []
+        seam_thresholds = seam_report.get("thresholds") if isinstance(seam_report, dict) else {}
+        seam_min_shared = int((seam_thresholds or {}).get("min_shared_images") or 10)
+        accepted_tree = seam_report.get("accepted_merge_tree") if isinstance(seam_report, dict) else []
+        candidate_edges = seam_report.get("candidate_edges") if isinstance(seam_report, dict) else []
+        accepted_tree_blockers = [
+            {
+                "leaf_a": edge.get("leaf_a"),
+                "leaf_b": edge.get("leaf_b"),
+                "blockers": edge.get("blockers") or [],
+            }
+            for edge in (accepted_tree or [])
+            if edge.get("blockers")
+        ]
+        edge_blockers = [
+            {
+                "leaf_a": edge.get("leaf_a"),
+                "leaf_b": edge.get("leaf_b"),
+                "blockers": edge.get("blockers") or [],
+                "decision": edge.get("decision"),
+                "strict_decision": edge.get("strict_decision"),
+            }
+            for edge in (candidate_edges or [])
+            if edge.get("decision") == "accept" and edge.get("blockers")
+        ]
         return {
             "leaf_count": leaf_count,
             "passed_leaf_count": reducer_metadata.get("passed_leaf_count", leaf_count if passed else 0),
@@ -377,6 +403,21 @@ def merge_stats(sfm_metadata: dict[str, Any], reducer_metadata: dict[str, Any]) 
                     for example in ((transform.get("surface_overlap") or {}).get("examples") or [])[:5]
                 ][:20],
             },
+            "seam_graph": {
+                "present": bool(seam_report),
+                "merge_strategy": seam_report.get("merge_strategy") if isinstance(seam_report, dict) else None,
+                "decision": seam_report.get("decision") if isinstance(seam_report, dict) else None,
+                "promotion_blockers": seam_report.get("promotion_blockers") if isinstance(seam_report, dict) else [],
+                "accepted_edge_count": len(accepted_tree or []),
+                "candidate_edge_count": len(candidate_edges or []),
+                "rejected_edge_count": len(seam_report.get("rejected_edges") or []) if isinstance(seam_report, dict) else 0,
+                "accepted_tree_blockers": accepted_tree_blockers,
+                "accepted_candidate_blockers": edge_blockers,
+                "cycle_consistency": seam_report.get("cycle_consistency") if isinstance(seam_report, dict) else {},
+                "post_merge_jurisdiction_culling": seam_report.get("post_merge_jurisdiction_culling")
+                if isinstance(seam_report, dict)
+                else {},
+            },
             "weak_merge_nodes": [
                 {
                     "sequence": item.get("leaf_index"),
@@ -386,7 +427,7 @@ def merge_stats(sfm_metadata: dict[str, Any], reducer_metadata: dict[str, Any]) 
                     "right_stage": f"leaf_{item.get('leaf_index')}",
                 }
                 for item in transforms
-                if int(item.get("shared_registered_images") or 0) < 10
+                if int(item.get("shared_registered_images") or 0) < seam_min_shared
             ],
         }
     proof = sfm_metadata.get("chunk_merge_proof") or {}
@@ -631,8 +672,49 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
         gates,
         "seam_overlap",
         "fail" if weak_nodes else "pass",
-        f"{len(weak_nodes)} merge nodes have <10 shared registered images",
+        f"{len(weak_nodes)} merge nodes are below the seam shared-camera floor",
     )
+    seam_graph = merge.get("seam_graph") or {}
+    if seam_graph.get("present"):
+        seam_failures: list[str] = []
+        if seam_graph.get("promotion_blockers"):
+            seam_failures.append(f"promotion_blockers={seam_graph.get('promotion_blockers')}")
+        if seam_graph.get("accepted_tree_blockers"):
+            seam_failures.append(f"accepted_tree_blockers={seam_graph.get('accepted_tree_blockers')}")
+        if seam_graph.get("accepted_edge_count") != max(0, int(merge.get("leaf_count") or 0) - 1):
+            seam_failures.append(
+                f"accepted_edge_count={seam_graph.get('accepted_edge_count')} leaf_count={merge.get('leaf_count')}"
+            )
+        add_gate(
+            gates,
+            "seam_graph_sim3",
+            "fail" if seam_failures else "pass",
+            "seam_graph=" + json.dumps(
+                {
+                    "strategy": seam_graph.get("merge_strategy"),
+                    "candidate_edge_count": seam_graph.get("candidate_edge_count"),
+                    "accepted_edge_count": seam_graph.get("accepted_edge_count"),
+                    "rejected_edge_count": seam_graph.get("rejected_edge_count"),
+                    "failures": seam_failures,
+                },
+                sort_keys=True,
+            ),
+        )
+        cycle_status = (seam_graph.get("cycle_consistency") or {}).get("status")
+        add_gate(
+            gates,
+            "seam_cycle_consistency",
+            "fail" if cycle_status == "fail" else "pass" if cycle_status in {"pass", "not_run_no_cycles"} else "warning",
+            f"cycle_status={cycle_status}",
+        )
+        culling_status = (seam_graph.get("post_merge_jurisdiction_culling") or {}).get("status")
+        removed = (seam_graph.get("post_merge_jurisdiction_culling") or {}).get("removed_point_count")
+        add_gate(
+            gates,
+            "post_merge_jurisdiction_culling",
+            "fail" if str(culling_status).startswith("fail") else "pass",
+            f"status={culling_status}, removed_point_count={removed}",
+        )
     error_p95 = (
         (sparse_points.get("reprojection_error") or {}).get("p95")
         or (viewer.get("sample_reprojection_error") or {}).get("p95")

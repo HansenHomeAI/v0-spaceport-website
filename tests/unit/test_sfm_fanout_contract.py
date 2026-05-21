@@ -199,6 +199,7 @@ class SfmFanoutContractTests(unittest.TestCase):
                 volume_size_gb=120,
                 max_concurrency=4,
                 max_attempts_per_leaf=3,
+                min_core_images=1,
                 summary_json_output=str(Path(tmp) / "contract.json"),
             )
 
@@ -280,6 +281,66 @@ class SfmFanoutContractTests(unittest.TestCase):
                 contract["gaps"],
             )
             self.assertEqual(contract["visibility_cell_contract"]["min_adjacent_shared_images"], 0)
+
+    def test_visibility_cell_contract_blocks_weak_core_chunks(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            manifest_path = Path(tmp) / "chunk_planner_manifest.json"
+            manifest_path.write_text(
+                json.dumps(
+                    {
+                        "planner": "visibility_cell_v1",
+                        "pipeline_mode": "distributed_chunked_v1",
+                        "seam_overlap_percent": 15.0,
+                        "primary_cell_id_by_image": {"A.JPG": 0},
+                        "overlap_cell_ids_by_image": {"B.JPG": [0]},
+                        "chunk_jurisdictions": {
+                            "0": {"jurisdiction_bounds": {"min_x": 0, "max_x": 10, "min_y": 0, "max_y": 10}},
+                        },
+                        "visibility_cell_manifest": {
+                            "cells": [
+                                {"index": 0, "cell_id": "cell-000", "image_names": ["A.JPG", "B.JPG"], "adjacency": []},
+                            ]
+                        },
+                        "chunks": [
+                            {
+                                "index": 0,
+                                "core_names": ["A.JPG"],
+                                "overlap_names": ["B.JPG"],
+                                "image_names": ["A.JPG", "B.JPG"],
+                            },
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            args = argparse.Namespace(
+                planner_manifest=str(manifest_path),
+                planner_manifest_uri="s3://bucket/chunk_planner_manifest.json",
+                input_s3_uri="s3://bucket/input.zip",
+                output_s3_uri="s3://bucket/fanout/",
+                branch="agent-73948216-sfm-production-spine",
+                head="abc123",
+                job_prefix="cvhr-visibility-canary",
+                image_uri="repo/sfm:tag",
+                instance_type="ml.g4dn.xlarge",
+                volume_size_gb=120,
+                max_concurrency=4,
+                max_attempts_per_leaf=3,
+                min_core_images=20,
+                summary_json_output=str(Path(tmp) / "contract.json"),
+            )
+
+            contract = fanout_contract.build_contract(args)
+
+            self.assertEqual(contract["status"], "dry_run_contract_needs_fix")
+            self.assertIn(
+                "visibility_cell_v1 leaf chunks must have at least 20 core images or be merged before fanout",
+                contract["gaps"],
+            )
+            self.assertEqual(
+                contract["visibility_cell_contract"]["weak_core_chunks"],
+                [{"chunk_index": 0, "core_image_count": 1, "min_core_images": 20}],
+            )
 
 
 if __name__ == "__main__":

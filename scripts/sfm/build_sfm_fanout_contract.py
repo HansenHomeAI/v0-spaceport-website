@@ -35,6 +35,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--volume-size-gb", type=int, default=120)
     parser.add_argument("--max-concurrency", type=int, default=0)
     parser.add_argument("--max-attempts-per-leaf", type=int, default=2)
+    parser.add_argument("--min-core-images", type=int, default=20)
     parser.add_argument("--summary-json-output", required=True)
     return parser.parse_args()
 
@@ -159,6 +160,16 @@ def build_contract(args: argparse.Namespace) -> dict[str, Any]:
     chunk_jurisdictions = manifest.get("chunk_jurisdictions") or {}
     visibility_weak_adjacent_seams: list[dict[str, int]] = []
     visibility_adjacent_seams: list[dict[str, int]] = []
+    min_core_images = int(getattr(args, "min_core_images", 20) or 0)
+    visibility_weak_core_chunks = [
+        {
+            "chunk_index": int(chunk.get("index", index)),
+            "core_image_count": len(chunk.get("core_names") or []),
+            "min_core_images": min_core_images,
+        }
+        for index, chunk in enumerate(chunks)
+        if min_core_images > 0 and len(chunk.get("core_names") or []) < min_core_images
+    ]
     if planner == "visibility_cell_v1" and isinstance(visibility_cells, list):
         cell_images: dict[int, set[str]] = {}
         cell_adjacency: dict[int, set[int]] = {}
@@ -212,6 +223,10 @@ def build_contract(args: argparse.Namespace) -> dict[str, Any]:
             gaps.append(
                 "visibility_cell_v1 adjacent seams must have at least 10 shared images or an explicit targeted seam proof"
             )
+        if visibility_weak_core_chunks:
+            gaps.append(
+                f"visibility_cell_v1 leaf chunks must have at least {min_core_images} core images or be merged before fanout"
+            )
 
     return {
         "status": "dry_run_contract_ready" if not gaps else "dry_run_contract_needs_fix",
@@ -240,6 +255,8 @@ def build_contract(args: argparse.Namespace) -> dict[str, Any]:
             "overlap_cell_id_by_image_count": len(manifest.get("overlap_cell_ids_by_image") or {}),
             "chunk_jurisdiction_count": len(chunk_jurisdictions),
             "min_required_adjacent_shared_images": 10,
+            "min_required_core_images": min_core_images,
+            "weak_core_chunks": visibility_weak_core_chunks,
             "min_adjacent_shared_images": min(
                 (seam["shared_image_count"] for seam in visibility_adjacent_seams),
                 default=0,
@@ -279,6 +296,7 @@ def build_contract(args: argparse.Namespace) -> dict[str, Any]:
                 "standard sparse/0 exists",
                 "visibility_cell_v1 jurisdiction coverage exists when enabled",
                 "no weak seam has <10 shared registered images without targeted seam proof",
+                "no visibility-cell leaf has fewer than min_required_core_images core cameras",
                 "registration and speed gates compare against md1p24e752k-1776314974",
             ],
         },

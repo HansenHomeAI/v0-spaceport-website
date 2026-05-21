@@ -768,6 +768,16 @@ class ColmapPipeline:
         self.visibility_cell_min_score = float(
             os.environ.get("COLMAP_VISIBILITY_CELL_MIN_SCORE", "0.08")
         )
+        visibility_cell_min_core_default = max(
+            self.chunk_min_images,
+            math.ceil(max(self.leaf_target_images, 1) * 0.25),
+        )
+        self.visibility_cell_min_core_images = int(
+            os.environ.get(
+                "COLMAP_VISIBILITY_CELL_MIN_CORE_IMAGES",
+                str(visibility_cell_min_core_default),
+            )
+        )
         self.visibility_cell_enable_horizon = (
             os.environ.get("COLMAP_VISIBILITY_CELL_ENABLE_HORIZON", "1") != "0"
         )
@@ -4506,20 +4516,69 @@ class ColmapPipeline:
         cell_height = span_y / row_count
 
         core_names_by_cell: Dict[tuple[int, int], List[str]] = defaultdict(list)
+        base_bounds_by_cell: Dict[tuple[int, int], Dict[str, float]] = {}
         for image_name in names:
             center_x, center_y = projections[image_name][0]
             column = min(max(int((center_x - global_bounds["min_x"]) / max(cell_width, 1e-6)), 0), column_count - 1)
             row = min(max(int((center_y - global_bounds["min_y"]) / max(cell_height, 1e-6)), 0), row_count - 1)
             core_names_by_cell[(column, row)].append(image_name)
-
-        cells: List[VisibilityCell] = []
-        for (column, row), core_names in sorted(core_names_by_cell.items(), key=lambda item: (item[0][1], item[0][0])):
-            base_bounds = {
+        for key in core_names_by_cell:
+            column, row = key
+            base_bounds_by_cell[key] = {
                 "min_x": round(global_bounds["min_x"] + column * cell_width, 3),
                 "max_x": round(global_bounds["min_x"] + (column + 1) * cell_width, 3),
                 "min_y": round(global_bounds["min_y"] + row * cell_height, 3),
                 "max_y": round(global_bounds["min_y"] + (row + 1) * cell_height, 3),
             }
+
+        def merged_bounds(left: Dict[str, float], right: Dict[str, float]) -> Dict[str, float]:
+            return {
+                "min_x": round(min(float(left["min_x"]), float(right["min_x"])), 3),
+                "max_x": round(max(float(left["max_x"]), float(right["max_x"])), 3),
+                "min_y": round(min(float(left["min_y"]), float(right["min_y"])), 3),
+                "max_y": round(max(float(left["max_y"]), float(right["max_y"])), 3),
+            }
+
+        def cell_center(key: tuple[int, int]) -> tuple[float, float]:
+            points = [projections[name][0] for name in core_names_by_cell.get(key, [])]
+            if not points:
+                bounds = base_bounds_by_cell[key]
+                return ((float(bounds["min_x"]) + float(bounds["max_x"])) / 2.0, (float(bounds["min_y"]) + float(bounds["max_y"])) / 2.0)
+            return (
+                sum(point[0] for point in points) / len(points),
+                sum(point[1] for point in points) / len(points),
+            )
+
+        min_core_images = min(self.visibility_cell_min_core_images, hard_cap)
+        while len(core_names_by_cell) > 1:
+            weak_cells = [
+                (len(core_names), key)
+                for key, core_names in core_names_by_cell.items()
+                if len(core_names) < min_core_images
+            ]
+            if not weak_cells:
+                break
+            _, weak_key = min(weak_cells, key=lambda item: (item[0], item[1][1], item[1][0]))
+            weak_center = cell_center(weak_key)
+            candidate_targets: List[tuple[int, float, int, tuple[int, int]]] = []
+            for target_key, target_names in core_names_by_cell.items():
+                if target_key == weak_key:
+                    continue
+                target_center = cell_center(target_key)
+                distance = math.hypot(target_center[0] - weak_center[0], target_center[1] - weak_center[1])
+                combined_count = len(target_names) + len(core_names_by_cell[weak_key])
+                exceeds_hard_cap = 1 if combined_count > hard_cap else 0
+                candidate_targets.append((exceeds_hard_cap, distance, len(target_names), target_key))
+            if not candidate_targets:
+                break
+            _, _, _, target_key = min(candidate_targets, key=lambda item: (item[0], item[1], item[2], item[3][1], item[3][0]))
+            core_names_by_cell[target_key].extend(core_names_by_cell.pop(weak_key))
+            core_names_by_cell[target_key] = self.sorted_capture_names(core_names_by_cell[target_key])
+            base_bounds_by_cell[target_key] = merged_bounds(base_bounds_by_cell[target_key], base_bounds_by_cell.pop(weak_key))
+
+        cells: List[VisibilityCell] = []
+        for (column, row), core_names in sorted(core_names_by_cell.items(), key=lambda item: (item[0][1], item[0][0])):
+            base_bounds = base_bounds_by_cell[(column, row)]
             for core_group in self.split_visibility_core_groups(
                 core_names=core_names,
                 projections=projections,

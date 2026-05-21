@@ -48,12 +48,13 @@ class SfmFanoutReducerTest(unittest.TestCase):
             fanout_reducer.write_standard_output_package(
                 merged_text_dir=merged,
                 output_dir=output,
-                reducer_metadata={"decision": "pass"},
+                reducer_metadata={"decision": "pass", "seam_merge_report": {"decision": "pass"}},
             )
 
             self.assertTrue((output / "sparse" / "0" / "images.txt").exists())
             self.assertTrue((output / "sparse_raw" / "0" / "points3D.txt").exists())
             self.assertIn("\"decision\": \"pass\"", (output / "reducer_metadata.json").read_text(encoding="utf-8"))
+            self.assertIn("\"decision\": \"pass\"", (output / "seam_merge_report.json").read_text(encoding="utf-8"))
 
     def test_more_than_two_leaf_merge_skips_per_leaf_binary_converters(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -81,7 +82,12 @@ class SfmFanoutReducerTest(unittest.TestCase):
                     output_dir.mkdir(parents=True, exist_ok=True)
                     for file_name in ("cameras.txt", "images.txt", "points3D.txt"):
                         (output_dir / file_name).write_text("# merged\n", encoding="utf-8")
-                    return {"strategy": "pose_aligned_text_merge", "transforms": []}
+                    return {
+                        "strategy": "seam_graph_sim3_v1",
+                        "transforms": [],
+                        "seam_merge_report": {"decision": "pass", "accepted_merge_tree": []},
+                        "promotion_blockers": [],
+                    }
 
                 def fake_run_command(command):
                     commands.append(command)
@@ -110,6 +116,7 @@ class SfmFanoutReducerTest(unittest.TestCase):
             self.assertEqual(len(commands), 1)
             self.assertTrue(any("pose_aligned_text" in part for part in commands[0]))
             self.assertEqual(report["blockers"], [])
+            self.assertEqual(report["fallback"]["strategy"], "seam_graph_sim3_v1")
 
 
 if __name__ == "__main__":

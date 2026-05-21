@@ -8,7 +8,12 @@ export async function GET(request: Request) {
     const params = new URL(request.url).searchParams;
     const artifact = parseSfmArtifact(params.get("url"));
     const maxPoints = Number(params.get("maxPoints") || 18000);
-    const payload = await buildSfmPreviewPayload(artifact, Number.isFinite(maxPoints) ? maxPoints : 18000);
+    const includeDebugSeams = params.get("debugSeams") === "1";
+    const payload = await buildSfmPreviewPayload(
+      artifact,
+      Number.isFinite(maxPoints) ? maxPoints : 18000,
+      includeDebugSeams,
+    );
     return Response.json(payload, {
       headers: {
         "Cache-Control": "no-store",

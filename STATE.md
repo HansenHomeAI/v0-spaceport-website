@@ -1,17 +1,18 @@
-reason: SfM-only visibility-cell production proof completed. The final MD1 artifact is one merged COLMAP sparse output produced from 19 distributed visibility-cell leaves with pruning and seam-conflict culling. Downstream 3DGS/SOGS render and AI visual gates are separate and are not part of this SfM-stage proof.
-last_step: 2026-05-19T15:59Z: uploaded and viewer-validated `merged-pruned-culled/colmap`; API returned HTTP 200 with 3076 registered images, 1057498 exact points, and 160000 sampled points; browser screenshot rendered visible points with lit_ratio_10pct=0.0466475.
-next_unblocked_step: Optional downstream handoff only: feed the single COLMAP artifact into the downstream 3DGS step, or use the local dev viewer for manual SfM inspection. No additional SfM fanout/reducer work is pending.
+reason: SfM-only visibility-cell proof completed on MD1 and pressure-tested on CV-HR, then follow-up no-spend reducer hardening implemented seam_graph_sim3_v1 to address observed leaf scale and duplicate-surface risk. Real no-spend replay now passes MD1 strict seam graph but blocks the prior CV-HR full merge because weak-core leaves cannot connect under the 15% scale-drift gate. The current patch prevents that failure mode by merging visibility cells with too few core cameras before fanout and by blocking weak-core manifests in the fanout contract. Downstream 3DGS/SOGS render and AI visual gates are separate and are not part of this SfM-stage proof.
+last_step: 2026-05-21T23:14Z: Isolated the CV-HR seam blocker to weak core support: old CV-HR leaves 00 and 10 had only 15 and 11 core cameras, and leaf 10 was mostly overlap (11 core / 125 overlap), which explains the scale-drift seams. Patched visibility_cell_v1 planning with COLMAP_VISIBILITY_CELL_MIN_CORE_IMAGES weak-cell merging and added a fanout contract --min-core-images gate. Existing CV-HR manifest now fails the no-spend contract instead of being launchable; py_compile passed, 138 focused planner/reducer/quality tests passed, JSON ledgers validate, npm web build passed with pre-existing warnings, and AWS shows no in-progress MD1/CV-HR processing/training jobs. A local no-copy CV-HR patched planner replay was attempted but stopped cleanly after EXIF reads stalled on Desktop/iCloud-backed source files without emitting artifacts.
+next_unblocked_step: Re-run patched CV-HR planner/manifest proof from a hydrated local archive or as the smallest bounded SageMaker planner-only job with the blocker/budget reason recorded, then run the smallest CV-HR repair canary only if the patched manifest passes static gates. Do not claim the new strict seam-graph path production-ready across datasets until CV-HR reconnects under the gates.
 owner_action_needed: none
 active_jobs: []
+completed_jobs_cvhr: ["cvhr-viscell-plan-v1-1779214624", "cvhr-viscell-c03-1779215211", "cvhr-viscell-c04-1779215211", "cvhr-viscell-full-l00-1779219568", "cvhr-viscell-full-l01-1779219573", "cvhr-viscell-full-l02-1779220672", "cvhr-viscell-full-l05-1779224497", "cvhr-viscell-full-l06-1779225051", "cvhr-viscell-full-l07-1779229061", "cvhr-viscell-full-l08-1779230706", "cvhr-viscell-full-l09-1779233441", "cvhr-viscell-full-l10-1779234178"]
 completed_jobs: ["md1-viscell-plan-v1-1779135256", "md1-viscell-full-l00-1779141981", "md1-viscell-full-l01-1779141986", "md1-viscell-full-l02-1779143476", "md1-viscell-full-l03-1779145861", "md1-viscell-full-l04-1779146968", "md1-viscell-full-l05-1779147527", "md1-viscell-full-l06r2-1779154798", "md1-viscell-full-l07-1779151432", "md1-viscell-full-l08-1779155211", "md1-viscell-full-l09-1779157902", "md1-viscell-full-l10-1779158398", "md1-viscell-full-l11-1779161085", "md1-viscell-full-l12-1779161215", "md1-viscell-full-l13-1779164027", "md1-viscell-full-l14-1779164403", "md1-viscell-full-l15-1779167214", "md1-viscell-full-l16-1779167589", "md1-viscell-full-l17-1779168816", "md1-viscell-full-l18-1779170653"]
 failed_jobs: ["md1-viscell-full-l06-1779150311"]
 held_jobs: []
 unrelated_active_jobs: []
 branch: agent-73948216-sfm-production-spine
-head: 60fcec4fe28e3ee73e4c44aa5eebcf4ade543c54
-current_rung: SFM_VISIBILITY_CELL_V1_FULL_FANOUT_REDUCER_VIEWER_PASSED
-project_final_decision: sfm_stage_production_ready_downstream_3dgs_separate
-project_level_unresolved_caveats: ["Downstream 3DGS/SOGS render and AI visual gates are separate from this SfM-only deliverable", "global sparse double-surface grid has 4 warning cells, but cross-leaf seam overlap is authoritative and passes with flagged_overlap_cell_ratio=0.0"]
+head: 01b872a43618ba84d3f386a0d5fe662005819a44
+current_rung: SFM_SEAM_GRAPH_SIM3_V1_CVHR_WEAK_CORE_REPAIR_PATCHED_NEEDS_PATCHED_PLANNER_REPLAY
+project_final_decision: md1_strict_seam_graph_replay_passed_cvhr_strict_seam_graph_replay_blocked_and_patched_for_replay
+project_level_unresolved_caveats: ["Downstream 3DGS/SOGS render and AI visual gates are separate from this SfM-only deliverable", "prior global sparse double-surface grid had warning cells", "CV-HR prior 11-leaf output passed older gates but fails new seam_graph_sim3_v1 strict replay because accepted seam graph is disconnected; weak-core leaves 00/10 and scale-blocked leaves 02/10 require patched planner replay before production promotion"]
 final_sfm_output_uri: s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/merged-pruned-culled/colmap
 current_viewer_url: http://127.0.0.1:3000/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fmd1-visibility-cell-v1-full-20260518T2206Z%2Fmerged-pruned-culled%2Fcolmap&maxPoints=160000
 final_reducer_report: logs/sfm-production-spine/md1_visibility_cell_v1_full_reducer_pruned_culled_20260519T1531Z.json
@@ -20,6 +21,39 @@ final_viewer_api: logs/sfm-production-spine/md1_visibility_cell_v1_full_pruned_c
 final_viewer_visual_proof: logs/sfm-production-spine/md1_visibility_cell_v1_full_pruned_culled_viewer_visual_proof_20260519T1559Z.json
 final_viewer_screenshot: logs/sfm-production-spine/md1_visibility_cell_v1_full_pruned_culled_viewer_20260519T1559Z.png
 final_s3_listing: logs/sfm-production-spine/md1_visibility_cell_v1_full_pruned_culled_s3_listing_20260519T1559Z.txt
+final_exact_head_cdk_workflow: logs/sfm-production-spine/visibility_cell_v1_final_cdk_run_view_20260519T1621Z.json
+final_active_processing_jobs: logs/sfm-production-spine/active-md1-processing-jobs-final-20260519T1621Z.json
+final_active_training_jobs: logs/sfm-production-spine/active-md1-training-jobs-final-20260519T1621Z.json
+cvhr_pressure_test:
+  updated: 2026-05-20T01:15Z
+  status: full_sfm_pressure_test_passed
+  input_uri: s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip
+  planner_output_uri: s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-planner-20260519T1749Z/colmap
+  final_sfm_output_uri: s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-20260519T1945Z/merged-pruned-culled/colmap
+  current_viewer_url: http://127.0.0.1:3000/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fcvhr-visibility-cell-v1-full-20260519T1945Z%2Fmerged-pruned-culled%2Fcolmap&maxPoints=160000
+  heartbeat_automation: cv-hr-visibility-cell-full-sfm-monitor deleted
+  final_active_processing_jobs: logs/sfm-production-spine/active-cvhr-processing-jobs-final-20260520T0115Z.json
+  canary:
+    leaves: ["leaf-03", "leaf-04"]
+    reducer_report: logs/sfm-production-spine/cvhr_visibility_cell_v1_canary_reducer_20260519T1932Z.json
+    quality_report: logs/sfm-production-spine/cvhr_visibility_cell_v1_canary_quality_20260519T1939Z.json
+    viewer_api: logs/sfm-production-spine/cvhr_visibility_cell_v1_canary_viewer_api_summary_20260519T1938Z.json
+    viewer_screenshot: logs/sfm-production-spine/cvhr_visibility_cell_v1_canary_viewer_loaded_20260519T1942Z.png
+    facts: "691/691 registered, 367513 merged points, one component, shared seam images 29, cross-leaf flagged overlap cell ratio 0.0, visible pipeline-viewer proof"
+  full_fanout:
+    manager: logs/sfm-production-spine/cvhr_visibility_cell_v1_full_fanout_continue.py
+    status_json: logs/sfm-production-spine/cvhr_visibility_cell_v1_full_fanout_continue_status.json
+    terminal_s3_listing: logs/sfm-production-spine/cvhr_visibility_cell_v1_full_all_leaves_s3_terminal_20260520T0052Z.txt
+    seeded_leaves: ["leaf-03", "leaf-04"]
+    active_leaves: []
+    active_jobs: []
+    pending_leaves: []
+    reducer_report: logs/sfm-production-spine/cvhr_visibility_cell_v1_full_reducer_20260520T0055Z.json
+    quality_report: logs/sfm-production-spine/cvhr_visibility_cell_v1_full_quality_20260520T0109Z.json
+    viewer_api: logs/sfm-production-spine/cvhr_visibility_cell_v1_full_viewer_api_summary_20260520T0108Z.json
+    viewer_visual_proof: logs/sfm-production-spine/cvhr_visibility_cell_v1_full_viewer_visual_proof_20260520T0110Z.json
+    viewer_screenshot: logs/sfm-production-spine/cvhr_visibility_cell_v1_full_viewer_loaded_20260520T0110Z.png
+    facts: "11/11 leaves passed, 1706/1706 registered, 762075 merged points, one component, cross-leaf flagged overlap cell ratio 0.0, sparse p95 reprojection 1.7974, double-surface flagged ratio 0.0459 under 0.08, visible pipeline-viewer proof"
 sfm_stage_metrics:
   planner: visibility_cell_v1
   leaf_count: 19
@@ -35,7 +69,60 @@ sfm_stage_metrics:
   sparse_reprojection_error_p95: 1.7666
   viewer_http_status: 200
   viewer_lit_ratio_10pct: 0.0466475
-updated: 2026-05-19T15:59Z
+updated: 2026-05-20T01:15Z
+
+sfm_seam_graph_sim3_v1_hardening:
+  updated: 2026-05-21T22:56:00Z
+  scope: SfM reducer/viewer hardening only; no SageMaker jobs launched.
+  status: no_spend_implementation_tests_and_real_md1_replay_passed_cvhr_replay_blocked_weak_core_repair_patched
+  accountability_automation:
+    id: sfm-seam-graph-production-proof
+    kind: heartbeat
+    cadence: every 30 minutes
+    status: ACTIVE
+  proof: logs/sfm-production-spine/seam_graph_sim3_v1_no_spend_proof_20260521T215008Z.json
+  weak_core_repair:
+    proof: logs/sfm-production-spine/seam_graph_sim3_v1_weak_core_repair_no_spend_proof_20260521T2251Z.json
+    support_analysis: logs/sfm-production-spine/cvhr_leaf02_leaf10_seam_support_analysis_20260521T2225Z.json
+    existing_manifest_contract: logs/sfm-production-spine/cvhr_visibility_cell_v1_existing_manifest_weak_core_contract_20260521T2250Z.json
+    blocker_facts: "Existing CV-HR manifest has weak core leaves chunk 00=15 core images and chunk 10=11 core images under the new min_core_images=20 gate; leaf10 registered only 135/136 manifest images and was dominated by overlap support (11 core / 125 overlap)."
+    patch: "visibility_cell_v1 now merges cells with fewer than COLMAP_VISIBILITY_CELL_MIN_CORE_IMAGES core cameras into the nearest viable neighbor before overlap assignment; fanout contract blocks weak-core manifests with --min-core-images."
+    local_replay_attempt: "Attempted no-copy local CV-HR patched planner replay against /Users/gabrielhansen/Desktop/CV-HR at 2026-05-21T22:58Z; stopped cleanly after exiftool remained in slow Desktop/iCloud-backed reads for about 16 minutes and emitted no planner artifacts."
+  implemented:
+    - reducer merge_strategy seam_graph_sim3_v1 with seam_merge_report.json
+    - all candidate seam edge reports include shared counts, camera distribution/rank, Sim3 scale/residuals, baseline-normalized residual, held-out residual, duplicate-surface stats, decision, and blockers
+    - merge graph selects deterministic max-confidence spanning tree with root chosen by accepted seam confidence, registered core image count, then leaf index
+    - strict production flags reject weak shared-camera count, degenerate camera layout, bad scale, bad residual, bad baseline-normalized residual, and cycle failure
+    - post-merge core-owned track culling audit records removal reason and affected seam when planner manifest core names are supplied
+    - quality evaluator now gates seam_graph_sim3, seam_cycle_consistency, and post_merge_jurisdiction_culling
+    - pipeline-viewer/sfm-preview debugSeams=1 loads seam_merge_report.json summary without changing normal viewer behavior
+    - visibility_cell_v1 planner now merges weak core cells before fanout to prevent overlap-dominated leaves from becoming independent reconstruction units
+    - fanout contract now emits visibility_cell_contract.weak_core_chunks and blocks production fanout when a leaf is below min_required_core_images
+  verification:
+    - python3 -m py_compile scripts/sfm/run_sfm_reducer_canary.py scripts/sfm/run_sfm_fanout_reducer.py scripts/sfm/evaluate_sfm_quality.py
+    - python3 -m unittest tests.unit.test_sfm_reducer_canary tests.unit.test_sfm_fanout_reducer tests.unit.test_sfm_quality_eval (23 tests)
+    - npm --prefix web run build
+    - synthetic strict two-leaf run_sfm_fanout_reducer CLI probe passed with 26 merged images, 22 shared seam cameras, no blockers, and emitted seam_merge_report.json
+    - python3 -m py_compile infrastructure/containers/sfm/run_colmap_sfm.py scripts/sfm/build_sfm_fanout_contract.py scripts/sfm/run_sfm_reducer_canary.py scripts/sfm/run_sfm_fanout_reducer.py scripts/sfm/evaluate_sfm_quality.py
+    - python3 -m unittest tests.unit.test_colmap_gps_priors tests.unit.test_sfm_reducer_canary tests.unit.test_sfm_fanout_contract tests.unit.test_sfm_fanout_reducer tests.unit.test_sfm_quality_eval (138 tests)
+    - existing CV-HR visibility-cell manifest contract replay exits dry_run_contract_needs_fix with weak_core_chunks=[00,10]
+    - jq empty passed for updated JSON ledgers/proofs
+    - AWS SageMaker InProgress processing/training queries for MD1/CV-HR returned []
+    - npm --prefix web run build passed with pre-existing warnings
+  real_artifact_replay:
+    md1:
+      report: logs/sfm-production-spine/md1_seam_graph_sim3_v1_report_replay_20260521T215008Z.json
+      result: pass
+      facts: "19 leaves, root leaf 14, 18 accepted merge-tree edges, 15 non-tree accepted edges, no promotion blockers"
+    cvhr:
+      report: logs/sfm-production-spine/cvhr_seam_graph_sim3_v1_report_replay_20260521T215008Z.json
+      blocker_isolation: logs/sfm-production-spine/cvhr_seam_graph_sim3_v1_blocker_isolation_20260521T2218Z.json
+      result: fail
+      facts: "11 leaves, only 8 accepted merge-tree edges, accepted nodes 0/1/3/4/5/6/7/8/9, leaves 02/10 disconnected; top rejected bridges fail scale_delta_exceeds_gate, including 1-2 at 0.1767, 2-7 at 0.1747, 7-10 at 0.3077, and 9-10 at 0.3140"
+  known_limits:
+    - seam-local BA is wired as an interface flag/report field but not yet executed by the local text reducer
+    - spatial jurisdiction bounds are not re-applied after Sim3 unless the planner/root COLMAP coordinate relationship is available; core-track ownership is enforced when manifest core names are supplied
+    - CV-HR needs a patched planner replay and smallest-leaf repair canary before the strict seam graph can be promoted across both datasets
 
 sfm_visibility_cell_v1_implementation:
   updated: 2026-05-18T17:41:04Z

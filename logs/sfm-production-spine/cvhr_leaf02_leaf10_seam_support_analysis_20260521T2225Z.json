@@ -1,0 +1,426 @@
+{
+  "bridges": [
+    {
+      "edge": "1-2",
+      "shared_registered_images": 206,
+      "edge_decision": "reject",
+      "blockers": [
+        "scale_delta_exceeds_gate"
+      ],
+      "warnings": [
+        "duplicate_surface_overlap_suspect"
+      ],
+      "scale_delta": 0.17669258,
+      "sim3_p95": 0.030121,
+      "baseline_normalized_residual": 0.00159142,
+      "leaf_1_shared_roles": {
+        "registered": 206,
+        "core": 84,
+        "overlap": 122,
+        "image_names": 206,
+        "core_sample": [
+          "DJI_00204.JPG",
+          "DJI_00205.JPG",
+          "DJI_00206.JPG",
+          "DJI_00220.JPG",
+          "DJI_00221.JPG",
+          "DJI_00222.JPG",
+          "DJI_00223.JPG",
+          "DJI_00224.JPG"
+        ],
+        "overlap_sample": [
+          "DJI_00207.JPG",
+          "DJI_00208.JPG",
+          "DJI_00209.JPG",
+          "DJI_00215.JPG",
+          "DJI_00216.JPG",
+          "DJI_00217.JPG",
+          "DJI_00218.JPG",
+          "DJI_00219.JPG"
+        ]
+      },
+      "leaf_2_shared_roles": {
+        "registered": 206,
+        "core": 83,
+        "overlap": 123,
+        "image_names": 206,
+        "core_sample": [
+          "DJI_00207.JPG",
+          "DJI_00208.JPG",
+          "DJI_00217.JPG",
+          "DJI_00218.JPG",
+          "DJI_00219.JPG",
+          "DJI_00225.JPG",
+          "DJI_00226.JPG",
+          "DJI_00227.JPG"
+        ],
+        "overlap_sample": [
+          "DJI_00204.JPG",
+          "DJI_00205.JPG",
+          "DJI_00206.JPG",
+          "DJI_00209.JPG",
+          "DJI_00215.JPG",
+          "DJI_00216.JPG",
+          "DJI_00220.JPG",
+          "DJI_00221.JPG"
+        ]
+      },
+      "shared_sample": [
+        "DJI_00204.JPG",
+        "DJI_00205.JPG",
+        "DJI_00206.JPG",
+        "DJI_00207.JPG",
+        "DJI_00208.JPG",
+        "DJI_00209.JPG",
+        "DJI_00215.JPG",
+        "DJI_00216.JPG",
+        "DJI_00217.JPG",
+        "DJI_00218.JPG",
+        "DJI_00219.JPG",
+        "DJI_00220.JPG"
+      ]
+    },
+    {
+      "edge": "2-7",
+      "shared_registered_images": 178,
+      "edge_decision": "reject",
+      "blockers": [
+        "scale_delta_exceeds_gate"
+      ],
+      "warnings": [
+        "duplicate_surface_overlap_suspect"
+      ],
+      "scale_delta": 0.17470825,
+      "sim3_p95": 0.009085,
+      "baseline_normalized_residual": 0.00062738,
+      "leaf_2_shared_roles": {
+        "registered": 178,
+        "core": 73,
+        "overlap": 105,
+        "image_names": 178,
+        "core_sample": [
+          "DJI_00207.JPG",
+          "DJI_00208.JPG",
+          "DJI_00217.JPG",
+          "DJI_00218.JPG",
+          "DJI_00219.JPG",
+          "DJI_00225.JPG",
+          "DJI_00226.JPG",
+          "DJI_00227.JPG"
+        ],
+        "overlap_sample": [
+          "DJI_00204.JPG",
+          "DJI_00205.JPG",
+          "DJI_00206.JPG",
+          "DJI_00209.JPG",
+          "DJI_00215.JPG",
+          "DJI_00216.JPG",
+          "DJI_00220.JPG",
+          "DJI_00221.JPG"
+        ]
+      },
+      "leaf_7_shared_roles": {
+        "registered": 178,
+        "core": 63,
+        "overlap": 115,
+        "image_names": 178,
+        "core_sample": [
+          "DJI_00209.JPG",
+          "DJI_00215.JPG",
+          "DJI_00216.JPG",
+          "DJI_00229.JPG",
+          "DJI_00236.JPG",
+          "DJI_00237.JPG",
+          "DJI_00256.JPG",
+          "DJI_00257.JPG"
+        ],
+        "overlap_sample": [
+          "DJI_00204.JPG",
+          "DJI_00205.JPG",
+          "DJI_00206.JPG",
+          "DJI_00207.JPG",
+          "DJI_00208.JPG",
+          "DJI_00217.JPG",
+          "DJI_00218.JPG",
+          "DJI_00219.JPG"
+        ]
+      },
+      "shared_sample": [
+        "DJI_00204.JPG",
+        "DJI_00205.JPG",
+        "DJI_00206.JPG",
+        "DJI_00207.JPG",
+        "DJI_00208.JPG",
+        "DJI_00209.JPG",
+        "DJI_00215.JPG",
+        "DJI_00216.JPG",
+        "DJI_00217.JPG",
+        "DJI_00218.JPG",
+        "DJI_00219.JPG",
+        "DJI_00220.JPG"
+      ]
+    },
+    {
+      "edge": "7-10",
+      "shared_registered_images": 122,
+      "edge_decision": "reject",
+      "blockers": [
+        "scale_delta_exceeds_gate"
+      ],
+      "warnings": [
+        "duplicate_surface_overlap_suspect"
+      ],
+      "scale_delta": 0.3077208,
+      "sim3_p95": 0.002502,
+      "baseline_normalized_residual": 0.0002311,
+      "leaf_7_shared_roles": {
+        "registered": 122,
+        "core": 79,
+        "overlap": 43,
+        "image_names": 122,
+        "core_sample": [
+          "DJI_00211.JPG",
+          "DJI_00212.JPG",
+          "DJI_00213.JPG",
+          "DJI_00232.JPG",
+          "DJI_00233.JPG",
+          "DJI_00234.JPG",
+          "DJI_00260.JPG",
+          "DJI_00261.JPG"
+        ],
+        "overlap_sample": [
+          "DJI_01324.JPG",
+          "DJI_01327.JPG",
+          "DJI_01341.JPG",
+          "DJI_01346.JPG",
+          "DJI_01347.JPG",
+          "DJI_01364.JPG",
+          "DJI_01371.JPG",
+          "DJI_01372.JPG"
+        ]
+      },
+      "leaf_10_shared_roles": {
+        "registered": 122,
+        "core": 11,
+        "overlap": 111,
+        "image_names": 122,
+        "core_sample": [
+          "DJI_01547.JPG",
+          "DJI_01554.JPG",
+          "DJI_01577.JPG",
+          "DJI_01582.JPG",
+          "DJI_01583.JPG",
+          "DJI_01600.JPG",
+          "DJI_01601.JPG",
+          "DJI_01602.JPG"
+        ],
+        "overlap_sample": [
+          "DJI_00211.JPG",
+          "DJI_00212.JPG",
+          "DJI_00213.JPG",
+          "DJI_00232.JPG",
+          "DJI_00233.JPG",
+          "DJI_00234.JPG",
+          "DJI_00260.JPG",
+          "DJI_00261.JPG"
+        ]
+      },
+      "shared_sample": [
+        "DJI_00211.JPG",
+        "DJI_00212.JPG",
+        "DJI_00213.JPG",
+        "DJI_00232.JPG",
+        "DJI_00233.JPG",
+        "DJI_00234.JPG",
+        "DJI_00260.JPG",
+        "DJI_00261.JPG",
+        "DJI_00262.JPG",
+        "DJI_00263.JPG",
+        "DJI_00300.JPG",
+        "DJI_00301.JPG"
+      ]
+    },
+    {
+      "edge": "9-10",
+      "shared_registered_images": 101,
+      "edge_decision": "reject",
+      "blockers": [
+        "scale_delta_exceeds_gate"
+      ],
+      "warnings": [
+        "duplicate_surface_overlap_suspect"
+      ],
+      "scale_delta": 0.314035,
+      "sim3_p95": 0.00234,
+      "baseline_normalized_residual": 0.00023218,
+      "leaf_9_shared_roles": {
+        "registered": 101,
+        "core": 26,
+        "overlap": 75,
+        "image_names": 101,
+        "core_sample": [
+          "DJI_01324.JPG",
+          "DJI_01341.JPG",
+          "DJI_01347.JPG",
+          "DJI_01364.JPG",
+          "DJI_01372.JPG",
+          "DJI_01397.JPG",
+          "DJI_01398.JPG",
+          "DJI_01407.JPG"
+        ],
+        "overlap_sample": [
+          "DJI_00211.JPG",
+          "DJI_00212.JPG",
+          "DJI_00213.JPG",
+          "DJI_00232.JPG",
+          "DJI_00233.JPG",
+          "DJI_00234.JPG",
+          "DJI_00260.JPG",
+          "DJI_00261.JPG"
+        ]
+      },
+      "leaf_10_shared_roles": {
+        "registered": 101,
+        "core": 11,
+        "overlap": 90,
+        "image_names": 101,
+        "core_sample": [
+          "DJI_01547.JPG",
+          "DJI_01554.JPG",
+          "DJI_01577.JPG",
+          "DJI_01582.JPG",
+          "DJI_01583.JPG",
+          "DJI_01600.JPG",
+          "DJI_01601.JPG",
+          "DJI_01602.JPG"
+        ],
+        "overlap_sample": [
+          "DJI_00211.JPG",
+          "DJI_00212.JPG",
+          "DJI_00213.JPG",
+          "DJI_00232.JPG",
+          "DJI_00233.JPG",
+          "DJI_00234.JPG",
+          "DJI_00260.JPG",
+          "DJI_00261.JPG"
+        ]
+      },
+      "shared_sample": [
+        "DJI_00211.JPG",
+        "DJI_00212.JPG",
+        "DJI_00213.JPG",
+        "DJI_00232.JPG",
+        "DJI_00233.JPG",
+        "DJI_00234.JPG",
+        "DJI_00260.JPG",
+        "DJI_00261.JPG",
+        "DJI_00262.JPG",
+        "DJI_00301.JPG",
+        "DJI_00302.JPG",
+        "DJI_00408.JPG"
+      ]
+    }
+  ],
+  "leaf_summary": {
+    "1": {
+      "cell_id": "cell-001",
+      "cell_type": "interior",
+      "registered_images": 360,
+      "manifest_images": 360,
+      "core_images": 130,
+      "overlap_images": 230,
+      "cell_bounds": {
+        "min_x": -735.975,
+        "max_x": -275.225,
+        "min_y": -143.205,
+        "max_y": 324.056
+      },
+      "jurisdiction_bounds": {
+        "min_x": -805.087,
+        "max_x": -206.113,
+        "min_y": -212.317,
+        "max_y": 393.168
+      }
+    },
+    "2": {
+      "cell_id": "cell-002",
+      "cell_type": "interior",
+      "registered_images": 360,
+      "manifest_images": 360,
+      "core_images": 193,
+      "overlap_images": 167,
+      "cell_bounds": {
+        "min_x": -735.975,
+        "max_x": -275.225,
+        "min_y": 324.056,
+        "max_y": 791.317
+      },
+      "jurisdiction_bounds": {
+        "min_x": -805.087,
+        "max_x": -206.113,
+        "min_y": 254.943,
+        "max_y": 860.429
+      }
+    },
+    "7": {
+      "cell_id": "cell-007",
+      "cell_type": "interior",
+      "registered_images": 360,
+      "manifest_images": 360,
+      "core_images": 154,
+      "overlap_images": 206,
+      "cell_bounds": {
+        "min_x": -275.225,
+        "max_x": 185.525,
+        "min_y": 324.056,
+        "max_y": 791.317
+      },
+      "jurisdiction_bounds": {
+        "min_x": -344.338,
+        "max_x": 254.637,
+        "min_y": 254.943,
+        "max_y": 860.429
+      }
+    },
+    "9": {
+      "cell_id": "cell-009",
+      "cell_type": "interior",
+      "registered_images": 360,
+      "manifest_images": 360,
+      "core_images": 84,
+      "overlap_images": 276,
+      "cell_bounds": {
+        "min_x": 185.525,
+        "max_x": 646.275,
+        "min_y": -143.205,
+        "max_y": 324.056
+      },
+      "jurisdiction_bounds": {
+        "min_x": 116.413,
+        "max_x": 715.387,
+        "min_y": -212.317,
+        "max_y": 393.168
+      }
+    },
+    "10": {
+      "cell_id": "cell-010",
+      "cell_type": "interior",
+      "registered_images": 135,
+      "manifest_images": 136,
+      "core_images": 11,
+      "overlap_images": 125,
+      "cell_bounds": {
+        "min_x": 185.525,
+        "max_x": 646.275,
+        "min_y": 324.056,
+        "max_y": 791.317
+      },
+      "jurisdiction_bounds": {
+        "min_x": 116.413,
+        "max_x": 715.387,
+        "min_y": 254.943,
+        "max_y": 860.429
+      }
+    }
+  }
+}

@@ -16,7 +16,16 @@ export default function SfmPreviewPage({
 }: {
   searchParams?: {
     url?: string;
+    maxPoints?: string;
+    debugSeams?: string;
   };
 }) {
-  return <SfmPreviewClient initialUrl={searchParams?.url || DEFAULT_OUTPUT_S3_URI} />;
+  const maxPoints = Number(searchParams?.maxPoints || 18_000);
+  return (
+    <SfmPreviewClient
+      initialUrl={searchParams?.url || DEFAULT_OUTPUT_S3_URI}
+      initialMaxPoints={Number.isFinite(maxPoints) ? maxPoints : 18_000}
+      initialDebugSeams={searchParams?.debugSeams === "1"}
+    />
+  );
 }

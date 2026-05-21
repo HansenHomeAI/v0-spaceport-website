@@ -1,0 +1,74 @@
+{
+  "updated": "2026-05-21T22:51:21Z",
+  "scope": "SfM-only seam graph and visibility-cell planner hardening; no SageMaker jobs launched for this proof.",
+  "decision": "not_production_ready_until_patched_cvhr_replay_passes",
+  "accountability_automation": {
+    "id": "sfm-seam-graph-production-proof",
+    "kind": "heartbeat",
+    "cadence": "FREQ=MINUTELY;INTERVAL=30",
+    "status": "ACTIVE"
+  },
+  "root_cause": {
+    "summary": "The old CV-HR visibility-cell run produced overlap-dominated weak-core leaves that could pass old component/registration gates while failing strict seam graph scale checks.",
+    "support_analysis": "logs/sfm-production-spine/cvhr_leaf02_leaf10_seam_support_analysis_20260521T2225Z.json",
+    "weak_core_manifest_contract": "logs/sfm-production-spine/cvhr_visibility_cell_v1_existing_manifest_weak_core_contract_20260521T2250Z.json",
+    "old_cvhr_weak_core_chunks": [
+      {
+        "chunk_index": 0,
+        "core_image_count": 15,
+        "min_core_images": 20
+      },
+      {
+        "chunk_index": 10,
+        "core_image_count": 11,
+        "min_core_images": 20
+      }
+    ],
+    "leaf10_support": {
+      "registered_images": 135,
+      "manifest_images": 136,
+      "core_images": 11,
+      "overlap_images": 125
+    },
+    "scale_blocked_bridges": [
+      {
+        "edge": "1-2",
+        "scale_delta": 0.17669258
+      },
+      {
+        "edge": "2-7",
+        "scale_delta": 0.17470825
+      },
+      {
+        "edge": "7-10",
+        "scale_delta": 0.3077208
+      },
+      {
+        "edge": "9-10",
+        "scale_delta": 0.314035
+      }
+    ]
+  },
+  "implemented_patch": {
+    "planner": "visibility_cell_v1 now merges cells with fewer than COLMAP_VISIBILITY_CELL_MIN_CORE_IMAGES core cameras into the nearest viable neighbor before overlap assignment.",
+    "planner_default": "max(COLMAP_CHUNK_MIN_IMAGES, ceil(COLMAP_LEAF_TARGET_IMAGES * 0.25))",
+    "fanout_contract": "scripts/sfm/build_sfm_fanout_contract.py adds --min-core-images and blocks visibility_cell_v1 manifests with weak_core_chunks before launch."
+  },
+  "verification": [
+    {
+      "command": "python3 -m py_compile infrastructure/containers/sfm/run_colmap_sfm.py scripts/sfm/build_sfm_fanout_contract.py scripts/sfm/run_sfm_reducer_canary.py scripts/sfm/run_sfm_fanout_reducer.py scripts/sfm/evaluate_sfm_quality.py",
+      "result": "pass"
+    },
+    {
+      "command": "python3 -m unittest tests.unit.test_colmap_gps_priors tests.unit.test_sfm_reducer_canary tests.unit.test_sfm_fanout_contract tests.unit.test_sfm_fanout_reducer tests.unit.test_sfm_quality_eval",
+      "result": "pass",
+      "tests": 138
+    },
+    {
+      "command": "python3 scripts/sfm/build_sfm_fanout_contract.py --planner-manifest logs/sfm-production-spine/cvhr_visibility_cell_v1_planner_20260519T1749Z/chunk_planner_manifest.json --min-core-images 20 --summary-json-output logs/sfm-production-spine/cvhr_visibility_cell_v1_existing_manifest_weak_core_contract_20260521T2250Z.json",
+      "result": "expected_block",
+      "status": "dry_run_contract_needs_fix"
+    }
+  ],
+  "next_gate": "Run a patched CV-HR planner/manifest replay with no-spend static gates. Only then launch the smallest paid CV-HR repair canary needed to prove seam_graph_sim3_v1 reconnects leaves 02/10 under scale gates."
+}

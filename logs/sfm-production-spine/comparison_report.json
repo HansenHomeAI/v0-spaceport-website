@@ -21,9 +21,10 @@
   "active_training_jobs_proof": "logs/sfm-production-spine/active-md1-training-jobs-current-20260517T0528Z.json",
   "active_training_jobs_task_owned": [],
   "automation": {
-    "id": "sfm-visibility-cell-production-proof-monitor",
-    "keep_active": false,
-    "reason": "SfM-stage production proof completed; delete monitor after final commit/push proof is captured."
+    "id": "sfm-seam-graph-production-proof",
+    "kind": "heartbeat",
+    "cadence": "FREQ=MINUTELY;INTERVAL=30",
+    "status": "ACTIVE"
   },
   "automation_recommendation": "delete after final code/evidence commit and push; downstream 3DGS/SOGS should use a separate monitor if needed",
   "baseline_mature": {
@@ -46,7 +47,10 @@
     "use": "benchmark only, not production candidate"
   },
   "block_reasons": [],
-  "blockers": [],
+  "blockers": [
+    "CV-HR prior visibility-cell output fails strict seam_graph_sim3_v1 because accepted seam graph is disconnected under scale_delta gates",
+    "Old CV-HR manifest has weak core chunks 00/10; patched planner replay is required before production promotion"
+  ],
   "branch": "agent-73948216-sfm-production-spine",
   "candidate": {
     "core_filtered_points": 1168773,
@@ -146,20 +150,20 @@
     "md1-tile03-h1i1lod-r41-1778982714",
     "md1-tile04-h1i1lod-r41-1778982715"
   ],
-  "current_branch_head": "aa2de93abf6da476de21272bb682c78ec1f91353",
-  "current_rung": "SFM_VISIBILITY_CELL_V1_FULL_FANOUT_REDUCER_VIEWER_PASSED",
+  "current_branch_head": "01b872a43618ba84d3f386a0d5fe662005819a44",
+  "current_rung": "SFM_SEAM_GRAPH_SIM3_V1_CVHR_WEAK_CORE_REPAIR_PATCHED_NEEDS_PATCHED_PLANNER_REPLAY",
   "dataset": "MD1 full 2157-image DJI dataset",
-  "decision": "sfm_stage_production_ready",
+  "decision": "md1_strict_seam_graph_replay_passed_cvhr_strict_seam_graph_replay_blocked_and_patched_for_replay",
   "decision_scope": "Promote r4exact739s1 as the MD1 same-dataset speed/quality proof artifact. This does not close a separate future milestone if the requirement is true multi-instance leaf fanout rather than the current single SageMaker processing job using distributed_chunked_v1 inside the harness.",
   "exact_head_workflows": {
+    "head": "01b872a43618ba84d3f386a0d5fe662005819a44",
+    "cdkRun": 26109625986,
     "cdkConclusion": "success",
-    "cdkLog": "logs/sfm-production-spine/github-cdk-25981786724-terminal-20260517T0514Z.log",
-    "cdkRun": 25981786724,
-    "head": "aa2de93abf6da476de21272bb682c78ec1f91353",
-    "pagesConclusion": "success",
-    "pagesLog": "logs/sfm-production-spine/github-pages-25981786728-terminal-20260517T0514Z.log",
-    "pagesRun": 25981786728,
-    "previewUrl": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev"
+    "cdkStatus": "completed",
+    "cdkUrl": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26109625986",
+    "cdkRunView": "logs/sfm-production-spine/visibility_cell_v1_final_cdk_run_view_20260519T1621Z.json",
+    "pagesRun": null,
+    "pagesConclusion": "not_spawned_for_final_non_web_push"
   },
   "failed_jobs": [
     "md1-tile00-lodonly-r38-1778950901",
@@ -333,7 +337,7 @@
       "splat.ply"
     ]
   },
-  "head": "aa2de93abf6da476de21272bb682c78ec1f91353",
+  "head": "01b872a43618ba84d3f386a0d5fe662005819a44",
   "historical_nonblocking_notes": [
     "r24/r25 full-MD1 monolithic 3DGS failed and were not used as the production proof path.",
     "r29 worst447 ds1000 49152 passed only as bounded proof.",
@@ -348,7 +352,7 @@
     "ssim": 0.7207,
     "successful_render_count": 431
   },
-  "last_step": "2026-05-17T05:28Z: exact-head deployed preview proof passed for r40 tile00 plus r41 tile01-tile04 direct visible splats and /sogs-viewer source-matched readiness; active MD1 SageMaker processing/training jobs empty.",
+  "last_step": "2026-05-21T23:14Z: Patched weak-core visibility-cell merging and fanout --min-core-images gating are verified locally. Existing CV-HR manifest now blocks before fanout because chunks 00/10 have only 15/11 core images. A no-copy local patched CV-HR planner replay was attempted against /Users/gabrielhansen/Desktop/CV-HR, but exiftool remained in slow Desktop/iCloud-backed reads for about 16 minutes and emitted no planner artifacts, so it was stopped cleanly with no process left running.",
   "latest_artifacts": {
     "ecr_3dgs_r27_poll": "logs/sfm-production-spine/ecr-3dgs-agent73948216-r27-poll-20260515T1203Z.json",
     "github_runs_exact_head_r27_poll": "logs/sfm-production-spine/github-runs-r27-poll-20260515T1203Z.json",
@@ -389,7 +393,8 @@
     "r29_latest_describe": "logs/sfm-production-spine/md1_worst447_ds1000_r29_3dgs_quality_describe_poll_20260515T1744Z.json",
     "r29_latest_logstreams": "logs/sfm-production-spine/md1_worst447_ds1000_r29_3dgs_quality_logstreams_poll_20260515T1744Z.json",
     "r29_latest_s3_listing": "logs/sfm-production-spine/md1_worst447_ds1000_r29_3dgs_quality_s3_poll_20260515T1744Z.txt",
-    "r29_unrelated_processing_job_describe": "logs/sfm-production-spine/unrelated-processing-md1-shrunk-1456-sfm-1778866088-describe-20260515T1744Z.json"
+    "r29_unrelated_processing_job_describe": "logs/sfm-production-spine/unrelated-processing-md1-shrunk-1456-sfm-1778866088-describe-20260515T1744Z.json",
+    "seam_graph_sim3_v1_weak_core_repair_no_spend_proof": "logs/sfm-production-spine/seam_graph_sim3_v1_weak_core_repair_no_spend_proof_20260521T2251Z.json"
   },
   "latest_ecr_3dgs_digest": "logs/sfm-production-spine/ecr-3dgs-agent73948216-r25-poll-20260515T0904Z.json",
   "latest_quality": {
@@ -410,7 +415,7 @@
   },
   "latest_workflows": "logs/sfm-production-spine/github-runs-r25-poll-20260515T0904Z.json",
   "mode": "distributed_chunked_v1",
-  "next_unblocked_step": "Production proof is complete; no owner action is needed for the audit. Optional next owner step is review/merge/promotion outside this bounded proof.",
+  "next_unblocked_step": "Run patched CV-HR planner/manifest proof from a hydrated local archive or as the smallest bounded SageMaker planner-only job with blocker/budget reason recorded; then launch only the smallest CV-HR repair canary if static gates pass.",
   "owner_action_needed": "none",
   "owner_wait_poll": {
     "active_md1_processing_jobs": [],
@@ -659,8 +664,12 @@
     "status": "complete",
     "updated": "2026-05-17T05:28Z"
   },
-  "project_final_decision": "sfm_stage_production_ready_downstream_3dgs_separate",
-  "project_level_unresolved_caveats": [],
+  "project_final_decision": "md1_strict_seam_graph_replay_passed_cvhr_strict_seam_graph_replay_blocked_and_patched_for_replay",
+  "project_level_unresolved_caveats": [
+    "Downstream 3DGS/SOGS render and AI visual gates are separate from this SfM-only deliverable",
+    "prior global sparse double-surface grid had warning cells",
+    "CV-HR prior 11-leaf output passed older gates but fails new seam_graph_sim3_v1 strict replay because accepted seam graph is disconnected; weak-core leaves 00/10 and scale-blocked leaves 02/10 require patched planner replay before production promotion"
+  ],
   "r24_no_spend_root_cause": {
     "decision": "not_production_ready_owner_approval_needed_for_r25_capacity_densification_proof",
     "named_blocker": "full-MD1 3DGS capacity/densification schedule is too small for 2,157 images: 16k iterations plus reset-alpha pause leaves 55 refinement steps and only 1.995M exported vertices, below the 447-image r22 model with 2.713M vertices.",
@@ -1736,7 +1745,11 @@
       "viewer_api": "logs/sfm-production-spine/md1_visibility_cell_v1_full_pruned_culled_viewer_api_summary_20260519T1556Z.json",
       "viewer_api_large_local_untracked": "logs/sfm-production-spine/md1_visibility_cell_v1_full_pruned_culled_viewer_api_20260519T1556Z.json",
       "viewer_screenshot": "logs/sfm-production-spine/md1_visibility_cell_v1_full_pruned_culled_viewer_20260519T1559Z.png",
-      "viewer_visual_proof": "logs/sfm-production-spine/md1_visibility_cell_v1_full_pruned_culled_viewer_visual_proof_20260519T1559Z.json"
+      "viewer_visual_proof": "logs/sfm-production-spine/md1_visibility_cell_v1_full_pruned_culled_viewer_visual_proof_20260519T1559Z.json",
+      "final_exact_head_cdk_workflow": "logs/sfm-production-spine/visibility_cell_v1_final_cdk_run_view_20260519T1621Z.json",
+      "final_active_processing_jobs": "logs/sfm-production-spine/active-md1-processing-jobs-final-20260519T1621Z.json",
+      "final_active_training_jobs": "logs/sfm-production-spine/active-md1-training-jobs-final-20260519T1621Z.json",
+      "final_aws_identity": "logs/sfm-production-spine/aws_identity_final_20260519T1621Z.json"
     },
     "expected_images": 3076,
     "final_min_track_length": 3,
@@ -1755,12 +1768,20 @@
     "seam_conflict_points_removed": 29621,
     "sparse_low_track_ratio": 0.0,
     "sparse_reprojection_error_p95": 1.7666,
-    "updated_at": "2026-05-19T15:59Z",
+    "updated_at": "2026-05-19T16:21Z",
     "viewer_http_status": 200,
     "viewer_lit_ratio_10pct": 0.0466475,
     "viewer_sampled_points": 160000,
     "viewer_url": "http://127.0.0.1:3000/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fmd1-visibility-cell-v1-full-20260518T2206Z%2Fmerged-pruned-culled%2Fcolmap&maxPoints=160000",
-    "weak_merge_nodes": 0
+    "weak_merge_nodes": 0,
+    "head_at_final_commit": "01b872a43618ba84d3f386a0d5fe662005819a44",
+    "exact_head_cdk_workflow": {
+      "run": 26109625986,
+      "conclusion": "success",
+      "status": "completed",
+      "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26109625986",
+      "evidence": "logs/sfm-production-spine/visibility_cell_v1_final_cdk_run_view_20260519T1621Z.json"
+    }
   },
   "status": "sfm_stage_production_ready_visibility_cell_v1_full_proof_passed",
   "unrelated_active_job_describes": [
@@ -1768,7 +1789,185 @@
   ],
   "unrelated_active_jobs": [],
   "unrelated_active_training_jobs": [],
-  "unresolved_caveats": [],
-  "updated": "2026-05-17T05:28Z",
-  "updated_at": "2026-05-19T15:59Z"
+  "unresolved_caveats": [
+    "Downstream 3DGS/SOGS render and AI visual gates are separate from this SfM-only deliverable",
+    "prior global sparse double-surface grid had warning cells",
+    "CV-HR prior 11-leaf output passed older gates but fails new seam_graph_sim3_v1 strict replay because accepted seam graph is disconnected; weak-core leaves 00/10 and scale-blocked leaves 02/10 require patched planner replay before production promotion"
+  ],
+  "updated": "2026-05-21T23:14:00Z",
+  "updated_at": "2026-05-21T23:14:00Z",
+  "cvhr_visibility_cell_v1_pressure_test": {
+    "updated": "2026-05-20T01:15Z",
+    "status": "full_sfm_pressure_test_passed",
+    "scope": "SfM-only visibility_cell_v1 pressure test on CV-HR; downstream 3DGS/SOGS render and AI gates remain separate",
+    "input_uri": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+    "planner_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-planner-20260519T1749Z/colmap",
+    "final_sfm_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-20260519T1945Z/merged-pruned-culled/colmap",
+    "viewer_url": "http://127.0.0.1:3000/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fcvhr-visibility-cell-v1-full-20260519T1945Z%2Fmerged-pruned-culled%2Fcolmap&maxPoints=160000",
+    "heartbeat_automation": "cv-hr-visibility-cell-full-sfm-monitor deleted",
+    "planner_facts": {
+      "images": 1710,
+      "cells": 11,
+      "orphan_images": 0,
+      "connected_components": 1,
+      "min_adjacent_shared_images": 18,
+      "weak_adjacent_seams": []
+    },
+    "canary_facts": {
+      "leaves": [
+        "leaf-03",
+        "leaf-04"
+      ],
+      "registered_images": 691,
+      "merged_points3d": 367513,
+      "merged_component_count": 1,
+      "shared_seam_images": 29,
+      "cross_leaf_flagged_overlap_cell_ratio": 0.0,
+      "sparse_reprojection_error_p95": 1.7579
+    },
+    "full_facts": {
+      "leaf_count": 11,
+      "passed_leaf_count": 11,
+      "registered_images": 1706,
+      "expected_registered_images": 1706,
+      "merged_points3d": 762075,
+      "merged_component_count": 1,
+      "cross_leaf_flagged_overlap_cell_ratio": 0.0,
+      "overlap_cells": 385,
+      "sparse_reprojection_error_p95": 1.7974,
+      "double_surface_flagged_cell_ratio": 0.0459,
+      "double_surface_max": 0.08,
+      "viewer_http_status": 200,
+      "sampled_viewer_points": 160000,
+      "active_cvhr_processing_jobs": []
+    },
+    "evidence": {
+      "planner_describe": "logs/sfm-production-spine/cvhr-viscell-plan-v1-1779214624_describe_poll_20260519T1758Z.json",
+      "planner_s3_terminal": "logs/sfm-production-spine/cvhr_visibility_cell_v1_planner_s3_terminal_20260519T1758Z.txt",
+      "canary_reducer_report": "logs/sfm-production-spine/cvhr_visibility_cell_v1_canary_reducer_20260519T1932Z.json",
+      "canary_quality_report": "logs/sfm-production-spine/cvhr_visibility_cell_v1_canary_quality_20260519T1939Z.json",
+      "canary_viewer_screenshot": "logs/sfm-production-spine/cvhr_visibility_cell_v1_canary_viewer_loaded_20260519T1942Z.png",
+      "full_leaf_s3_terminal": "logs/sfm-production-spine/cvhr_visibility_cell_v1_full_all_leaves_s3_terminal_20260520T0052Z.txt",
+      "full_reducer_report": "logs/sfm-production-spine/cvhr_visibility_cell_v1_full_reducer_20260520T0055Z.json",
+      "full_quality_report": "logs/sfm-production-spine/cvhr_visibility_cell_v1_full_quality_20260520T0109Z.json",
+      "full_viewer_api": "logs/sfm-production-spine/cvhr_visibility_cell_v1_full_viewer_api_summary_20260520T0108Z.json",
+      "full_viewer_visual_proof": "logs/sfm-production-spine/cvhr_visibility_cell_v1_full_viewer_visual_proof_20260520T0110Z.json",
+      "full_viewer_screenshot": "logs/sfm-production-spine/cvhr_visibility_cell_v1_full_viewer_loaded_20260520T0110Z.png",
+      "active_cvhr_processing_jobs_final": "logs/sfm-production-spine/active-cvhr-processing-jobs-final-20260520T0115Z.json"
+    },
+    "caveats": [
+      "Quality evaluator decision is needs_more_proof only because heldout render metrics and AI visual review require downstream splat renders, outside this SfM-only proof.",
+      "A local disk-space error occurred after the last leaf completed while writing manager status; it was local-only, AWS leaf outputs were complete, and reducer/viewer proof succeeded from S3 artifacts."
+    ]
+  },
+  "seam_graph_sim3_v1_hardening": {
+    "updated": "2026-05-21T23:14:00Z",
+    "scope": "SfM reducer/viewer/planner hardening only; no SageMaker jobs launched for this weak-core repair patch.",
+    "status": "no_spend_implementation_tests_and_real_md1_replay_passed_cvhr_replay_blocked_weak_core_repair_patched",
+    "accountability_automation": {
+      "id": "sfm-seam-graph-production-proof",
+      "kind": "heartbeat",
+      "cadence": "FREQ=MINUTELY;INTERVAL=30",
+      "status": "ACTIVE"
+    },
+    "proof": "logs/sfm-production-spine/seam_graph_sim3_v1_no_spend_proof_20260521T215008Z.json",
+    "weak_core_repair": {
+      "support_analysis": "logs/sfm-production-spine/cvhr_leaf02_leaf10_seam_support_analysis_20260521T2225Z.json",
+      "existing_manifest_contract": "logs/sfm-production-spine/cvhr_visibility_cell_v1_existing_manifest_weak_core_contract_20260521T2250Z.json",
+      "facts": {
+        "old_cvhr_weak_core_chunks": [
+          {
+            "chunk_index": 0,
+            "core_image_count": 15,
+            "min_core_images": 20
+          },
+          {
+            "chunk_index": 10,
+            "core_image_count": 11,
+            "min_core_images": 20
+          }
+        ],
+        "leaf10_support": {
+          "registered_images": 135,
+          "manifest_images": 136,
+          "core_images": 11,
+          "overlap_images": 125
+        },
+        "scale_blocked_bridges": [
+          {
+            "edge": "1-2",
+            "scale_delta": 0.17669258
+          },
+          {
+            "edge": "2-7",
+            "scale_delta": 0.17470825
+          },
+          {
+            "edge": "7-10",
+            "scale_delta": 0.3077208
+          },
+          {
+            "edge": "9-10",
+            "scale_delta": 0.314035
+          }
+        ]
+      },
+      "patch": [
+        "visibility_cell_v1 merges cells with fewer than COLMAP_VISIBILITY_CELL_MIN_CORE_IMAGES core cameras into the nearest viable neighbor before overlap assignment",
+        "fanout contract adds --min-core-images and blocks weak-core visibility-cell manifests before launch"
+      ],
+      "proof": "logs/sfm-production-spine/seam_graph_sim3_v1_weak_core_repair_no_spend_proof_20260521T2251Z.json",
+      "local_replay_attempt": {
+        "attempted_at": "2026-05-21T22:58Z",
+        "mode": "no_copy_local_planner_replay",
+        "input_dir": "/Users/gabrielhansen/Desktop/CV-HR",
+        "result": "stopped_no_artifacts",
+        "reason": "exiftool remained in slow Desktop/iCloud-backed reads for about 16 minutes",
+        "cleanup": "process stopped cleanly; temp output removed"
+      }
+    },
+    "implemented": [
+      "reducer merge_strategy seam_graph_sim3_v1 with seam_merge_report.json",
+      "all candidate seam edge reports include shared counts, camera distribution/rank, Sim3 scale/residuals, baseline-normalized residual, held-out residual, duplicate-surface stats, decision, and blockers",
+      "merge graph selects deterministic max-confidence spanning tree with root chosen by accepted seam confidence, registered core image count, then leaf index",
+      "strict production flags reject weak shared-camera count, degenerate camera layout, bad scale, bad residual, bad baseline-normalized residual, and cycle failure",
+      "post-merge core-owned track culling audit records removal reason and affected seam when planner manifest core names are supplied",
+      "quality evaluator now gates seam_graph_sim3, seam_cycle_consistency, and post_merge_jurisdiction_culling",
+      "pipeline-viewer/sfm-preview debugSeams=1 loads seam_merge_report.json summary without changing normal viewer behavior",
+      "visibility_cell_v1 planner now merges weak core cells before fanout to prevent overlap-dominated leaves from becoming independent reconstruction units",
+      "fanout contract now emits visibility_cell_contract.weak_core_chunks and blocks production fanout when a leaf is below min_required_core_images"
+    ],
+    "verification": [
+      "python3 -m py_compile infrastructure/containers/sfm/run_colmap_sfm.py scripts/sfm/build_sfm_fanout_contract.py scripts/sfm/run_sfm_reducer_canary.py scripts/sfm/run_sfm_fanout_reducer.py scripts/sfm/evaluate_sfm_quality.py",
+      "python3 -m unittest tests.unit.test_colmap_gps_priors tests.unit.test_sfm_reducer_canary tests.unit.test_sfm_fanout_contract tests.unit.test_sfm_fanout_reducer tests.unit.test_sfm_quality_eval (138 tests)",
+      "existing CV-HR visibility-cell manifest contract replay exits dry_run_contract_needs_fix with weak_core_chunks=[00,10]",
+      "previous npm --prefix web run build passed after debugSeams viewer patch with pre-existing warnings",
+      "jq empty logs/sfm-production-spine/frontier.json logs/sfm-production-spine/final_promotion_packet.json logs/sfm-production-spine/md1_speed_proof_audit.json logs/sfm-production-spine/comparison_report.json logs/sfm-production-spine/cvhr_leaf02_leaf10_seam_support_analysis_20260521T2225Z.json logs/sfm-production-spine/cvhr_visibility_cell_v1_existing_manifest_weak_core_contract_20260521T2250Z.json logs/sfm-production-spine/seam_graph_sim3_v1_weak_core_repair_no_spend_proof_20260521T2251Z.json",
+      "AWS SageMaker InProgress query for MD1/CV-HR processing jobs returned []",
+      "AWS SageMaker InProgress query for MD1/CV-HR training jobs returned []",
+      "npm --prefix web run build passed with pre-existing warnings"
+    ],
+    "real_artifact_replay": {
+      "md1": {
+        "report": "logs/sfm-production-spine/md1_seam_graph_sim3_v1_report_replay_20260521T215008Z.json",
+        "result": "pass",
+        "facts": "19 leaves, root leaf 14, 18 accepted merge-tree edges, 15 non-tree accepted edges, no promotion blockers"
+      },
+      "cvhr": {
+        "report": "logs/sfm-production-spine/cvhr_seam_graph_sim3_v1_report_replay_20260521T215008Z.json",
+        "blocker_isolation": "logs/sfm-production-spine/cvhr_seam_graph_sim3_v1_blocker_isolation_20260521T2218Z.json",
+        "support_analysis": "logs/sfm-production-spine/cvhr_leaf02_leaf10_seam_support_analysis_20260521T2225Z.json",
+        "result": "fail_on_old_output_patched_for_replay",
+        "facts": "11 leaves, only 8 accepted merge-tree edges, accepted nodes 0/1/3/4/5/6/7/8/9, leaves 02/10 disconnected; old manifest has weak core chunks 00/10 and top rejected bridges fail scale_delta_exceeds_gate"
+      }
+    },
+    "known_limits": [
+      "seam-local BA is wired as an interface flag/report field but not yet executed by the local text reducer",
+      "spatial jurisdiction bounds are not re-applied after Sim3 unless the planner/root COLMAP coordinate relationship is available; core-track ownership is enforced when manifest core names are supplied",
+      "CV-HR needs a patched planner replay and smallest-leaf repair canary before the strict seam graph can be promoted across both datasets"
+    ]
+  },
+  "proof_artifacts_extra": {
+    "seam_graph_sim3_v1_weak_core_repair_no_spend_proof": "logs/sfm-production-spine/seam_graph_sim3_v1_weak_core_repair_no_spend_proof_20260521T2251Z.json"
+  }
 }

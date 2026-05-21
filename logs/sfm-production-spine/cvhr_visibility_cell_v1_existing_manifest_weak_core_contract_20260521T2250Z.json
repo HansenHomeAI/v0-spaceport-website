@@ -1,0 +1,1264 @@
+{
+  "status": "dry_run_contract_needs_fix",
+  "no_compute_launched": true,
+  "branch": "agent-73948216-sfm-production-spine",
+  "head": "01b872a43618ba84d3f386a0d5fe662005819a44",
+  "input_s3_uri": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+  "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z",
+  "planner_manifest": "logs/sfm-production-spine/cvhr_visibility_cell_v1_planner_20260519T1749Z/chunk_planner_manifest.json",
+  "planner_manifest_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-planner-20260519T1749Z/colmap/chunk_planner_manifest.json",
+  "planner": "visibility_cell_v1",
+  "pipeline_mode": "distributed_chunked_v1",
+  "max_concurrency": 11,
+  "retry_policy": {
+    "max_attempts_per_leaf": 2,
+    "rerun_scope": "failed_leaf_or_smallest_bridge_only",
+    "duplicate_full_md1_launch_allowed": false
+  },
+  "chunk_count": 11,
+  "leaf_job_count": 11,
+  "visibility_cell_contract": {
+    "enabled": true,
+    "cell_count": 11,
+    "seam_overlap_percent": 15.0,
+    "primary_cell_id_by_image_count": 1710,
+    "overlap_cell_id_by_image_count": 1057,
+    "chunk_jurisdiction_count": 11,
+    "min_required_adjacent_shared_images": 10,
+    "min_required_core_images": 20,
+    "weak_core_chunks": [
+      {
+        "chunk_index": 0,
+        "core_image_count": 15,
+        "min_core_images": 20
+      },
+      {
+        "chunk_index": 10,
+        "core_image_count": 11,
+        "min_core_images": 20
+      }
+    ],
+    "min_adjacent_shared_images": 18,
+    "weak_adjacent_seams_under_10": [],
+    "adjacent_seam_shared_images": [
+      {
+        "first_chunk_index": 0,
+        "second_chunk_index": 1,
+        "shared_image_count": 95
+      },
+      {
+        "first_chunk_index": 0,
+        "second_chunk_index": 4,
+        "shared_image_count": 59
+      },
+      {
+        "first_chunk_index": 0,
+        "second_chunk_index": 6,
+        "shared_image_count": 92
+      },
+      {
+        "first_chunk_index": 1,
+        "second_chunk_index": 2,
+        "shared_image_count": 206
+      },
+      {
+        "first_chunk_index": 1,
+        "second_chunk_index": 3,
+        "shared_image_count": 73
+      },
+      {
+        "first_chunk_index": 1,
+        "second_chunk_index": 4,
+        "shared_image_count": 71
+      },
+      {
+        "first_chunk_index": 1,
+        "second_chunk_index": 5,
+        "shared_image_count": 72
+      },
+      {
+        "first_chunk_index": 1,
+        "second_chunk_index": 6,
+        "shared_image_count": 80
+      },
+      {
+        "first_chunk_index": 1,
+        "second_chunk_index": 7,
+        "shared_image_count": 89
+      },
+      {
+        "first_chunk_index": 2,
+        "second_chunk_index": 3,
+        "shared_image_count": 34
+      },
+      {
+        "first_chunk_index": 2,
+        "second_chunk_index": 7,
+        "shared_image_count": 178
+      },
+      {
+        "first_chunk_index": 3,
+        "second_chunk_index": 4,
+        "shared_image_count": 29
+      },
+      {
+        "first_chunk_index": 3,
+        "second_chunk_index": 5,
+        "shared_image_count": 71
+      },
+      {
+        "first_chunk_index": 3,
+        "second_chunk_index": 7,
+        "shared_image_count": 82
+      },
+      {
+        "first_chunk_index": 3,
+        "second_chunk_index": 9,
+        "shared_image_count": 18
+      },
+      {
+        "first_chunk_index": 3,
+        "second_chunk_index": 10,
+        "shared_image_count": 20
+      },
+      {
+        "first_chunk_index": 4,
+        "second_chunk_index": 5,
+        "shared_image_count": 64
+      },
+      {
+        "first_chunk_index": 4,
+        "second_chunk_index": 6,
+        "shared_image_count": 125
+      },
+      {
+        "first_chunk_index": 4,
+        "second_chunk_index": 8,
+        "shared_image_count": 54
+      },
+      {
+        "first_chunk_index": 4,
+        "second_chunk_index": 9,
+        "shared_image_count": 86
+      },
+      {
+        "first_chunk_index": 5,
+        "second_chunk_index": 9,
+        "shared_image_count": 29
+      },
+      {
+        "first_chunk_index": 6,
+        "second_chunk_index": 8,
+        "shared_image_count": 242
+      },
+      {
+        "first_chunk_index": 6,
+        "second_chunk_index": 9,
+        "shared_image_count": 155
+      },
+      {
+        "first_chunk_index": 7,
+        "second_chunk_index": 9,
+        "shared_image_count": 98
+      },
+      {
+        "first_chunk_index": 7,
+        "second_chunk_index": 10,
+        "shared_image_count": 122
+      },
+      {
+        "first_chunk_index": 8,
+        "second_chunk_index": 9,
+        "shared_image_count": 178
+      },
+      {
+        "first_chunk_index": 9,
+        "second_chunk_index": 10,
+        "shared_image_count": 101
+      }
+    ]
+  },
+  "coverage": {
+    "selected_chunk_indexes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "expected_chunk_indexes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "unique_core_images": 1710,
+    "unique_leaf_images": 1710,
+    "duplicate_core_images": 0,
+    "max_leaf_image_count": 360,
+    "max_core_image_count": 281
+  },
+  "leaf_jobs": [
+    {
+      "chunk_index": 0,
+      "job_name": "cvhr-viscell-repair-preflight-leaf-00",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-00/colmap",
+      "image_count": 108,
+      "core_image_count": 15,
+      "overlap_image_count": 93,
+      "selected_chunk_indexes": [
+        0
+      ],
+      "processing_job_spec": {
+        "ProcessingJobName": "cvhr-viscell-repair-preflight-leaf-00",
+        "AppSpecification": {
+          "ImageUri": "placeholder/sfm:local",
+          "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 120
+          }
+        },
+        "ProcessingInputs": [
+          {
+            "InputName": "sfm-input",
+            "S3Input": {
+              "S3Uri": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+              "LocalPath": "/opt/ml/processing/input",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File",
+              "S3DataDistributionType": "FullyReplicated",
+              "S3CompressionType": "None"
+            }
+          }
+        ],
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "OutputName": "colmap-output",
+              "S3Output": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-00/colmap",
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob"
+              },
+              "AppManaged": false
+            }
+          ]
+        },
+        "Environment": {
+          "AWS_DEFAULT_REGION": "us-west-2",
+          "PYTHONUNBUFFERED": "1",
+          "SFM_BRANCH_NAME": "agent-73948216-sfm-production-spine",
+          "SFM_GIT_HEAD": "01b872a43618ba84d3f386a0d5fe662005819a44",
+          "SFM_INPUT_URI": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+          "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-00/colmap",
+          "SFM_JOB_NAME": "cvhr-viscell-repair-preflight-leaf-00",
+          "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+          "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+          "COLMAP_CHUNK_PLANNER": "visibility_cell_v1",
+          "COLMAP_ONLY_CHUNK_INDEXES": "0",
+          "COLMAP_LEAF_TARGET_IMAGES": "200",
+          "COLMAP_LEAF_HARD_CAP": "320",
+          "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-planner-20260519T1749Z/colmap/chunk_planner_manifest.json"
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "SfM"
+          },
+          {
+            "Key": "Benchmark",
+            "Value": "true"
+          },
+          {
+            "Key": "Branch",
+            "Value": "agent-73948216-sfm-production-spine"
+          },
+          {
+            "Key": "FanoutProof",
+            "Value": "true"
+          }
+        ]
+      }
+    },
+    {
+      "chunk_index": 1,
+      "job_name": "cvhr-viscell-repair-preflight-leaf-01",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-01/colmap",
+      "image_count": 360,
+      "core_image_count": 130,
+      "overlap_image_count": 230,
+      "selected_chunk_indexes": [
+        1
+      ],
+      "processing_job_spec": {
+        "ProcessingJobName": "cvhr-viscell-repair-preflight-leaf-01",
+        "AppSpecification": {
+          "ImageUri": "placeholder/sfm:local",
+          "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 120
+          }
+        },
+        "ProcessingInputs": [
+          {
+            "InputName": "sfm-input",
+            "S3Input": {
+              "S3Uri": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+              "LocalPath": "/opt/ml/processing/input",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File",
+              "S3DataDistributionType": "FullyReplicated",
+              "S3CompressionType": "None"
+            }
+          }
+        ],
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "OutputName": "colmap-output",
+              "S3Output": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-01/colmap",
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob"
+              },
+              "AppManaged": false
+            }
+          ]
+        },
+        "Environment": {
+          "AWS_DEFAULT_REGION": "us-west-2",
+          "PYTHONUNBUFFERED": "1",
+          "SFM_BRANCH_NAME": "agent-73948216-sfm-production-spine",
+          "SFM_GIT_HEAD": "01b872a43618ba84d3f386a0d5fe662005819a44",
+          "SFM_INPUT_URI": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+          "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-01/colmap",
+          "SFM_JOB_NAME": "cvhr-viscell-repair-preflight-leaf-01",
+          "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+          "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+          "COLMAP_CHUNK_PLANNER": "visibility_cell_v1",
+          "COLMAP_ONLY_CHUNK_INDEXES": "1",
+          "COLMAP_LEAF_TARGET_IMAGES": "200",
+          "COLMAP_LEAF_HARD_CAP": "320",
+          "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-planner-20260519T1749Z/colmap/chunk_planner_manifest.json"
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "SfM"
+          },
+          {
+            "Key": "Benchmark",
+            "Value": "true"
+          },
+          {
+            "Key": "Branch",
+            "Value": "agent-73948216-sfm-production-spine"
+          },
+          {
+            "Key": "FanoutProof",
+            "Value": "true"
+          }
+        ]
+      }
+    },
+    {
+      "chunk_index": 2,
+      "job_name": "cvhr-viscell-repair-preflight-leaf-02",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-02/colmap",
+      "image_count": 360,
+      "core_image_count": 193,
+      "overlap_image_count": 167,
+      "selected_chunk_indexes": [
+        2
+      ],
+      "processing_job_spec": {
+        "ProcessingJobName": "cvhr-viscell-repair-preflight-leaf-02",
+        "AppSpecification": {
+          "ImageUri": "placeholder/sfm:local",
+          "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 120
+          }
+        },
+        "ProcessingInputs": [
+          {
+            "InputName": "sfm-input",
+            "S3Input": {
+              "S3Uri": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+              "LocalPath": "/opt/ml/processing/input",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File",
+              "S3DataDistributionType": "FullyReplicated",
+              "S3CompressionType": "None"
+            }
+          }
+        ],
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "OutputName": "colmap-output",
+              "S3Output": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-02/colmap",
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob"
+              },
+              "AppManaged": false
+            }
+          ]
+        },
+        "Environment": {
+          "AWS_DEFAULT_REGION": "us-west-2",
+          "PYTHONUNBUFFERED": "1",
+          "SFM_BRANCH_NAME": "agent-73948216-sfm-production-spine",
+          "SFM_GIT_HEAD": "01b872a43618ba84d3f386a0d5fe662005819a44",
+          "SFM_INPUT_URI": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+          "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-02/colmap",
+          "SFM_JOB_NAME": "cvhr-viscell-repair-preflight-leaf-02",
+          "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+          "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+          "COLMAP_CHUNK_PLANNER": "visibility_cell_v1",
+          "COLMAP_ONLY_CHUNK_INDEXES": "2",
+          "COLMAP_LEAF_TARGET_IMAGES": "200",
+          "COLMAP_LEAF_HARD_CAP": "320",
+          "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-planner-20260519T1749Z/colmap/chunk_planner_manifest.json"
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "SfM"
+          },
+          {
+            "Key": "Benchmark",
+            "Value": "true"
+          },
+          {
+            "Key": "Branch",
+            "Value": "agent-73948216-sfm-production-spine"
+          },
+          {
+            "Key": "FanoutProof",
+            "Value": "true"
+          }
+        ]
+      }
+    },
+    {
+      "chunk_index": 3,
+      "job_name": "cvhr-viscell-repair-preflight-leaf-03",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-03/colmap",
+      "image_count": 360,
+      "core_image_count": 280,
+      "overlap_image_count": 80,
+      "selected_chunk_indexes": [
+        3
+      ],
+      "processing_job_spec": {
+        "ProcessingJobName": "cvhr-viscell-repair-preflight-leaf-03",
+        "AppSpecification": {
+          "ImageUri": "placeholder/sfm:local",
+          "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 120
+          }
+        },
+        "ProcessingInputs": [
+          {
+            "InputName": "sfm-input",
+            "S3Input": {
+              "S3Uri": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+              "LocalPath": "/opt/ml/processing/input",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File",
+              "S3DataDistributionType": "FullyReplicated",
+              "S3CompressionType": "None"
+            }
+          }
+        ],
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "OutputName": "colmap-output",
+              "S3Output": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-03/colmap",
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob"
+              },
+              "AppManaged": false
+            }
+          ]
+        },
+        "Environment": {
+          "AWS_DEFAULT_REGION": "us-west-2",
+          "PYTHONUNBUFFERED": "1",
+          "SFM_BRANCH_NAME": "agent-73948216-sfm-production-spine",
+          "SFM_GIT_HEAD": "01b872a43618ba84d3f386a0d5fe662005819a44",
+          "SFM_INPUT_URI": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+          "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-03/colmap",
+          "SFM_JOB_NAME": "cvhr-viscell-repair-preflight-leaf-03",
+          "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+          "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+          "COLMAP_CHUNK_PLANNER": "visibility_cell_v1",
+          "COLMAP_ONLY_CHUNK_INDEXES": "3",
+          "COLMAP_LEAF_TARGET_IMAGES": "200",
+          "COLMAP_LEAF_HARD_CAP": "320",
+          "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-planner-20260519T1749Z/colmap/chunk_planner_manifest.json"
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "SfM"
+          },
+          {
+            "Key": "Benchmark",
+            "Value": "true"
+          },
+          {
+            "Key": "Branch",
+            "Value": "agent-73948216-sfm-production-spine"
+          },
+          {
+            "Key": "FanoutProof",
+            "Value": "true"
+          }
+        ]
+      }
+    },
+    {
+      "chunk_index": 4,
+      "job_name": "cvhr-viscell-repair-preflight-leaf-04",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-04/colmap",
+      "image_count": 360,
+      "core_image_count": 281,
+      "overlap_image_count": 79,
+      "selected_chunk_indexes": [
+        4
+      ],
+      "processing_job_spec": {
+        "ProcessingJobName": "cvhr-viscell-repair-preflight-leaf-04",
+        "AppSpecification": {
+          "ImageUri": "placeholder/sfm:local",
+          "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 120
+          }
+        },
+        "ProcessingInputs": [
+          {
+            "InputName": "sfm-input",
+            "S3Input": {
+              "S3Uri": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+              "LocalPath": "/opt/ml/processing/input",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File",
+              "S3DataDistributionType": "FullyReplicated",
+              "S3CompressionType": "None"
+            }
+          }
+        ],
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "OutputName": "colmap-output",
+              "S3Output": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-04/colmap",
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob"
+              },
+              "AppManaged": false
+            }
+          ]
+        },
+        "Environment": {
+          "AWS_DEFAULT_REGION": "us-west-2",
+          "PYTHONUNBUFFERED": "1",
+          "SFM_BRANCH_NAME": "agent-73948216-sfm-production-spine",
+          "SFM_GIT_HEAD": "01b872a43618ba84d3f386a0d5fe662005819a44",
+          "SFM_INPUT_URI": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+          "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-04/colmap",
+          "SFM_JOB_NAME": "cvhr-viscell-repair-preflight-leaf-04",
+          "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+          "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+          "COLMAP_CHUNK_PLANNER": "visibility_cell_v1",
+          "COLMAP_ONLY_CHUNK_INDEXES": "4",
+          "COLMAP_LEAF_TARGET_IMAGES": "200",
+          "COLMAP_LEAF_HARD_CAP": "320",
+          "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-planner-20260519T1749Z/colmap/chunk_planner_manifest.json"
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "SfM"
+          },
+          {
+            "Key": "Benchmark",
+            "Value": "true"
+          },
+          {
+            "Key": "Branch",
+            "Value": "agent-73948216-sfm-production-spine"
+          },
+          {
+            "Key": "FanoutProof",
+            "Value": "true"
+          }
+        ]
+      }
+    },
+    {
+      "chunk_index": 5,
+      "job_name": "cvhr-viscell-repair-preflight-leaf-05",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-05/colmap",
+      "image_count": 360,
+      "core_image_count": 281,
+      "overlap_image_count": 79,
+      "selected_chunk_indexes": [
+        5
+      ],
+      "processing_job_spec": {
+        "ProcessingJobName": "cvhr-viscell-repair-preflight-leaf-05",
+        "AppSpecification": {
+          "ImageUri": "placeholder/sfm:local",
+          "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 120
+          }
+        },
+        "ProcessingInputs": [
+          {
+            "InputName": "sfm-input",
+            "S3Input": {
+              "S3Uri": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+              "LocalPath": "/opt/ml/processing/input",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File",
+              "S3DataDistributionType": "FullyReplicated",
+              "S3CompressionType": "None"
+            }
+          }
+        ],
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "OutputName": "colmap-output",
+              "S3Output": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-05/colmap",
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob"
+              },
+              "AppManaged": false
+            }
+          ]
+        },
+        "Environment": {
+          "AWS_DEFAULT_REGION": "us-west-2",
+          "PYTHONUNBUFFERED": "1",
+          "SFM_BRANCH_NAME": "agent-73948216-sfm-production-spine",
+          "SFM_GIT_HEAD": "01b872a43618ba84d3f386a0d5fe662005819a44",
+          "SFM_INPUT_URI": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+          "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-05/colmap",
+          "SFM_JOB_NAME": "cvhr-viscell-repair-preflight-leaf-05",
+          "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+          "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+          "COLMAP_CHUNK_PLANNER": "visibility_cell_v1",
+          "COLMAP_ONLY_CHUNK_INDEXES": "5",
+          "COLMAP_LEAF_TARGET_IMAGES": "200",
+          "COLMAP_LEAF_HARD_CAP": "320",
+          "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-planner-20260519T1749Z/colmap/chunk_planner_manifest.json"
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "SfM"
+          },
+          {
+            "Key": "Benchmark",
+            "Value": "true"
+          },
+          {
+            "Key": "Branch",
+            "Value": "agent-73948216-sfm-production-spine"
+          },
+          {
+            "Key": "FanoutProof",
+            "Value": "true"
+          }
+        ]
+      }
+    },
+    {
+      "chunk_index": 6,
+      "job_name": "cvhr-viscell-repair-preflight-leaf-06",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-06/colmap",
+      "image_count": 360,
+      "core_image_count": 96,
+      "overlap_image_count": 264,
+      "selected_chunk_indexes": [
+        6
+      ],
+      "processing_job_spec": {
+        "ProcessingJobName": "cvhr-viscell-repair-preflight-leaf-06",
+        "AppSpecification": {
+          "ImageUri": "placeholder/sfm:local",
+          "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 120
+          }
+        },
+        "ProcessingInputs": [
+          {
+            "InputName": "sfm-input",
+            "S3Input": {
+              "S3Uri": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+              "LocalPath": "/opt/ml/processing/input",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File",
+              "S3DataDistributionType": "FullyReplicated",
+              "S3CompressionType": "None"
+            }
+          }
+        ],
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "OutputName": "colmap-output",
+              "S3Output": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-06/colmap",
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob"
+              },
+              "AppManaged": false
+            }
+          ]
+        },
+        "Environment": {
+          "AWS_DEFAULT_REGION": "us-west-2",
+          "PYTHONUNBUFFERED": "1",
+          "SFM_BRANCH_NAME": "agent-73948216-sfm-production-spine",
+          "SFM_GIT_HEAD": "01b872a43618ba84d3f386a0d5fe662005819a44",
+          "SFM_INPUT_URI": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+          "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-06/colmap",
+          "SFM_JOB_NAME": "cvhr-viscell-repair-preflight-leaf-06",
+          "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+          "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+          "COLMAP_CHUNK_PLANNER": "visibility_cell_v1",
+          "COLMAP_ONLY_CHUNK_INDEXES": "6",
+          "COLMAP_LEAF_TARGET_IMAGES": "200",
+          "COLMAP_LEAF_HARD_CAP": "320",
+          "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-planner-20260519T1749Z/colmap/chunk_planner_manifest.json"
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "SfM"
+          },
+          {
+            "Key": "Benchmark",
+            "Value": "true"
+          },
+          {
+            "Key": "Branch",
+            "Value": "agent-73948216-sfm-production-spine"
+          },
+          {
+            "Key": "FanoutProof",
+            "Value": "true"
+          }
+        ]
+      }
+    },
+    {
+      "chunk_index": 7,
+      "job_name": "cvhr-viscell-repair-preflight-leaf-07",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-07/colmap",
+      "image_count": 360,
+      "core_image_count": 154,
+      "overlap_image_count": 206,
+      "selected_chunk_indexes": [
+        7
+      ],
+      "processing_job_spec": {
+        "ProcessingJobName": "cvhr-viscell-repair-preflight-leaf-07",
+        "AppSpecification": {
+          "ImageUri": "placeholder/sfm:local",
+          "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 120
+          }
+        },
+        "ProcessingInputs": [
+          {
+            "InputName": "sfm-input",
+            "S3Input": {
+              "S3Uri": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+              "LocalPath": "/opt/ml/processing/input",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File",
+              "S3DataDistributionType": "FullyReplicated",
+              "S3CompressionType": "None"
+            }
+          }
+        ],
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "OutputName": "colmap-output",
+              "S3Output": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-07/colmap",
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob"
+              },
+              "AppManaged": false
+            }
+          ]
+        },
+        "Environment": {
+          "AWS_DEFAULT_REGION": "us-west-2",
+          "PYTHONUNBUFFERED": "1",
+          "SFM_BRANCH_NAME": "agent-73948216-sfm-production-spine",
+          "SFM_GIT_HEAD": "01b872a43618ba84d3f386a0d5fe662005819a44",
+          "SFM_INPUT_URI": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+          "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-07/colmap",
+          "SFM_JOB_NAME": "cvhr-viscell-repair-preflight-leaf-07",
+          "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+          "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+          "COLMAP_CHUNK_PLANNER": "visibility_cell_v1",
+          "COLMAP_ONLY_CHUNK_INDEXES": "7",
+          "COLMAP_LEAF_TARGET_IMAGES": "200",
+          "COLMAP_LEAF_HARD_CAP": "320",
+          "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-planner-20260519T1749Z/colmap/chunk_planner_manifest.json"
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "SfM"
+          },
+          {
+            "Key": "Benchmark",
+            "Value": "true"
+          },
+          {
+            "Key": "Branch",
+            "Value": "agent-73948216-sfm-production-spine"
+          },
+          {
+            "Key": "FanoutProof",
+            "Value": "true"
+          }
+        ]
+      }
+    },
+    {
+      "chunk_index": 8,
+      "job_name": "cvhr-viscell-repair-preflight-leaf-08",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-08/colmap",
+      "image_count": 316,
+      "core_image_count": 185,
+      "overlap_image_count": 131,
+      "selected_chunk_indexes": [
+        8
+      ],
+      "processing_job_spec": {
+        "ProcessingJobName": "cvhr-viscell-repair-preflight-leaf-08",
+        "AppSpecification": {
+          "ImageUri": "placeholder/sfm:local",
+          "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 120
+          }
+        },
+        "ProcessingInputs": [
+          {
+            "InputName": "sfm-input",
+            "S3Input": {
+              "S3Uri": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+              "LocalPath": "/opt/ml/processing/input",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File",
+              "S3DataDistributionType": "FullyReplicated",
+              "S3CompressionType": "None"
+            }
+          }
+        ],
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "OutputName": "colmap-output",
+              "S3Output": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-08/colmap",
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob"
+              },
+              "AppManaged": false
+            }
+          ]
+        },
+        "Environment": {
+          "AWS_DEFAULT_REGION": "us-west-2",
+          "PYTHONUNBUFFERED": "1",
+          "SFM_BRANCH_NAME": "agent-73948216-sfm-production-spine",
+          "SFM_GIT_HEAD": "01b872a43618ba84d3f386a0d5fe662005819a44",
+          "SFM_INPUT_URI": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+          "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-08/colmap",
+          "SFM_JOB_NAME": "cvhr-viscell-repair-preflight-leaf-08",
+          "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+          "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+          "COLMAP_CHUNK_PLANNER": "visibility_cell_v1",
+          "COLMAP_ONLY_CHUNK_INDEXES": "8",
+          "COLMAP_LEAF_TARGET_IMAGES": "200",
+          "COLMAP_LEAF_HARD_CAP": "320",
+          "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-planner-20260519T1749Z/colmap/chunk_planner_manifest.json"
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "SfM"
+          },
+          {
+            "Key": "Benchmark",
+            "Value": "true"
+          },
+          {
+            "Key": "Branch",
+            "Value": "agent-73948216-sfm-production-spine"
+          },
+          {
+            "Key": "FanoutProof",
+            "Value": "true"
+          }
+        ]
+      }
+    },
+    {
+      "chunk_index": 9,
+      "job_name": "cvhr-viscell-repair-preflight-leaf-09",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-09/colmap",
+      "image_count": 360,
+      "core_image_count": 84,
+      "overlap_image_count": 276,
+      "selected_chunk_indexes": [
+        9
+      ],
+      "processing_job_spec": {
+        "ProcessingJobName": "cvhr-viscell-repair-preflight-leaf-09",
+        "AppSpecification": {
+          "ImageUri": "placeholder/sfm:local",
+          "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 120
+          }
+        },
+        "ProcessingInputs": [
+          {
+            "InputName": "sfm-input",
+            "S3Input": {
+              "S3Uri": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+              "LocalPath": "/opt/ml/processing/input",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File",
+              "S3DataDistributionType": "FullyReplicated",
+              "S3CompressionType": "None"
+            }
+          }
+        ],
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "OutputName": "colmap-output",
+              "S3Output": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-09/colmap",
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob"
+              },
+              "AppManaged": false
+            }
+          ]
+        },
+        "Environment": {
+          "AWS_DEFAULT_REGION": "us-west-2",
+          "PYTHONUNBUFFERED": "1",
+          "SFM_BRANCH_NAME": "agent-73948216-sfm-production-spine",
+          "SFM_GIT_HEAD": "01b872a43618ba84d3f386a0d5fe662005819a44",
+          "SFM_INPUT_URI": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+          "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-09/colmap",
+          "SFM_JOB_NAME": "cvhr-viscell-repair-preflight-leaf-09",
+          "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+          "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+          "COLMAP_CHUNK_PLANNER": "visibility_cell_v1",
+          "COLMAP_ONLY_CHUNK_INDEXES": "9",
+          "COLMAP_LEAF_TARGET_IMAGES": "200",
+          "COLMAP_LEAF_HARD_CAP": "320",
+          "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-planner-20260519T1749Z/colmap/chunk_planner_manifest.json"
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "SfM"
+          },
+          {
+            "Key": "Benchmark",
+            "Value": "true"
+          },
+          {
+            "Key": "Branch",
+            "Value": "agent-73948216-sfm-production-spine"
+          },
+          {
+            "Key": "FanoutProof",
+            "Value": "true"
+          }
+        ]
+      }
+    },
+    {
+      "chunk_index": 10,
+      "job_name": "cvhr-viscell-repair-preflight-leaf-10",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-10/colmap",
+      "image_count": 136,
+      "core_image_count": 11,
+      "overlap_image_count": 125,
+      "selected_chunk_indexes": [
+        10
+      ],
+      "processing_job_spec": {
+        "ProcessingJobName": "cvhr-viscell-repair-preflight-leaf-10",
+        "AppSpecification": {
+          "ImageUri": "placeholder/sfm:local",
+          "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+          ]
+        },
+        "ProcessingResources": {
+          "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 120
+          }
+        },
+        "ProcessingInputs": [
+          {
+            "InputName": "sfm-input",
+            "S3Input": {
+              "S3Uri": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+              "LocalPath": "/opt/ml/processing/input",
+              "S3DataType": "S3Prefix",
+              "S3InputMode": "File",
+              "S3DataDistributionType": "FullyReplicated",
+              "S3CompressionType": "None"
+            }
+          }
+        ],
+        "ProcessingOutputConfig": {
+          "Outputs": [
+            {
+              "OutputName": "colmap-output",
+              "S3Output": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-10/colmap",
+                "LocalPath": "/opt/ml/processing/output",
+                "S3UploadMode": "EndOfJob"
+              },
+              "AppManaged": false
+            }
+          ]
+        },
+        "Environment": {
+          "AWS_DEFAULT_REGION": "us-west-2",
+          "PYTHONUNBUFFERED": "1",
+          "SFM_BRANCH_NAME": "agent-73948216-sfm-production-spine",
+          "SFM_GIT_HEAD": "01b872a43618ba84d3f386a0d5fe662005819a44",
+          "SFM_INPUT_URI": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+          "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-10/colmap",
+          "SFM_JOB_NAME": "cvhr-viscell-repair-preflight-leaf-10",
+          "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+          "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+          "COLMAP_CHUNK_PLANNER": "visibility_cell_v1",
+          "COLMAP_ONLY_CHUNK_INDEXES": "10",
+          "COLMAP_LEAF_TARGET_IMAGES": "200",
+          "COLMAP_LEAF_HARD_CAP": "320",
+          "COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-planner-20260519T1749Z/colmap/chunk_planner_manifest.json"
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "Spaceport"
+          },
+          {
+            "Key": "Component",
+            "Value": "SfM"
+          },
+          {
+            "Key": "Benchmark",
+            "Value": "true"
+          },
+          {
+            "Key": "Branch",
+            "Value": "agent-73948216-sfm-production-spine"
+          },
+          {
+            "Key": "FanoutProof",
+            "Value": "true"
+          }
+        ]
+      }
+    }
+  ],
+  "reducer_contract": {
+    "expected_leaf_count": 11,
+    "leaf_output_uris": [
+      "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-00/colmap",
+      "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-01/colmap",
+      "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-02/colmap",
+      "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-03/colmap",
+      "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-04/colmap",
+      "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-05/colmap",
+      "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-06/colmap",
+      "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-07/colmap",
+      "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-08/colmap",
+      "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-09/colmap",
+      "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/leaves/leaf-10/colmap"
+    ],
+    "final_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-full-repair-preflight-20260521T2250Z/merged/colmap",
+    "required_leaf_artifacts": [
+      "chunk_planner_manifest.json",
+      "leaf_metadata.json",
+      "sfm_metadata.json",
+      "sparse/0/cameras.txt",
+      "sparse/0/images.txt",
+      "sparse/0/points3D.txt",
+      "sparse_raw/0/cameras.txt",
+      "sparse_raw/0/images.txt",
+      "sparse_raw/0/points3D.txt"
+    ],
+    "promotion_gates": [
+      "all leaf jobs Completed",
+      "failed_leaf_count == 0 after bounded retries",
+      "merged_component_count == expected_component_count",
+      "standard sparse/0 exists",
+      "visibility_cell_v1 jurisdiction coverage exists when enabled",
+      "no weak seam has <10 shared registered images without targeted seam proof",
+      "no visibility-cell leaf has fewer than min_required_core_images core cameras",
+      "registration and speed gates compare against md1p24e752k-1776314974"
+    ]
+  },
+  "gaps": [
+    "visibility_cell_v1 leaf chunks must have at least 20 core images or be merged before fanout"
+  ],
+  "warnings": [],
+  "unresolved_after_dry_run": [
+    "actual multi-instance SageMaker leaf execution is not yet proven",
+    "reducer merge from independently uploaded leaf outputs is not yet proven"
+  ],
+  "next_validation_step": "Upload the immutable planner manifest, launch a two-leaf canary with this contract, then run the reducer against the two independent leaf prefixes before any repeat full MD1 fanout."
+}

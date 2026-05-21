@@ -118,6 +118,60 @@ class ColmapGpsPriorTests(unittest.TestCase):
         self.assertIn("weak_adjacent_seams_under_10", report["visibility_cell_summary"])
         self.assertEqual(report["expected_output_kind"], "single_merged_model")
 
+    def test_visibility_cell_planner_merges_weak_core_cells(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {
+                "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+                "COLMAP_CHUNK_PLANNER": "visibility_cell_v1",
+                "COLMAP_CHUNK_MIN_IMAGES": "2",
+                "COLMAP_LEAF_TARGET_IMAGES": "4",
+                "COLMAP_LEAF_HARD_CAP": "8",
+                "COLMAP_VISIBILITY_CELL_MIN_CORE_IMAGES": "3",
+                "COLMAP_VISIBILITY_CELL_MIN_SCORE": "0.0",
+                "COLMAP_VISIBILITY_CELL_MAX_OVERLAP_CELLS": "3",
+                "COLMAP_VISIBILITY_CELL_OVERLAP_RATIO": "0.15",
+            },
+            clear=True,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            names = [f"IMG_{index:03d}.JPG" for index in range(9)]
+            xy = [
+                (0.0, 0.0),
+                (20.0, 0.0),
+                (0.0, 20.0),
+                (20.0, 20.0),
+                (40.0, 0.0),
+                (40.0, 20.0),
+                (60.0, 0.0),
+                (60.0, 20.0),
+                (320.0, 320.0),
+            ]
+            pipeline.capture_ordered_names = names
+            pipeline.exif_records = {
+                name: self.make_visibility_exif_record(
+                    name,
+                    x=xy[index][0],
+                    y=xy[index][1],
+                    capture_time_s=float(index),
+                    heading_deg=0.0,
+                    pitch_deg=-58.0,
+                )
+                for index, name in enumerate(names)
+            }
+            pipeline.dataset_image_count = len(names)
+            pipeline.gps_image_count = len(names)
+            pipeline.orientation_prior_count = len(names)
+            pipeline.colmap_capabilities["supports_matches_importer"] = True
+            pipeline.image_list_path.write_text("\n".join(names) + "\n", encoding="utf-8")
+
+            chunks = pipeline.build_chunk_plans()
+
+        self.assertGreaterEqual(len(chunks), 2)
+        self.assertTrue(all(len(chunk.core_names) >= 3 for chunk in chunks))
+        self.assertEqual(sorted(name for chunk in chunks for name in chunk.core_names), sorted(names))
+
     def test_visibility_cell_jurisdiction_rejects_far_owner_points(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
             os.environ,

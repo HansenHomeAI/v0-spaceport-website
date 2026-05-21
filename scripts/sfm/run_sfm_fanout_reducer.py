@@ -37,9 +37,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--work-dir", required=True)
     parser.add_argument("--report-json-output", required=True)
     parser.add_argument("--min-retention-ratio", type=float, default=0.95)
-    parser.add_argument("--min-shared-images", type=int, default=8)
+    parser.add_argument("--min-shared-images", type=int, default=20)
     parser.add_argument("--expected-component-count", type=int, default=1)
     parser.add_argument("--final-min-track-length", type=int, default=3)
+    parser.add_argument("--planner-manifest", default="")
+    parser.add_argument("--seam-report-output", default="")
+    parser.add_argument("--max-scale-delta", type=float, default=0.15)
+    parser.add_argument("--max-sim3-p95-residual-m", type=float, default=0.25)
+    parser.add_argument("--max-baseline-normalized-residual", type=float, default=0.01)
+    parser.add_argument("--enable-seam-local-ba", action="store_true")
+    parser.add_argument("--strict-production-gates", action="store_true")
     parser.add_argument("--branch", default="")
     parser.add_argument("--head", default="")
     parser.add_argument("--input-uri", default="")
@@ -107,6 +114,23 @@ def download_sparse_from_s3(leaf_uri: str, target: Path) -> dict[str, object]:
     raise RuntimeError(f"Unable to download required sparse files from {leaf_uri}")
 
 
+def load_planner_manifest(manifest_uri: str, work_dir: Path) -> tuple[dict[str, object] | None, dict[str, object]]:
+    if not manifest_uri:
+        return None, {"source": "", "loaded": False}
+    if is_s3_uri(manifest_uri):
+        target = work_dir / "planner_manifest.json"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        command = run_cli(["aws", "s3", "cp", manifest_uri, str(target), "--only-show-errors"])
+        if command["returncode"] != 0:
+            return None, {"source": manifest_uri, "loaded": False, "command": command}
+        path = target
+    else:
+        path = Path(manifest_uri)
+    with path.open("r", encoding="utf-8") as handle:
+        payload = json.load(handle)
+    return payload, {"source": manifest_uri, "loaded": True, "local_path": str(path)}
+
+
 def materialize_leaf_sparse(leaf_uri: str, target: Path) -> tuple[Path, dict[str, object]]:
     if is_s3_uri(leaf_uri):
         result = download_sparse_from_s3(leaf_uri, target)
@@ -131,6 +155,12 @@ def write_standard_output_package(
         json.dumps(reducer_metadata, indent=2) + "\n",
         encoding="utf-8",
     )
+    seam_report = reducer_metadata.get("seam_merge_report")
+    if isinstance(seam_report, dict):
+        (output_dir / "seam_merge_report.json").write_text(
+            json.dumps(seam_report, indent=2) + "\n",
+            encoding="utf-8",
+        )
 
 
 def upload_output(output_dir: Path, output_uri: str) -> dict[str, object]:
@@ -150,6 +180,12 @@ def merge_leaf_models(
     colmap_bin: str,
     min_shared_images: int,
     final_min_track_length: int = 3,
+    planner_manifest: dict[str, object] | None = None,
+    max_scale_delta: float = 0.15,
+    max_sim3_p95_residual_m: float = 0.25,
+    max_baseline_normalized_residual: float = 0.01,
+    enable_seam_local_ba: bool = False,
+    strict_production_gates: bool = False,
     scratch_cleanup_paths: list[Path] | None = None,
 ) -> dict[str, object]:
     normalized_root = work_dir / "normalized"
@@ -167,7 +203,7 @@ def merge_leaf_models(
     convert_commands: list[dict[str, object]] = []
     normalized_dirs: list[Path] = []
     binary_dirs: list[Path] = []
-    use_stock_binary_merge = len(leaf_dirs) == 2
+    use_stock_binary_merge = False
     for index, model_dir in enumerate(leaf_dirs):
         normalized_dir = normalized_root / f"leaf-{index:02d}"
         binary_dir = binary_root / f"leaf-{index:02d}"
@@ -248,6 +284,12 @@ def merge_leaf_models(
                     output_dir=pose_aligned_text,
                     min_shared_images=min_shared_images,
                     min_final_track_length=final_min_track_length,
+                    planner_manifest=planner_manifest,
+                    max_scale_delta=max_scale_delta,
+                    max_sim3_p95_residual_m=max_sim3_p95_residual_m,
+                    max_baseline_normalized_residual=max_baseline_normalized_residual,
+                    enable_seam_local_ba=enable_seam_local_ba,
+                    strict_production_gates=strict_production_gates,
                 )
                 for cleanup_path in scratch_cleanup_paths or []:
                     shutil.rmtree(cleanup_path, ignore_errors=True)
@@ -302,6 +344,8 @@ def merge_leaf_models(
         blockers.append("model_merge_failed")
     if pose_aligned_report is not None and "error" in pose_aligned_report:
         blockers.append("pose_aligned_merge_failed")
+    if pose_aligned_report is not None:
+        blockers.extend(str(item) for item in (pose_aligned_report.get("promotion_blockers") or []))
     if pose_aligned_validator is not None and pose_aligned_validator["returncode"] != 0:
         blockers.append("pose_aligned_model_validation_failed")
 
@@ -338,6 +382,7 @@ def main() -> int:
         leaf_dir, materialize_report = materialize_leaf_sparse(leaf_uri, download_root / f"leaf-{index:02d}")
         leaf_dirs.append(leaf_dir)
         materialize_reports.append({"leaf_uri": leaf_uri, **materialize_report})
+    planner_manifest, planner_manifest_report = load_planner_manifest(args.planner_manifest, work_dir)
 
     merge_report = merge_leaf_models(
         leaf_dirs=leaf_dirs,
@@ -345,6 +390,12 @@ def main() -> int:
         colmap_bin=args.colmap_bin,
         min_shared_images=args.min_shared_images,
         final_min_track_length=args.final_min_track_length,
+        planner_manifest=planner_manifest,
+        max_scale_delta=args.max_scale_delta,
+        max_sim3_p95_residual_m=args.max_sim3_p95_residual_m,
+        max_baseline_normalized_residual=args.max_baseline_normalized_residual,
+        enable_seam_local_ba=args.enable_seam_local_ba,
+        strict_production_gates=args.strict_production_gates,
         scratch_cleanup_paths=[download_root],
     )
     before: list[ModelStats] = merge_report["before"]  # type: ignore[assignment]
@@ -362,6 +413,9 @@ def main() -> int:
     promotion_blockers = list(dict.fromkeys(blockers))
     if merged.registered_images <= 0:
         promotion_blockers.append("missing_sparse0")
+    fallback = merge_report.get("fallback") if isinstance(merge_report.get("fallback"), dict) else {}
+    seam_merge_report = fallback.get("seam_merge_report") if isinstance(fallback, dict) else None
+    seam_report_uri = f"{normalize_prefix(args.output_uri)}/seam_merge_report.json" if seam_merge_report else ""
 
     reducer_metadata = {
         "artifact_kind": "sfm_fanout_reducer_report",
@@ -384,13 +438,21 @@ def main() -> int:
         "min_retention_ratio": args.min_retention_ratio,
         "min_shared_images": args.min_shared_images,
         "final_min_track_length": args.final_min_track_length,
-        "merge_strategy": "stock_colmap_or_chained_pose_aligned_text_merge",
+        "merge_strategy": "seam_graph_sim3_v1",
+        "seam_merge_report_uri": seam_report_uri,
+        "seam_merge_report": seam_merge_report,
+        "accepted_merge_tree": fallback.get("accepted_merge_tree") if isinstance(fallback, dict) else None,
+        "rejected_edges": fallback.get("rejected_edges") if isinstance(fallback, dict) else None,
+        "cycle_consistency": fallback.get("cycle_consistency") if isinstance(fallback, dict) else None,
+        "post_merge_jurisdiction_culling": fallback.get("post_merge_jurisdiction_culling") if isinstance(fallback, dict) else None,
         "merged_component_count": merged_component_count,
         "expected_component_count": args.expected_component_count,
-        "ba_policy": "leaf_local_or_deferred_global",
+        "ba_policy": "seam_local_ba_interface" if args.enable_seam_local_ba else "leaf_local_or_deferred_global",
+        "strict_production_gates": args.strict_production_gates,
         "standard_sparse0_exists": merged.registered_images > 0,
         "promotion_blockers": promotion_blockers,
         "blockers": blockers,
+        "planner_manifest": planner_manifest_report,
         "materialize_reports": materialize_reports,
         "commands": merge_report["commands"],
         "fallback": merge_report["fallback"],
@@ -411,6 +473,10 @@ def main() -> int:
     else:
         upload_report = {"command": [], "returncode": 2, "seconds": 0.0, "skipped": True}
     reducer_metadata["upload"] = upload_report
+    if args.seam_report_output and isinstance(seam_merge_report, dict):
+        seam_output_path = Path(args.seam_report_output).resolve()
+        seam_output_path.parent.mkdir(parents=True, exist_ok=True)
+        seam_output_path.write_text(json.dumps(seam_merge_report, indent=2) + "\n", encoding="utf-8")
     report_path.write_text(json.dumps(reducer_metadata, indent=2) + "\n", encoding="utf-8")
     print(
         json.dumps(

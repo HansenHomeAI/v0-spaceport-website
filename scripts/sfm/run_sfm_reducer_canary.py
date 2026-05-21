@@ -10,8 +10,9 @@ import shutil
 import subprocess
 import time
 from dataclasses import dataclass
+from itertools import combinations
 from pathlib import Path
-from typing import Iterable
+from typing import Any, Iterable
 
 import numpy as np
 
@@ -31,6 +32,15 @@ class SimilarityTransform:
     residuals: list[float]
 
 
+@dataclass(frozen=True)
+class SeamThresholds:
+    min_shared_images: int
+    max_scale_delta: float
+    max_sim3_p95_residual_m: float
+    max_baseline_normalized_residual: float
+    strict_production_gates: bool = False
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -42,7 +52,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--report-json-output", required=True)
     parser.add_argument("--min-retention-ratio", type=float, default=0.95)
-    parser.add_argument("--min-shared-images", type=int, default=8)
+    parser.add_argument("--min-shared-images", type=int, default=20)
+    parser.add_argument("--max-scale-delta", type=float, default=0.15)
+    parser.add_argument("--max-sim3-p95-residual-m", type=float, default=0.25)
+    parser.add_argument("--max-baseline-normalized-residual", type=float, default=0.01)
+    parser.add_argument("--strict-production-gates", action="store_true")
     parser.add_argument("--colmap-bin", default="colmap")
     return parser.parse_args()
 
@@ -210,6 +224,518 @@ def estimate_similarity(source: np.ndarray, target: np.ndarray) -> SimilarityTra
     aligned = (scale * (rotation @ source.T)).T + translation
     residuals = [float(np.linalg.norm(left - right)) for left, right in zip(aligned, target)]
     return SimilarityTransform(scale=scale, rotation=rotation, translation=translation, residuals=residuals)
+
+
+def identity_similarity() -> SimilarityTransform:
+    return SimilarityTransform(
+        scale=1.0,
+        rotation=np.eye(3, dtype=float),
+        translation=np.zeros(3, dtype=float),
+        residuals=[],
+    )
+
+
+def transform_points(points: np.ndarray, transform: SimilarityTransform) -> np.ndarray:
+    if points.size == 0:
+        return points
+    return (transform.scale * (transform.rotation @ points.T)).T + transform.translation
+
+
+def transform_coords(
+    coords: list[tuple[float, float, float]],
+    transform: SimilarityTransform,
+) -> list[tuple[float, float, float]]:
+    if not coords:
+        return []
+    transformed = transform_points(np.array(coords, dtype=float), transform)
+    return [(float(point[0]), float(point[1]), float(point[2])) for point in transformed]
+
+
+def residual_summary(residuals: list[float]) -> dict[str, float | int | None]:
+    if not residuals:
+        return {"count": 0, "min": None, "p50": None, "p95": None, "max": None}
+    ordered = sorted(float(value) for value in residuals)
+    return {
+        "count": len(ordered),
+        "min": round(ordered[0], 6),
+        "p50": round(float(np.median(ordered)), 6),
+        "p95": round(percentile(ordered, 0.95) or 0.0, 6),
+        "max": round(ordered[-1], 6),
+    }
+
+
+def camera_distribution_stats(points: np.ndarray) -> dict[str, object]:
+    if points.size == 0 or points.shape[0] < 2:
+        return {
+            "rank": 0,
+            "baseline_m": 0.0,
+            "singular_values": [],
+            "normalized_singular_values": [],
+        }
+    centered = points - points.mean(axis=0)
+    singular_values = np.linalg.svd(centered, compute_uv=False)
+    largest = float(singular_values[0]) if len(singular_values) else 0.0
+    rank = int(sum(1 for value in singular_values if largest > 0.0 and float(value) / largest > 1e-3))
+    min_corner = points.min(axis=0)
+    max_corner = points.max(axis=0)
+    baseline = float(np.linalg.norm(max_corner - min_corner))
+    normalized = [float(value / largest) if largest > 0.0 else 0.0 for value in singular_values]
+    return {
+        "rank": rank,
+        "baseline_m": round(baseline, 6),
+        "singular_values": [round(float(value), 6) for value in singular_values],
+        "normalized_singular_values": [round(value, 6) for value in normalized],
+    }
+
+
+def candidate_similarity_triplets(count: int) -> list[tuple[int, int, int]]:
+    if count < 3:
+        return []
+    all_indices = range(count)
+    if count <= 14:
+        return list(combinations(all_indices, 3))
+    candidates: set[tuple[int, int, int]] = set()
+    third = max(count // 3, 1)
+    for offset in range(min(count, 64)):
+        candidates.add(tuple(sorted((offset % count, (offset + third) % count, (offset + 2 * third) % count))))
+    candidates.add((0, count // 2, count - 1))
+    candidates.add((0, max(1, count // 3), max(2, (2 * count) // 3)))
+    return [item for item in sorted(candidates) if len(set(item)) == 3]
+
+
+def estimate_robust_similarity(source: np.ndarray, target: np.ndarray) -> SimilarityTransform:
+    if source.shape != target.shape or source.shape[0] < 3:
+        raise ValueError("at least three shared camera centers are required for similarity alignment")
+    source_layout = camera_distribution_stats(source)
+    target_layout = camera_distribution_stats(target)
+    if int(source_layout["rank"]) < 2 or int(target_layout["rank"]) < 2:
+        transform = estimate_similarity(source, target)
+        return transform
+
+    best: tuple[float, float, float, SimilarityTransform] | None = None
+    for triplet in candidate_similarity_triplets(source.shape[0]):
+        indices = np.array(triplet, dtype=int)
+        try:
+            candidate = estimate_similarity(source[indices], target[indices])
+        except Exception:
+            continue
+        residuals = sorted(
+            float(np.linalg.norm(left - right))
+            for left, right in zip(transform_points(source, candidate), target)
+        )
+        score = (
+            float(np.median(residuals)),
+            float(percentile(residuals, 0.95) or residuals[-1]),
+            float(residuals[-1]),
+        )
+        if best is None or score < best[:3]:
+            best = (*score, candidate)
+
+    if best is None:
+        return estimate_similarity(source, target)
+
+    initial = best[3]
+    initial_residuals = [
+        float(np.linalg.norm(left - right))
+        for left, right in zip(transform_points(source, initial), target)
+    ]
+    median = float(np.median(initial_residuals))
+    inlier_cutoff = max(0.05, median * 2.5, float(percentile(initial_residuals, 0.75) or median) * 1.5)
+    inlier_indices = [index for index, value in enumerate(initial_residuals) if value <= inlier_cutoff]
+    if len(inlier_indices) >= 3:
+        try:
+            refined = estimate_similarity(source[np.array(inlier_indices)], target[np.array(inlier_indices)])
+            aligned = transform_points(source, refined)
+            refined_residuals = [float(np.linalg.norm(left - right)) for left, right in zip(aligned, target)]
+            return SimilarityTransform(
+                scale=refined.scale,
+                rotation=refined.rotation,
+                translation=refined.translation,
+                residuals=refined_residuals,
+            )
+        except Exception:
+            pass
+
+    aligned = transform_points(source, initial)
+    return SimilarityTransform(
+        scale=initial.scale,
+        rotation=initial.rotation,
+        translation=initial.translation,
+        residuals=[float(np.linalg.norm(left - right)) for left, right in zip(aligned, target)],
+    )
+
+
+def heldout_similarity_residual(
+    source: np.ndarray,
+    target: np.ndarray,
+) -> dict[str, object]:
+    if source.shape[0] < 5:
+        return {"status": "not_run", "reason": "requires_at_least_5_shared_cameras"}
+    heldout_indices = [index for index in range(source.shape[0]) if index % 5 == 0]
+    train_indices = [index for index in range(source.shape[0]) if index not in set(heldout_indices)]
+    if len(train_indices) < 3 or not heldout_indices:
+        return {"status": "not_run", "reason": "insufficient_train_or_heldout_shared_cameras"}
+    try:
+        train_transform = estimate_robust_similarity(source[np.array(train_indices)], target[np.array(train_indices)])
+    except Exception as exc:
+        return {"status": "failed", "reason": str(exc)}
+    aligned = transform_points(source[np.array(heldout_indices)], train_transform)
+    residuals = [float(np.linalg.norm(left - right)) for left, right in zip(aligned, target[np.array(heldout_indices)])]
+    return {
+        "status": "pass",
+        "heldout_count": len(heldout_indices),
+        "train_count": len(train_indices),
+        "residual_m": residual_summary(residuals),
+    }
+
+
+def axis_surface_overlap_stats(
+    existing_points: list[tuple[float, float, float]],
+    incoming_points: list[tuple[float, float, float]],
+    *,
+    projection_axes: tuple[int, int],
+    separation_axis: int,
+    min_points_per_side: int = 6,
+) -> dict[str, object]:
+    if not existing_points or not incoming_points:
+        return {
+            "overlap_cell_count": 0,
+            "flagged_overlap_cell_count": 0,
+            "flagged_overlap_cell_ratio": 0.0,
+            "median_abs_gap_m": None,
+            "p95_abs_gap_m": None,
+            "max_abs_gap_m": None,
+            "examples": [],
+        }
+    combined = existing_points + incoming_points
+    axis_a_values = [point[projection_axes[0]] for point in combined]
+    axis_b_values = [point[projection_axes[1]] for point in combined]
+    span = max(max(axis_a_values) - min(axis_a_values), max(axis_b_values) - min(axis_b_values), 1.0)
+    cell_size = max(span / 80.0, 2.0)
+    min_a = min(axis_a_values)
+    min_b = min(axis_b_values)
+
+    def group(points: list[tuple[float, float, float]]) -> dict[tuple[int, int], list[float]]:
+        cells: dict[tuple[int, int], list[float]] = {}
+        for point in points:
+            key = (
+                int((point[projection_axes[0]] - min_a) / cell_size),
+                int((point[projection_axes[1]] - min_b) / cell_size),
+            )
+            cells.setdefault(key, []).append(point[separation_axis])
+        return cells
+
+    existing_cells = group(existing_points)
+    incoming_cells = group(incoming_points)
+    gaps: list[float] = []
+    flagged: list[dict[str, object]] = []
+    for key in sorted(set(existing_cells).intersection(incoming_cells)):
+        left = existing_cells[key]
+        right = incoming_cells[key]
+        if len(left) < min_points_per_side or len(right) < min_points_per_side:
+            continue
+        left_median = float(np.median(left))
+        right_median = float(np.median(right))
+        gap = abs(left_median - right_median)
+        gaps.append(gap)
+        left_span = max(left) - min(left)
+        right_span = max(right) - min(right)
+        tolerance = max(1.5, 0.35 * max(left_span, right_span, cell_size))
+        if gap <= tolerance:
+            continue
+        flagged.append(
+            {
+                "cell": [key[0], key[1]],
+                "existing_count": len(left),
+                "incoming_count": len(right),
+                "median_gap_m": round(gap, 4),
+                "existing_axis_median": round(left_median, 4),
+                "incoming_axis_median": round(right_median, 4),
+                "tolerance_m": round(tolerance, 4),
+            }
+        )
+    overlap_count = len(gaps)
+    return {
+        "overlap_cell_count": overlap_count,
+        "flagged_overlap_cell_count": len(flagged),
+        "flagged_overlap_cell_ratio": round(len(flagged) / overlap_count, 4) if overlap_count else 0.0,
+        "median_abs_gap_m": round(float(np.median(gaps)), 4) if gaps else None,
+        "p95_abs_gap_m": round(percentile(gaps, 0.95), 4) if gaps else None,
+        "max_abs_gap_m": round(max(gaps), 4) if gaps else None,
+        "cell_size_m": round(cell_size, 4),
+        "examples": sorted(flagged, key=lambda item: (-float(item["median_gap_m"]), item["cell"]))[:20],
+    }
+
+
+def cross_leaf_duplicate_surface_stats(
+    existing_points: list[tuple[float, float, float]],
+    incoming_points: list[tuple[float, float, float]],
+) -> dict[str, object]:
+    axes = [
+        ("xy_z", (0, 1), 2),
+        ("xz_y", (0, 2), 1),
+        ("yz_x", (1, 2), 0),
+    ]
+    reports = {
+        name: axis_surface_overlap_stats(
+            existing_points,
+            incoming_points,
+            projection_axes=projection_axes,
+            separation_axis=separation_axis,
+        )
+        for name, projection_axes, separation_axis in axes
+    }
+    blocking_axis = max(
+        reports,
+        key=lambda name: (
+            float(reports[name].get("flagged_overlap_cell_ratio") or 0.0),
+            int(reports[name].get("flagged_overlap_cell_count") or 0),
+        ),
+    )
+    return {
+        "axis_reports": reports,
+        "blocking_axis": blocking_axis,
+        "max_flagged_overlap_cell_ratio": reports[blocking_axis].get("flagged_overlap_cell_ratio"),
+        "max_flagged_overlap_cell_count": reports[blocking_axis].get("flagged_overlap_cell_count"),
+        "max_overlap_cell_count": reports[blocking_axis].get("overlap_cell_count"),
+    }
+
+
+def edge_confidence(edge: dict[str, object], thresholds: SeamThresholds) -> float:
+    shared = float(edge.get("shared_registered_images") or 0)
+    residual = ((edge.get("sim3_residual_m") or {}) if isinstance(edge.get("sim3_residual_m"), dict) else {}).get("p95")
+    residual_value = float(residual) if residual is not None else thresholds.max_sim3_p95_residual_m * 10.0
+    baseline_norm = float(edge.get("baseline_normalized_residual") or thresholds.max_baseline_normalized_residual * 10.0)
+    scale_delta = float(edge.get("scale_delta") or thresholds.max_scale_delta * 10.0)
+    blockers = len(edge.get("blockers") or [])
+    surface_warning = float(edge.get("surface_overlap_warning_score") or 0.0)
+    return round(
+        shared
+        + max(0.0, 1.0 - residual_value / max(thresholds.max_sim3_p95_residual_m, 1e-9)) * 20.0
+        + max(0.0, 1.0 - baseline_norm / max(thresholds.max_baseline_normalized_residual, 1e-9)) * 20.0
+        + max(0.0, 1.0 - scale_delta / max(thresholds.max_scale_delta, 1e-9)) * 10.0
+        - min(surface_warning, 1.0) * 25.0
+        - blockers * (100.0 if thresholds.strict_production_gates else 12.0),
+        6,
+    )
+
+
+def evaluate_seam_edge(
+    *,
+    leaf_a: int,
+    leaf_b: int,
+    leaf_a_by_name: dict[str, tuple[list[str], str]],
+    leaf_b_by_name: dict[str, tuple[list[str], str]],
+    thresholds: SeamThresholds,
+    surface_a: list[tuple[float, float, float]] | None = None,
+    surface_b: list[tuple[float, float, float]] | None = None,
+) -> tuple[dict[str, object], SimilarityTransform | None]:
+    shared_names = sorted(set(leaf_a_by_name).intersection(leaf_b_by_name))
+    report: dict[str, object] = {
+        "leaf_a": leaf_a,
+        "leaf_b": leaf_b,
+        "alignment_direction": f"leaf_{leaf_b:02d}_to_leaf_{leaf_a:02d}",
+        "shared_registered_images": len(shared_names),
+        "shared_image_sample": shared_names[:16],
+        "blockers": [],
+        "warnings": [],
+    }
+    blockers: list[str] = []
+    warnings: list[str] = []
+    if len(shared_names) < thresholds.min_shared_images:
+        blockers.append("weak_shared_camera_count")
+    if len(shared_names) < 3:
+        blockers.append("insufficient_shared_cameras_for_sim3")
+        report["decision"] = "reject"
+        report["strict_decision"] = "reject"
+        report["blockers"] = blockers
+        report["confidence"] = edge_confidence(report, thresholds)
+        return report, None
+
+    source = np.array([camera_center(leaf_b_by_name[name][0]) for name in shared_names], dtype=float)
+    target = np.array([camera_center(leaf_a_by_name[name][0]) for name in shared_names], dtype=float)
+    source_layout = camera_distribution_stats(source)
+    target_layout = camera_distribution_stats(target)
+    report["shared_camera_distribution"] = {
+        "source_leaf_b": source_layout,
+        "target_leaf_a": target_layout,
+        "rank": min(int(source_layout["rank"]), int(target_layout["rank"])),
+    }
+    if int(source_layout["rank"]) < 2 or int(target_layout["rank"]) < 2:
+        blockers.append("degenerate_shared_camera_layout")
+
+    transform: SimilarityTransform | None = None
+    try:
+        transform = estimate_robust_similarity(source, target)
+    except Exception as exc:
+        blockers.append("sim3_estimation_failed")
+        report["sim3_error"] = str(exc)
+
+    if transform is not None:
+        residuals = sorted(transform.residuals)
+        residual_report = residual_summary(residuals)
+        p95 = float(residual_report["p95"] or 0.0)
+        baseline = max(float(target_layout.get("baseline_m") or 0.0), 1e-9)
+        baseline_normalized = p95 / baseline
+        scale_delta = abs(transform.scale - 1.0)
+        report.update(
+            {
+                "sim3": {
+                    "scale": round(transform.scale, 8),
+                    "rotation": [[round(float(value), 10) for value in row] for row in transform.rotation.tolist()],
+                    "translation": [round(float(value), 6) for value in transform.translation.tolist()],
+                },
+                "scale_delta": round(scale_delta, 8),
+                "sim3_residual_m": residual_report,
+                "baseline_normalized_residual": round(baseline_normalized, 8),
+                "heldout_shared_camera_residual": heldout_similarity_residual(source, target),
+            }
+        )
+        if scale_delta > thresholds.max_scale_delta:
+            blockers.append("scale_delta_exceeds_gate")
+        if p95 > thresholds.max_sim3_p95_residual_m:
+            blockers.append("sim3_p95_residual_exceeds_gate")
+        if baseline_normalized > thresholds.max_baseline_normalized_residual:
+            blockers.append("baseline_normalized_residual_exceeds_gate")
+        if surface_a is not None and surface_b is not None:
+            transformed_b = transform_coords(surface_b, transform)
+            report["pre_overlap_surface_stats"] = cross_leaf_duplicate_surface_stats(surface_a, surface_b)
+            post_overlap = cross_leaf_duplicate_surface_stats(surface_a, transformed_b)
+            report["post_overlap_surface_stats"] = post_overlap
+            flagged_ratio = float(post_overlap.get("max_flagged_overlap_cell_ratio") or 0.0)
+            if flagged_ratio > 0.02:
+                warnings.append("duplicate_surface_overlap_suspect")
+                report["surface_overlap_warning_score"] = round(flagged_ratio, 6)
+
+    report["gps_exif_residual"] = {
+        "status": "not_available",
+        "reason": "reducer inputs do not include raw EXIF/GPS priors in this local model format",
+    }
+    report["blockers"] = list(dict.fromkeys(blockers))
+    report["warnings"] = list(dict.fromkeys(warnings))
+    fatal_blockers = {
+        "insufficient_shared_cameras_for_sim3",
+        "sim3_estimation_failed",
+    }
+    strict_reject = bool(report["blockers"])
+    non_strict_reject = any(blocker in fatal_blockers for blocker in report["blockers"])
+    report["decision"] = "reject" if (strict_reject if thresholds.strict_production_gates else non_strict_reject) else "accept"
+    report["strict_decision"] = "reject" if strict_reject else "accept"
+    report["confidence"] = edge_confidence(report, thresholds)
+    return report, transform
+
+
+def build_seam_merge_graph(
+    *,
+    normalized_dirs: list[Path],
+    thresholds: SeamThresholds,
+) -> dict[str, object]:
+    leaf_pairs = [image_record_pairs(path / "images.txt") for path in normalized_dirs]
+    leaf_by_name = [{parts[9]: (parts, points_line) for parts, points_line in pairs} for pairs in leaf_pairs]
+    surface_points = [point_coords(path / "points3D.txt") for path in normalized_dirs]
+    edge_reports: list[dict[str, object]] = []
+    edge_lookup: dict[tuple[int, int], dict[str, object]] = {}
+    for leaf_a, leaf_b in combinations(range(len(normalized_dirs)), 2):
+        report, _ = evaluate_seam_edge(
+            leaf_a=leaf_a,
+            leaf_b=leaf_b,
+            leaf_a_by_name=leaf_by_name[leaf_a],
+            leaf_b_by_name=leaf_by_name[leaf_b],
+            thresholds=thresholds,
+            surface_a=surface_points[leaf_a],
+            surface_b=surface_points[leaf_b],
+        )
+        edge_reports.append(report)
+        edge_lookup[(leaf_a, leaf_b)] = report
+
+    parent = list(range(len(normalized_dirs)))
+
+    def find(index: int) -> int:
+        while parent[index] != index:
+            parent[index] = parent[parent[index]]
+            index = parent[index]
+        return index
+
+    def union(left: int, right: int) -> bool:
+        left_root = find(left)
+        right_root = find(right)
+        if left_root == right_root:
+            return False
+        parent[right_root] = left_root
+        return True
+
+    candidate_edges = [edge for edge in edge_reports if edge.get("decision") == "accept"]
+    tree: list[dict[str, object]] = []
+    for edge in sorted(candidate_edges, key=lambda item: (-float(item.get("confidence") or 0.0), int(item["leaf_a"]), int(item["leaf_b"]))):
+        leaf_a = int(edge["leaf_a"])
+        leaf_b = int(edge["leaf_b"])
+        if union(leaf_a, leaf_b):
+            tree.append(
+                {
+                    "leaf_a": leaf_a,
+                    "leaf_b": leaf_b,
+                    "confidence": edge.get("confidence"),
+                    "shared_registered_images": edge.get("shared_registered_images"),
+                    "strict_decision": edge.get("strict_decision"),
+                    "blockers": edge.get("blockers") or [],
+                }
+            )
+        if len(tree) == max(0, len(normalized_dirs) - 1):
+            break
+
+    confidence_by_leaf = {index: 0.0 for index in range(len(normalized_dirs))}
+    for edge in tree:
+        confidence = float(edge.get("confidence") or 0.0)
+        confidence_by_leaf[int(edge["leaf_a"])] += confidence
+        confidence_by_leaf[int(edge["leaf_b"])] += confidence
+    stats = [stats_for_model(path) for path in normalized_dirs]
+    root_leaf = min(
+        range(len(normalized_dirs)),
+        key=lambda index: (-confidence_by_leaf[index], -stats[index].registered_images, index),
+    ) if normalized_dirs else 0
+
+    tree_pairs = {tuple(sorted((int(edge["leaf_a"]), int(edge["leaf_b"])))) for edge in tree}
+    non_tree_accepted = [
+        edge for edge in candidate_edges if tuple(sorted((int(edge["leaf_a"]), int(edge["leaf_b"])))) not in tree_pairs
+    ]
+    graph_blockers: list[str] = []
+    if len(tree) != max(0, len(normalized_dirs) - 1):
+        graph_blockers.append("accepted_seam_graph_is_disconnected")
+    return {
+        "schema_version": 1,
+        "artifact_kind": "seam_merge_report",
+        "merge_strategy": "seam_graph_sim3_v1",
+        "thresholds": {
+            "min_shared_images": thresholds.min_shared_images,
+            "max_scale_delta": thresholds.max_scale_delta,
+            "max_sim3_p95_residual_m": thresholds.max_sim3_p95_residual_m,
+            "max_baseline_normalized_residual": thresholds.max_baseline_normalized_residual,
+            "strict_production_gates": thresholds.strict_production_gates,
+        },
+        "leaf_count": len(normalized_dirs),
+        "root_leaf": root_leaf,
+        "candidate_edges": edge_reports,
+        "accepted_merge_tree": tree,
+        "rejected_edges": [edge for edge in edge_reports if edge.get("decision") == "reject"],
+        "non_tree_accepted_edges": non_tree_accepted,
+        "cycle_consistency": {
+            "status": "not_evaluated_until_root_transforms_are_known",
+            "non_tree_edge_count": len(non_tree_accepted),
+        },
+        "post_merge_jurisdiction_culling": {
+            "status": "pending",
+            "removed_point_count": 0,
+            "by_reason": {},
+            "records": [],
+        },
+        "seam_local_ba": {
+            "enabled": False,
+            "status": "not_run",
+            "reason": "local text reducer has no bounded COLMAP BA window implementation yet",
+        },
+        "promotion_blockers": graph_blockers,
+        "decision": "fail" if graph_blockers else "pass",
+    }
 
 
 def transform_point(parts: list[str], transform: SimilarityTransform) -> list[str]:
@@ -399,8 +925,71 @@ def write_pose_aligned_merge(
     output_dir: Path,
     min_shared_images: int,
     min_final_track_length: int = 2,
+    planner_manifest: dict[str, Any] | None = None,
+    max_scale_delta: float = 0.15,
+    max_sim3_p95_residual_m: float = 0.25,
+    max_baseline_normalized_residual: float = 0.01,
+    enable_seam_local_ba: bool = False,
+    strict_production_gates: bool = False,
 ) -> dict[str, object]:
-    anchor = normalized_dirs[0]
+    thresholds = SeamThresholds(
+        min_shared_images=min_shared_images,
+        max_scale_delta=max_scale_delta,
+        max_sim3_p95_residual_m=max_sim3_p95_residual_m,
+        max_baseline_normalized_residual=max_baseline_normalized_residual,
+        strict_production_gates=strict_production_gates,
+    )
+    seam_report = build_seam_merge_graph(normalized_dirs=normalized_dirs, thresholds=thresholds)
+    if seam_report.get("decision") == "fail" and strict_production_gates:
+        return {
+            "strategy": "seam_graph_sim3_v1",
+            "error": "strict seam graph rejected reducer merge",
+            "root_leaf": seam_report.get("root_leaf"),
+            "transforms": [],
+            "accepted_merge_tree": seam_report.get("accepted_merge_tree"),
+            "rejected_edges": seam_report.get("rejected_edges"),
+            "cycle_consistency": seam_report.get("cycle_consistency"),
+            "post_merge_jurisdiction_culling": seam_report.get("post_merge_jurisdiction_culling"),
+            "promotion_blockers": seam_report.get("promotion_blockers") or [],
+            "seam_merge_report": seam_report,
+        }
+
+    root_index = int(seam_report.get("root_leaf") or 0)
+    tree_edges = seam_report.get("accepted_merge_tree") or []
+    adjacency: dict[int, list[int]] = {index: [] for index in range(len(normalized_dirs))}
+    for edge in tree_edges:
+        left = int(edge["leaf_a"])
+        right = int(edge["leaf_b"])
+        adjacency.setdefault(left, []).append(right)
+        adjacency.setdefault(right, []).append(left)
+    merge_sequence: list[tuple[int | None, int]] = [(None, root_index)]
+    visited = {root_index}
+    queue = [root_index]
+    while queue:
+        parent_index = queue.pop(0)
+        for child_index in sorted(adjacency.get(parent_index, [])):
+            if child_index in visited:
+                continue
+            visited.add(child_index)
+            queue.append(child_index)
+            merge_sequence.append((parent_index, child_index))
+    if len(visited) != len(normalized_dirs):
+        missing = sorted(set(range(len(normalized_dirs))) - visited)
+        raise RuntimeError(f"accepted seam graph is disconnected; missing leaves {missing}")
+
+    chunks = []
+    if isinstance(planner_manifest, dict):
+        chunks = planner_manifest.get("chunks") or planner_manifest.get("chunk_plans") or []
+    core_names_by_leaf: dict[int, set[str]] = {}
+    for fallback_index, chunk in enumerate(chunks if isinstance(chunks, list) else []):
+        if not isinstance(chunk, dict):
+            continue
+        chunk_index = int(chunk.get("index", fallback_index))
+        core_names = chunk.get("core_names") or chunk.get("coreNames") or []
+        if isinstance(core_names, list):
+            core_names_by_leaf[chunk_index] = {str(name) for name in core_names}
+
+    anchor = normalized_dirs[root_index]
     output_dir.mkdir(parents=True, exist_ok=True)
     anchor_pairs = image_record_pairs(anchor / "images.txt")
     anchor_by_name = {parts[9]: (parts, points_line) for parts, points_line in anchor_pairs}
@@ -417,54 +1006,63 @@ def write_pose_aligned_merge(
     additional_image_lines: list[tuple[list[str], str, dict[int, int]]] = []
     additional_points_lines: list[str] = []
     next_point_id = point_id_range(anchor / "points3D.txt")[1] + 1
+    root_transforms: dict[int, SimilarityTransform] = {root_index: identity_similarity()}
+    culling_records: list[dict[str, object]] = []
+    culling_by_reason: dict[str, int] = {}
+    culling_blockers: list[dict[str, object]] = []
 
-    pending_leaf_dirs = list(enumerate(normalized_dirs[1:], start=1))
-    while pending_leaf_dirs:
-        ranked_leaf_dirs: list[tuple[int, int, Path, dict[str, tuple[list[str], str]], list[str]]] = []
-        for leaf_index, leaf_dir in pending_leaf_dirs:
-            leaf_pairs = image_record_pairs(leaf_dir / "images.txt")
-            leaf_by_name = {parts[9]: (parts, points_line) for parts, points_line in leaf_pairs}
-            shared_names = sorted(set(anchor_by_name).intersection(leaf_by_name))
-            ranked_leaf_dirs.append((-len(shared_names), leaf_index, leaf_dir, leaf_by_name, shared_names))
-        ranked_leaf_dirs.sort()
-        shared_count = -ranked_leaf_dirs[0][0]
-        if shared_count < min_shared_images:
-            leaf_summaries = [
-                {"leaf_index": leaf_index, "shared_registered_images": -negative_shared_count}
-                for negative_shared_count, leaf_index, _, _, _ in ranked_leaf_dirs
-            ]
-            raise RuntimeError(
-                f"unable to continue chained pose-aligned merge; best remaining leaf has "
-                f"{shared_count} shared registered images, minimum is {min_shared_images}: {leaf_summaries}"
+    def record_cull(reason: str, leaf_index: int, point_id: int, seam: str) -> None:
+        culling_by_reason[reason] = culling_by_reason.get(reason, 0) + 1
+        if len(culling_records) < 200:
+            culling_records.append(
+                {
+                    "leaf_index": leaf_index,
+                    "old_point_id": point_id,
+                    "reason": reason,
+                    "affected_seam": seam,
+                }
             )
-        _, leaf_index, leaf_dir, leaf_by_name, shared_names = ranked_leaf_dirs[0]
-        pending_leaf_dirs = [
-            (candidate_index, candidate_dir)
-            for candidate_index, candidate_dir in pending_leaf_dirs
-            if candidate_index != leaf_index
-        ]
+
+    for parent_index, leaf_index in merge_sequence[1:]:
+        leaf_dir = normalized_dirs[leaf_index]
         leaf_pairs = image_record_pairs(leaf_dir / "images.txt")
+        leaf_by_name = {parts[9]: (parts, points_line) for parts, points_line in leaf_pairs}
+        shared_names = sorted(set(anchor_by_name).intersection(leaf_by_name))
+        if len(shared_names) < min_shared_images:
+            raise RuntimeError(
+                f"accepted seam tree reached leaf {leaf_index} but current merged anchor only has "
+                f"{len(shared_names)} shared registered images, minimum is {min_shared_images}"
+            )
         source = np.array([camera_center(leaf_by_name[name][0]) for name in shared_names], dtype=float)
         target = np.array([camera_center(anchor_by_name[name][0]) for name in shared_names], dtype=float)
-        transform = estimate_similarity(source, target)
+        transform = estimate_robust_similarity(source, target)
+        root_transforms[leaf_index] = transform
         residuals = sorted(transform.residuals)
         point_map: dict[int, int] = {}
         candidate_points: list[tuple[int, int, list[str], list[str], tuple[float, float, float]]] = []
         kept_leaf_surface_points: list[tuple[float, float, float]] = []
         leaf_image_id_to_name = image_id_to_name(leaf_dir / "images.txt")
+        core_names = core_names_by_leaf.get(leaf_index, set())
+        seam_name = f"leaf_{parent_index if parent_index is not None else root_index:02d}_to_leaf_{leaf_index:02d}"
         for line in non_comment_lines(leaf_dir / "points3D.txt"):
             parts = line.split()
             track: list[str] = []
+            original_track_names: set[str] = set()
             for offset in range(8, len(parts), 2):
                 if offset + 1 >= len(parts):
                     break
                 image_id = int(parts[offset])
                 image_name = leaf_image_id_to_name.get(image_id, "")
+                if image_name:
+                    original_track_names.add(image_name)
                 if image_name and image_name not in emitted_names:
                     track.extend((str(image_id), parts[offset + 1]))
             if len(track) < min_final_track_length * 2:
                 continue
             old_point_id = int(parts[0])
+            if core_names and not original_track_names.intersection(core_names):
+                record_cull("no_core_owned_track", leaf_index, old_point_id, seam_name)
+                continue
             new_point_id = next_point_id
             next_point_id += 1
             transformed_parts = transform_point(parts, transform)
@@ -490,10 +1088,24 @@ def write_pose_aligned_merge(
         for old_point_id, new_point_id, transformed_parts, track, coord in candidate_points:
             if flagged_cells and point_overlap_cell(coord, overlap_grid) in flagged_cells:
                 seam_conflict_points_removed += 1
+                record_cull("cross_leaf_surface_overlap_flagged_cell", leaf_index, old_point_id, seam_name)
                 continue
             point_map[old_point_id] = new_point_id
             additional_points_lines.append(" ".join([*transformed_parts[:8], *track]) + "\n")
             kept_leaf_surface_points.append(coord)
+
+        seam_cull_ratio = seam_conflict_points_removed / len(candidate_points) if candidate_points else 0.0
+        if candidate_points and seam_cull_ratio > 0.5:
+            culling_blockers.append(
+                {
+                    "reason": "excessive_duplicate_surface_culling",
+                    "affected_seam": seam_name,
+                    "leaf_index": leaf_index,
+                    "candidate_points": len(candidate_points),
+                    "removed_points": seam_conflict_points_removed,
+                    "removed_ratio": round(seam_cull_ratio, 6),
+                }
+            )
 
         surface_overlap = cross_leaf_surface_overlap_stats(
             merged_surface_points,
@@ -521,6 +1133,7 @@ def write_pose_aligned_merge(
         transforms.append(
             {
                 "leaf_index": leaf_index,
+                "parent_leaf_index": parent_index,
                 "shared_registered_images": len(shared_names),
                 "scale": round(transform.scale, 8),
                 "alignment_error_m": {
@@ -531,7 +1144,9 @@ def write_pose_aligned_merge(
                 },
                 "surface_overlap": surface_overlap,
                 "pre_cull_surface_overlap": pre_cull_surface_overlap,
+                "duplicate_surface_overlap": cross_leaf_duplicate_surface_stats(merged_surface_points, kept_leaf_surface_points),
                 "seam_conflict_points_removed": seam_conflict_points_removed,
+                "seam_conflict_points_removed_ratio": round(seam_cull_ratio, 6),
                 "new_points_kept": len(point_map),
             }
         )
@@ -582,7 +1197,81 @@ def write_pose_aligned_merge(
         for line in anchor_point_lines:
             target.write(line + "\n")
         target.writelines(additional_points_lines)
-    return {"strategy": "pose_aligned_text_merge", "transforms": transforms}
+
+    non_tree_cycles: list[dict[str, object]] = []
+    for edge in seam_report.get("non_tree_accepted_edges") or []:
+        leaf_a = int(edge["leaf_a"])
+        leaf_b = int(edge["leaf_b"])
+        if leaf_a not in root_transforms or leaf_b not in root_transforms:
+            continue
+        predicted_scale = root_transforms[leaf_b].scale / max(root_transforms[leaf_a].scale, 1e-12)
+        measured_scale = ((edge.get("sim3") or {}) if isinstance(edge.get("sim3"), dict) else {}).get("scale")
+        scale_error = abs(float(measured_scale) - predicted_scale) if measured_scale is not None else None
+        non_tree_cycles.append(
+            {
+                "leaf_a": leaf_a,
+                "leaf_b": leaf_b,
+                "measured_scale": measured_scale,
+                "predicted_scale_from_tree": round(predicted_scale, 8),
+                "scale_cycle_error": round(scale_error, 8) if scale_error is not None else None,
+                "decision": "fail" if scale_error is not None and scale_error > max_scale_delta else "pass",
+            }
+        )
+    if non_tree_cycles:
+        cycle_failures = [item for item in non_tree_cycles if item["decision"] == "fail"]
+        seam_report["cycle_consistency"] = {
+            "status": "fail" if cycle_failures else "pass",
+            "non_tree_edge_count": len(non_tree_cycles),
+            "failures": cycle_failures,
+            "checks": non_tree_cycles,
+        }
+        if cycle_failures:
+            seam_report.setdefault("promotion_blockers", []).append("cycle_consistency_failed")
+    else:
+        seam_report["cycle_consistency"] = {
+            "status": "not_run_no_cycles",
+            "non_tree_edge_count": 0,
+            "checks": [],
+        }
+
+    seam_report["actual_merge_sequence"] = [
+        {"parent_leaf_index": parent, "leaf_index": leaf} for parent, leaf in merge_sequence
+    ]
+    seam_report["post_merge_jurisdiction_culling"] = {
+        "status": "fail_excessive_duplicate_surface_culling" if culling_blockers else "pass" if culling_by_reason else "pass_no_points_removed",
+        "removed_point_count": sum(culling_by_reason.values()),
+        "by_reason": culling_by_reason,
+        "records": culling_records,
+        "blockers": culling_blockers,
+        "spatial_jurisdiction_rechecked": False,
+        "spatial_jurisdiction_note": (
+            "planner cell bounds are not guaranteed to share the root COLMAP coordinate frame; "
+            "core-track ownership is enforced when a planner manifest is supplied"
+        ),
+    }
+    if culling_blockers:
+        seam_report.setdefault("promotion_blockers", []).append("excessive_duplicate_surface_culling")
+    seam_report["seam_local_ba"] = {
+        "enabled": enable_seam_local_ba,
+        "status": "not_run",
+        "reason": (
+            "bounded seam-local BA is recorded as an interface flag; this local text reducer does not "
+            "run COLMAP bundle_adjuster windows yet"
+        ),
+    }
+    seam_report["decision"] = "fail" if seam_report.get("promotion_blockers") else "pass"
+
+    return {
+        "strategy": "seam_graph_sim3_v1",
+        "root_leaf": root_index,
+        "transforms": transforms,
+        "accepted_merge_tree": seam_report.get("accepted_merge_tree"),
+        "rejected_edges": seam_report.get("rejected_edges"),
+        "cycle_consistency": seam_report.get("cycle_consistency"),
+        "post_merge_jurisdiction_culling": seam_report.get("post_merge_jurisdiction_culling"),
+        "promotion_blockers": seam_report.get("promotion_blockers") or [],
+        "seam_merge_report": seam_report,
+    }
 
 
 def rewrite_model_text(
@@ -793,6 +1482,10 @@ def main() -> int:
                     normalized_dirs=normalized_dirs,
                     output_dir=fallback_text,
                     min_shared_images=args.min_shared_images,
+                    max_scale_delta=args.max_scale_delta,
+                    max_sim3_p95_residual_m=args.max_sim3_p95_residual_m,
+                    max_baseline_normalized_residual=args.max_baseline_normalized_residual,
+                    strict_production_gates=args.strict_production_gates,
                 )
                 fallback_validation_binary.mkdir(parents=True, exist_ok=True)
                 fallback_validation_command = run_command(
@@ -837,6 +1530,8 @@ def main() -> int:
         blockers.append("model_merger_failed")
     if fallback_report is not None and "error" in fallback_report:
         blockers.append("pose_aligned_merge_failed")
+    if fallback_report is not None:
+        blockers.extend(str(item) for item in (fallback_report.get("promotion_blockers") or []))
     if fallback_validation_command is not None and fallback_validation_command["returncode"] != 0:
         blockers.append("pose_aligned_model_validation_failed")
     if convert_merged_command is not None and convert_merged_command["returncode"] != 0:
@@ -864,6 +1559,12 @@ def main() -> int:
         "leaf_retention_ratios": leaf_retention,
         "min_retention_ratio": args.min_retention_ratio,
         "min_shared_images": args.min_shared_images,
+        "merge_strategy": (fallback_report or {}).get("strategy") or "stock_colmap_model_merger",
+        "seam_merge_report": (fallback_report or {}).get("seam_merge_report"),
+        "accepted_merge_tree": (fallback_report or {}).get("accepted_merge_tree"),
+        "rejected_edges": (fallback_report or {}).get("rejected_edges"),
+        "cycle_consistency": (fallback_report or {}).get("cycle_consistency"),
+        "post_merge_jurisdiction_culling": (fallback_report or {}).get("post_merge_jurisdiction_culling"),
         "blockers": blockers,
         "commands": {
             "leaf_converters": convert_commands,

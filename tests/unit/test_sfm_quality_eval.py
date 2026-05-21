@@ -191,6 +191,77 @@ class SfmQualityEvalTest(unittest.TestCase):
             report["next_required_gates"],
         )
 
+    def test_seam_graph_blocker_fails_quality_gate(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            reducer = root / "fanout_reducer.json"
+            reducer.write_text(
+                json.dumps(
+                    {
+                        "artifact_kind": "sfm_fanout_reducer_report",
+                        "decision": "pass",
+                        "leaf_count": 2,
+                        "passed_leaf_count": 2,
+                        "failed_leaf_count": 0,
+                        "merged_component_count": 1,
+                        "expected_component_count": 1,
+                        "promotion_blockers": [],
+                        "merged_registered_images": 40,
+                        "leaf_retention_ratios": [1.0, 1.0],
+                        "fallback": {
+                            "transforms": [{"leaf_index": 1, "shared_registered_images": 20}],
+                        },
+                        "seam_merge_report": {
+                            "merge_strategy": "seam_graph_sim3_v1",
+                            "decision": "pass",
+                            "thresholds": {"min_shared_images": 20},
+                            "candidate_edges": [
+                                {
+                                    "leaf_a": 0,
+                                    "leaf_b": 1,
+                                    "decision": "accept",
+                                    "strict_decision": "reject",
+                                    "blockers": ["scale_delta_exceeds_gate"],
+                                }
+                            ],
+                            "accepted_merge_tree": [
+                                {
+                                    "leaf_a": 0,
+                                    "leaf_b": 1,
+                                    "blockers": ["scale_delta_exceeds_gate"],
+                                }
+                            ],
+                            "rejected_edges": [],
+                            "promotion_blockers": [],
+                            "cycle_consistency": {"status": "pass"},
+                            "post_merge_jurisdiction_culling": {
+                                "status": "pass_no_points_removed",
+                                "removed_point_count": 0,
+                            },
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            report = quality_eval.build_report(
+                SimpleNamespace(
+                    sparse_dir="",
+                    viewer_api_json="",
+                    sfm_metadata="",
+                    reducer_metadata=str(reducer),
+                    expected_images=40,
+                    min_registered_ratio=0.98,
+                    min_points=0,
+                    max_reprojection_error_p95=8.0,
+                    output=str(root / "report.json"),
+                )
+            )
+
+        gates = {gate["gate"]: gate["status"] for gate in report["gates"]}
+        self.assertEqual(gates["seam_graph_sim3"], "fail")
+        self.assertEqual(report["decision"], "do_not_promote")
+
     def test_render_and_visual_gates_can_promote_when_all_proof_is_present(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

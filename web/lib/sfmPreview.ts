@@ -11,6 +11,8 @@ type ParsedPoint = {
   r: number;
   g: number;
   b: number;
+  error: number;
+  trackLength: number;
   chunkIndex: number;
 };
 
@@ -18,6 +20,9 @@ type RawCamera = {
   imageId: number;
   name: string;
   position: Vec3;
+  forward: Vec3;
+  right: Vec3;
+  up: Vec3;
   chunkIndexes: number[];
   primaryChunkIndex: number | null;
 };
@@ -52,21 +57,35 @@ export type SfmPreviewPayload = {
   positions: number[];
   colors: number[];
   chunkColors: number[];
+  pointErrors: number[];
+  pointTrackLengths: number[];
   pointChunkIndexes: number[];
+  seamDebug?: {
+    strategy: string | null;
+    decision: string | null;
+    acceptedEdgeCount: number;
+    rejectedEdgeCount: number;
+    promotionBlockers: string[];
+    cycleStatus: string | null;
+    culledPointCount: number | null;
+  };
   cameras: Array<{
     imageId: number;
     name: string;
     position: Vec3;
+    forward: Vec3;
+    right: Vec3;
+    up: Vec3;
     chunkIndexes: number[];
     primaryChunkIndex: number | null;
   }>;
 };
 
 const REGION = process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || "us-west-2";
-const RANGE_COUNT = 14;
-const RANGE_BYTES = 768 * 1024;
+const BASE_RANGE_COUNT = 14;
+const BASE_RANGE_BYTES = 768 * 1024;
 const DEFAULT_SAMPLE_POINTS = 18_000;
-const MAX_SAMPLE_POINTS = 45_000;
+const MAX_SAMPLE_POINTS = 160_000;
 const DEFAULT_OUTPUT_S3_URI =
   "s3://spaceport-ml-processing-staging/manual-validations/md1p24e752k-1776314974/colmap";
 const CHUNK_PALETTE: Vec3[] = [
@@ -233,12 +252,15 @@ function parseCount(pattern: RegExp, text: string) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-function buildRanges(totalBytes: number) {
-  if (totalBytes <= RANGE_BYTES) {
+function buildRanges(totalBytes: number, requestedMaxPoints: number) {
+  const qualityScale = Math.max(1, requestedMaxPoints / DEFAULT_SAMPLE_POINTS);
+  const rangeCount = Math.min(56, Math.ceil(BASE_RANGE_COUNT * Math.sqrt(qualityScale)));
+  const rangeBytes = Math.min(1536 * 1024, Math.ceil(BASE_RANGE_BYTES * Math.min(2, Math.sqrt(qualityScale))));
+
+  if (totalBytes <= rangeBytes) {
     return [[0, Math.max(0, totalBytes - 1)] as [number, number]];
   }
-  const rangeCount: number = RANGE_COUNT;
-  const lastStart = Math.max(0, totalBytes - RANGE_BYTES);
+  const lastStart = Math.max(0, totalBytes - rangeBytes);
   const starts = new Set<number>();
   for (let index = 0; index < rangeCount; index += 1) {
     const ratio = rangeCount === 1 ? 0 : index / (rangeCount - 1);
@@ -246,7 +268,7 @@ function buildRanges(totalBytes: number) {
   }
   return [...starts]
     .sort((left, right) => left - right)
-    .map((start) => [start, Math.min(totalBytes - 1, start + RANGE_BYTES - 1)] as [number, number]);
+    .map((start) => [start, Math.min(totalBytes - 1, start + rangeBytes - 1)] as [number, number]);
 }
 
 function reduceSample<T>(items: T[], maxCount: number) {
@@ -259,6 +281,14 @@ function reduceSample<T>(items: T[], maxCount: number) {
     output.push(items[Math.floor(index * step)]);
   }
   return output;
+}
+
+function quantile(values: number[], ratio: number) {
+  if (values.length === 0) {
+    return 0;
+  }
+  const sorted = [...values].sort((left, right) => left - right);
+  return sorted[Math.min(sorted.length - 1, Math.max(0, Math.floor((sorted.length - 1) * ratio)))];
 }
 
 function quatToMatrix([qw, qx, qy, qz]: Quaternion): Matrix3 {
@@ -284,6 +314,16 @@ function vecTransformTranspose(matrix: Matrix3, vec: Vec3): Vec3 {
     matrix[0][1] * vec[0] + matrix[1][1] * vec[1] + matrix[2][1] * vec[2],
     matrix[0][2] * vec[0] + matrix[1][2] * vec[1] + matrix[2][2] * vec[2],
   ];
+}
+
+function normalizeVec([x, y, z]: Vec3): Vec3 {
+  const length = Math.hypot(x, y, z) || 1;
+  return [x / length, y / length, z / length];
+}
+
+function displayChannel(value: number) {
+  const clamped = Math.min(1, Math.max(0, value / 255));
+  return Math.sqrt(clamped);
 }
 
 function parseChunkRecords(text: string): RawChunk[] {
@@ -348,11 +388,17 @@ function parseFrameCameras(framesText: string, imageNames: string[], membership:
     }
     const rotation = quatToMatrix(quaternion);
     const position = vecTransformTranspose(rotation, translation).map((value) => -value) as Vec3;
+    const right = normalizeVec(vecTransformTranspose(rotation, [1, 0, 0]));
+    const up = normalizeVec(vecTransformTranspose(rotation, [0, -1, 0]));
+    const forward = normalizeVec(vecTransformTranspose(rotation, [0, 0, 1]));
     const chunkIndexes = [...(membership.get(imageId) || new Set<number>())].sort((left, right) => left - right);
     cameras.push({
       imageId,
       name: imageNames[imageId - 1] || `image-${imageId}`,
       position,
+      forward,
+      right,
+      up,
       chunkIndexes,
       primaryChunkIndex: chunkIndexes[0] ?? null,
     });
@@ -375,9 +421,11 @@ function parsePointLine(line: string, membership: Map<number, Set<number>>): Par
   const r = Number(parts[4]);
   const g = Number(parts[5]);
   const b = Number(parts[6]);
+  const error = Number(parts[7]);
   if (![x, y, z, r, g, b].every(Number.isFinite)) {
     return null;
   }
+  const trackLength = Math.max(0, Math.floor((parts.length - 8) / 2));
 
   const chunkVotes = new Map<number, number>();
   for (let index = 8; index < parts.length; index += 2) {
@@ -391,7 +439,30 @@ function parsePointLine(line: string, membership: Map<number, Set<number>>): Par
     }
   }
   const chunkIndex = [...chunkVotes.entries()].sort((left, right) => right[1] - left[1])[0]?.[0] ?? -1;
-  return { x, y, z, r, g, b, chunkIndex };
+  return { x, y, z, r, g, b, error: Number.isFinite(error) ? error : Number.NaN, trackLength, chunkIndex };
+}
+
+function summarizeSeamDebug(text: string): SfmPreviewPayload["seamDebug"] {
+  const parsed = JSON.parse(text) as {
+    merge_strategy?: string;
+    decision?: string;
+    accepted_merge_tree?: unknown[];
+    rejected_edges?: unknown[];
+    promotion_blockers?: string[];
+    cycle_consistency?: { status?: string };
+    post_merge_jurisdiction_culling?: { removed_point_count?: number };
+  };
+  return {
+    strategy: parsed.merge_strategy || null,
+    decision: parsed.decision || null,
+    acceptedEdgeCount: Array.isArray(parsed.accepted_merge_tree) ? parsed.accepted_merge_tree.length : 0,
+    rejectedEdgeCount: Array.isArray(parsed.rejected_edges) ? parsed.rejected_edges.length : 0,
+    promotionBlockers: parsed.promotion_blockers || [],
+    cycleStatus: parsed.cycle_consistency?.status || null,
+    culledPointCount: Number.isFinite(parsed.post_merge_jurisdiction_culling?.removed_point_count)
+      ? Number(parsed.post_merge_jurisdiction_culling?.removed_point_count)
+      : null,
+  };
 }
 
 function normalizeScene(points: ParsedPoint[], cameras: RawCamera[]) {
@@ -408,28 +479,45 @@ function normalizeScene(points: ParsedPoint[], cameras: RawCamera[]) {
   points.forEach((point) => extend([point.x, point.y, point.z]));
   cameras.forEach((camera) => extend(camera.position));
 
+  const pointXs = points.map((point) => point.x);
+  const pointYs = points.map((point) => point.y);
+  const pointZs = points.map((point) => point.z);
+  const robustMin: Vec3 =
+    points.length >= 100
+      ? [quantile(pointXs, 0.015), quantile(pointYs, 0.015), quantile(pointZs, 0.015)]
+      : min;
+  const robustMax: Vec3 =
+    points.length >= 100
+      ? [quantile(pointXs, 0.985), quantile(pointYs, 0.985), quantile(pointZs, 0.985)]
+      : max;
+
   const center: Vec3 = [
-    (min[0] + max[0]) / 2,
-    (min[1] + max[1]) / 2,
-    (min[2] + max[2]) / 2,
+    (robustMin[0] + robustMax[0]) / 2,
+    (robustMin[1] + robustMax[1]) / 2,
+    (robustMin[2] + robustMax[2]) / 2,
   ];
-  const span = Math.max(max[0] - min[0], max[1] - min[1], max[2] - min[2], 1);
+  const span = Math.max(robustMax[0] - robustMin[0], robustMax[1] - robustMin[1], robustMax[2] - robustMin[2], 1);
   const scale = 2.6 / span;
   const normalize = ([x, y, z]: Vec3): Vec3 => [
     (x - center[0]) * scale,
-    (y - center[1]) * scale,
+    -(y - center[1]) * scale,
     (z - center[2]) * scale,
   ];
+  const flipVerticalAxis = ([x, y, z]: Vec3): Vec3 => [x, -y, z];
 
   const positions: number[] = [];
   const colors: number[] = [];
   const chunkColors: number[] = [];
+  const pointErrors: number[] = [];
+  const pointTrackLengths: number[] = [];
   const pointChunkIndexes: number[] = [];
   for (const point of points) {
     const normalized = normalize([point.x, point.y, point.z]);
     positions.push(...normalized);
-    colors.push(point.r / 255, point.g / 255, point.b / 255);
+    colors.push(displayChannel(point.r), displayChannel(point.g), displayChannel(point.b));
     chunkColors.push(...(point.chunkIndex >= 0 ? CHUNK_PALETTE[point.chunkIndex % CHUNK_PALETTE.length] : [0.8, 0.82, 0.86]));
+    pointErrors.push(point.error);
+    pointTrackLengths.push(point.trackLength);
     pointChunkIndexes.push(point.chunkIndex);
   }
 
@@ -438,10 +526,15 @@ function normalizeScene(points: ParsedPoint[], cameras: RawCamera[]) {
     positions,
     colors,
     chunkColors,
+    pointErrors,
+    pointTrackLengths,
     pointChunkIndexes,
     cameras: cameras.map((camera) => ({
       ...camera,
       position: normalize(camera.position),
+      forward: flipVerticalAxis(camera.forward),
+      right: flipVerticalAxis(camera.right),
+      up: flipVerticalAxis(camera.up),
     })),
   };
 }
@@ -449,13 +542,15 @@ function normalizeScene(points: ParsedPoint[], cameras: RawCamera[]) {
 export async function buildSfmPreviewPayload(
   artifact: SfmPreviewArtifact,
   requestedMaxPoints = DEFAULT_SAMPLE_POINTS,
+  includeDebugSeams = false,
 ): Promise<SfmPreviewPayload> {
   const maxPoints = Math.min(MAX_SAMPLE_POINTS, Math.max(1000, requestedMaxPoints));
   const pointsKey = artifactKey(artifact, "sparse/0/points3D.txt");
   const framesKey = artifactKey(artifact, "sparse/0/frames.txt");
   const manifestKey = artifactKey(artifact, "chunk_planner_manifest.json");
+  const seamReportKey = artifactKey(artifact, "seam_merge_report.json");
   const sourceSizeBytes = await headSize(artifact.bucket, pointsKey);
-  const ranges = buildRanges(sourceSizeBytes);
+  const ranges = buildRanges(sourceSizeBytes, maxPoints);
   const perRangeTarget = Math.max(250, Math.ceil(maxPoints / ranges.length));
 
   const [pointsHeader, framesText, manifestText, imageKeys] = await Promise.all([
@@ -494,6 +589,9 @@ export async function buildSfmPreviewPayload(
 
   const points = reduceSample(sampledPoints, maxPoints);
   const normalized = normalizeScene(points, cameras);
+  const seamDebug = includeDebugSeams
+    ? await readObjectText(artifact.bucket, seamReportKey).then(summarizeSeamDebug).catch(() => undefined)
+    : undefined;
 
   return {
     artifact,
@@ -507,7 +605,10 @@ export async function buildSfmPreviewPayload(
     positions: normalized.positions,
     colors: normalized.colors,
     chunkColors: normalized.chunkColors,
+    pointErrors: normalized.pointErrors,
+    pointTrackLengths: normalized.pointTrackLengths,
     pointChunkIndexes: normalized.pointChunkIndexes,
+    seamDebug,
     cameras: normalized.cameras,
   };
 }
