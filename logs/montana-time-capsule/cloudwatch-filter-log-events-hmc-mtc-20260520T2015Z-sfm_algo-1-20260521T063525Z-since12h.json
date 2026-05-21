@@ -1,0 +1,356 @@
+{
+    "events": [
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509299,
+            "message": "============================================================",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695454354869318523174702126219842590176583811072"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509299,
+            "message": "🚀 SPACEPORT COLMAP GPU SfM PROCESSING",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695454354869318523174702126219842590176583811073"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509299,
+            "message": "============================================================",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695454354869318523174702126219842590176583811074"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509299,
+            "message": "📅 Started at: Wed May 20 20:21:46 UTC 2026",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695454354869318523174702126219842590176583811075"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509299,
+            "message": "🔧 Pipeline: COLMAP mapper with GPU SIFT + spatial/sequential/vocab matching",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695454354869318523174702126219842590176583811076"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509299,
+            "message": "📍 GPS Priors: image EXIF metadata",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695454354869318523174702126219842590176583811077"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509299,
+            "message": "🎯 Output: COLMAP TXT export for 3DGS",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695454354869318523174702126219842590176583811078"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509299,
+            "message": "============================================================",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695454354869318523174702126219842590176583811079"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509299,
+            "message": "🔍 Verifying environment...",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695454354869318523174702126219842590176583811080"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509299,
+            "message": "Python 3.12.3",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695454354869318523174702126219842590176583811081"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509299,
+            "message": "📦 COLMAP version: unavailable via 'colmap version'",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695454354869318523174702126219842590176583811082"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509299,
+            "message": "Wed May 20 20:21:46 2026       ",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695454354869318523174702126219842590176583811083"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509299,
+            "message": "+-----------------------------------------------------------------------------------------+",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695454354869318523174702126219842590176583811084"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509299,
+            "message": "| NVIDIA-SMI 570.211.01             Driver Version: 570.211.01     CUDA Version: 12.9     |",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695454354869318523174702126219842590176583811085"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509299,
+            "message": "|-----------------------------------------+------------------------+----------------------+",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695454354869318523174702126219842590176583811086"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509299,
+            "message": "| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695454354869318523174702126219842590176583811087"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509299,
+            "message": "| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695454354869318523174702126219842590176583811088"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509299,
+            "message": "|                                         |                        |               MIG M. |",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695454354869318523174702126219842590176583811089"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509299,
+            "message": "|=========================================+========================+======================|",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695454354869318523174702126219842590176583811090"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509299,
+            "message": "|   0  Tesla T4                       On  |   00000000:00:1E.0 Off |                    0 |",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695454354869318523174702126219842590176583811091"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509299,
+            "message": "| N/A   27C    P8              9W /   70W |       0MiB /  15360MiB |      0%      Default |",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695454354869318523174702126219842590176583811092"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509299,
+            "message": "|                                         |                        |                  N/A |",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695454354869318523174702126219842590176583811093"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "+-----------------------------------------+------------------------+----------------------+\n                                                                                         ",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791510"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "+-----------------------------------------------------------------------------------------+",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791511"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "| Processes:                                                                              |",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791512"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791513"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "|        ID   ID                                                               Usage      |",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791514"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "|=========================================================================================|",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791515"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "|  No running processes found                                                             |",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791516"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "+-----------------------------------------------------------------------------------------+",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791517"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "✅ Environment verification completed",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791518"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "MEMORY_PROBE [startup]:",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791519"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "MemTotal:       16081288 kB",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791520"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "MemFree:          852004 kB",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791521"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "MemAvailable:   14962844 kB\n               total        used        free      shared  buff/cache   available",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791522"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "Mem:            15Gi       1.1Gi       832Mi       1.1Mi        13Gi        14Gi",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791523"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "Swap:             0B          0B          0B",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791524"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "📁 Input directory: /opt/ml/processing/input",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791525"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "📁 Output directory: /opt/ml/processing/output",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791526"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "🔍 Input directory contents:",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791527"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "total 8443916",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791528"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "drwxr-xr-x 2 root root       4096 May 20 20:17 .",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791529"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "drwxr-xr-x 1 root root       4096 Mar 30 20:31 ..",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791530"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "-rw-r--r-- 1 root root 8646557673 May 20 20:21 1778952912508-hmc-high-mountain-camp-images-flat.zip",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791531"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "📦 ZIP files found: 1",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791532"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "============================================================",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791533"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "🚀 LAUNCHING COLMAP GPU PROCESSOR",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791534"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "============================================================",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791535"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "MEMORY_PROBE [before_python]:",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791536"
+        },
+        {
+            "logStreamName": "hmc-mtc-20260520T2015Z-sfm/algo-1-1779308230",
+            "timestamp": 1779308509300,
+            "message": "MemTotal:       16081288 kB",
+            "ingestionTime": 1779308515487,
+            "eventId": "39679905695476655614517053797843661938115238538089791537"
+        }
+    ],
+    "searchedLogStreams": [],
+    "nextToken": "Bxkq6kVGFtq2y_MoigeqscPOdhXVbhiVtLoAmXb5jCqwEWQlU3MMDBEblfp6tMpIXmheUpxNJ6Pvll8-vqvJc-Q7Cn4TJpe2KanxwU097pa9Ph7HfYXhjFL8owQ_-qU62FDTKaOTu_XILhd6AB3cT8oKq1wOKxUMUxGNqNg8zp949wqAT72N1jM-DkG6SKYjQW7ciiuZMHGCVG0l-aRKdwBd7mvVxiP7uoLUeA3fqSgEOQUPQaJ_GAthkn4Z7XuA53Fv-rWFhfjYp0fDpVpqYEATn_Z48NAAvl6Ywu77DpM_UFeQZASTlHwwQm5nOInQKkpe6OGkIgnSHAWb4SRtFYXY4MJ7Oz9bfCeY_1fZNgA"
+}

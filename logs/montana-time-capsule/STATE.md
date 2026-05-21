@@ -4109,6 +4109,19 @@ Next: continue polling until SfM becomes Completed; do not launch 3DGS until SfM
 - SageMaker describe: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T053844Z.json (still InProgress; LastModifiedTime unchanged)
 - CloudWatch (since 2h): logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T053844Z-since2h.json (0 events)
 
+## 2026-05-21T06:37:09Z Monitor tick (HMC)
+
+- Git: agent-40136728-montana-time-capsule @ f8a56b1330aeafc3a9f86d114b4b49012c1abe8d (`chore: record post-push ci proof 20260521T0618Z [skip ci]`)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T063423Z.json (acct 975050048887)
+- SageMaker SfM:
+  - job: hmc-mtc-20260520T2015Z-sfm
+  - status: InProgress (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T063423Z.json; list=logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260521T063423Z.json)
+  - CloudWatch newest event still 2026-05-21T00:01:36.365Z (streams=logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T063450Z.json; events=logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm_algo-1-20260521T063720Z-tail.json)
+  - output prefix still empty (EndOfJob upload): logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T063423Z.txt (Total Objects: 0)
+- CI: exact head is [skip ci]; refreshed branch run list at logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T063705Z.json (latest green Pages+CDK unchanged).
+
+Next: continue polling until SfM becomes Completed; do not launch 3DGS until SfM output exists.
+
 ## 2026-05-21T05:34:14Z Monitor tick
 
 - Git: agent-40136728-montana-time-capsule @ c752d273cd3b5ef683a527debdd0a009c938d148 ([skip ci])
