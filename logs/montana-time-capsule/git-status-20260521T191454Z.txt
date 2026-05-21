@@ -1,0 +1,3 @@
+agent-40136728-montana-time-capsule
+3ff7c291a30f7c4ea87352cbd48e93046e48c20b
+?? logs/montana-time-capsule/git-status-20260521T191454Z.txt

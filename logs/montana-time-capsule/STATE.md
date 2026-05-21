@@ -10,6 +10,24 @@
 - Git head pushed: bf33d0e2ea4a07e47449c3c8ef1c27cf666e8229 ([skip ci])
 - Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T185911Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260521T185911Z.json)
 
+## 2026-05-21T19:16:59Z Monitor tick (HMC) - 3DGS still InProgress
+
+- Git: agent-40136728-montana-time-capsule @ 3ff7c291a30f7c4ea87352cbd48e93046e48c20b (status=logs/montana-time-capsule/git-status-20260521T191454Z.txt)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T191454Z.json (acct 975050048887)
+- SageMaker:
+  - SfM job: hmc-mtc-20260520T2015Z-sfm status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T191620Z.json)
+  - 3DGS job: hmc-mtc-20260520T2015Z-3dgs status=InProgress (SecondaryStatus=Training) (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260521T191620Z.json)
+  - CloudWatch streams: logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-3dgs-20260521T191610Z.json (best=logs/montana-time-capsule/cloudwatch-best-stream-hmc-mtc-20260520T2015Z-3dgs-20260521T191610Z.txt)
+  - CloudWatch tail: logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-3dgs-20260521T191610Z-tail200.json (last event timestamp ms=1779382018947; last message head shows 2026-05-21 16:46:58)
+- S3:
+  - SfM prefix non-empty: logs/montana-time-capsule/s3api-list-objects-v2-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-colmap-20260521T191620Z-max20.json
+  - 3DGS output prefix still empty: logs/montana-time-capsule/s3api-list-objects-v2-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-3dgs-20260521T191641Z-maxkeys50.json (KeyCount=0)
+- CI:
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260521T191659Z.json
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260521T191659Z.json
+
+Next: keep polling until `describe-training-job` is Completed; do not launch compression until 3DGS is Completed.
+
 ## 2026-05-21T18:56:34Z Monitor tick (HMC) - 3DGS still InProgress
 
 - Git: agent-40136728-montana-time-capsule @ 2546cd1456240efc218c032565e9852ad09bf55a (status=logs/montana-time-capsule/git-status-20260521T185634Z.txt)

@@ -124,3 +124,4 @@
 [2026-05-21T18:38:29Z] poll 3dgs -> InProgress (S3 KeyCount=0; cw last=2026-05-21T16:46:58Z) -> next poll
 [2026-05-21T18:56:55Z] poll 3dgs -> InProgress (SecondaryStatus=Training; S3 KeyCount=0; cw last=2026-05-21T16:46:58.947Z) -> next poll
 [2026-05-21T18:59:20Z] push-proof -> head bf33d0e2 pushed; exact-head GH runs=0 ([skip ci] expected); proof=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T185911Z.json
+[2026-05-21T19:17:53Z] monitor 3dgs -> InProgress (Training; S3 KeyCount=0) -> next poll
