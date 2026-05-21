@@ -20,6 +20,11 @@
 
 Next: keep polling until `describe-processing-job` reports Completed; do not launch 3DGS until SageMaker status flips.
 
+## 2026-05-21T16:17:19Z Post-push CI proof (HMC)
+
+- Git head pushed: cc7b05110e20019927eb069f1c6b1d07c4bd6a13 ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T161719Z.txt; branch=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-postpush-20260521T161719Z.txt)
+
 ## 2026-05-21T15:36:52Z Monitor tick (HMC)
 
 - Git: agent-40136728-montana-time-capsule @ 7a416db7052f1e6c8f116b66a25e0d88a26d9595 (`chore: record post-push ci proof 20260521T1519Z [skip ci]`)
