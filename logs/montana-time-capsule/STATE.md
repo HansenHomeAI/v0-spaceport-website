@@ -4054,3 +4054,21 @@ Next: continue polling until SfM becomes Completed; only then run pinned 3DGS st
 
 - Git head pushed: 4f706585b411dac50d3db3d8078570dcddbba4ff ([skip ci])
 - Exact-head workflow runs: 0 (expected due to [skip ci]) (logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-head-postpush-20260521T043810Z.json)
+
+## 2026-05-21T04:56:20Z Monitor Tick
+
+- Git: agent-40136728-montana-time-capsule @ 791f4684b586dacb8d742c10f9e445a72d81a520 ([skip ci])
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260521T045418Z.json (acct 975050048887)
+- Input proven (no re-upload):
+  - s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip head=logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260521T045510Z.json
+  - s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.manifest.json head=logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.manifest.json-20260521T045510Z.json
+- SageMaker SfM:
+  - job: hmc-mtc-20260520T2015Z-sfm
+  - status: InProgress (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T045430Z.json; list=logs/montana-time-capsule/sagemaker-list-processing-jobs-20260521T045520Z.json)
+  - CloudWatch lastEventTimestamp still 2026-05-21T00:01:36.365Z (streams=logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T045458Z.json; events=logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T045458Z-since6h.json)
+  - output prefix still empty (EndOfJob upload): logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T045430Z.txt
+- CI (exact head): no runs for 791f4684 due to [skip ci] (runs list=logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260521T045542Z.json). Latest green runs on branch remain:
+  - Pages: 26200368328 (sha 88b1848f5700cae039c8ea4dbda31a6790b6dc69)
+  - CDK: 26202111411 (sha 7422efd9f9c9e1de23f82a09f991435839a6c365)
+
+Next: continue polling until SfM becomes Completed; do not launch 3DGS until SfM output exists.

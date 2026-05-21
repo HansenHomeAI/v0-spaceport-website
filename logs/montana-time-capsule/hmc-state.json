@@ -21,14 +21,18 @@
     "hmc_2063_DJI_0717.JPG"
   ],
   "monitor": {
-    "checked_at": "2026-05-21T01:35:50Z",
+    "checked_at": "2026-05-21T04:56:25Z",
     "cloudwatch_tail_since6h_path": "logs/montana-time-capsule/cloudwatch-tail-hmc-mtc-20260520T2015Z-sfm-20260521T013456Z-since6h.log",
     "pages_preview_alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
     "pages_preview_hash_url": "https://9480e9f2.v0-spaceport-website-preview2.pages.dev",
     "pages_run_log_path": "logs/montana-time-capsule/gh-run-26200368328-pages.txt",
-    "s3_head_input_path": "logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260521T001534Z.json",
-    "sagemaker_describe_path": "logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T013435Z.json",
-    "sfm_status": "InProgress"
+    "s3_head_input_path": "logs/montana-time-capsule/s3-head-spaceport-uploads-1778952912508-hmc-high-mountain-camp-images-flat.zip-20260521T045510Z.json",
+    "sagemaker_describe_path": "logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260521T045430Z.json",
+    "sfm_status": "InProgress",
+    "cloudwatch_describe_log_streams_path": "logs/montana-time-capsule/cloudwatch-describe-log-streams-hmc-mtc-20260520T2015Z-sfm-20260521T045458Z.json",
+    "cloudwatch_get_log_events_since6h_path": "logs/montana-time-capsule/cloudwatch-get-log-events-hmc-mtc-20260520T2015Z-sfm-20260521T045458Z-since6h.json",
+    "s3_ls_sfm_output_path": "logs/montana-time-capsule/s3-ls-ml-processing-staging-manual-validations-hmc-mtc-20260520T2015Z-colmap-20260521T045430Z.txt",
+    "last_cloudwatch_event_at": "2026-05-21T00:01:36.365000Z"
   },
   "profile": "brass-chunked",
   "profile_note": "Exact Brass Lantern chunked SfM image; default reproducible Montana profile.",
@@ -126,6 +130,6 @@
   },
   "sfm_status": "InProgress",
   "status": "sfm_running",
-  "updated_at": "2026-05-21T04:36:52Z",
+  "updated_at": "2026-05-21T04:56:25Z",
   "zip_entries": 2063
 }

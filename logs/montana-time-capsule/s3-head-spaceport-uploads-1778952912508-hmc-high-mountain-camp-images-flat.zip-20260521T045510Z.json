@@ -1,0 +1,14 @@
+{
+    "AcceptRanges": "bytes",
+    "LastModified": "2026-05-16T17:35:27+00:00",
+    "ContentLength": 8646557673,
+    "ETag": "\"ed86661a82b28856997a09f129ce6bec-1031\"",
+    "ContentType": "application/zip",
+    "ServerSideEncryption": "AES256",
+    "Metadata": {
+        "sha256": "8ac35927d5c90969f5e10f1fa011333e6065140924986c75f18fc81f899b1df2",
+        "dataset": "hmc",
+        "source": "dropbox",
+        "photo-count": "2063"
+    }
+}
