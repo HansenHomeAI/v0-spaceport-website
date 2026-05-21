@@ -1,0 +1,12 @@
+# postpush CI snapshot
+
+ts=20260521T071901Z
+branch=agent-113647-md1-baseline-e2e
+head=a5585740a92da070eb2d0abb7103900ddbce2922
+head_short=a5585740
+exact_head_run_count=0
+expected=0 (head commit contains [skip ci])
+
+Evidence:
+- logs/md1-shrunk/polls/20260521T071901Z-ci-postpush-sha-a5585740/gh-run-list-exact-head.json
+- logs/md1-shrunk/polls/20260521T071901Z-ci-postpush-sha-a5585740/gh-run-list.json
