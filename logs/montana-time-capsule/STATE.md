@@ -28,6 +28,11 @@
 
 Next: HMC is at terminal output (compressed bundle + hosted viewer validated). If/when a new acceptance gate requires public promotion or publishing to a canonical bundle registry, do that as a separate, explicit stage.
 
+## 2026-05-21T20:41:22Z Post-push CI proof (HMC)
+
+- Git head pushed: 03df0096ba1175c4b3524eb0cb50c6e66e7a9b63 ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T204113Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260521T204118Z.json)
+
 ## 2026-05-21T19:58:16Z Post-push CI proof (HMC)
 
 - Git head pushed: 0882a830377a3cb26b6bca6dc975d0e838788545 ([skip ci])
