@@ -5046,3 +5046,8 @@ Next: poll `aws sagemaker describe-processing-job --processing-job-name hmc-mtc-
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260521T211521Z.json
 
 Next: HMC remains at terminal output (compressed bundle + hosted viewer previously validated). No new stage is unblocked without an explicit new acceptance gate (e.g., public promotion / canonical registry entry).
+
+## 2026-05-21T21:17:33Z Post-push CI proof (HMC)
+
+- Git head pushed: 5cfd21b0 ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260521T211733Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260521T211733Z.json)
