@@ -169,3 +169,5 @@
 [2026-05-22T14:58:10Z] post-push CI proof -> pushed 6a0dbb0f ([skip ci]); exact-head runs 0 -> idle
 [2026-05-22T15:34:47Z] hmc-mtc heartbeat verify -> terminal+S3+viewer HTTP200+exact-head CI 0 (skip ci) -> commit/push ledger
 [2026-05-22T15:35:20Z] heartbeat verify (no-spend) -> terminal+viewer HTTP200 -> commit/push logs
+[2026-05-22T15:36:36Z] heartbeat -> verified git/aws/sagemaker/s3/viewer/gh (no spend) -> idle
+[2026-05-22T15:36:37Z] heartbeat -> terminal reconfirmed (no spend) -> idle
