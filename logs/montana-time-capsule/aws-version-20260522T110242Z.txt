@@ -1,0 +1,1 @@
+aws-cli/2.22.26 Python/3.12.8 Darwin/25.4.0 source/arm64
