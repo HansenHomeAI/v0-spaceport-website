@@ -28,6 +28,13 @@
 
 Next: remain idle; do not re-launch HMC unless a new explicit acceptance gate is requested.
 
+## 2026-05-22T14:58:10Z Post-push CI proof (HMC)
+
+- Git head pushed: 6a0dbb0f6b52968705289ca8a7696db25351d2d1 ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-20260522T145812Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-20260522T145812Z.json)
+
+Next: remain idle; do not re-launch HMC unless a new explicit acceptance gate is requested.
+
 ## 2026-05-22T14:44:54Z HEARTBEAT monitor (HMC) - terminal reconfirmed + viewer still reachable + Playwright proof (no launches)
 
 - Git: agent-40136728-montana-time-capsule @ 028449b5b04925f636665c1c68b2499a0d6bcaac ([skip ci]) (status=logs/montana-time-capsule/git-status-porcelain-20260522T052551Z.txt)

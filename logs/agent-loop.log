@@ -166,3 +166,4 @@
 [2026-05-22T14:15:03Z] heartbeat(no-spend) -> HMC terminal; S3+viewer+proxy HTTP200; GH exact-head=0 ([skip ci]) -> commit/push evidence
 [2026-05-22T14:44:54Z] heartbeat(no-spend) -> terminal + S3 ok + viewer/proxy 200 + Playwright skybox/no-sky screenshots -> commit/push evidence
 [2026-05-22T14:45:09Z] heartbeat(no-spend) -> HMC terminal; S3+viewer+proxy HTTP200; GH exact-head=0 ([skip ci]) -> commit/push evidence
+[2026-05-22T14:58:10Z] post-push CI proof -> pushed 6a0dbb0f ([skip ci]); exact-head runs 0 -> idle
