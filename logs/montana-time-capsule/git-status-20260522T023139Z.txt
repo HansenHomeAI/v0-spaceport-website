@@ -1,0 +1,9 @@
+ M logs/agent-loop.log
+ M logs/montana-time-capsule/STATE.md
+?? logs/montana-time-capsule/gh-run-list-branch-postpush-20260522T020433Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-20260522T020415Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260522T020420Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260522T020428Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260522T020433Z.json
+?? logs/montana-time-capsule/git-status-20260522T023107Z.txt
+?? logs/montana-time-capsule/git-status-20260522T023139Z.txt
