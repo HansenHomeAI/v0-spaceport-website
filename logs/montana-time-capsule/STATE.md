@@ -5801,3 +5801,27 @@ Next: remain idle for HMC; do not stop unrelated jobs.
 - GitHub Actions:
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260522T153834Z.json
   - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260522T153834Z.json (0; head commit is [skip ci])
+
+## 2026-05-22T16:00:34Z HEARTBEAT monitor (HMC) - terminal reconfirmed (no launches)
+
+- Git: agent-40136728-montana-time-capsule @ 34687c672db332bf3a09afc231249907942ff355 ([skip ci])
+  - status: logs/montana-time-capsule/heartbeat-git-20260522T160034Z.txt (dirty due to new evidence artifacts)
+- AWS (us-west-2):
+  - sts: logs/montana-time-capsule/aws-sts-get-caller-identity-20260522T160034Z.json
+  - SageMaker in-progress processing jobs: logs/montana-time-capsule/sagemaker-list-processing-jobs-inprogress-20260522T160034Z.json (1 unrelated job; no action)
+  - SageMaker in-progress training jobs: logs/montana-time-capsule/sagemaker-list-training-jobs-inprogress-20260522T160034Z.json (0)
+  - describe sfm: logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260522T160034Z.json (Completed)
+  - describe 3dgs: logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260522T160034Z.json (Completed)
+  - describe compression: logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260522T160034Z.json (Completed)
+- S3 supersplat bundle (staging):
+  - head-object meta.json: logs/montana-time-capsule/s3api-head-object-supersplat-meta-20260522T160034Z.json
+  - list-objects: logs/montana-time-capsule/s3api-list-objects-supersplat_bundle-20260522T160034Z.json (13 keys)
+- Hosted preview viewer reachability (curl -I):
+  - skybox URL: logs/montana-time-capsule/heartbeat-viewer-skybox-url-20260522T160034Z.txt (headers=logs/montana-time-capsule/curlI-viewer-skybox-20260522T160034Z.headers; HTTP 200)
+  - no-sky URL: logs/montana-time-capsule/heartbeat-viewer-nosky-url-20260522T160034Z.txt (headers=logs/montana-time-capsule/curlI-viewer-nosky-20260522T160034Z.headers; HTTP 200)
+  - proxy meta URL: logs/montana-time-capsule/heartbeat-proxy-meta-url-20260522T160034Z.txt (headers=logs/montana-time-capsule/curlI-proxy-meta-20260522T160034Z.headers; HTTP 200)
+- GitHub Actions:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260522T160034Z.json (latest green Pages+CDK on 2026-05-21)
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260522T160034Z.json (0; head commit is [skip ci])
+
+Next: remain idle for HMC; do not stop unrelated jobs; no launches.
