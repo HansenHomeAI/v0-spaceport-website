@@ -217,6 +217,11 @@ Next: HMC is at terminal output (compressed bundle + hosted viewer validated). I
 
 Next: remain idle; do not re-launch HMC unless a new explicit acceptance gate is requested.
 
+## 2026-05-22T00:43:20Z Post-push CI proof (HMC)
+
+- Git head pushed: d9ea1dcd00fe24fa5a7c4709126a2f3ced17f82c ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260522T004320Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260522T004320Z.json)
+
 ## 2026-05-21T20:41:22Z Post-push CI proof (HMC)
 
 - Git head pushed: 03df0096ba1175c4b3524eb0cb50c6e66e7a9b63 ([skip ci])
