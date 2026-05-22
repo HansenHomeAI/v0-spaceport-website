@@ -1,0 +1,5 @@
+timestamp_utc=20260522T144440Z
+branch=agent-40136728-montana-time-capsule
+head=eacb7fda7a30a97d221b3d5ee2057c560bb48f2e
+subject=chore: heartbeat HMC terminal 20260522T1413Z [skip ci]
+dirty=1
