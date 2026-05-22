@@ -26,6 +26,8 @@
   - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260522T161812Z.json (count=logs/montana-time-capsule/gh-exact-head-run-count-20260522T161812Z.txt; expected 0 due to [skip ci] head)
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260522T161812Z.json (count=logs/montana-time-capsule/gh-branch-run-count-20260522T161812Z.txt)
 
+Post-push sanity: Git HEAD is now 0090a4a8a2f7b2639e7e4b66800b4ad3ab14dc1a ([skip ci]) (head=logs/montana-time-capsule/git-head-status-20260522T162104Z.txt; status=logs/montana-time-capsule/git-status-20260522T162104Z.txt; exact-head runs=logs/montana-time-capsule/gh-exact-head-run-count-20260522T162104Z.txt).
+
 Next: remain idle unless a new acceptance gate is requested (visual screenshots/skybox/no-sky in browser); do not launch or stop any jobs.
 
 ## 2026-05-22T15:40:12Z HEARTBEAT monitor (HMC) - terminal reconfirmed + S3 + viewer/proxy reachable + non-HMC in-progress job observed (no launches)
