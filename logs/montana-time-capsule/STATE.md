@@ -5725,7 +5725,9 @@ Next: remain idle; do not re-launch HMC unless a new explicit acceptance gate is
 - gh runs (exact head): logs/montana-time-capsule/gh-run-list-exact-head-20260522T153642Z.json (0; head is [skip ci])
 - gh runs (branch): logs/montana-time-capsule/gh-run-list-branch-20260522T153735Z.json (latest non-skip-ci runs include CDK Deploy success)
 
-## 2026-05-22T15:37:53Z HEARTBEAT monitor (HMC) - terminal reconfirmed + S3 + viewer reachable + CI enumerated (no launches)
+## 2026-05-22T15:37:53Z HEARTBEAT monitor (HMC) - superseded
+
+This entry referenced non-existent artifact filenames (timestamp mismatch). Use the later heartbeats below (15:38Z and 15:40Z) for correct evidence paths.
 
 - Git:
   - branch: agent-40136728-montana-time-capsule
