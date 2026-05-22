@@ -5759,7 +5759,7 @@ This entry referenced non-existent artifact filenames (timestamp mismatch). Use 
   - compression: logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260522T153740Z.json
 - SageMaker InProgress processing jobs list includes 1 unrelated job:
   - list: logs/montana-time-capsule/sagemaker-list-processing-jobs-inprogress-20260522T153940Z.json
-  - describe: logs/montana-time-capsule/sagemaker-describe-unrelated-processing-cvhr-wcrepair-l08-1779464068-20260522T154021Z.json
+  - describe: logs/montana-time-capsule/sagemaker-describe-cvhr-wcrepair-l08-1779464068-20260522T154012Z.json
 
 Next: remain idle for HMC; do not stop unrelated jobs.
 
