@@ -1,0 +1,7 @@
+logs/montana-time-capsule/curlI-proxy-meta-20260522T145813Z.headers:1:HTTP/2 200 
+logs/montana-time-capsule/curlI-proxy-meta-20260522T145813Z.headers:3:content-type: application/octet-stream
+logs/montana-time-capsule/curlI-proxy-meta-20260522T145813Z.headers:8:access-control-allow-origin: *
+logs/montana-time-capsule/curlI-viewer-nosky-20260522T145813Z.headers:1:HTTP/2 200 
+logs/montana-time-capsule/curlI-viewer-nosky-20260522T145813Z.headers:3:content-type: text/html; charset=utf-8
+logs/montana-time-capsule/curlI-viewer-skybox-20260522T145813Z.headers:1:HTTP/2 200 
+logs/montana-time-capsule/curlI-viewer-skybox-20260522T145813Z.headers:3:content-type: text/html; charset=utf-8
