@@ -152,3 +152,4 @@
 [2026-05-21T23:37:11Z] post-push CI proof -> pushed c8ab97c6 ([skip ci]); exact-head runs 0 -> idle
 [2026-05-21T23:57:53Z] heartbeat(hmc-mtc-20260520T2015Z) -> terminal reconfirmed; S3 meta+background_skybox.webp ok; viewer/proxy 200; exact-head GH runs=0 ([skip ci]) -> commit+push ledger
 [2026-05-22T00:00:24Z] post-push CI proof -> pushed 748bd3d4 ([skip ci]); exact-head runs 0 -> idle
+[2026-05-22T00:23:35Z] heartbeat(hmc-mtc-20260520T2015Z) -> terminal reconfirmed; S3 meta+background_skybox.webp ok; viewer/proxy 200; exact-head GH runs=0 ([skip ci]) -> commit+push ledger
