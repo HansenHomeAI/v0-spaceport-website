@@ -5726,6 +5726,18 @@ Next: remain idle; do not re-launch HMC unless a new explicit acceptance gate is
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260522T153753Z.json (latest green Pages+CDK on 2026-05-21)
   - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260522T153753Z.json (0; head commit is [skip ci])
 
+## 2026-05-22T15:40:21Z HEARTBEAT monitor (HMC) - terminal reconfirmed; unrelated SageMaker InProgress observed (no action)
+
+- HMC canonical jobs remain Completed:
+  - sfm: logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260522T153740Z.json
+  - 3dgs: logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260522T153940Z.json
+  - compression: logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260522T153740Z.json
+- SageMaker InProgress processing jobs list includes 1 unrelated job:
+  - list: logs/montana-time-capsule/sagemaker-list-processing-jobs-inprogress-20260522T153940Z.json
+  - describe: logs/montana-time-capsule/sagemaker-describe-unrelated-processing-cvhr-wcrepair-l08-1779464068-20260522T154021Z.json
+
+Next: remain idle for HMC; do not stop unrelated jobs.
+
 ## 2026-05-22T15:38:34Z HEARTBEAT monitor (HMC) - fresh reconfirm (no launches)
 
 - Git: agent-40136728-montana-time-capsule @ 2768757a0336acd182d52e718afc2a2cfe3671a5 ([skip ci])
