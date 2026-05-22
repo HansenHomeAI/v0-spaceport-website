@@ -188,22 +188,22 @@ Next: remain idle; do not re-launch HMC unless a new explicit acceptance gate is
 
 ## 2026-05-22T14:45:00Z HEARTBEAT monitor (HMC) - no-spend reconfirm: AWS identity ok, no in-progress jobs, supersplat bundle still present, viewer/proxy still HTTP 200, exact-head GH runs=0 ([skip ci])
 
-- Git: agent-40136728-montana-time-capsule @ 65f85de6d3c0363d8999c3993d663c57b7033036 ([skip ci]) (dirty=logs only)
-- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260522T141352Z.json; logs/montana-time-capsule/aws-config-region-20260522T141352Z.txt
+- Git: agent-40136728-montana-time-capsule @ 41bcccb2655e5046ca8a2d0acd8366b6cae4c1d0 ([skip ci]) (dirty=logs only)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260522T144532Z.json; logs/montana-time-capsule/aws-config-region-20260522T144532Z.txt
 - SageMaker terminal state:
-  - InProgress processing jobs=0 (logs/montana-time-capsule/sagemaker-list-processing-jobs-inprogress-20260522T141352Z.json)
-  - InProgress training jobs=0 (logs/montana-time-capsule/sagemaker-list-training-jobs-inprogress-20260522T141438Z.json) (note: first attempt throttled at 20260522T141352Z)
-  - SfM: Completed (logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260522T141352Z.json)
-  - 3DGS: Completed (logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260522T141352Z.json)
-  - compression: Completed (logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260522T141352Z.json)
-- S3 (supersplat bundle): logs/montana-time-capsule/s3-ls-supersplat_bundle-20260522T141458Z.txt (13 objects); meta ContentLength=1359 (logs/montana-time-capsule/s3api-head-object-supersplat-meta-20260522T141458Z.json)
+  - InProgress processing jobs=0 (logs/montana-time-capsule/sagemaker-list-processing-jobs-inprogress-20260522T144522Z.json)
+  - InProgress training jobs=0 (logs/montana-time-capsule/sagemaker-list-training-jobs-inprogress-20260522T144522Z.json)
+  - SfM: Completed (logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260522T144522Z.json)
+  - 3DGS: Completed (logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260522T144522Z.json)
+  - compression: Completed (logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260522T144522Z.json)
+- S3 (supersplat bundle): logs/montana-time-capsule/s3-ls-supersplat_bundle-20260522T144503Z.txt (13 objects); meta ContentLength=1359 (logs/montana-time-capsule/s3api-head-object-supersplat-meta.json-20260522T144503Z.json)
 - Hosted viewer reachability:
-  - skybox: logs/montana-time-capsule/heartbeat-viewer-skybox-url-20260522T144408Z.txt (headers=logs/montana-time-capsule/curlI-viewer-skybox-20260522T144408Z.headers; HTTP 200)
-  - no-sky: logs/montana-time-capsule/heartbeat-viewer-nosky-url-20260522T144408Z.txt (headers=logs/montana-time-capsule/curlI-viewer-nosky-20260522T144408Z.headers; HTTP 200)
-  - proxy meta: logs/montana-time-capsule/heartbeat-proxy-meta-url-20260522T144408Z.txt (headers=logs/montana-time-capsule/curlI-proxy-meta-20260522T144408Z.headers; HTTP 200)
+  - skybox: logs/montana-time-capsule/heartbeat-viewer-skybox-url-20260522T144508Z.txt (headers=logs/montana-time-capsule/curlI-viewer-skybox-20260522T144508Z.headers; HTTP 200)
+  - no-sky: logs/montana-time-capsule/heartbeat-viewer-nosky-url-20260522T144508Z.txt (headers=logs/montana-time-capsule/curlI-viewer-nosky-20260522T144508Z.headers; HTTP 200)
+  - proxy meta: logs/montana-time-capsule/heartbeat-proxy-meta-url-20260522T144508Z.txt (headers=logs/montana-time-capsule/curlI-proxy-meta-20260522T144508Z.headers; HTTP 200)
 - CI:
-  - exact-head runs=0 (logs/montana-time-capsule/gh-run-list-exact-head-20260522T144424Z.json)
-  - branch runs latest success still 2026-05-21 (logs/montana-time-capsule/gh-run-list-branch-20260522T144424Z.json)
+  - exact-head runs=0 (logs/montana-time-capsule/gh-run-list-exact-head-20260522T145741Z.json)
+  - branch runs latest success still 2026-05-21 (logs/montana-time-capsule/gh-run-list-branch-20260522T145741Z.json)
 
 Next: remain idle (no re-launches) unless a new explicit acceptance gate is requested.
 
