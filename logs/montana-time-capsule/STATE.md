@@ -56,6 +56,11 @@ Next: remain idle; do not re-launch HMC unless a new explicit acceptance gate is
 - Git head pushed: 748bd3d481a832e3ba56ca366c835d05c45ebd4a ([skip ci])
 - Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260522T000024Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260522T000024Z.json)
 
+## 2026-05-22T00:24:52Z Post-push CI proof (HMC)
+
+- Git head pushed: 84f10827bdaa1bc06d42ee9af9d6daad8be84003 ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260522T002452Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260522T002452Z.json)
+
 ## 2026-05-21T23:18:33Z HEARTBEAT monitor (HMC) - terminal reconfirmed + proxy/meta reachable (no launches)
 
 - Git: agent-40136728-montana-time-capsule @ bd7c48289e40eb4aee30e07ad6293ca72144452e (clean) ([skip ci])
