@@ -1,0 +1,5 @@
+ STATE.md                                           |  2 +-
+ logs/agent-loop.log                                |  1 +
+ logs/montana-time-capsule/STATE.md                 | 48 ++++++++++++++++++++++
+ ...ad-object-supersplat-meta-20260522T144450Z.json | 11 +++++
+ 4 files changed, 61 insertions(+), 1 deletion(-)

@@ -1,0 +1,12 @@
+HTTP/1.1 400 Bad Request
+x-amz-request-id: VW844KGHMHX3VG0E
+x-amz-id-2: CJN6vc5QYl3Ny3jflYPqggsy7sp7kPIlYwFL5PwpdDUQowWfrfPhAMbAwH1RVbSTm3VuN1Yi36CAi5DoCOmj28zY3pJb0HE7ggK/Km03nQ4=
+x-amz-region: us-west-2
+Content-Type: application/xml
+Transfer-Encoding: chunked
+Date: Fri, 22 May 2026 14:45:20 GMT
+Connection: close
+Server: AmazonS3
+
+<?xml version="1.0" encoding="UTF-8"?>
+<Error><Code>InvalidArgument</Code><Message>Requests specifying Server Side Encryption with AWS KMS managed keys require AWS Signature Version 4.</Message><ArgumentName>Authorization</ArgumentName><RequestId>VW844KGHMHX3VG0E</RequestId><HostId>CJN6vc5QYl3Ny3jflYPqggsy7sp7kPIlYwFL5PwpdDUQowWfrfPhAMbAwH1RVbSTm3VuN1Yi36CAi5DoCOmj28zY3pJb0HE7ggK/Km03nQ4=</HostId></Error>
