@@ -5687,3 +5687,25 @@ Next: remain idle; do not re-launch HMC unless a new explicit acceptance gate is
 - GitHub Actions:
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260522T153753Z.json (latest green Pages+CDK on 2026-05-21)
   - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260522T153753Z.json (0; head commit is [skip ci])
+
+## 2026-05-22T15:38:34Z HEARTBEAT monitor (HMC) - fresh reconfirm (no launches)
+
+- Git: agent-40136728-montana-time-capsule @ 2768757a0336acd182d52e718afc2a2cfe3671a5 ([skip ci])
+- AWS (us-west-2):
+  - sts: logs/montana-time-capsule/aws-sts-get-caller-identity-20260522T153705Z.json
+  - SageMaker in-progress processing jobs: logs/montana-time-capsule/sagemaker-list-processing-jobs-inprogress-20260522T153656Z.json (expect 0)
+  - SageMaker in-progress training jobs: logs/montana-time-capsule/sagemaker-list-training-jobs-inprogress-20260522T153656Z.json (expect 0)
+  - describe sfm: logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260522T153740Z.json (Completed)
+  - describe 3dgs: logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260522T153656Z.json (Completed)
+  - describe compression: logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260522T153656Z.json (Completed)
+- S3 supersplat bundle (staging):
+  - head-object meta.json: logs/montana-time-capsule/s3api-head-object-supersplat-meta-20260522T153844Z.json
+  - head-object background_skybox.webp: logs/montana-time-capsule/s3api-head-object-supersplat-background_skybox.webp-20260522T153735Z.json
+  - list-objects (13 keys): logs/montana-time-capsule/s3api-list-objects-supersplat_bundle-20260522T153747Z.json
+- Hosted preview viewer reachability (curl -I):
+  - skybox: logs/montana-time-capsule/curlI-viewer-skybox-20260522T153834Z.headers (HTTP 200)
+  - no-sky: logs/montana-time-capsule/curlI-viewer-nosky-20260522T153834Z.headers (HTTP 200)
+  - proxy meta: logs/montana-time-capsule/curlI-proxy-meta-20260522T153834Z.headers (HTTP 200)
+- GitHub Actions:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260522T153834Z.json
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260522T153834Z.json (0; head commit is [skip ci])

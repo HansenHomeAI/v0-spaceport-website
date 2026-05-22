@@ -1,0 +1,21 @@
+branch=agent-40136728-montana-time-capsule
+head=92718e5d1a3ead69e55f869a128b663aa4e71a6f
+ M logs/agent-loop.log
+?? logs/montana-time-capsule/curlI-viewer-skybox-20260522T153858Z.headers
+?? logs/montana-time-capsule/curlI-viewer-skybox-20260522T153940Z.headers
+?? logs/montana-time-capsule/gh-exact-head-sha-20260522T153939Z.txt
+?? logs/montana-time-capsule/gh-run-list-branch-20260522T153939Z.err
+?? logs/montana-time-capsule/gh-run-list-branch-20260522T153939Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-20260522T153939Z.err
+?? logs/montana-time-capsule/gh-run-list-exact-head-20260522T153939Z.json
+?? logs/montana-time-capsule/git-head-status-20260522T153940Z.txt
+?? logs/montana-time-capsule/heartbeat-preview-url-20260522T153940Z.txt
+?? logs/montana-time-capsule/heartbeat-proxy-meta-url-20260522T153858Z.txt
+?? logs/montana-time-capsule/heartbeat-proxy-meta-url-20260522T153940Z.txt
+?? logs/montana-time-capsule/heartbeat-s3-meta-url-20260522T153940Z.txt
+?? logs/montana-time-capsule/heartbeat-viewer-nosky-url-20260522T153858Z.txt
+?? logs/montana-time-capsule/heartbeat-viewer-nosky-url-20260522T153940Z.txt
+?? logs/montana-time-capsule/heartbeat-viewer-skybox-url-20260522T153858Z.txt
+?? logs/montana-time-capsule/heartbeat-viewer-skybox-url-20260522T153940Z.txt
+?? logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260522T153914Z.json
+?? logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260522T153914Z.json
