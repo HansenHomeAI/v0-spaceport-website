@@ -1,0 +1,3 @@
+Canvas stats: {"camera":{"position":{"x":4.930380657631324e-32,"y":0.5,"z":-2.0000000000000004},"angles":{"x":-14.036243467926479,"y":-180,"z":0},"distance":2.0615528128088303}}
+Render stats: {"width":1280,"height":800,"bright":995023,"alpha":1024000}
+OK — screenshot /Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule/logs/sogs-migrated-viewer-smoke.png

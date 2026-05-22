@@ -163,3 +163,4 @@
 [2026-05-22T10:46:32Z] heartbeat hmc-mtc-20260520T2015Z -> terminal confirmed + viewer 200 + screenshots -> idle
 [2026-05-22T11:02:59Z] heartbeat(hmc-mtc-20260520T2015Z) -> terminal reconfirmed; S3+viewer/proxy 200; exact-head GH runs=0 ([skip ci]) -> commit+push ledger
 [2026-05-22T05:01:17Z] heartbeat(no-spend) -> HMC terminal; S3 bundle present; viewer+proxy HTTP200; GH exact-head=0 ([skip ci]) -> commit/push logs
+[2026-05-22T14:15:03Z] heartbeat(no-spend) -> HMC terminal; S3+viewer+proxy HTTP200; GH exact-head=0 ([skip ci]) -> commit/push evidence
