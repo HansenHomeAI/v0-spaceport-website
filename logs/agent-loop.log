@@ -179,6 +179,6 @@
 [2026-05-22T14:57:58Z] post-push CI proof -> pushed 38b2b503 ([skip ci]); exact-head runs 0 -> idle
 [2026-05-22T15:38:34Z] montana-time-capsule heartbeat -> no-spend reconfirm (aws/sagemaker/s3/viewer/gh) -> commit+push evidence
 [2026-05-22T15:40:37Z] heartbeat -> HMC terminal reconfirmed; 1 unrelated SageMaker InProgress observed (no action) -> idle
-[2026-05-22T15:45:57Z] heartbeat(no-spend) -> HMC terminal; S3 bundle present; viewer+proxy HTTP200; GH exact-head=0 ([skip ci]) -> commit/push evidence
+[2026-05-22T15:48:37Z] heartbeat(no-spend) -> HMC terminal; S3 bundle present; viewer+proxy HTTP200; GH exact-head=0 ([skip ci]) -> commit/push evidence
 [2026-05-22T15:43:07Z] heartbeat(no-spend) -> HMC terminal; S3 bundle present; viewer+proxy HTTP200; GH exact-head=0 ([skip ci]) -> commit/push evidence
 [2026-05-22T15:47:04Z] heartbeat(no-spend) -> verified terminal state in ledger (no launches) -> commit/push
