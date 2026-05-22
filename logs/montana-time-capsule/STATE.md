@@ -5658,3 +5658,27 @@ Next: remain idle; do not re-launch HMC unless a new explicit acceptance gate is
 - viewer reachability: logs/montana-time-capsule/curlI-viewer-skybox-20260522T153642Z.headers ; logs/montana-time-capsule/curlI-viewer-nosky-20260522T153642Z.headers ; logs/montana-time-capsule/curlI-proxy-meta-20260522T153642Z.headers ; logs/montana-time-capsule/curlI-s3-meta-20260522T153645Z.headers (all HTTP 200)
 - gh runs (exact head): logs/montana-time-capsule/gh-run-list-exact-head-20260522T153642Z.json (0; head is [skip ci])
 - gh runs (branch): logs/montana-time-capsule/gh-run-list-branch-20260522T153735Z.json (latest non-skip-ci runs include CDK Deploy success)
+
+## 2026-05-22T15:37:53Z HEARTBEAT monitor (HMC) - terminal reconfirmed + S3 + viewer reachable + CI enumerated (no launches)
+
+- Git:
+  - branch: agent-40136728-montana-time-capsule
+  - head: e7d1111e81ec4afe5a4c32b04a1da24bdd0eff43
+  - status: 7 changed paths (logs/ evidence)
+- AWS:
+  - sts: logs/montana-time-capsule/aws-sts-get-caller-identity-20260522T153753Z.json
+  - region: unknown
+  - SageMaker in-progress processing jobs: 0 (logs/montana-time-capsule/sagemaker-list-processing-jobs-inprogress-20260522T153753Z.json)
+  - SageMaker in-progress training jobs: 0 (logs/montana-time-capsule/sagemaker-list-training-jobs-inprogress-20260522T153753Z.json)
+  - describe sfm: logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260522T153753Z.json
+  - describe 3dgs: logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260522T153753Z.json
+- S3 supersplat bundle (staging):
+  - listing: logs/montana-time-capsule/s3-ls-supersplat_bundle-20260522T153753Z.txt
+  - head-object meta.json: logs/montana-time-capsule/s3api-head-object-supersplat-meta.json-20260522T153753Z.json
+  - head-object background_skybox.webp: logs/montana-time-capsule/s3api-head-object-supersplat-background_skybox.webp-20260522T153753Z.json
+- Hosted preview viewer reachability (curl -I):
+  - skybox URL: logs/montana-time-capsule/heartbeat-viewer-skybox-url-20260522T153753Z.txt (headers=logs/montana-time-capsule/curlI-viewer-skybox-20260522T153753Z.headers; HTTP 200)
+  - no-sky URL: logs/montana-time-capsule/heartbeat-viewer-nosky-url-20260522T153753Z.txt (headers=logs/montana-time-capsule/curlI-viewer-nosky-20260522T153753Z.headers; HTTP 200)
+- GitHub Actions:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260522T153753Z.json (latest green Pages+CDK on 2026-05-21)
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260522T153753Z.json (0; head commit is [skip ci])
