@@ -171,3 +171,5 @@
 [2026-05-22T15:35:20Z] heartbeat verify (no-spend) -> terminal+viewer HTTP200 -> commit/push logs
 [2026-05-22T15:36:36Z] heartbeat -> verified git/aws/sagemaker/s3/viewer/gh (no spend) -> idle
 [2026-05-22T15:36:37Z] heartbeat -> terminal reconfirmed (no spend) -> idle
+[2026-05-22T15:37Z] heartbeat -> terminal + viewer HTTP 200 -> commit/push ledger
+[2026-05-22T15:37:35Z] heartbeat(no-spend) -> HMC terminal; S3 bundle present; viewer+proxy HTTP200; GH exact-head=0 ([skip ci]) -> commit/push evidence
