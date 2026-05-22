@@ -156,3 +156,4 @@
 [2026-05-22T00:24:52Z] post-push CI proof -> pushed 84f10827 ([skip ci]); exact-head runs 0 -> idle
 [2026-05-22T00:43:26Z] heartbeat(hmc-mtc-20260520T2015Z) -> terminal reconfirmed; S3 meta ok; viewer/proxy 200; exact-head GH runs=0 ([skip ci]) -> commit+push ledger
 [2026-05-22T00:44:10Z] post-push CI proof -> pushed d9ea1dcd ([skip ci]); exact-head runs 0 -> idle
+[2026-05-22T02:03:37Z] heartbeat(no-spend) -> HMC terminal + S3 + viewer/proxy 200 + CI checked -> commit/push evidence
