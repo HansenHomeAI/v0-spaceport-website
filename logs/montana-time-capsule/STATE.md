@@ -103,6 +103,11 @@ Next: remain idle; do not re-launch HMC unless a new explicit acceptance gate is
 
 Next: remain idle; do not re-launch HMC unless a new explicit acceptance gate is requested.
 
+## 2026-05-22T15:50:04Z Post-push CI proof (HMC)
+
+- Git head pushed: e1cb51d3a64d1c6681d878f16c24e8ad5f4fb3bd ([skip ci])
+- Exact-head workflow runs: 0 (expected due to [skip ci]) (exact-head=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260522T155004Z.json; branch=logs/montana-time-capsule/gh-run-list-branch-postpush-20260522T155004Z.json)
+
 ## 2026-05-22T14:57:58Z Post-push CI proof (HMC)
 
 - Git head pushed: 38b2b50385b09b51e0765d34f40264476a263b80 ([skip ci])
