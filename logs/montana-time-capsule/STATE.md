@@ -28,6 +28,28 @@
 
 Next: remain idle; do not re-launch HMC unless a new explicit acceptance gate is requested.
 
+## 2026-05-22T14:14:48Z HEARTBEAT monitor (HMC) - terminal reconfirmed + viewer still HTTP 200 (no launches)
+
+- Git: agent-40136728-montana-time-capsule @ 028449b5b04925f636665c1c68b2499a0d6bcaac ([skip ci]) (status=logs/montana-time-capsule/git-status-20260522T141448Z.txt)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260522T141448Z.json (acct 975050048887)
+- SageMaker:
+  - SfM processing job: hmc-mtc-20260520T2015Z-sfm status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260522T141448Z.json)
+  - 3DGS training job: hmc-mtc-20260520T2015Z-3dgs status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260522T141448Z.json)
+  - compression processing job: hmc-mtc-20260520T2015Z-compression status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260522T141448Z.json)
+  - InProgress lists (expect 0): logs/montana-time-capsule/sagemaker-list-processing-jobs-inprogress-20260522T141448Z.json; logs/montana-time-capsule/sagemaker-list-training-jobs-inprogress-20260522T141448Z.json
+- S3:
+  - supersplat bundle listing: logs/montana-time-capsule/s3-ls-supersplat_bundle-20260522T141448Z.txt
+  - meta.json head-object: logs/montana-time-capsule/s3api-head-object-supersplat-meta-20260522T141448Z.json
+- Hosted preview viewer reachability:
+  - skybox URL: logs/montana-time-capsule/heartbeat-viewer-skybox-url-20260522T141448Z.txt (headers=logs/montana-time-capsule/curlI-viewer-skybox-20260522T141448Z.headers; HTTP 200)
+  - no-sky URL: logs/montana-time-capsule/heartbeat-viewer-nosky-url-20260522T141448Z.txt (headers=logs/montana-time-capsule/curlI-viewer-nosky-20260522T141448Z.headers; HTTP 200)
+  - proxy meta URL: logs/montana-time-capsule/heartbeat-proxy-meta-url-20260522T141448Z.txt (headers=logs/montana-time-capsule/curlI-proxy-meta-20260522T141448Z.headers; HTTP 200; content-length=1359)
+- CI:
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260522T141448Z.json (still 0 expected due to [skip ci] head)
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260522T141448Z.json
+
+Next: remain idle; do not re-launch HMC unless a new explicit acceptance gate is requested.
+
 ## 2026-05-22T14:13:38Z HEARTBEAT monitor (HMC) - terminal reconfirmed + S3 + viewer/proxy reachable + exact-head CI recorded (no launches)
 
 - Git: agent-40136728-montana-time-capsule @ 028449b5b04925f636665c1c68b2499a0d6bcaac ([skip ci]) (status=logs/montana-time-capsule/git-head-status-20260522T141338Z.txt)
