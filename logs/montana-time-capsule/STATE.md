@@ -195,6 +195,28 @@ Next: remain idle; do not re-launch HMC unless a new explicit acceptance gate is
 
 Next: HMC is at terminal output (compressed bundle + hosted viewer validated). If/when a new acceptance gate requires public promotion or publishing to a canonical bundle registry, do that as a separate, explicit stage.
 
+## 2026-05-22T00:41:25Z HEARTBEAT monitor (HMC) - terminal reconfirmed + S3 + viewer/proxy reachable + exact-head CI confirmed (no launches)
+
+- Git: agent-40136728-montana-time-capsule @ 813bc3f26644808ba676008234e8758f44c6a160 (clean) ([skip ci])
+- AWS (us-west-2; /opt/homebrew/bin/aws): logs/montana-time-capsule/aws-sts-get-caller-identity-20260522T004125Z.json (acct 975050048887)
+- SageMaker (/opt/homebrew/bin/aws):
+  - SfM processing job: hmc-mtc-20260520T2015Z-sfm status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260522T004125Z.json)
+  - 3DGS training job: hmc-mtc-20260520T2015Z-3dgs status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260522T004125Z.json)
+  - compression processing job: hmc-mtc-20260520T2015Z-compression status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260522T004125Z.json)
+  - InProgress lists: logs/montana-time-capsule/sagemaker-list-processing-jobs-inprogress-20260522T004125Z.json (2; not HMC); logs/montana-time-capsule/sagemaker-list-training-jobs-inprogress-20260522T004125Z.json (0)
+- S3 (supersplat bundle; /opt/homebrew/bin/aws):
+  - bundle listing: logs/montana-time-capsule/s3-ls-spaceport-ml-processing-staging-compressed_hmc-mtc-20260520T2015Z_supersplat_bundle_-20260522T004125Z-head200.txt (Total Objects: 13; Total Size: 6.8 MiB)
+  - bundle meta head-object: logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-staging-20260522T004125Z-meta.json
+- Hosted preview viewer reachability:
+  - viewer URL (skybox): logs/montana-time-capsule/heartbeat-viewer-skybox-url-20260522T004125Z.txt (headers=logs/montana-time-capsule/curlI-viewer-skybox-20260522T004125Z.headers; HTTP 200)
+  - viewer URL (no-sky): logs/montana-time-capsule/heartbeat-viewer-nosky-url-20260522T004125Z.txt (headers=logs/montana-time-capsule/curlI-viewer-nosky-20260522T004125Z.headers; HTTP 200)
+  - proxy meta URL: logs/montana-time-capsule/heartbeat-proxy-meta-url-20260522T004125Z.txt (headers=logs/montana-time-capsule/curlI-proxy-meta-20260522T004125Z.headers; HTTP 200)
+- CI (/opt/homebrew/bin/gh):
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260522T004125Z.json (0; expected due to [skip ci] head)
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260522T004125Z.json (latest success sha=0e48d07)
+
+Next: remain idle; do not re-launch HMC unless a new explicit acceptance gate is requested.
+
 ## 2026-05-21T20:41:22Z Post-push CI proof (HMC)
 
 - Git head pushed: 03df0096ba1175c4b3524eb0cb50c6e66e7a9b63 ([skip ci])
