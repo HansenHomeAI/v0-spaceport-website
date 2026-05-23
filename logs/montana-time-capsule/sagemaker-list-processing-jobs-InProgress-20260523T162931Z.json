@@ -1,0 +1,11 @@
+{
+    "ProcessingJobSummaries": [
+        {
+            "ProcessingJobName": "cvhr-globalprior-full-l01-1779549138",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/cvhr-globalprior-full-l01-1779549138",
+            "CreationTime": 1779549138.809,
+            "LastModifiedTime": 1779549289.769,
+            "ProcessingJobStatus": "InProgress"
+        }
+    ]
+}

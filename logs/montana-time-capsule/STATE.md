@@ -6445,3 +6445,30 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remain
 - GitHub Actions:
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260523T160656Z.json
   - exact-head runs (expected 0 due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260523T160656Z.json
+
+### 2026-05-23T16:31:12Z heartbeat acceptance re-check (no-spend)
+
+- Git: agent-40136728-montana-time-capsule @ 8b122ddec05f34454afa899dd7f87d11ef57b35a ([skip ci]) (clean)
+- GitHub Actions:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260523T162828Z.json
+  - exact-head runs (expected 0 due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260523T162828Z.json
+  - Pages runs: logs/montana-time-capsule/gh-run-list-pages-20260523T162828Z.json
+  - CDK runs: logs/montana-time-capsule/gh-run-list-cdk-20260523T162828Z.json
+- Cloudflare Pages preview (re-derived from deploy run 26200368328):
+  - extract: logs/montana-time-capsule/gh-run-view-pages-26200368328-20260523T162837Z.preview-grep.txt
+  - alias URL: https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260523T162931Z.json
+- SageMaker (canonical jobs Completed; do not launch duplicates):
+  - SfM processing describe: logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260523T162931Z.json
+  - 3DGS training describe: logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260523T162931Z.json
+  - compression processing describe: logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260523T162931Z.json
+  - InProgress processing list (unrelated; recorded only): logs/montana-time-capsule/sagemaker-list-processing-jobs-InProgress-20260523T162931Z.json (contains `cvhr-globalprior-full-l01-1779549138`)
+  - InProgress training list: logs/montana-time-capsule/sagemaker-list-training-jobs-InProgress-20260523T162931Z.json
+- S3 supersplat bundle (HMC staging):
+  - s3 ls: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260523T163020Z.txt
+  - head meta.json: logs/montana-time-capsule/s3api-head-meta-json-hmc-mtc-20260520T2015Z-20260523T163020Z.json
+  - head background_skybox.webp: logs/montana-time-capsule/s3api-head-background-skybox-webp-hmc-mtc-20260520T2015Z-20260523T163020Z.json
+- Viewer/proxy reachability (Origin/CORS; HTTP 200):
+  - viewer URL (skybox): logs/montana-time-capsule/heartbeat-viewer-skybox-url-20260523T163040Z.txt (headers=logs/montana-time-capsule/curlI-viewer-skybox-20260523T163040Z.headers)
+  - viewer URL (no-sky): logs/montana-time-capsule/heartbeat-viewer-nosky-url-20260523T163040Z.txt (headers=logs/montana-time-capsule/curlI-viewer-nosky-20260523T163040Z.headers)
+  - proxy meta.json URL: logs/montana-time-capsule/heartbeat-proxy-meta-json-url-20260523T163040Z.txt (headers=logs/montana-time-capsule/curlI-proxy-meta-json-20260523T163040Z.headers; body=logs/montana-time-capsule/curl-proxy-meta-json-20260523T163040Z.body.json; jq=logs/montana-time-capsule/jq-validate-proxy-meta-json-20260523T163040Z.txt)
