@@ -30,6 +30,13 @@
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260523T165945Z.json
   - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260523T165945Z.json
 
+## 2026-05-23T17:03:03Z postpush CI snapshot (exact-head expected empty due to `[skip ci]`)
+
+- Git: agent-40136728-montana-time-capsule @ 1c9cb822635a1528466e32ef2424e221a44496fb ([skip ci]) (pushed)
+- CI:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260523T170259Z.json
+  - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260523T170259Z.json
+
 ## 2026-05-23T13:04:40Z HEARTBEAT monitor (HMC) - terminal reconfirmed (awscli) + S3 bundle present + Pages deploy log reconfirmed + viewer/proxy HTTP 200 (Origin/CORS) (no launches)
 
 - Git: agent-40136728-montana-time-capsule @ 535a873ba4377a29168a1bff987bb84e0a18e28e ([skip ci]) (clean)
