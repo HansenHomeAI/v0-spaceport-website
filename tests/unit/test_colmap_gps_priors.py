@@ -112,11 +112,55 @@ class ColmapGpsPriorTests(unittest.TestCase):
         self.assertIn("visibility_cell_manifest", manifest)
         self.assertEqual(len(manifest["primary_cell_id_by_image"]), len(names))
         self.assertEqual(len(manifest["chunk_jurisdictions"]), len(chunks))
+        self.assertEqual(len(manifest["image_pose_priors_local"]), len(names))
+        self.assertEqual(manifest["image_pose_priors_local"]["IMG_000.JPG"]["local_x_m"], 0.0)
         self.assertTrue(all(chunk["jurisdiction_bounds"] for chunk in manifest["chunks"]))
         self.assertEqual(report["visibility_cell_summary"]["seam_overlap_percent"], 15.0)
         self.assertIn("adjacent_seam_shared_images", report["visibility_cell_summary"])
         self.assertIn("weak_adjacent_seams_under_10", report["visibility_cell_summary"])
         self.assertEqual(report["expected_output_kind"], "single_merged_model")
+
+    def test_model_aligner_ref_images_use_registered_gps_priors(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {
+                "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+                "COLMAP_CHUNK_PLANNER": "visibility_cell_v1",
+            },
+            clear=True,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.exif_records = {
+                "IMG_001.JPG": self.make_visibility_exif_record(
+                    "IMG_001.JPG",
+                    x=12.5,
+                    y=-4.0,
+                    capture_time_s=1.0,
+                ),
+                "IMG_002.JPG": self.make_visibility_exif_record(
+                    "IMG_002.JPG",
+                    x=22.0,
+                    y=8.25,
+                    capture_time_s=2.0,
+                ),
+                "IMG_003.JPG": {"file_name": "IMG_003.JPG"},
+            }
+            ref_path = root / "refs.txt"
+
+            count = pipeline.write_model_aligner_ref_images(
+                registered_names={"IMG_001.JPG", "IMG_002.JPG", "IMG_003.JPG", "MISSING.JPG"},
+                ref_images_path=ref_path,
+            )
+
+            self.assertEqual(count, 2)
+            self.assertEqual(
+                ref_path.read_text(encoding="utf-8").splitlines(),
+                [
+                    "IMG_001.JPG 12.500000000 -4.000000000 80.000000000",
+                    "IMG_002.JPG 22.000000000 8.250000000 80.000000000",
+                ],
+            )
 
     def test_visibility_cell_planner_merges_weak_core_cells(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(

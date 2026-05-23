@@ -1,0 +1,8 @@
+I20260523 02:46:29.888450 1012395 model.cc:135]
+Cartesian Alignment Coordinates extracted (MUST NOT BE GPS coords!).
+I20260523 02:46:31.529771 1012395 misc.cc:51]
+Aligning reconstruction to custom
+---------------------------------
+I20260523 02:46:31.529824 1012395 model.cc:361] => Using 50 reference images
+I20260523 02:46:31.532976 1012395 model.cc:388] => Alignment error: 0.000000 (mean), 0.000000 (median)
+I20260523 02:46:31.533196 1012395 model.cc:425] => Alignment succeeded

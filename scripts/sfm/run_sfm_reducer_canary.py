@@ -529,6 +529,7 @@ def evaluate_seam_edge(
     thresholds: SeamThresholds,
     surface_a: list[tuple[float, float, float]] | None = None,
     surface_b: list[tuple[float, float, float]] | None = None,
+    pose_priors: dict[str, tuple[float, float, float]] | None = None,
 ) -> tuple[dict[str, object], SimilarityTransform | None]:
     shared_names = sorted(set(leaf_a_by_name).intersection(leaf_b_by_name))
     report: dict[str, object] = {
@@ -607,10 +608,39 @@ def evaluate_seam_edge(
                 warnings.append("duplicate_surface_overlap_suspect")
                 report["surface_overlap_warning_score"] = round(flagged_ratio, 6)
 
-    report["gps_exif_residual"] = {
-        "status": "not_available",
-        "reason": "reducer inputs do not include raw EXIF/GPS priors in this local model format",
-    }
+    if transform is not None and pose_priors:
+        prior_names = [name for name in shared_names if name in pose_priors]
+        if len(prior_names) >= 3:
+            prior = np.array([pose_priors[name] for name in prior_names], dtype=float)
+            leaf_a_centers = np.array([camera_center(leaf_a_by_name[name][0]) for name in prior_names], dtype=float)
+            leaf_b_centers = np.array([camera_center(leaf_b_by_name[name][0]) for name in prior_names], dtype=float)
+            leaf_b_transformed = transform_points(leaf_b_centers, transform)
+            leaf_a_residuals = sorted(float(np.linalg.norm(left - right)) for left, right in zip(leaf_a_centers, prior))
+            leaf_b_residuals = sorted(float(np.linalg.norm(left - right)) for left, right in zip(leaf_b_transformed, prior))
+            gps_p95 = max(
+                float(residual_summary(leaf_a_residuals)["p95"] or 0.0),
+                float(residual_summary(leaf_b_residuals)["p95"] or 0.0),
+            )
+            report["gps_exif_residual"] = {
+                "status": "evaluated",
+                "shared_reference_count": len(prior_names),
+                "leaf_a_camera_to_prior_m": residual_summary(leaf_a_residuals),
+                "leaf_b_transformed_camera_to_prior_m": residual_summary(leaf_b_residuals),
+                "max_p95_m": round(gps_p95, 6),
+            }
+            if thresholds.strict_production_gates and gps_p95 > 50.0:
+                blockers.append("gps_exif_residual_exceeds_gate")
+        else:
+            report["gps_exif_residual"] = {
+                "status": "not_evaluated",
+                "reason": "fewer_than_three_shared_pose_priors",
+                "shared_reference_count": len(prior_names),
+            }
+    else:
+        report["gps_exif_residual"] = {
+            "status": "not_available",
+            "reason": "planner manifest does not include image_pose_priors_local",
+        }
     report["blockers"] = list(dict.fromkeys(blockers))
     report["warnings"] = list(dict.fromkeys(warnings))
     fatal_blockers = {
@@ -629,10 +659,12 @@ def build_seam_merge_graph(
     *,
     normalized_dirs: list[Path],
     thresholds: SeamThresholds,
+    planner_manifest: dict[str, Any] | None = None,
 ) -> dict[str, object]:
     leaf_pairs = [image_record_pairs(path / "images.txt") for path in normalized_dirs]
     leaf_by_name = [{parts[9]: (parts, points_line) for parts, points_line in pairs} for pairs in leaf_pairs]
     surface_points = [point_coords(path / "points3D.txt") for path in normalized_dirs]
+    pose_priors = pose_priors_from_planner_manifest(planner_manifest)
     edge_reports: list[dict[str, object]] = []
     edge_lookup: dict[tuple[int, int], dict[str, object]] = {}
     for leaf_a, leaf_b in combinations(range(len(normalized_dirs)), 2):
@@ -644,6 +676,7 @@ def build_seam_merge_graph(
             thresholds=thresholds,
             surface_a=surface_points[leaf_a],
             surface_b=surface_points[leaf_b],
+            pose_priors=pose_priors,
         )
         edge_reports.append(report)
         edge_lookup[(leaf_a, leaf_b)] = report
@@ -711,6 +744,7 @@ def build_seam_merge_graph(
             "max_sim3_p95_residual_m": thresholds.max_sim3_p95_residual_m,
             "max_baseline_normalized_residual": thresholds.max_baseline_normalized_residual,
             "strict_production_gates": thresholds.strict_production_gates,
+            "gps_exif_p95_residual_m": 50.0,
         },
         "leaf_count": len(normalized_dirs),
         "root_leaf": root_leaf,
@@ -772,6 +806,28 @@ def rewrite_points_line_with_kept_ids(points_line: str, kept_point_ids: set[int]
             )
         )
     return " ".join(rewritten)
+
+
+def pose_priors_from_planner_manifest(
+    planner_manifest: dict[str, Any] | None,
+) -> dict[str, tuple[float, float, float]]:
+    if not isinstance(planner_manifest, dict):
+        return {}
+    raw_priors = planner_manifest.get("image_pose_priors_local") or {}
+    if not isinstance(raw_priors, dict):
+        return {}
+    priors: dict[str, tuple[float, float, float]] = {}
+    for image_name, payload in raw_priors.items():
+        if not isinstance(payload, dict):
+            continue
+        if "local_x_m" not in payload or "local_y_m" not in payload:
+            continue
+        priors[str(image_name)] = (
+            float(payload["local_x_m"]),
+            float(payload["local_y_m"]),
+            float(payload.get("local_z_m", 0.0)),
+        )
+    return priors
 
 
 def kept_point_lines_and_coords(
@@ -939,7 +995,11 @@ def write_pose_aligned_merge(
         max_baseline_normalized_residual=max_baseline_normalized_residual,
         strict_production_gates=strict_production_gates,
     )
-    seam_report = build_seam_merge_graph(normalized_dirs=normalized_dirs, thresholds=thresholds)
+    seam_report = build_seam_merge_graph(
+        normalized_dirs=normalized_dirs,
+        thresholds=thresholds,
+        planner_manifest=planner_manifest,
+    )
     if seam_report.get("decision") == "fail" and strict_production_gates:
         return {
             "strategy": "seam_graph_sim3_v1",

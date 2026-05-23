@@ -759,6 +759,18 @@ class ColmapPipeline:
         self.filtered_sparse_absurd_outlier_floor = float(
             os.environ.get("COLMAP_FILTERED_SPARSE_ABSURD_OUTLIER_FLOOR", "1000.0")
         )
+        self.gps_output_alignment_enabled = (
+            os.environ.get("COLMAP_GPS_ALIGN_OUTPUT", "1") != "0"
+        )
+        self.gps_output_alignment_required = (
+            os.environ.get("COLMAP_GPS_ALIGN_OUTPUT_REQUIRED", "1") != "0"
+        )
+        self.gps_output_alignment_min_common_images = int(
+            os.environ.get("COLMAP_GPS_ALIGN_MIN_COMMON_IMAGES", "20")
+        )
+        self.gps_output_alignment_max_error_m = float(
+            os.environ.get("COLMAP_GPS_ALIGN_MAX_ERROR_METERS", "25.0")
+        )
         self.visibility_cell_overlap_ratio = float(
             os.environ.get("COLMAP_VISIBILITY_CELL_OVERLAP_RATIO", "0.15")
         )
@@ -970,6 +982,7 @@ class ColmapPipeline:
         self.chunk_merge_proof: dict[str, object] = {}
         self.chunk_merge_summary: dict[str, object] = {}
         self.filtered_sparse_summary: dict[str, object] = {}
+        self.model_alignment_reports: List[dict[str, object]] = []
         self.probe_subset_details: Dict[str, dict[str, object]] = {}
         self.ladder_subsets: Dict[str, List[str]] = {}
         self.ladder_subset_details: Dict[str, dict[str, object]] = {}
@@ -1044,6 +1057,7 @@ class ColmapPipeline:
             "supports_matches_importer": "matches_importer" in commands,
             "supports_exhaustive_matcher": "exhaustive_matcher" in commands,
             "supports_pose_prior_mapper": "pose_prior_mapper" in commands,
+            "supports_model_aligner": "model_aligner" in commands,
             "supports_hierarchical_mapper": "hierarchical_mapper" in commands,
             "supports_global_mapper": "global_mapper" in commands,
         }
@@ -3484,6 +3498,165 @@ class ColmapPipeline:
             image_count=image_count,
         )
 
+    def build_image_pose_priors_manifest(self) -> Dict[str, dict[str, float]]:
+        priors: Dict[str, dict[str, float]] = {}
+        for image_name in self.capture_ordered_names or sorted(self.exif_records):
+            record = self.exif_records.get(image_name)
+            if not record:
+                continue
+            if "local_x_m" not in record or "local_y_m" not in record:
+                continue
+            priors[image_name] = {
+                "local_x_m": round(float(record["local_x_m"]), 6),
+                "local_y_m": round(float(record["local_y_m"]), 6),
+                "local_z_m": round(float(record.get("local_z_m", 0.0)), 6),
+            }
+        return priors
+
+    def should_align_model_to_gps_priors(self) -> bool:
+        if not self.gps_output_alignment_enabled:
+            return False
+        if not self.uses_graph_chunk_planner():
+            return False
+        if self.gps_prior_coverage < self.gps_min_prior_coverage:
+            return False
+        return True
+
+    def write_model_aligner_ref_images(
+        self,
+        *,
+        registered_names: Set[str],
+        ref_images_path: Path,
+    ) -> int:
+        ref_images_path.parent.mkdir(parents=True, exist_ok=True)
+        ref_count = 0
+        with open(ref_images_path, "w", encoding="utf-8") as handle:
+            for image_name in sorted(registered_names):
+                record = self.exif_records.get(image_name)
+                if not record:
+                    continue
+                if "local_x_m" not in record or "local_y_m" not in record:
+                    continue
+                handle.write(
+                    f"{image_name} "
+                    f"{float(record['local_x_m']):.9f} "
+                    f"{float(record['local_y_m']):.9f} "
+                    f"{float(record.get('local_z_m', 0.0)):.9f}\n"
+                )
+                ref_count += 1
+        return ref_count
+
+    def align_model_to_gps_priors_if_needed(self, model: ModelSummary) -> ModelSummary:
+        report: dict[str, object] = {
+            "stage": model.stage,
+            "enabled": self.gps_output_alignment_enabled,
+            "required": self.gps_output_alignment_required,
+            "gps_prior_coverage": self.gps_prior_coverage,
+            "min_common_images": self.gps_output_alignment_min_common_images,
+            "alignment_max_error_m": self.gps_output_alignment_max_error_m,
+        }
+        if not self.should_align_model_to_gps_priors():
+            report["status"] = "skipped"
+            if not self.gps_output_alignment_enabled:
+                report["reason"] = "disabled"
+            elif not self.uses_graph_chunk_planner():
+                report["reason"] = "not_graph_chunk_planner"
+            else:
+                report["reason"] = "insufficient_gps_prior_coverage"
+            self.model_alignment_reports.append(report)
+            return model
+        if not self.colmap_capabilities.get("supports_model_aligner"):
+            report["status"] = "failed"
+            report["reason"] = "model_aligner_unavailable"
+            self.model_alignment_reports.append(report)
+            if self.gps_output_alignment_required:
+                raise RuntimeError("COLMAP model_aligner is required for graph leaf GPS output alignment")
+            return model
+
+        registered_names = load_registered_image_names(model.text_dir / "images.txt")
+        ref_images_path = self.work_dir / "gps_alignment" / f"{model.stage}_ref_images.txt"
+        ref_count = self.write_model_aligner_ref_images(
+            registered_names=registered_names,
+            ref_images_path=ref_images_path,
+        )
+        report["registered_images"] = len(registered_names)
+        report["reference_image_count"] = ref_count
+        if ref_count < self.gps_output_alignment_min_common_images:
+            report["status"] = "failed"
+            report["reason"] = "insufficient_reference_images"
+            self.model_alignment_reports.append(report)
+            if self.gps_output_alignment_required:
+                raise RuntimeError(
+                    f"GPS output alignment has only {ref_count} reference images, "
+                    f"below {self.gps_output_alignment_min_common_images}"
+                )
+            return model
+
+        aligned_binary_dir = self.work_dir / "gps_aligned_models" / model.stage
+        if aligned_binary_dir.exists():
+            shutil.rmtree(aligned_binary_dir)
+        aligned_binary_dir.mkdir(parents=True, exist_ok=True)
+        align_stage = f"{model.stage}_gps_model_aligner"
+        try:
+            stream_command(
+                [
+                    "colmap",
+                    "model_aligner",
+                    "--input_path",
+                    str(model.text_dir),
+                    "--output_path",
+                    str(aligned_binary_dir),
+                    "--ref_images_path",
+                    str(ref_images_path),
+                    "--ref_is_gps",
+                    "0",
+                    "--alignment_type",
+                    "custom",
+                    "--min_common_images",
+                    str(self.gps_output_alignment_min_common_images),
+                    "--alignment_max_error",
+                    str(self.gps_output_alignment_max_error_m),
+                ],
+                stage=align_stage,
+                timeout_seconds=self.resolve_timeout_seconds(self.matcher_timeout_seconds),
+                heartbeat_seconds=self.command_heartbeat_seconds,
+            )
+            aligned_model = self.summarize_model(
+                stage=f"{model.stage}_gps_aligned",
+                binary_dir=aligned_binary_dir,
+                image_count=model.image_count or model.images_registered,
+            )
+        except RuntimeError as error:
+            report["status"] = "failed"
+            report["reason"] = str(error)
+            self.model_alignment_reports.append(report)
+            if self.gps_output_alignment_required:
+                self.handle_stage_runtime_error(align_stage, error)
+                raise
+            logger.warning("Skipping GPS output alignment for %s after failure: %s", model.stage, error)
+            return model
+
+        aligned_model.image_names = list(model.image_names)
+        aligned_model.source_chunk_indexes = list(model.source_chunk_indexes)
+        aligned_model.partial_result = model.partial_result
+        aligned_model.timed_out = model.timed_out
+        report.update(
+            {
+                "status": "aligned",
+                "aligned_stage": aligned_model.stage,
+                "aligned_images_registered": aligned_model.images_registered,
+                "aligned_points_3d": aligned_model.points_3d,
+                "ref_images_path": str(ref_images_path),
+            }
+        )
+        self.model_alignment_reports.append(report)
+        logger.info(
+            "Aligned %s output to EXIF/GPS local coordinates using %s reference images",
+            model.stage,
+            ref_count,
+        )
+        return aligned_model
+
     def run_mapper(
         self,
         *,
@@ -5749,6 +5922,7 @@ class ColmapPipeline:
             "primary_cell_id_by_image": self.primary_cell_id_by_image,
             "overlap_cell_ids_by_image": self.overlap_cell_ids_by_image,
             "image_visibility_scores": self.image_visibility_scores,
+            "image_pose_priors_local": self.build_image_pose_priors_manifest(),
             "chunk_jurisdictions": self.chunk_jurisdictions,
             "chunks": [
                 {
@@ -8959,6 +9133,7 @@ class ColmapPipeline:
             "chunk_merge_seconds": round(self.chunk_merge_seconds, 2),
             "chunk_merge_proof": self.chunk_merge_proof,
             "chunk_merge_summary": self.chunk_merge_summary,
+            "model_alignment_reports": self.model_alignment_reports,
             "visibility_cell_manifest": self.visibility_cell_manifest
             if self.chunk_planner == "visibility_cell_v1"
             else {},
@@ -9040,6 +9215,7 @@ class ColmapPipeline:
         }
 
     def export_output(self, best_model: ModelSummary) -> None:
+        best_model = self.align_model_to_gps_priors_if_needed(best_model)
         sparse_output = self.output_dir / "sparse" / "0"
         raw_sparse_output = self.output_dir / "sparse_raw" / "0"
         images_output = self.output_dir / "images"

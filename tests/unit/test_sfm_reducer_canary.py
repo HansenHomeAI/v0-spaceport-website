@@ -94,6 +94,40 @@ class SfmReducerCanaryTest(unittest.TestCase):
         self.assertEqual(report["decision"], "pass")
         self.assertEqual(report["accepted_merge_tree"][0]["blockers"], [])
 
+    def test_manifest_pose_priors_emit_gps_exif_residual(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            names = [f"IMG_{index:04d}.JPG" for index in range(22)]
+            positions = self.grid_positions(names)
+            self.write_model(root / "leaf0", names, [(names[0], names[1])], camera_positions=positions)
+            self.write_model(root / "leaf1", names, [(names[2], names[3])], camera_positions=positions)
+
+            report = reducer_canary.build_seam_merge_graph(
+                normalized_dirs=[root / "leaf0", root / "leaf1"],
+                thresholds=reducer_canary.SeamThresholds(
+                    min_shared_images=20,
+                    max_scale_delta=0.15,
+                    max_sim3_p95_residual_m=0.25,
+                    max_baseline_normalized_residual=0.01,
+                    strict_production_gates=True,
+                ),
+                planner_manifest={
+                    "image_pose_priors_local": {
+                        name: {
+                            "local_x_m": xyz[0],
+                            "local_y_m": xyz[1],
+                            "local_z_m": xyz[2],
+                        }
+                        for name, xyz in positions.items()
+                    }
+                },
+            )
+
+        gps = report["candidate_edges"][0]["gps_exif_residual"]
+        self.assertEqual(gps["status"], "evaluated")
+        self.assertEqual(gps["shared_reference_count"], 22)
+        self.assertEqual(gps["max_p95_m"], 0.0)
+
     def test_scaled_duplicate_wall_fails_strict_seam_gate(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

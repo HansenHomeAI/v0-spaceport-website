@@ -1,0 +1,148 @@
+{
+  "blocker_isolation": {
+    "current_gap_in_report": "Existing repaired-leaf manifest did not include image_pose_priors_local and existing leaf outputs were not GPS-aligned, so gps_exif_residual stayed unavailable in this replay.",
+    "exact_blocker": "repaired CV-HR 02/06/08 canary remains disconnected because new leaf02-to-new leaf06 has scale_delta=0.16123255, narrowly above max_scale_delta=0.15, despite 178 shared registered cameras and baseline_normalized_residual=0.00055231",
+    "important_non_claim": "Do not loosen the scale gate or promote the CV-HR strict proof from this replay; the rejected seam also carries duplicate-surface warnings.",
+    "why_weak_core_patch_was_not_enough": "Weak-core cell merging removed the old isolated leaf10 pattern, but current leaf sparse outputs are still independent mapper-scale COLMAP reconstructions; they are not normalized to the common EXIF/GPS local coordinate frame before export."
+  },
+  "decision": "not_production_ready_next_bounded_gps_aligned_leaf_canary_required",
+  "leaf08_terminal": {
+    "cameras": 1,
+    "cloudwatch_tail": "logs/sfm-production-spine/cvhr_wcrepair_l08_cloudwatch_tail_20260523T0812Z.json",
+    "describe": "logs/sfm-production-spine/cvhr-wcrepair-l08-1779464068_describe_poll_20260523T0812Z.json",
+    "exit_message": null,
+    "failure_reason": null,
+    "job": "cvhr-wcrepair-l08-1779464068",
+    "points3D": 98326,
+    "processing_end_time": "2026-05-22T11:01:55.712000-06:00",
+    "processing_start_time": "2026-05-22T09:35:20.304000-06:00",
+    "registered_images": 360,
+    "s3_listing": "logs/sfm-production-spine/cvhr_weakcore_repair_leaf08_s3_poll_20260523T0812Z.txt",
+    "sparse_counts": "logs/sfm-production-spine/cvhr_weakcore_repair_leaf08_sparse_counts_20260523T0812Z.json",
+    "status": "Completed"
+  },
+  "material_regression": false,
+  "next_bounded_step_after_exact_head_build": [
+    "Commit/push the GPS-aligned leaf export and reducer GPS/EXIF residual patch.",
+    "Wait for exact-head Pages/CDK/container workflows to pass and for the SfM image to rebuild.",
+    "Run a planner-only CV-HR weak-core repair replay to produce a manifest with image_pose_priors_local.",
+    "Relaunch only repaired leaves 02/06/08 with GPS alignment enabled, then rerun strict seam_graph_sim3_v1 reducer replay.",
+    "Do not launch full CV-HR fanout until the bounded 02/06/08 replay reconnects under strict gates."
+  ],
+  "owner_action_needed": null,
+  "patch_summary": {
+    "leaf_export": "Graph-planned SfM leaf outputs now optionally run COLMAP model_aligner against EXIF/GPS local coordinates before sparse export; enabled by default for visibility_cell_v1/distributed graph leaves and required unless COLMAP_GPS_ALIGN_OUTPUT_REQUIRED=0.",
+    "planner_manifest": "visibility_cell_v1 manifests now include image_pose_priors_local for reducer GPS/EXIF seam checks.",
+    "proof_probe": "Local colmap model_aligner probe succeeded with 50 reference images and zero alignment error; see logs/sfm-production-spine/model_aligner_probe_20260523T0841Z/model_aligner.log.",
+    "reducer": "seam_graph_sim3_v1 now evaluates gps_exif_residual when planner pose priors are present and blocks strict seams whose max p95 GPS/EXIF residual exceeds 50m."
+  },
+  "scope": "SfM-only seam_graph_sim3_v1 production proof; no 3DGS/SOGS claim.",
+  "strict_020608_replay": {
+    "accepted_merge_tree": [
+      {
+        "blockers": [],
+        "confidence": 147.391374,
+        "leaf_a": 1,
+        "leaf_b": 2,
+        "shared_registered_images": 101,
+        "strict_decision": "accept"
+      }
+    ],
+    "candidate_edge_summary": [
+      {
+        "baseline_normalized_residual": 0.00055231,
+        "blockers": [
+          "scale_delta_exceeds_gate"
+        ],
+        "decision": "reject",
+        "gps_exif_residual": {
+          "reason": "reducer inputs do not include raw EXIF/GPS priors in this local model format",
+          "status": "not_available"
+        },
+        "leaf_a": 0,
+        "leaf_b": 1,
+        "pre_overlap_surface_stats": {
+          "blocking_axis": "yz_x",
+          "max_flagged_overlap_cell_count": 25,
+          "max_flagged_overlap_cell_ratio": 0.5102,
+          "max_overlap_cell_count": 49
+        },
+        "scale": 0.83876745,
+        "scale_delta": 0.16123255,
+        "shared_registered_images": 178,
+        "warnings": [
+          "duplicate_surface_overlap_suspect"
+        ]
+      },
+      {
+        "baseline_normalized_residual": 0.00012754,
+        "blockers": [
+          "weak_shared_camera_count",
+          "scale_delta_exceeds_gate"
+        ],
+        "decision": "reject",
+        "gps_exif_residual": {
+          "reason": "reducer inputs do not include raw EXIF/GPS priors in this local model format",
+          "status": "not_available"
+        },
+        "leaf_a": 0,
+        "leaf_b": 2,
+        "pre_overlap_surface_stats": {
+          "blocking_axis": "xy_z",
+          "max_flagged_overlap_cell_count": 62,
+          "max_flagged_overlap_cell_ratio": 0.6327,
+          "max_overlap_cell_count": 98
+        },
+        "scale": 0.82314921,
+        "scale_delta": 0.17685079,
+        "shared_registered_images": 5,
+        "warnings": [
+          "duplicate_surface_overlap_suspect"
+        ]
+      },
+      {
+        "baseline_normalized_residual": 0.00016541,
+        "blockers": [],
+        "decision": "accept",
+        "gps_exif_residual": {
+          "reason": "reducer inputs do not include raw EXIF/GPS priors in this local model format",
+          "status": "not_available"
+        },
+        "leaf_a": 1,
+        "leaf_b": 2,
+        "pre_overlap_surface_stats": {
+          "blocking_axis": "xy_z",
+          "max_flagged_overlap_cell_count": 69,
+          "max_flagged_overlap_cell_ratio": 0.5948,
+          "max_overlap_cell_count": 116
+        },
+        "scale": 0.98168761,
+        "scale_delta": 0.01831239,
+        "shared_registered_images": 101,
+        "warnings": [
+          "duplicate_surface_overlap_suspect"
+        ]
+      }
+    ],
+    "reducer_promotion_blockers": [
+      "model_merge_failed",
+      "pose_aligned_merge_failed",
+      "accepted_seam_graph_is_disconnected",
+      "pose_aligned_model_validation_failed",
+      "leaf_retention_below_gate",
+      "merged_model_lost_dominant_leaf",
+      "missing_sparse0"
+    ],
+    "reducer_report": "logs/sfm-production-spine/cvhr_weakcore_repair_020608_seam_graph_reducer_20260523T0812Z.json",
+    "result": "fail",
+    "seam_merge_report": "logs/sfm-production-spine/cvhr_weakcore_repair_020608_seam_merge_report_20260523T0812Z.json",
+    "seam_promotion_blockers": [
+      "accepted_seam_graph_is_disconnected"
+    ]
+  },
+  "updated": "2026-05-23T08:59:00Z",
+  "verification": [
+    "python3 -m py_compile infrastructure/containers/sfm/run_colmap_sfm.py scripts/sfm/run_sfm_reducer_canary.py scripts/sfm/run_sfm_fanout_reducer.py",
+    "PYTHONPATH=. python3 -m unittest tests.unit.test_colmap_gps_priors tests.unit.test_sfm_fanout_contract tests.unit.test_sfm_reducer_canary tests.unit.test_sfm_fanout_reducer tests.unit.test_sfm_quality_eval (140 tests OK)"
+  ]
+}

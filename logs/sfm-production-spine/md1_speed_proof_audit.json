@@ -13,9 +13,9 @@
   "active_jobs": [],
   "active_jobs_proof": "logs/sfm-production-spine/active-md1-processing-jobs-current-20260517T0528Z.json",
   "active_processing_jobs": [],
-  "active_processing_jobs_proof": "logs/sfm-production-spine/active-md1-processing-jobs-current-20260517T0528Z.json",
+  "active_processing_jobs_proof": "logs/sfm-production-spine/active-cvhr-processing-jobs-current_20260523T0812Z.json",
   "active_training_jobs": [],
-  "active_training_jobs_proof": "logs/sfm-production-spine/active-md1-training-jobs-current-20260517T0528Z.json",
+  "active_training_jobs_proof": "logs/sfm-production-spine/active-cvhr-training-jobs-current_20260523T0812Z.json",
   "automation": {
     "id": "sfm-seam-graph-production-proof",
     "kind": "heartbeat",
@@ -44,8 +44,7 @@
   },
   "block_reasons": [],
   "blockers": [
-    "CV-HR prior visibility-cell output fails strict seam_graph_sim3_v1 because accepted seam graph is disconnected under scale_delta gates",
-    "Old CV-HR manifest has weak core chunks 00/10; patched planner replay is required before production promotion"
+    "CV-HR strict seam graph production proof is still pending: repaired 02/06/08 replay remains disconnected because leaf02-leaf06 scale_delta=0.16123255 exceeds the 0.15 strict gate; GPS-aligned leaf export patch is locally verified but not yet rebuilt/run in SageMaker."
   ],
   "branch": "agent-73948216-sfm-production-spine",
   "candidate": {
@@ -135,30 +134,49 @@
     "md1-tile01-h1i1lod-r41-1778982712",
     "md1-tile02-h1i1lod-r41-1778982713",
     "md1-tile03-h1i1lod-r41-1778982714",
-    "md1-tile04-h1i1lod-r41-1778982715"
+    "md1-tile04-h1i1lod-r41-1778982715",
+    "cvhr-viscell-wcrepair-plan-v1-1779407138",
+    "cvhr-wcrepair-l02-1779407790",
+    "cvhr-wcrepair-l06-1779407814",
+    "cvhr-wcrepair-l08-1779464068"
   ],
-  "current_branch_head": "626346baf71cf76ccd820517bbee5fac665d2115",
-  "current_rung": "SFM_SEAM_GRAPH_SIM3_V1_CVHR_WEAK_CORE_REPAIR_PATCHED_NEEDS_PATCHED_PLANNER_REPLAY",
+  "current_branch_head": "99d1c2d6805a861a80cd6f815df548fb858be779",
+  "current_rung": "SFM_SEAM_GRAPH_SIM3_V1_CVHR_GPS_ALIGNMENT_PATCH_LOCAL_VERIFIED",
   "dataset": "MD1 full 2157-image DJI dataset",
-  "decision": "md1_strict_seam_graph_replay_passed_cvhr_strict_seam_graph_replay_blocked_and_patched_for_replay",
+  "decision": "not_production_ready_gps_alignment_patch_local_verified_next_exact_head_build",
   "decision_scope": "Promote r4exact739s1 as the MD1 same-dataset speed/quality proof artifact. This does not close a separate future milestone if the requirement is true multi-instance leaf fanout rather than the current single SageMaker processing job using distributed_chunked_v1 inside the harness.",
   "end_goal_phrase": "Prove the mature MD1 SfM path is same-quality and meaningfully faster on the same MD1 dataset, with standard COLMAP sparse/0 and viewer proof.",
   "exact_head_workflows": {
-    "head": "01b872a43618ba84d3f386a0d5fe662005819a44",
-    "cdkRun": 26109625986,
-    "cdkConclusion": "success",
-    "cdkStatus": "completed",
-    "cdkUrl": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26109625986",
-    "cdkRunView": "logs/sfm-production-spine/visibility_cell_v1_final_cdk_run_view_20260519T1621Z.json",
-    "pagesRun": null,
-    "pagesConclusion": "not_spawned_for_final_non_web_push"
+    "cdk_deploy": {
+      "run_id": 26258763395,
+      "head": "99d1c2d6805a861a80cd6f815df548fb858be779",
+      "conclusion": "success"
+    },
+    "pages_deploy": {
+      "run_id": 26259313111,
+      "head": "99d1c2d6805a861a80cd6f815df548fb858be779",
+      "conclusion": "success",
+      "preview_url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev",
+      "hash_url": "https://3f41f4ae.v0-spaceport-website-preview2.pages.dev"
+    },
+    "ml_container_build": {
+      "run_id": 26258735982,
+      "head": "626346baf71cf76ccd820517bbee5fac665d2115",
+      "conclusion": "success"
+    },
+    "obsolete_pages_failure": {
+      "run_id": 26258735979,
+      "head": "626346baf71cf76ccd820517bbee5fac665d2115",
+      "conclusion": "failure",
+      "reason": "waited on superseded CDK run cancelled by follow-up ledger commit; exact-head pages run succeeded"
+    }
   },
   "failed_jobs": [
     "md1-tile00-lodonly-r38-1778950901",
     "r41-remaining-tiles-viewer-visual-proof",
     "r41-viewer-unified-lod-false-idle"
   ],
-  "final_next_step": "completed_production_ready_proof",
+  "final_next_step": "Commit/push GPS-aligned leaf export and reducer GPS/EXIF residual patch, wait for exact-head container/CDK/Pages success, rerun planner-only CV-HR weak-core repair to get image_pose_priors_local, then relaunch only leaves 02/06/08 before any full CV-HR fanout.",
   "final_project_proof": {
     "activeProcessingJobsProof": "logs/sfm-production-spine/active-md1-processing-jobs-current-20260517T0528Z.json",
     "activeTrainingJobsProof": "logs/sfm-production-spine/active-md1-training-jobs-current-20260517T0528Z.json",
@@ -171,7 +189,7 @@
     "sogsViewerProof": "logs/sfm-production-spine/md1_r41_deployed_first_chunk_readiness_preview_proof_20260517T0520Z.json",
     "unresolvedCaveats": []
   },
-  "head": "626346baf71cf76ccd820517bbee5fac665d2115",
+  "head": "99d1c2d6805a861a80cd6f815df548fb858be779",
   "historical_nonblocking_notes": [
     "r24/r25 full-MD1 monolithic 3DGS failed and were not used as the production proof path.",
     "r29 worst447 ds1000 49152 passed only as bounded proof.",
@@ -179,12 +197,12 @@
     "r38/r39 compressor/viewer paths failed and were superseded by the r40/r41 H1 -i1 LOD path with visible deployed browser proof."
   ],
   "input_uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
-  "last_step": "2026-05-21T23:18Z: Committed and pushed seam_graph_sim3_v1 merge hardening plus weak-core visibility-cell repair patch as 626346baf71cf76ccd820517bbee5fac665d2115. Current project remains not production-ready across CV-HR until patched planner replay and smallest repair canary pass.",
+  "last_step": "2026-05-22T16:11Z: CV-HR weak-core repair leaf08 cvhr-wcrepair-l08-1779464068 remains InProgress/no FailureReason; mapper active at num_reg_frames=224, S3 output empty before EndOfJob.",
   "latest_artifacts": {
     "seam_graph_sim3_v1_weak_core_repair_no_spend_proof": "logs/sfm-production-spine/seam_graph_sim3_v1_weak_core_repair_no_spend_proof_20260521T2251Z.json"
   },
   "mode": "distributed_chunked_v1",
-  "next_unblocked_step": "Run patched CV-HR planner/manifest proof from a hydrated local archive or as the smallest bounded SageMaker planner-only job with blocker/budget reason recorded; then launch only the smallest CV-HR repair canary if static gates pass.",
+  "next_unblocked_step": "Monitor cvhr-wcrepair-l08-1779464068 to terminal. If it succeeds, run strict seam_graph_sim3_v1 reducer replay on repaired leaves 02/06/08; do not launch full CV-HR fanout unless that canary reconnects under strict gates.",
   "owner_action_needed": "none",
   "planner": {
     "candidate_pair_counts": {
@@ -349,7 +367,7 @@
     "status": "complete",
     "updated": "2026-05-17T05:28Z"
   },
-  "project_final_decision": "md1_strict_seam_graph_replay_passed_cvhr_strict_seam_graph_replay_blocked_and_patched_for_replay",
+  "project_final_decision": "patched_cvhr_manifest_contract_leaf02_leaf06_completed_leaf08_active",
   "project_level_unresolved_caveats": [
     "Downstream 3DGS/SOGS render and AI visual gates are separate from this SfM-only deliverable",
     "prior global sparse double-surface grid had warning cells",
@@ -648,14 +666,14 @@
       "evidence": "logs/sfm-production-spine/visibility_cell_v1_final_cdk_run_view_20260519T1621Z.json"
     }
   },
-  "status": "sfm_stage_production_ready_visibility_cell_v1_full_proof_passed",
+  "status": "cvhr_weak_core_repair_leaf_canary_active",
   "unresolved_caveats": [
     "Downstream 3DGS/SOGS render and AI visual gates are separate from this SfM-only deliverable",
     "prior global sparse double-surface grid had warning cells",
     "CV-HR prior 11-leaf output passed older gates but fails new seam_graph_sim3_v1 strict replay because accepted seam graph is disconnected; weak-core leaves 00/10 and scale-blocked leaves 02/10 require patched planner replay before production promotion"
   ],
-  "updated": "2026-05-21T23:18:00Z",
-  "updated_at": "2026-05-21T23:18:00Z",
+  "updated": "2026-05-23T08:59:00Z",
+  "updated_at": "2026-05-22T16:11:00Z",
   "cvhr_visibility_cell_v1_pressure_test": {
     "updated": "2026-05-20T01:15Z",
     "status": "full_sfm_pressure_test_passed",
@@ -721,9 +739,9 @@
     ]
   },
   "seam_graph_sim3_v1_hardening": {
-    "updated": "2026-05-21T23:18:00Z",
-    "scope": "SfM reducer/viewer/planner hardening only; no SageMaker jobs launched for this weak-core repair patch.",
-    "status": "no_spend_implementation_tests_and_real_md1_replay_passed_cvhr_replay_blocked_weak_core_repair_patched",
+    "updated": "2026-05-22T16:11:00Z",
+    "scope": "SfM reducer/viewer/planner hardening only; two bounded CV-HR leaf canary SageMaker jobs are active to test the patched weak-core manifest on the previously disconnected seam path. No full fanout, 3DGS, or SOGS launched.",
+    "status": "cvhr_weak_core_repair_leaf08_active",
     "accountability_automation": {
       "id": "sfm-seam-graph-production-proof",
       "kind": "heartbeat",
@@ -784,6 +802,72 @@
         "result": "stopped_no_artifacts",
         "reason": "exiftool remained in slow Desktop/iCloud-backed reads for about 16 minutes",
         "cleanup": "process stopped cleanly; temp output removed"
+      },
+      "budget_reason": "logs/sfm-production-spine/cvhr_seam_graph_sim3_v1_planner_only_budget_reason_20260521T2345Z.json",
+      "planner_only_job": {
+        "job_name": "cvhr-viscell-wcrepair-plan-v1-1779407138",
+        "status": "Completed",
+        "output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-weakcore-repair-planner-20260521T2345Z/colmap",
+        "contract": "logs/sfm-production-spine/cvhr_visibility_cell_v1_weakcore_repair_manifest_contract_20260521T2358Z.json",
+        "manifest_delta": "logs/sfm-production-spine/cvhr_visibility_cell_v1_weakcore_repair_manifest_delta_20260521T2358Z.json"
+      },
+      "leaf_canary_budget_reason": "logs/sfm-production-spine/cvhr_weakcore_repair_leaf_canary_budget_reason_20260522T0002Z.json",
+      "active_leaf_canary_jobs": [
+        "cvhr-wcrepair-l08-1779464068"
+      ],
+      "pending_leaf_canary_jobs": [],
+      "latest_leaf_canary_poll": {
+        "updated": "2026-05-22T16:11:00Z",
+        "leaf02": {
+          "leaf": "leaf-02",
+          "job_name": "cvhr-wcrepair-l02-1779407790",
+          "status": "Completed",
+          "failure_reason": null,
+          "registered_images": 360,
+          "final_sparse_points": 124954,
+          "s3_objects": 376,
+          "describe": "logs/sfm-production-spine/cvhr-wcrepair-l02-1779407790_describe_poll_20260522T0123Z.json",
+          "cloudwatch_tail": "logs/sfm-production-spine/cvhr_wcrepair_l02_cloudwatch_tail_20260522T0123Z.json",
+          "s3_listing": "logs/sfm-production-spine/cvhr_weakcore_repair_leaf02_s3_poll_20260522T0123Z.txt"
+        },
+        "leaf06": {
+          "leaf": "leaf-06",
+          "job_name": "cvhr-wcrepair-l06-1779407814",
+          "status": "Completed",
+          "failure_reason": null,
+          "registered_images": 360,
+          "final_sparse_points": 133231,
+          "s3_objects": 376,
+          "describe": "logs/sfm-production-spine/cvhr-wcrepair-l06-1779407814_describe_poll_20260522T0123Z.json",
+          "cloudwatch_tail": "logs/sfm-production-spine/cvhr_wcrepair_l06_cloudwatch_tail_20260522T0123Z.json",
+          "s3_listing": "logs/sfm-production-spine/cvhr_weakcore_repair_leaf06_s3_poll_20260522T0123Z.txt"
+        },
+        "leaf08": {
+          "leaf": "leaf-08",
+          "job_name": "cvhr-wcrepair-l08-1779464068",
+          "status": "InProgress",
+          "failure_reason": null,
+          "processing_start_time": "2026-05-22T09:35:20.304000-06:00",
+          "latest_visible_stage": "chunk_08_mapper_initial",
+          "latest_mapper_progress": "num_reg_frames=224",
+          "cloudwatch_stream": "cvhr-wcrepair-l08-1779464068/algo-1-1779464119",
+          "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-weakcore-repair-canary-20260522T0002Z/leaves/leaf-08/colmap",
+          "create_request": "logs/sfm-production-spine/cvhr_weakcore_repair_leaf08_create_cvhr-wcrepair-l08-1779464068.json",
+          "submit_log": "logs/sfm-production-spine/cvhr_weakcore_repair_leaf08_submit_20260522T1534Z.log",
+          "initial_describe": "logs/sfm-production-spine/cvhr-wcrepair-l08-1779464068_describe_initial_20260522T1534Z.json",
+          "latest_describe": "logs/sfm-production-spine/cvhr-wcrepair-l08-1779464068_describe_poll_20260522T1611Z.json",
+          "log_streams": "logs/sfm-production-spine/cvhr-wcrepair-l08-1779464068_log_streams_20260522T1542Z.json",
+          "cloudwatch_tail": "logs/sfm-production-spine/cvhr_wcrepair_l08_cloudwatch_tail_20260522T1611Z.json",
+          "s3_listing": "logs/sfm-production-spine/cvhr_weakcore_repair_leaf08_s3_poll_20260522T1611Z.txt",
+          "s3_objects_observed": 0
+        },
+        "active_leaf_canary_jobs": [
+          "cvhr-wcrepair-l08-1779464068"
+        ],
+        "pending_leaf_canary_jobs": [],
+        "active_processing_jobs_proof": "logs/sfm-production-spine/active-cvhr-wcrepair-processing-jobs-20260522T1611Z.json",
+        "active_training_jobs_proof": "logs/sfm-production-spine/active-cvhr-training-jobs-20260522T1611Z.json",
+        "decision": "monitor_leaf08_no_owner_action"
       }
     },
     "implemented": [
@@ -826,9 +910,135 @@
       "spatial jurisdiction bounds are not re-applied after Sim3 unless the planner/root COLMAP coordinate relationship is available; core-track ownership is enforced when manifest core names are supplied",
       "CV-HR needs a patched planner replay and smallest-leaf repair canary before the strict seam graph can be promoted across both datasets"
     ],
-    "pushed_commit": "626346baf71cf76ccd820517bbee5fac665d2115"
+    "pushed_commit": "99d1c2d6805a861a80cd6f815df548fb858be779",
+    "preview_url": "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev",
+    "active_planner_only_job": {
+      "job_name": "cvhr-viscell-wcrepair-plan-v1-1779407138",
+      "status": "Completed",
+      "terminal_describe": "logs/sfm-production-spine/cvhr-viscell-wcrepair-plan-v1-1779407138_describe_terminal_or_poll_20260521T2357Z.json"
+    },
+    "active_leaf_canary_jobs": [
+      "cvhr-wcrepair-l02-1779407790",
+      "cvhr-wcrepair-l06-1779407814"
+    ],
+    "pending_leaf_canary_jobs": [
+      "leaf-08"
+    ],
+    "planner_contract_result": {
+      "chunk_count": 9,
+      "weak_core_chunks": [],
+      "min_adjacent_shared_images": 13,
+      "status": "dry_run_contract_ready"
+    },
+    "latest_leaf_canary_poll": {
+      "updated": "2026-05-22T00:44:00Z",
+      "leaf02": {
+        "job_name": "cvhr-wcrepair-l02-1779407790",
+        "status": "InProgress",
+        "failure_reason": null,
+        "latest_registered_frames_observed": 326,
+        "describe": "logs/sfm-production-spine/cvhr-wcrepair-l02-1779407790_describe_poll_20260522T0044Z.json",
+        "cloudwatch_tail": "logs/sfm-production-spine/cvhr_wcrepair_l02_cloudwatch_tail_20260522T0044Z.json",
+        "s3_poll": "logs/sfm-production-spine/cvhr_weakcore_repair_leaf02_s3_poll_20260522T0044Z.txt",
+        "s3_objects_observed": 0
+      },
+      "leaf06": {
+        "job_name": "cvhr-wcrepair-l06-1779407814",
+        "status": "InProgress",
+        "failure_reason": null,
+        "latest_registered_frames_observed": 280,
+        "describe": "logs/sfm-production-spine/cvhr-wcrepair-l06-1779407814_describe_poll_20260522T0044Z.json",
+        "cloudwatch_tail": "logs/sfm-production-spine/cvhr_wcrepair_l06_cloudwatch_tail_20260522T0044Z.json",
+        "s3_poll": "logs/sfm-production-spine/cvhr_weakcore_repair_leaf06_s3_poll_20260522T0044Z.txt",
+        "s3_objects_observed": 0
+      },
+      "active_leaf_canary_jobs": [
+        "cvhr-wcrepair-l02-1779407790",
+        "cvhr-wcrepair-l06-1779407814"
+      ],
+      "pending_leaf_canary_jobs": [
+        "leaf-08"
+      ],
+      "active_processing_jobs_proof": "logs/sfm-production-spine/active-cvhr-wcrepair-processing-jobs-20260522T0044Z.json",
+      "active_training_jobs_proof": "logs/sfm-production-spine/active-cvhr-training-jobs-20260522T0044Z.json",
+      "decision": "keep_monitoring_no_owner_action"
+    }
   },
   "proof_artifacts_extra": {
-    "seam_graph_sim3_v1_weak_core_repair_no_spend_proof": "logs/sfm-production-spine/seam_graph_sim3_v1_weak_core_repair_no_spend_proof_20260521T2251Z.json"
+    "seam_graph_sim3_v1_weak_core_repair_no_spend_proof": "logs/sfm-production-spine/seam_graph_sim3_v1_weak_core_repair_no_spend_proof_20260521T2251Z.json",
+    "cvhr_weak_core_repair_planner_budget_reason": "logs/sfm-production-spine/cvhr_seam_graph_sim3_v1_planner_only_budget_reason_20260521T2345Z.json",
+    "cvhr_weak_core_repair_planner_initial_describe": "logs/sfm-production-spine/cvhr-viscell-wcrepair-plan-v1-1779407138_describe_initial_20260521T2346Z.json",
+    "planner_terminal_describe": "logs/sfm-production-spine/cvhr-viscell-wcrepair-plan-v1-1779407138_describe_terminal_or_poll_20260521T2357Z.json",
+    "planner_cloudwatch": "logs/sfm-production-spine/cvhr_viscell_wcrepair_plan_cloudwatch_poll_20260521T2356Z.json",
+    "planner_s3_listing": "logs/sfm-production-spine/cvhr_visibility_cell_v1_weakcore_repair_planner_s3_poll_20260521T2356Z.txt",
+    "planner_local_dir": "logs/sfm-production-spine/cvhr_visibility_cell_v1_weakcore_repair_planner_20260521T2345Z",
+    "manifest_contract": "logs/sfm-production-spine/cvhr_visibility_cell_v1_weakcore_repair_manifest_contract_20260521T2358Z.json",
+    "manifest_delta": "logs/sfm-production-spine/cvhr_visibility_cell_v1_weakcore_repair_manifest_delta_20260521T2358Z.json",
+    "old_new_core_mapping": "logs/sfm-production-spine/cvhr_visibility_cell_v1_weakcore_repair_old_new_core_mapping_20260522T0000Z.json",
+    "leaf_canary_budget_reason": "logs/sfm-production-spine/cvhr_weakcore_repair_leaf_canary_budget_reason_20260522T0002Z.json",
+    "leaf02_initial_describe": "logs/sfm-production-spine/cvhr-wcrepair-l02-1779407790_describe_initial_20260522T0003Z.json",
+    "leaf06_initial_describe": "logs/sfm-production-spine/cvhr-wcrepair-l06-1779407814_describe_initial_20260522T0003Z.json",
+    "active_jobs": "logs/sfm-production-spine/active-cvhr-wcrepair-processing-jobs-20260522T0003Z.json",
+    "cvhr_weak_core_repair_leaf_canary_status": "logs/sfm-production-spine/cvhr_weakcore_repair_leaf_canary_status_20260522T1611Z.json",
+    "leaf08_create_request": "logs/sfm-production-spine/cvhr_weakcore_repair_leaf08_create_cvhr-wcrepair-l08-1779464068.json",
+    "leaf08_submit_log": "logs/sfm-production-spine/cvhr_weakcore_repair_leaf08_submit_20260522T1534Z.log",
+    "leaf08_initial_describe": "logs/sfm-production-spine/cvhr-wcrepair-l08-1779464068_describe_initial_20260522T1534Z.json",
+    "leaf08_latest_describe": "logs/sfm-production-spine/cvhr-wcrepair-l08-1779464068_describe_poll_20260522T1611Z.json",
+    "leaf08_log_streams": "logs/sfm-production-spine/cvhr-wcrepair-l08-1779464068_log_streams_20260522T1542Z.json",
+    "leaf08_s3_poll": "logs/sfm-production-spine/cvhr_weakcore_repair_leaf08_s3_poll_20260522T1611Z.txt",
+    "leaf08_cloudwatch_tail": "logs/sfm-production-spine/cvhr_wcrepair_l08_cloudwatch_tail_20260522T1611Z.json",
+    "active_cvhr_wcrepair_processing_jobs": "logs/sfm-production-spine/active-cvhr-wcrepair-processing-jobs-20260522T1611Z.json",
+    "active_cvhr_training_jobs": "logs/sfm-production-spine/active-cvhr-training-jobs-20260522T1611Z.json"
+  },
+  "active_training_jobs_task_owned": [],
+  "active_processing_jobs_latest_verified": [],
+  "sfm_scope_only": true,
+  "seam_graph_sim3_v1_latest_proof": "logs/sfm-production-spine/cvhr_weakcore_repair_020608_scale_blocker_gps_alignment_next_proof_20260523T0859Z.json",
+  "cvhr_weakcore_repair_latest": {
+    "updated": "2026-05-23T08:59:00Z",
+    "leaf08_status": "Completed/no FailureReason; 360/360 images; 98326 sparse points",
+    "strict_020608_replay": "fail_accepted_seam_graph_disconnected",
+    "critical_edge": {
+      "leaf_a": 0,
+      "leaf_b": 1,
+      "semantic_pair": "new leaf02 to new leaf06",
+      "shared_registered_images": 178,
+      "scale_delta": 0.16123255,
+      "max_scale_delta_gate": 0.15,
+      "baseline_normalized_residual": 0.00055231,
+      "decision": "reject_scale_delta_exceeds_gate"
+    },
+    "patch": "GPS-align visibility_cell_v1 leaf exports with COLMAP model_aligner and carry image_pose_priors_local into reducer GPS/EXIF residual checks.",
+    "proof": "logs/sfm-production-spine/cvhr_weakcore_repair_020608_scale_blocker_gps_alignment_next_proof_20260523T0859Z.json"
+  },
+  "sfm_seam_graph_sim3_v1_hardening": {
+    "updated": "2026-05-23T08:59:00Z",
+    "status": "cvhr_gps_alignment_patch_local_verified_next_exact_head_build",
+    "scope": "SfM reducer/planner/leaf-export hardening only; no 3DGS/SOGS launched.",
+    "latest_proof": "logs/sfm-production-spine/cvhr_weakcore_repair_020608_scale_blocker_gps_alignment_next_proof_20260523T0859Z.json",
+    "active_leaf_canary_jobs": [],
+    "latest_leaf_canary_poll": {
+      "updated": "2026-05-23T08:12:00Z",
+      "leaf08": "Completed/no FailureReason; 360/360 images; 98326 sparse points; active CV-HR processing/training lists empty afterward"
+    },
+    "strict_020608_replay": {
+      "result": "fail",
+      "reducer_report": "logs/sfm-production-spine/cvhr_weakcore_repair_020608_seam_graph_reducer_20260523T0812Z.json",
+      "seam_merge_report": "logs/sfm-production-spine/cvhr_weakcore_repair_020608_seam_merge_report_20260523T0812Z.json",
+      "blocker": "leaf02-leaf06 scale_delta 0.16123255 exceeds strict 0.15 gate; accepted graph only connects leaf06-leaf08"
+    },
+    "gps_alignment_patch": {
+      "code_files": [
+        "infrastructure/containers/sfm/run_colmap_sfm.py",
+        "scripts/sfm/run_sfm_reducer_canary.py",
+        "tests/unit/test_colmap_gps_priors.py",
+        "tests/unit/test_sfm_reducer_canary.py"
+      ],
+      "model_aligner_probe": "logs/sfm-production-spine/model_aligner_probe_20260523T0841Z/model_aligner.log",
+      "verification": [
+        "python3 -m py_compile infrastructure/containers/sfm/run_colmap_sfm.py scripts/sfm/run_sfm_reducer_canary.py scripts/sfm/run_sfm_fanout_reducer.py",
+        "PYTHONPATH=. python3 -m unittest tests.unit.test_colmap_gps_priors tests.unit.test_sfm_fanout_contract tests.unit.test_sfm_reducer_canary tests.unit.test_sfm_fanout_reducer tests.unit.test_sfm_quality_eval (140 tests OK)"
+      ]
+    }
   }
 }

@@ -1,0 +1,4522 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "seam_merge_report",
+  "merge_strategy": "seam_graph_sim3_v1",
+  "thresholds": {
+    "min_shared_images": 20,
+    "max_scale_delta": 0.15,
+    "max_sim3_p95_residual_m": 0.25,
+    "max_baseline_normalized_residual": 0.01,
+    "strict_production_gates": true
+  },
+  "leaf_count": 3,
+  "root_leaf": 1,
+  "candidate_edges": [
+    {
+      "leaf_a": 0,
+      "leaf_b": 1,
+      "alignment_direction": "leaf_01_to_leaf_00",
+      "shared_registered_images": 178,
+      "shared_image_sample": [
+        "DJI_00204.JPG",
+        "DJI_00205.JPG",
+        "DJI_00206.JPG",
+        "DJI_00207.JPG",
+        "DJI_00208.JPG",
+        "DJI_00209.JPG",
+        "DJI_00215.JPG",
+        "DJI_00216.JPG",
+        "DJI_00217.JPG",
+        "DJI_00218.JPG",
+        "DJI_00219.JPG",
+        "DJI_00220.JPG",
+        "DJI_00221.JPG",
+        "DJI_00222.JPG",
+        "DJI_00223.JPG",
+        "DJI_00224.JPG"
+      ],
+      "blockers": [
+        "scale_delta_exceeds_gate"
+      ],
+      "warnings": [
+        "duplicate_surface_overlap_suspect"
+      ],
+      "shared_camera_distribution": {
+        "source_leaf_b": {
+          "rank": 3,
+          "baseline_m": 17.311152,
+          "singular_values": [
+            47.487011,
+            18.834909,
+            6.613232
+          ],
+          "normalized_singular_values": [
+            1.0,
+            0.396633,
+            0.139264
+          ]
+        },
+        "target_leaf_a": {
+          "rank": 3,
+          "baseline_m": 14.45195,
+          "singular_values": [
+            39.832754,
+            15.793122,
+            5.545648
+          ],
+          "normalized_singular_values": [
+            1.0,
+            0.396486,
+            0.139223
+          ]
+        },
+        "rank": 3
+      },
+      "sim3": {
+        "scale": 0.83876745,
+        "rotation": [
+          [
+            0.9879735907,
+            0.0446656334,
+            0.1480309602
+          ],
+          [
+            -0.0403406446,
+            0.9986704522,
+            -0.0320929944
+          ],
+          [
+            -0.1492675999,
+            0.0257353665,
+            0.9884618731
+          ]
+        ],
+        "translation": [
+          2.354203,
+          0.757123,
+          -1.566787
+        ]
+      },
+      "scale_delta": 0.16123255,
+      "sim3_residual_m": {
+        "count": 178,
+        "min": 0.000552,
+        "p50": 0.002008,
+        "p95": 0.007982,
+        "max": 0.023096
+      },
+      "baseline_normalized_residual": 0.00055231,
+      "heldout_shared_camera_residual": {
+        "status": "pass",
+        "heldout_count": 36,
+        "train_count": 142,
+        "residual_m": {
+          "count": 36,
+          "min": 0.000575,
+          "p50": 0.002211,
+          "p95": 0.006974,
+          "max": 0.010325
+        }
+      },
+      "pre_overlap_surface_stats": {
+        "axis_reports": {
+          "xy_z": {
+            "overlap_cell_count": 69,
+            "flagged_overlap_cell_count": 27,
+            "flagged_overlap_cell_ratio": 0.3913,
+            "median_abs_gap_m": 4.4508,
+            "p95_abs_gap_m": 12.4043,
+            "max_abs_gap_m": 14.2133,
+            "cell_size_m": 3.709,
+            "examples": [
+              {
+                "cell": [
+                  37,
+                  15
+                ],
+                "existing_count": 18,
+                "incoming_count": 10,
+                "median_gap_m": 14.2133,
+                "existing_axis_median": 40.6562,
+                "incoming_axis_median": 54.8695,
+                "tolerance_m": 3.3146
+              },
+              {
+                "cell": [
+                  35,
+                  20
+                ],
+                "existing_count": 885,
+                "incoming_count": 10,
+                "median_gap_m": 14.0211,
+                "existing_axis_median": -3.4473,
+                "incoming_axis_median": 10.5738,
+                "tolerance_m": 11.1015
+              },
+              {
+                "cell": [
+                  38,
+                  15
+                ],
+                "existing_count": 17,
+                "incoming_count": 7,
+                "median_gap_m": 12.6107,
+                "existing_axis_median": 40.478,
+                "incoming_axis_median": 53.0887,
+                "tolerance_m": 3.3371
+              },
+              {
+                "cell": [
+                  40,
+                  17
+                ],
+                "existing_count": 118,
+                "incoming_count": 6,
+                "median_gap_m": 12.4043,
+                "existing_axis_median": 20.8921,
+                "incoming_axis_median": 33.2963,
+                "tolerance_m": 5.4523
+              },
+              {
+                "cell": [
+                  39,
+                  17
+                ],
+                "existing_count": 149,
+                "incoming_count": 13,
+                "median_gap_m": 11.5763,
+                "existing_axis_median": 20.0525,
+                "incoming_axis_median": 31.6287,
+                "tolerance_m": 4.348
+              },
+              {
+                "cell": [
+                  35,
+                  14
+                ],
+                "existing_count": 9,
+                "incoming_count": 7,
+                "median_gap_m": 11.4067,
+                "existing_axis_median": 52.3573,
+                "incoming_axis_median": 63.764,
+                "tolerance_m": 3.0578
+              },
+              {
+                "cell": [
+                  39,
+                  18
+                ],
+                "existing_count": 533,
+                "incoming_count": 7,
+                "median_gap_m": 10.7664,
+                "existing_axis_median": 10.0957,
+                "incoming_axis_median": 20.8621,
+                "tolerance_m": 4.2354
+              },
+              {
+                "cell": [
+                  34,
+                  20
+                ],
+                "existing_count": 2046,
+                "incoming_count": 18,
+                "median_gap_m": 10.3032,
+                "existing_axis_median": -2.6226,
+                "incoming_axis_median": 7.6807,
+                "tolerance_m": 7.5372
+              },
+              {
+                "cell": [
+                  34,
+                  14
+                ],
+                "existing_count": 8,
+                "incoming_count": 12,
+                "median_gap_m": 9.9428,
+                "existing_axis_median": 52.4447,
+                "incoming_axis_median": 62.3875,
+                "tolerance_m": 3.8399
+              },
+              {
+                "cell": [
+                  36,
+                  15
+                ],
+                "existing_count": 14,
+                "incoming_count": 24,
+                "median_gap_m": 8.8685,
+                "existing_axis_median": 41.0715,
+                "incoming_axis_median": 49.94,
+                "tolerance_m": 3.6955
+              },
+              {
+                "cell": [
+                  34,
+                  13
+                ],
+                "existing_count": 7,
+                "incoming_count": 8,
+                "median_gap_m": 8.5027,
+                "existing_axis_median": 62.4632,
+                "incoming_axis_median": 70.9659,
+                "tolerance_m": 1.9759
+              },
+              {
+                "cell": [
+                  36,
+                  14
+                ],
+                "existing_count": 8,
+                "incoming_count": 10,
+                "median_gap_m": 8.3123,
+                "existing_axis_median": 52.6598,
+                "incoming_axis_median": 60.9721,
+                "tolerance_m": 3.0982
+              },
+              {
+                "cell": [
+                  37,
+                  16
+                ],
+                "existing_count": 56,
+                "incoming_count": 43,
+                "median_gap_m": 8.1632,
+                "existing_axis_median": 31.4322,
+                "incoming_axis_median": 39.5953,
+                "tolerance_m": 6.1835
+              },
+              {
+                "cell": [
+                  38,
+                  17
+                ],
+                "existing_count": 192,
+                "incoming_count": 49,
+                "median_gap_m": 7.4391,
+                "existing_axis_median": 21.965,
+                "incoming_axis_median": 29.4041,
+                "tolerance_m": 3.7628
+              },
+              {
+                "cell": [
+                  37,
+                  17
+                ],
+                "existing_count": 234,
+                "incoming_count": 83,
+                "median_gap_m": 7.2635,
+                "existing_axis_median": 21.2302,
+                "incoming_axis_median": 28.4937,
+                "tolerance_m": 5.7248
+              },
+              {
+                "cell": [
+                  38,
+                  16
+                ],
+                "existing_count": 66,
+                "incoming_count": 33,
+                "median_gap_m": 7.1531,
+                "existing_axis_median": 32.4075,
+                "incoming_axis_median": 39.5606,
+                "tolerance_m": 4.887
+              },
+              {
+                "cell": [
+                  37,
+                  18
+                ],
+                "existing_count": 1346,
+                "incoming_count": 197,
+                "median_gap_m": 7.0432,
+                "existing_axis_median": 10.4364,
+                "incoming_axis_median": 17.4796,
+                "tolerance_m": 6.7779
+              },
+              {
+                "cell": [
+                  37,
+                  14
+                ],
+                "existing_count": 15,
+                "incoming_count": 11,
+                "median_gap_m": 6.9,
+                "existing_axis_median": 53.72,
+                "incoming_axis_median": 60.6201,
+                "tolerance_m": 3.1645
+              },
+              {
+                "cell": [
+                  39,
+                  16
+                ],
+                "existing_count": 40,
+                "incoming_count": 11,
+                "median_gap_m": 6.8377,
+                "existing_axis_median": 31.1353,
+                "incoming_axis_median": 37.973,
+                "tolerance_m": 3.7228
+              },
+              {
+                "cell": [
+                  26,
+                  17
+                ],
+                "existing_count": 12,
+                "incoming_count": 95,
+                "median_gap_m": 6.5414,
+                "existing_axis_median": 27.3275,
+                "incoming_axis_median": 20.7861,
+                "tolerance_m": 4.2593
+              }
+            ]
+          },
+          "xz_y": {
+            "overlap_cell_count": 106,
+            "flagged_overlap_cell_count": 15,
+            "flagged_overlap_cell_ratio": 0.1415,
+            "median_abs_gap_m": 1.0162,
+            "p95_abs_gap_m": 2.8291,
+            "max_abs_gap_m": 3.4929,
+            "cell_size_m": 3.709,
+            "examples": [
+              {
+                "cell": [
+                  40,
+                  21
+                ],
+                "existing_count": 37,
+                "incoming_count": 6,
+                "median_gap_m": 3.4929,
+                "existing_axis_median": -7.0162,
+                "incoming_axis_median": -3.5233,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  39,
+                  25
+                ],
+                "existing_count": 6,
+                "incoming_count": 11,
+                "median_gap_m": 3.3796,
+                "existing_axis_median": -12.0465,
+                "incoming_axis_median": -8.6669,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  38,
+                  26
+                ],
+                "existing_count": 8,
+                "incoming_count": 9,
+                "median_gap_m": 2.97,
+                "existing_axis_median": -13.1908,
+                "incoming_axis_median": -10.2208,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  37,
+                  25
+                ],
+                "existing_count": 9,
+                "incoming_count": 19,
+                "median_gap_m": 2.9081,
+                "existing_axis_median": -12.2044,
+                "incoming_axis_median": -9.2964,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  37,
+                  26
+                ],
+                "existing_count": 11,
+                "incoming_count": 13,
+                "median_gap_m": 2.8291,
+                "existing_axis_median": -13.2808,
+                "incoming_axis_median": -10.4517,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  37,
+                  24
+                ],
+                "existing_count": 19,
+                "incoming_count": 18,
+                "median_gap_m": 2.7554,
+                "existing_axis_median": -10.6498,
+                "incoming_axis_median": -7.8944,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  38,
+                  22
+                ],
+                "existing_count": 30,
+                "incoming_count": 21,
+                "median_gap_m": 2.7064,
+                "existing_axis_median": -7.9159,
+                "incoming_axis_median": -5.2095,
+                "tolerance_m": 2.6135
+              },
+              {
+                "cell": [
+                  35,
+                  29
+                ],
+                "existing_count": 7,
+                "incoming_count": 8,
+                "median_gap_m": 2.6821,
+                "existing_axis_median": -17.4087,
+                "incoming_axis_median": -14.7265,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  38,
+                  23
+                ],
+                "existing_count": 26,
+                "incoming_count": 17,
+                "median_gap_m": 2.6477,
+                "existing_axis_median": -9.3621,
+                "incoming_axis_median": -6.7144,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  36,
+                  25
+                ],
+                "existing_count": 11,
+                "incoming_count": 22,
+                "median_gap_m": 2.5567,
+                "existing_axis_median": -12.0149,
+                "incoming_axis_median": -9.4582,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  37,
+                  23
+                ],
+                "existing_count": 17,
+                "incoming_count": 27,
+                "median_gap_m": 2.4494,
+                "existing_axis_median": -9.4298,
+                "incoming_axis_median": -6.9804,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  38,
+                  24
+                ],
+                "existing_count": 27,
+                "incoming_count": 12,
+                "median_gap_m": 2.4091,
+                "existing_axis_median": -10.5071,
+                "incoming_axis_median": -8.098,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  38,
+                  19
+                ],
+                "existing_count": 84,
+                "incoming_count": 6,
+                "median_gap_m": 2.2508,
+                "existing_axis_median": -4.1018,
+                "incoming_axis_median": -1.851,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  35,
+                  25
+                ],
+                "existing_count": 15,
+                "incoming_count": 35,
+                "median_gap_m": 2.1668,
+                "existing_axis_median": -11.6965,
+                "incoming_axis_median": -9.5298,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  37,
+                  20
+                ],
+                "existing_count": 125,
+                "incoming_count": 81,
+                "median_gap_m": 2.0085,
+                "existing_axis_median": -5.234,
+                "incoming_axis_median": -3.2255,
+                "tolerance_m": 1.9238
+              }
+            ]
+          },
+          "yz_x": {
+            "overlap_cell_count": 49,
+            "flagged_overlap_cell_count": 25,
+            "flagged_overlap_cell_ratio": 0.5102,
+            "median_abs_gap_m": 31.7978,
+            "p95_abs_gap_m": 128.6808,
+            "max_abs_gap_m": 138.5123,
+            "cell_size_m": 3.1757,
+            "examples": [
+              {
+                "cell": [
+                  15,
+                  36
+                ],
+                "existing_count": 12,
+                "incoming_count": 10,
+                "median_gap_m": 138.5123,
+                "existing_axis_median": 79.5157,
+                "incoming_axis_median": -58.9966,
+                "tolerance_m": 11.4493
+              },
+              {
+                "cell": [
+                  19,
+                  24
+                ],
+                "existing_count": 28,
+                "incoming_count": 10,
+                "median_gap_m": 131.7534,
+                "existing_axis_median": 85.2465,
+                "incoming_axis_median": -46.507,
+                "tolerance_m": 29.7636
+              },
+              {
+                "cell": [
+                  18,
+                  27
+                ],
+                "existing_count": 30,
+                "incoming_count": 11,
+                "median_gap_m": 128.6808,
+                "existing_axis_median": 82.4996,
+                "incoming_axis_median": -46.1812,
+                "tolerance_m": 26.5999
+              },
+              {
+                "cell": [
+                  17,
+                  30
+                ],
+                "existing_count": 23,
+                "incoming_count": 19,
+                "median_gap_m": 127.9052,
+                "existing_axis_median": 80.7259,
+                "incoming_axis_median": -47.1793,
+                "tolerance_m": 16.4524
+              },
+              {
+                "cell": [
+                  12,
+                  45
+                ],
+                "existing_count": 6,
+                "incoming_count": 6,
+                "median_gap_m": 107.5764,
+                "existing_axis_median": 55.0861,
+                "incoming_axis_median": -52.4903,
+                "tolerance_m": 10.4862
+              },
+              {
+                "cell": [
+                  19,
+                  25
+                ],
+                "existing_count": 46,
+                "incoming_count": 45,
+                "median_gap_m": 96.9472,
+                "existing_axis_median": 65.9353,
+                "incoming_axis_median": -31.0119,
+                "tolerance_m": 24.5371
+              },
+              {
+                "cell": [
+                  14,
+                  39
+                ],
+                "existing_count": 7,
+                "incoming_count": 10,
+                "median_gap_m": 96.9471,
+                "existing_axis_median": 35.459,
+                "incoming_axis_median": -61.4881,
+                "tolerance_m": 23.3679
+              },
+              {
+                "cell": [
+                  21,
+                  19
+                ],
+                "existing_count": 62,
+                "incoming_count": 53,
+                "median_gap_m": 92.8641,
+                "existing_axis_median": 62.7341,
+                "incoming_axis_median": -30.13,
+                "tolerance_m": 30.9984
+              },
+              {
+                "cell": [
+                  18,
+                  28
+                ],
+                "existing_count": 59,
+                "incoming_count": 41,
+                "median_gap_m": 90.4634,
+                "existing_axis_median": 51.2595,
+                "incoming_axis_median": -39.2039,
+                "tolerance_m": 29.3109
+              },
+              {
+                "cell": [
+                  20,
+                  22
+                ],
+                "existing_count": 36,
+                "incoming_count": 55,
+                "median_gap_m": 86.5065,
+                "existing_axis_median": 58.3178,
+                "incoming_axis_median": -28.1887,
+                "tolerance_m": 29.8657
+              },
+              {
+                "cell": [
+                  17,
+                  31
+                ],
+                "existing_count": 42,
+                "incoming_count": 31,
+                "median_gap_m": 85.7192,
+                "existing_axis_median": 46.2628,
+                "incoming_axis_median": -39.4564,
+                "tolerance_m": 24.8456
+              },
+              {
+                "cell": [
+                  11,
+                  48
+                ],
+                "existing_count": 6,
+                "incoming_count": 7,
+                "median_gap_m": 83.294,
+                "existing_axis_median": 47.2784,
+                "incoming_axis_median": -36.0156,
+                "tolerance_m": 14.6604
+              },
+              {
+                "cell": [
+                  13,
+                  43
+                ],
+                "existing_count": 6,
+                "incoming_count": 6,
+                "median_gap_m": 77.4564,
+                "existing_axis_median": 53.659,
+                "incoming_axis_median": -23.7975,
+                "tolerance_m": 22.4521
+              },
+              {
+                "cell": [
+                  14,
+                  40
+                ],
+                "existing_count": 16,
+                "incoming_count": 12,
+                "median_gap_m": 66.0642,
+                "existing_axis_median": 22.5197,
+                "incoming_axis_median": -43.5446,
+                "tolerance_m": 27.7113
+              },
+              {
+                "cell": [
+                  15,
+                  37
+                ],
+                "existing_count": 18,
+                "incoming_count": 7,
+                "median_gap_m": 61.5256,
+                "existing_axis_median": 17.5,
+                "incoming_axis_median": -44.0256,
+                "tolerance_m": 29.3217
+              },
+              {
+                "cell": [
+                  15,
+                  38
+                ],
+                "existing_count": 12,
+                "incoming_count": 13,
+                "median_gap_m": 58.7017,
+                "existing_axis_median": 12.8238,
+                "incoming_axis_median": -45.8779,
+                "tolerance_m": 29.9039
+              },
+              {
+                "cell": [
+                  16,
+                  34
+                ],
+                "existing_count": 30,
+                "incoming_count": 14,
+                "median_gap_m": 57.2964,
+                "existing_axis_median": 16.146,
+                "incoming_axis_median": -41.1505,
+                "tolerance_m": 27.6407
+              },
+              {
+                "cell": [
+                  17,
+                  32
+                ],
+                "existing_count": 57,
+                "incoming_count": 45,
+                "median_gap_m": 55.1754,
+                "existing_axis_median": 28.409,
+                "incoming_axis_median": -26.7664,
+                "tolerance_m": 40.1912
+              },
+              {
+                "cell": [
+                  16,
+                  35
+                ],
+                "existing_count": 32,
+                "incoming_count": 17,
+                "median_gap_m": 53.3134,
+                "existing_axis_median": 13.0774,
+                "incoming_axis_median": -40.2359,
+                "tolerance_m": 40.5728
+              },
+              {
+                "cell": [
+                  18,
+                  29
+                ],
+                "existing_count": 106,
+                "incoming_count": 78,
+                "median_gap_m": 48.8527,
+                "existing_axis_median": 17.7311,
+                "incoming_axis_median": -31.1216,
+                "tolerance_m": 40.3371
+              }
+            ]
+          }
+        },
+        "blocking_axis": "yz_x",
+        "max_flagged_overlap_cell_ratio": 0.5102,
+        "max_flagged_overlap_cell_count": 25,
+        "max_overlap_cell_count": 49
+      },
+      "post_overlap_surface_stats": {
+        "axis_reports": {
+          "xy_z": {
+            "overlap_cell_count": 86,
+            "flagged_overlap_cell_count": 2,
+            "flagged_overlap_cell_ratio": 0.0233,
+            "median_abs_gap_m": 0.5547,
+            "p95_abs_gap_m": 3.0057,
+            "max_abs_gap_m": 8.0672,
+            "cell_size_m": 3.3711,
+            "examples": [
+              {
+                "cell": [
+                  30,
+                  12
+                ],
+                "existing_count": 7,
+                "incoming_count": 6,
+                "median_gap_m": 3.0928,
+                "existing_axis_median": 60.0039,
+                "incoming_axis_median": 56.9111,
+                "tolerance_m": 2.9964
+              },
+              {
+                "cell": [
+                  29,
+                  12
+                ],
+                "existing_count": 6,
+                "incoming_count": 9,
+                "median_gap_m": 3.0057,
+                "existing_axis_median": 58.5088,
+                "incoming_axis_median": 55.5031,
+                "tolerance_m": 2.6265
+              }
+            ]
+          },
+          "xz_y": {
+            "overlap_cell_count": 135,
+            "flagged_overlap_cell_count": 0,
+            "flagged_overlap_cell_ratio": 0.0,
+            "median_abs_gap_m": 0.0926,
+            "p95_abs_gap_m": 0.3556,
+            "max_abs_gap_m": 0.5609,
+            "cell_size_m": 3.3711,
+            "examples": []
+          },
+          "yz_x": {
+            "overlap_cell_count": 46,
+            "flagged_overlap_cell_count": 3,
+            "flagged_overlap_cell_ratio": 0.0652,
+            "median_abs_gap_m": 8.1825,
+            "p95_abs_gap_m": 29.7248,
+            "max_abs_gap_m": 53.5308,
+            "cell_size_m": 2.8483,
+            "examples": [
+              {
+                "cell": [
+                  11,
+                  48
+                ],
+                "existing_count": 6,
+                "incoming_count": 13,
+                "median_gap_m": 53.5308,
+                "existing_axis_median": 53.659,
+                "incoming_axis_median": 0.1282,
+                "tolerance_m": 24.2289
+              },
+              {
+                "cell": [
+                  14,
+                  39
+                ],
+                "existing_count": 17,
+                "incoming_count": 11,
+                "median_gap_m": 35.3356,
+                "existing_axis_median": 46.8117,
+                "incoming_axis_median": 11.4761,
+                "tolerance_m": 27.5091
+              },
+              {
+                "cell": [
+                  15,
+                  36
+                ],
+                "existing_count": 24,
+                "incoming_count": 7,
+                "median_gap_m": 26.8473,
+                "existing_axis_median": 49.951,
+                "incoming_axis_median": 23.1037,
+                "tolerance_m": 25.1811
+              }
+            ]
+          }
+        },
+        "blocking_axis": "yz_x",
+        "max_flagged_overlap_cell_ratio": 0.0652,
+        "max_flagged_overlap_cell_count": 3,
+        "max_overlap_cell_count": 46
+      },
+      "surface_overlap_warning_score": 0.0652,
+      "gps_exif_residual": {
+        "status": "not_available",
+        "reason": "reducer inputs do not include raw EXIF/GPS priors in this local model format"
+      },
+      "decision": "reject",
+      "strict_decision": "reject",
+      "confidence": 114.62682
+    },
+    {
+      "leaf_a": 0,
+      "leaf_b": 2,
+      "alignment_direction": "leaf_02_to_leaf_00",
+      "shared_registered_images": 5,
+      "shared_image_sample": [
+        "DJI_00301.JPG",
+        "DJI_01450.JPG",
+        "DJI_01451.JPG",
+        "DJI_01452.JPG",
+        "DJI_01453.JPG"
+      ],
+      "blockers": [
+        "weak_shared_camera_count",
+        "scale_delta_exceeds_gate"
+      ],
+      "warnings": [
+        "duplicate_surface_overlap_suspect"
+      ],
+      "shared_camera_distribution": {
+        "source_leaf_b": {
+          "rank": 3,
+          "baseline_m": 1.90854,
+          "singular_values": [
+            1.622526,
+            0.228892,
+            0.011058
+          ],
+          "normalized_singular_values": [
+            1.0,
+            0.141072,
+            0.006815
+          ]
+        },
+        "target_leaf_a": {
+          "rank": 3,
+          "baseline_m": 1.599507,
+          "singular_values": [
+            1.335582,
+            0.188407,
+            0.009084
+          ],
+          "normalized_singular_values": [
+            1.0,
+            0.141067,
+            0.006802
+          ]
+        },
+        "rank": 3
+      },
+      "sim3": {
+        "scale": 0.82314921,
+        "rotation": [
+          [
+            0.5737599878,
+            0.2230388635,
+            -0.7880692493
+          ],
+          [
+            -0.2772381824,
+            0.9582936709,
+            0.0693702427
+          ],
+          [
+            0.770674034,
+            0.1786810167,
+            0.611665454
+          ]
+        ],
+        "translation": [
+          5.485545,
+          0.247839,
+          -0.34713
+        ]
+      },
+      "scale_delta": 0.17685079,
+      "sim3_residual_m": {
+        "count": 5,
+        "min": 1.8e-05,
+        "p50": 6.3e-05,
+        "p95": 0.000204,
+        "max": 0.000204
+      },
+      "baseline_normalized_residual": 0.00012754,
+      "heldout_shared_camera_residual": {
+        "status": "pass",
+        "heldout_count": 1,
+        "train_count": 4,
+        "residual_m": {
+          "count": 1,
+          "min": 0.003685,
+          "p50": 0.003685,
+          "p95": 0.003685,
+          "max": 0.003685
+        }
+      },
+      "pre_overlap_surface_stats": {
+        "axis_reports": {
+          "xy_z": {
+            "overlap_cell_count": 98,
+            "flagged_overlap_cell_count": 62,
+            "flagged_overlap_cell_ratio": 0.6327,
+            "median_abs_gap_m": 8.1023,
+            "p95_abs_gap_m": 16.1892,
+            "max_abs_gap_m": 18.7483,
+            "cell_size_m": 3.1688,
+            "examples": [
+              {
+                "cell": [
+                  33,
+                  13
+                ],
+                "existing_count": 12,
+                "incoming_count": 16,
+                "median_gap_m": 18.7483,
+                "existing_axis_median": 36.4334,
+                "incoming_axis_median": 55.1817,
+                "tolerance_m": 3.6327
+              },
+              {
+                "cell": [
+                  41,
+                  13
+                ],
+                "existing_count": 9,
+                "incoming_count": 6,
+                "median_gap_m": 18.4839,
+                "existing_axis_median": 34.3461,
+                "incoming_axis_median": 52.83,
+                "tolerance_m": 2.734
+              },
+              {
+                "cell": [
+                  34,
+                  13
+                ],
+                "existing_count": 9,
+                "incoming_count": 8,
+                "median_gap_m": 16.6522,
+                "existing_axis_median": 37.9665,
+                "incoming_axis_median": 54.6186,
+                "tolerance_m": 2.5076
+              },
+              {
+                "cell": [
+                  30,
+                  13
+                ],
+                "existing_count": 16,
+                "incoming_count": 19,
+                "median_gap_m": 16.3142,
+                "existing_axis_median": 38.552,
+                "incoming_axis_median": 54.8662,
+                "tolerance_m": 9.2571
+              },
+              {
+                "cell": [
+                  32,
+                  13
+                ],
+                "existing_count": 14,
+                "incoming_count": 7,
+                "median_gap_m": 16.1892,
+                "existing_axis_median": 39.4308,
+                "incoming_axis_median": 55.6201,
+                "tolerance_m": 2.7491
+              },
+              {
+                "cell": [
+                  28,
+                  13
+                ],
+                "existing_count": 19,
+                "incoming_count": 32,
+                "median_gap_m": 15.6981,
+                "existing_axis_median": 37.873,
+                "incoming_axis_median": 53.5711,
+                "tolerance_m": 3.8646
+              },
+              {
+                "cell": [
+                  31,
+                  12
+                ],
+                "existing_count": 9,
+                "incoming_count": 6,
+                "median_gap_m": 15.5483,
+                "existing_axis_median": 48.5688,
+                "incoming_axis_median": 64.1171,
+                "tolerance_m": 2.06
+              },
+              {
+                "cell": [
+                  31,
+                  13
+                ],
+                "existing_count": 22,
+                "incoming_count": 14,
+                "median_gap_m": 15.1932,
+                "existing_axis_median": 38.7832,
+                "incoming_axis_median": 53.9764,
+                "tolerance_m": 3.782
+              },
+              {
+                "cell": [
+                  30,
+                  14
+                ],
+                "existing_count": 55,
+                "incoming_count": 30,
+                "median_gap_m": 15.1313,
+                "existing_axis_median": 28.9146,
+                "incoming_axis_median": 44.0459,
+                "tolerance_m": 5.3886
+              },
+              {
+                "cell": [
+                  27,
+                  13
+                ],
+                "existing_count": 18,
+                "incoming_count": 29,
+                "median_gap_m": 15.0741,
+                "existing_axis_median": 37.8459,
+                "incoming_axis_median": 52.9199,
+                "tolerance_m": 3.5732
+              },
+              {
+                "cell": [
+                  24,
+                  14
+                ],
+                "existing_count": 18,
+                "incoming_count": 39,
+                "median_gap_m": 14.5793,
+                "existing_axis_median": 31.0299,
+                "incoming_axis_median": 45.6092,
+                "tolerance_m": 5.8129
+              },
+              {
+                "cell": [
+                  35,
+                  13
+                ],
+                "existing_count": 13,
+                "incoming_count": 9,
+                "median_gap_m": 14.448,
+                "existing_axis_median": 37.9101,
+                "incoming_axis_median": 52.3581,
+                "tolerance_m": 3.2775
+              },
+              {
+                "cell": [
+                  35,
+                  14
+                ],
+                "existing_count": 28,
+                "incoming_count": 16,
+                "median_gap_m": 14.3535,
+                "existing_axis_median": 27.4455,
+                "incoming_axis_median": 41.7991,
+                "tolerance_m": 4.0406
+              },
+              {
+                "cell": [
+                  27,
+                  12
+                ],
+                "existing_count": 6,
+                "incoming_count": 7,
+                "median_gap_m": 14.2408,
+                "existing_axis_median": 48.6068,
+                "incoming_axis_median": 62.8476,
+                "tolerance_m": 2.6545
+              },
+              {
+                "cell": [
+                  29,
+                  13
+                ],
+                "existing_count": 20,
+                "incoming_count": 20,
+                "median_gap_m": 14.2306,
+                "existing_axis_median": 39.7837,
+                "incoming_axis_median": 54.0143,
+                "tolerance_m": 3.1812
+              },
+              {
+                "cell": [
+                  27,
+                  14
+                ],
+                "existing_count": 47,
+                "incoming_count": 37,
+                "median_gap_m": 13.807,
+                "existing_axis_median": 31.2347,
+                "incoming_axis_median": 45.0417,
+                "tolerance_m": 3.798
+              },
+              {
+                "cell": [
+                  24,
+                  13
+                ],
+                "existing_count": 9,
+                "incoming_count": 25,
+                "median_gap_m": 13.2606,
+                "existing_axis_median": 39.6085,
+                "incoming_axis_median": 52.8692,
+                "tolerance_m": 6.0971
+              },
+              {
+                "cell": [
+                  26,
+                  13
+                ],
+                "existing_count": 6,
+                "incoming_count": 28,
+                "median_gap_m": 13.2203,
+                "existing_axis_median": 39.5604,
+                "incoming_axis_median": 52.7807,
+                "tolerance_m": 3.6212
+              },
+              {
+                "cell": [
+                  42,
+                  13
+                ],
+                "existing_count": 7,
+                "incoming_count": 6,
+                "median_gap_m": 13.2012,
+                "existing_axis_median": 35.9829,
+                "incoming_axis_median": 49.1842,
+                "tolerance_m": 2.5162
+              },
+              {
+                "cell": [
+                  34,
+                  14
+                ],
+                "existing_count": 27,
+                "incoming_count": 24,
+                "median_gap_m": 13.0772,
+                "existing_axis_median": 28.8167,
+                "incoming_axis_median": 41.894,
+                "tolerance_m": 5.1665
+              }
+            ]
+          },
+          "xz_y": {
+            "overlap_cell_count": 160,
+            "flagged_overlap_cell_count": 78,
+            "flagged_overlap_cell_ratio": 0.4875,
+            "median_abs_gap_m": 1.9944,
+            "p95_abs_gap_m": 3.6702,
+            "max_abs_gap_m": 5.6574,
+            "cell_size_m": 3.1688,
+            "examples": [
+              {
+                "cell": [
+                  30,
+                  34
+                ],
+                "existing_count": 8,
+                "incoming_count": 6,
+                "median_gap_m": 5.6574,
+                "existing_axis_median": -17.8534,
+                "incoming_axis_median": -12.196,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  32,
+                  30
+                ],
+                "existing_count": 6,
+                "incoming_count": 14,
+                "median_gap_m": 4.5461,
+                "existing_axis_median": -13.1353,
+                "incoming_axis_median": -8.5892,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  31,
+                  30
+                ],
+                "existing_count": 12,
+                "incoming_count": 8,
+                "median_gap_m": 4.2653,
+                "existing_axis_median": -12.8417,
+                "incoming_axis_median": -8.5764,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  29,
+                  30
+                ],
+                "existing_count": 9,
+                "incoming_count": 12,
+                "median_gap_m": 4.2095,
+                "existing_axis_median": -12.6862,
+                "incoming_axis_median": -8.4767,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  30,
+                  30
+                ],
+                "existing_count": 8,
+                "incoming_count": 10,
+                "median_gap_m": 3.9915,
+                "existing_axis_median": -12.671,
+                "incoming_axis_median": -8.6795,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  27,
+                  29
+                ],
+                "existing_count": 12,
+                "incoming_count": 11,
+                "median_gap_m": 3.9018,
+                "existing_axis_median": -11.5076,
+                "incoming_axis_median": -7.6058,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  31,
+                  28
+                ],
+                "existing_count": 21,
+                "incoming_count": 19,
+                "median_gap_m": 3.7485,
+                "existing_axis_median": -10.5011,
+                "incoming_axis_median": -6.7526,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  33,
+                  28
+                ],
+                "existing_count": 9,
+                "incoming_count": 9,
+                "median_gap_m": 3.6702,
+                "existing_axis_median": -10.9013,
+                "incoming_axis_median": -7.2311,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  28,
+                  29
+                ],
+                "existing_count": 16,
+                "incoming_count": 28,
+                "median_gap_m": 3.5896,
+                "existing_axis_median": -11.366,
+                "incoming_axis_median": -7.7764,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  26,
+                  29
+                ],
+                "existing_count": 6,
+                "incoming_count": 13,
+                "median_gap_m": 3.5484,
+                "existing_axis_median": -10.9972,
+                "incoming_axis_median": -7.4489,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  30,
+                  28
+                ],
+                "existing_count": 15,
+                "incoming_count": 10,
+                "median_gap_m": 3.5251,
+                "existing_axis_median": -10.5373,
+                "incoming_axis_median": -7.0122,
+                "tolerance_m": 2.291
+              },
+              {
+                "cell": [
+                  29,
+                  29
+                ],
+                "existing_count": 7,
+                "incoming_count": 20,
+                "median_gap_m": 3.5178,
+                "existing_axis_median": -11.0961,
+                "incoming_axis_median": -7.5784,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  32,
+                  27
+                ],
+                "existing_count": 14,
+                "incoming_count": 18,
+                "median_gap_m": 3.5149,
+                "existing_axis_median": -9.4934,
+                "incoming_axis_median": -5.9785,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  34,
+                  28
+                ],
+                "existing_count": 6,
+                "incoming_count": 10,
+                "median_gap_m": 3.5008,
+                "existing_axis_median": -10.713,
+                "incoming_axis_median": -7.2122,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  32,
+                  28
+                ],
+                "existing_count": 11,
+                "incoming_count": 18,
+                "median_gap_m": 3.4878,
+                "existing_axis_median": -10.5004,
+                "incoming_axis_median": -7.0125,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  34,
+                  27
+                ],
+                "existing_count": 7,
+                "incoming_count": 12,
+                "median_gap_m": 3.3999,
+                "existing_axis_median": -9.6831,
+                "incoming_axis_median": -6.2832,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  29,
+                  28
+                ],
+                "existing_count": 14,
+                "incoming_count": 39,
+                "median_gap_m": 3.3968,
+                "existing_axis_median": -10.2738,
+                "incoming_axis_median": -6.8769,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  33,
+                  27
+                ],
+                "existing_count": 11,
+                "incoming_count": 19,
+                "median_gap_m": 3.3525,
+                "existing_axis_median": -9.6498,
+                "incoming_axis_median": -6.2972,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  26,
+                  28
+                ],
+                "existing_count": 16,
+                "incoming_count": 14,
+                "median_gap_m": 3.3386,
+                "existing_axis_median": -10.0407,
+                "incoming_axis_median": -6.7021,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  27,
+                  28
+                ],
+                "existing_count": 19,
+                "incoming_count": 24,
+                "median_gap_m": 3.3357,
+                "existing_axis_median": -10.0891,
+                "incoming_axis_median": -6.7534,
+                "tolerance_m": 1.5
+              }
+            ]
+          },
+          "yz_x": {
+            "overlap_cell_count": 19,
+            "flagged_overlap_cell_count": 3,
+            "flagged_overlap_cell_ratio": 0.1579,
+            "median_abs_gap_m": 8.5274,
+            "p95_abs_gap_m": 34.6687,
+            "max_abs_gap_m": 34.6687,
+            "cell_size_m": 3.0573,
+            "examples": [
+              {
+                "cell": [
+                  17,
+                  19
+                ],
+                "existing_count": 137,
+                "incoming_count": 27,
+                "median_gap_m": 34.6687,
+                "existing_axis_median": 34.4979,
+                "incoming_axis_median": -0.1708,
+                "tolerance_m": 32.6733
+              },
+              {
+                "cell": [
+                  19,
+                  20
+                ],
+                "existing_count": 20,
+                "incoming_count": 11,
+                "median_gap_m": 10.0495,
+                "existing_axis_median": 8.7389,
+                "incoming_axis_median": -1.3106,
+                "tolerance_m": 6.1895
+              },
+              {
+                "cell": [
+                  19,
+                  21
+                ],
+                "existing_count": 12,
+                "incoming_count": 7,
+                "median_gap_m": 9.6052,
+                "existing_axis_median": 8.2938,
+                "incoming_axis_median": -1.3114,
+                "tolerance_m": 5.8437
+              }
+            ]
+          }
+        },
+        "blocking_axis": "xy_z",
+        "max_flagged_overlap_cell_ratio": 0.6327,
+        "max_flagged_overlap_cell_count": 62,
+        "max_overlap_cell_count": 98
+      },
+      "post_overlap_surface_stats": {
+        "axis_reports": {
+          "xy_z": {
+            "overlap_cell_count": 46,
+            "flagged_overlap_cell_count": 1,
+            "flagged_overlap_cell_ratio": 0.0217,
+            "median_abs_gap_m": 0.8565,
+            "p95_abs_gap_m": 3.5284,
+            "max_abs_gap_m": 5.9163,
+            "cell_size_m": 3.8174,
+            "examples": [
+              {
+                "cell": [
+                  29,
+                  13
+                ],
+                "existing_count": 16,
+                "incoming_count": 89,
+                "median_gap_m": 5.7689,
+                "existing_axis_median": 21.3623,
+                "incoming_axis_median": 15.5935,
+                "tolerance_m": 4.2225
+              }
+            ]
+          },
+          "xz_y": {
+            "overlap_cell_count": 84,
+            "flagged_overlap_cell_count": 0,
+            "flagged_overlap_cell_ratio": 0.0,
+            "median_abs_gap_m": 0.1302,
+            "p95_abs_gap_m": 0.498,
+            "max_abs_gap_m": 0.7642,
+            "cell_size_m": 3.8174,
+            "examples": []
+          },
+          "yz_x": {
+            "overlap_cell_count": 55,
+            "flagged_overlap_cell_count": 14,
+            "flagged_overlap_cell_ratio": 0.2545,
+            "median_abs_gap_m": 15.626,
+            "p95_abs_gap_m": 44.0956,
+            "max_abs_gap_m": 56.6029,
+            "cell_size_m": 2.267,
+            "examples": [
+              {
+                "cell": [
+                  27,
+                  19
+                ],
+                "existing_count": 94,
+                "incoming_count": 7,
+                "median_gap_m": 56.6029,
+                "existing_axis_median": 16.5547,
+                "incoming_axis_median": -40.0481,
+                "tolerance_m": 9.0384
+              },
+              {
+                "cell": [
+                  22,
+                  30
+                ],
+                "existing_count": 213,
+                "incoming_count": 7,
+                "median_gap_m": 44.9145,
+                "existing_axis_median": 28.3084,
+                "incoming_axis_median": -16.606,
+                "tolerance_m": 27.6784
+              },
+              {
+                "cell": [
+                  27,
+                  17
+                ],
+                "existing_count": 104,
+                "incoming_count": 7,
+                "median_gap_m": 44.0956,
+                "existing_axis_median": 24.6921,
+                "incoming_axis_median": -19.4035,
+                "tolerance_m": 19.1829
+              },
+              {
+                "cell": [
+                  17,
+                  46
+                ],
+                "existing_count": 29,
+                "incoming_count": 22,
+                "median_gap_m": 42.8661,
+                "existing_axis_median": 16.8478,
+                "incoming_axis_median": -26.0183,
+                "tolerance_m": 31.4525
+              },
+              {
+                "cell": [
+                  18,
+                  43
+                ],
+                "existing_count": 46,
+                "incoming_count": 31,
+                "median_gap_m": 34.6618,
+                "existing_axis_median": 16.7103,
+                "incoming_axis_median": -17.9515,
+                "tolerance_m": 32.9452
+              },
+              {
+                "cell": [
+                  17,
+                  45
+                ],
+                "existing_count": 26,
+                "incoming_count": 13,
+                "median_gap_m": 34.0164,
+                "existing_axis_median": 27.6404,
+                "incoming_axis_median": -6.376,
+                "tolerance_m": 25.2904
+              },
+              {
+                "cell": [
+                  15,
+                  52
+                ],
+                "existing_count": 11,
+                "incoming_count": 6,
+                "median_gap_m": 30.7938,
+                "existing_axis_median": 4.6332,
+                "incoming_axis_median": -26.1606,
+                "tolerance_m": 24.9758
+              },
+              {
+                "cell": [
+                  18,
+                  44
+                ],
+                "existing_count": 26,
+                "incoming_count": 29,
+                "median_gap_m": 29.6344,
+                "existing_axis_median": 13.0366,
+                "incoming_axis_median": -16.5978,
+                "tolerance_m": 24.778
+              },
+              {
+                "cell": [
+                  26,
+                  20
+                ],
+                "existing_count": 268,
+                "incoming_count": 7,
+                "median_gap_m": 29.5839,
+                "existing_axis_median": 17.2026,
+                "incoming_axis_median": -12.3813,
+                "tolerance_m": 19.9231
+              },
+              {
+                "cell": [
+                  21,
+                  33
+                ],
+                "existing_count": 154,
+                "incoming_count": 6,
+                "median_gap_m": 25.4417,
+                "existing_axis_median": 27.3467,
+                "incoming_axis_median": 1.905,
+                "tolerance_m": 21.6558
+              },
+              {
+                "cell": [
+                  15,
+                  51
+                ],
+                "existing_count": 11,
+                "incoming_count": 11,
+                "median_gap_m": 24.214,
+                "existing_axis_median": 6.6344,
+                "incoming_axis_median": -17.5796,
+                "tolerance_m": 12.2411
+              },
+              {
+                "cell": [
+                  24,
+                  29
+                ],
+                "existing_count": 14,
+                "incoming_count": 50,
+                "median_gap_m": 23.55,
+                "existing_axis_median": 6.9458,
+                "incoming_axis_median": -16.6042,
+                "tolerance_m": 22.4204
+              },
+              {
+                "cell": [
+                  26,
+                  21
+                ],
+                "existing_count": 392,
+                "incoming_count": 78,
+                "median_gap_m": 20.8843,
+                "existing_axis_median": 14.1733,
+                "incoming_axis_median": -6.711,
+                "tolerance_m": 16.9628
+              },
+              {
+                "cell": [
+                  26,
+                  26
+                ],
+                "existing_count": 7,
+                "incoming_count": 6,
+                "median_gap_m": 7.6578,
+                "existing_axis_median": 7.8837,
+                "incoming_axis_median": 0.2259,
+                "tolerance_m": 6.6773
+              }
+            ]
+          }
+        },
+        "blocking_axis": "yz_x",
+        "max_flagged_overlap_cell_ratio": 0.2545,
+        "max_flagged_overlap_cell_count": 14,
+        "max_overlap_cell_count": 55
+      },
+      "surface_overlap_warning_score": 0.2545,
+      "gps_exif_residual": {
+        "status": "not_available",
+        "reason": "reducer inputs do not include raw EXIF/GPS priors in this local model format"
+      },
+      "decision": "reject",
+      "strict_decision": "reject",
+      "confidence": -161.6339
+    },
+    {
+      "leaf_a": 1,
+      "leaf_b": 2,
+      "alignment_direction": "leaf_02_to_leaf_01",
+      "shared_registered_images": 101,
+      "shared_image_sample": [
+        "DJI_00211.JPG",
+        "DJI_00212.JPG",
+        "DJI_00213.JPG",
+        "DJI_00232.JPG",
+        "DJI_00233.JPG",
+        "DJI_00234.JPG",
+        "DJI_00260.JPG",
+        "DJI_00261.JPG",
+        "DJI_00262.JPG",
+        "DJI_00301.JPG",
+        "DJI_00302.JPG",
+        "DJI_00408.JPG",
+        "DJI_00410.JPG",
+        "DJI_01324.JPG",
+        "DJI_01327.JPG",
+        "DJI_01341.JPG"
+      ],
+      "blockers": [],
+      "warnings": [
+        "duplicate_surface_overlap_suspect"
+      ],
+      "shared_camera_distribution": {
+        "source_leaf_b": {
+          "rank": 3,
+          "baseline_m": 9.917062,
+          "singular_values": [
+            23.852561,
+            11.362875,
+            2.919847
+          ],
+          "normalized_singular_values": [
+            1.0,
+            0.47638,
+            0.122412
+          ]
+        },
+        "target_leaf_a": {
+          "rank": 3,
+          "baseline_m": 10.162476,
+          "singular_values": [
+            23.416372,
+            11.153498,
+            2.86647
+          ],
+          "normalized_singular_values": [
+            1.0,
+            0.476312,
+            0.122413
+          ]
+        },
+        "rank": 3
+      },
+      "sim3": {
+        "scale": 0.98168761,
+        "rotation": [
+          [
+            0.4628706837,
+            0.1540097973,
+            -0.872944278
+          ],
+          [
+            -0.2308418564,
+            0.9717546225,
+            0.0490407069
+          ],
+          [
+            0.8558403867,
+            0.1788125721,
+            0.4853486341
+          ]
+        ],
+        "translation": [
+          3.494889,
+          -0.399381,
+          2.012877
+        ]
+      },
+      "scale_delta": 0.01831239,
+      "sim3_residual_m": {
+        "count": 101,
+        "min": 0.000144,
+        "p50": 0.000703,
+        "p95": 0.001681,
+        "max": 0.004247
+      },
+      "baseline_normalized_residual": 0.00016541,
+      "heldout_shared_camera_residual": {
+        "status": "pass",
+        "heldout_count": 21,
+        "train_count": 80,
+        "residual_m": {
+          "count": 21,
+          "min": 0.000188,
+          "p50": 0.000845,
+          "p95": 0.001671,
+          "max": 0.002157
+        }
+      },
+      "pre_overlap_surface_stats": {
+        "axis_reports": {
+          "xy_z": {
+            "overlap_cell_count": 116,
+            "flagged_overlap_cell_count": 69,
+            "flagged_overlap_cell_ratio": 0.5948,
+            "median_abs_gap_m": 5.204,
+            "p95_abs_gap_m": 12.8066,
+            "max_abs_gap_m": 16.7294,
+            "cell_size_m": 2.6694,
+            "examples": [
+              {
+                "cell": [
+                  39,
+                  20
+                ],
+                "existing_count": 14,
+                "incoming_count": 7,
+                "median_gap_m": 16.7294,
+                "existing_axis_median": 54.8806,
+                "incoming_axis_median": 71.61,
+                "tolerance_m": 2.5105
+              },
+              {
+                "cell": [
+                  36,
+                  25
+                ],
+                "existing_count": 33,
+                "incoming_count": 6,
+                "median_gap_m": 15.2084,
+                "existing_axis_median": 7.8993,
+                "incoming_axis_median": 23.1077,
+                "tolerance_m": 3.1843
+              },
+              {
+                "cell": [
+                  41,
+                  22
+                ],
+                "existing_count": 13,
+                "incoming_count": 9,
+                "median_gap_m": 13.6475,
+                "existing_axis_median": 36.348,
+                "incoming_axis_median": 49.9956,
+                "tolerance_m": 3.3216
+              },
+              {
+                "cell": [
+                  35,
+                  24
+                ],
+                "existing_count": 31,
+                "incoming_count": 10,
+                "median_gap_m": 12.9671,
+                "existing_axis_median": 19.5646,
+                "incoming_axis_median": 32.5317,
+                "tolerance_m": 2.6568
+              },
+              {
+                "cell": [
+                  43,
+                  21
+                ],
+                "existing_count": 12,
+                "incoming_count": 14,
+                "median_gap_m": 12.8748,
+                "existing_axis_median": 45.2204,
+                "incoming_axis_median": 58.0952,
+                "tolerance_m": 2.87
+              },
+              {
+                "cell": [
+                  44,
+                  21
+                ],
+                "existing_count": 15,
+                "incoming_count": 7,
+                "median_gap_m": 12.8066,
+                "existing_axis_median": 45.2674,
+                "incoming_axis_median": 58.0741,
+                "tolerance_m": 2.8396
+              },
+              {
+                "cell": [
+                  36,
+                  24
+                ],
+                "existing_count": 40,
+                "incoming_count": 10,
+                "median_gap_m": 12.3733,
+                "existing_axis_median": 20.5058,
+                "incoming_axis_median": 32.8791,
+                "tolerance_m": 3.5242
+              },
+              {
+                "cell": [
+                  45,
+                  21
+                ],
+                "existing_count": 23,
+                "incoming_count": 12,
+                "median_gap_m": 12.2387,
+                "existing_axis_median": 46.559,
+                "incoming_axis_median": 58.7977,
+                "tolerance_m": 4.6758
+              },
+              {
+                "cell": [
+                  40,
+                  22
+                ],
+                "existing_count": 25,
+                "incoming_count": 7,
+                "median_gap_m": 12.0476,
+                "existing_axis_median": 37.3297,
+                "incoming_axis_median": 49.3772,
+                "tolerance_m": 2.652
+              },
+              {
+                "cell": [
+                  40,
+                  23
+                ],
+                "existing_count": 58,
+                "incoming_count": 41,
+                "median_gap_m": 11.8316,
+                "existing_axis_median": 29.1348,
+                "incoming_axis_median": 40.9665,
+                "tolerance_m": 3.2082
+              },
+              {
+                "cell": [
+                  43,
+                  23
+                ],
+                "existing_count": 87,
+                "incoming_count": 33,
+                "median_gap_m": 11.8066,
+                "existing_axis_median": 30.8817,
+                "incoming_axis_median": 42.6883,
+                "tolerance_m": 3.5634
+              },
+              {
+                "cell": [
+                  36,
+                  23
+                ],
+                "existing_count": 36,
+                "incoming_count": 9,
+                "median_gap_m": 11.487,
+                "existing_axis_median": 26.241,
+                "incoming_axis_median": 37.728,
+                "tolerance_m": 3.7586
+              },
+              {
+                "cell": [
+                  39,
+                  23
+                ],
+                "existing_count": 49,
+                "incoming_count": 16,
+                "median_gap_m": 11.4128,
+                "existing_axis_median": 27.9159,
+                "incoming_axis_median": 39.3287,
+                "tolerance_m": 3.1255
+              },
+              {
+                "cell": [
+                  37,
+                  23
+                ],
+                "existing_count": 46,
+                "incoming_count": 16,
+                "median_gap_m": 11.1439,
+                "existing_axis_median": 26.8332,
+                "incoming_axis_median": 37.9771,
+                "tolerance_m": 2.814
+              },
+              {
+                "cell": [
+                  38,
+                  23
+                ],
+                "existing_count": 48,
+                "incoming_count": 22,
+                "median_gap_m": 11.1327,
+                "existing_axis_median": 27.8684,
+                "incoming_axis_median": 39.0011,
+                "tolerance_m": 3.1615
+              },
+              {
+                "cell": [
+                  42,
+                  23
+                ],
+                "existing_count": 77,
+                "incoming_count": 13,
+                "median_gap_m": 10.6753,
+                "existing_axis_median": 29.7569,
+                "incoming_axis_median": 40.4322,
+                "tolerance_m": 3.5747
+              },
+              {
+                "cell": [
+                  51,
+                  21
+                ],
+                "existing_count": 8,
+                "incoming_count": 8,
+                "median_gap_m": 10.5971,
+                "existing_axis_median": 49.3473,
+                "incoming_axis_median": 59.9444,
+                "tolerance_m": 3.5073
+              },
+              {
+                "cell": [
+                  39,
+                  24
+                ],
+                "existing_count": 114,
+                "incoming_count": 25,
+                "median_gap_m": 10.5795,
+                "existing_axis_median": 19.1056,
+                "incoming_axis_median": 29.685,
+                "tolerance_m": 3.3511
+              },
+              {
+                "cell": [
+                  40,
+                  24
+                ],
+                "existing_count": 126,
+                "incoming_count": 53,
+                "median_gap_m": 10.4375,
+                "existing_axis_median": 19.3025,
+                "incoming_axis_median": 29.74,
+                "tolerance_m": 3.4044
+              },
+              {
+                "cell": [
+                  37,
+                  24
+                ],
+                "existing_count": 64,
+                "incoming_count": 24,
+                "median_gap_m": 10.3677,
+                "existing_axis_median": 19.6305,
+                "incoming_axis_median": 29.9982,
+                "tolerance_m": 3.4098
+              }
+            ]
+          },
+          "xz_y": {
+            "overlap_cell_count": 223,
+            "flagged_overlap_cell_count": 100,
+            "flagged_overlap_cell_ratio": 0.4484,
+            "median_abs_gap_m": 1.4467,
+            "p95_abs_gap_m": 3.4068,
+            "max_abs_gap_m": 4.1277,
+            "cell_size_m": 2.6694,
+            "examples": [
+              {
+                "cell": [
+                  40,
+                  18
+                ],
+                "existing_count": 6,
+                "incoming_count": 14,
+                "median_gap_m": 4.1277,
+                "existing_axis_median": -13.8993,
+                "incoming_axis_median": -9.7715,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  37,
+                  15
+                ],
+                "existing_count": 8,
+                "incoming_count": 10,
+                "median_gap_m": 3.9702,
+                "existing_axis_median": -11.76,
+                "incoming_axis_median": -7.7898,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  40,
+                  17
+                ],
+                "existing_count": 11,
+                "incoming_count": 6,
+                "median_gap_m": 3.8265,
+                "existing_axis_median": -12.93,
+                "incoming_axis_median": -9.1035,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  39,
+                  16
+                ],
+                "existing_count": 8,
+                "incoming_count": 8,
+                "median_gap_m": 3.7203,
+                "existing_axis_median": -12.1494,
+                "incoming_axis_median": -8.4292,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  41,
+                  17
+                ],
+                "existing_count": 6,
+                "incoming_count": 11,
+                "median_gap_m": 3.6885,
+                "existing_axis_median": -12.8555,
+                "incoming_axis_median": -9.167,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  40,
+                  16
+                ],
+                "existing_count": 7,
+                "incoming_count": 14,
+                "median_gap_m": 3.644,
+                "existing_axis_median": -12.1844,
+                "incoming_axis_median": -8.5404,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  38,
+                  16
+                ],
+                "existing_count": 9,
+                "incoming_count": 9,
+                "median_gap_m": 3.6406,
+                "existing_axis_median": -12.2384,
+                "incoming_axis_median": -8.5978,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  38,
+                  15
+                ],
+                "existing_count": 13,
+                "incoming_count": 9,
+                "median_gap_m": 3.6146,
+                "existing_axis_median": -11.5131,
+                "incoming_axis_median": -7.8985,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  42,
+                  19
+                ],
+                "existing_count": 9,
+                "incoming_count": 8,
+                "median_gap_m": 3.5501,
+                "existing_axis_median": -14.102,
+                "incoming_axis_median": -10.5519,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  37,
+                  12
+                ],
+                "existing_count": 17,
+                "incoming_count": 10,
+                "median_gap_m": 3.4975,
+                "existing_axis_median": -8.9133,
+                "incoming_axis_median": -5.4158,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  37,
+                  11
+                ],
+                "existing_count": 21,
+                "incoming_count": 9,
+                "median_gap_m": 3.422,
+                "existing_axis_median": -8.1562,
+                "incoming_axis_median": -4.7342,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  43,
+                  18
+                ],
+                "existing_count": 9,
+                "incoming_count": 17,
+                "median_gap_m": 3.4068,
+                "existing_axis_median": -13.165,
+                "incoming_axis_median": -9.7582,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  40,
+                  15
+                ],
+                "existing_count": 10,
+                "incoming_count": 10,
+                "median_gap_m": 3.3795,
+                "existing_axis_median": -11.0,
+                "incoming_axis_median": -7.6205,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  38,
+                  11
+                ],
+                "existing_count": 20,
+                "incoming_count": 7,
+                "median_gap_m": 3.3577,
+                "existing_axis_median": -8.1453,
+                "incoming_axis_median": -4.7876,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  40,
+                  14
+                ],
+                "existing_count": 10,
+                "incoming_count": 9,
+                "median_gap_m": 3.2722,
+                "existing_axis_median": -10.0552,
+                "incoming_axis_median": -6.783,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  45,
+                  18
+                ],
+                "existing_count": 14,
+                "incoming_count": 8,
+                "median_gap_m": 3.2345,
+                "existing_axis_median": -12.926,
+                "incoming_axis_median": -9.6915,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  41,
+                  13
+                ],
+                "existing_count": 29,
+                "incoming_count": 16,
+                "median_gap_m": 3.2185,
+                "existing_axis_median": -9.2536,
+                "incoming_axis_median": -6.035,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  43,
+                  16
+                ],
+                "existing_count": 13,
+                "incoming_count": 9,
+                "median_gap_m": 3.2185,
+                "existing_axis_median": -11.5294,
+                "incoming_axis_median": -8.3108,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  46,
+                  19
+                ],
+                "existing_count": 8,
+                "incoming_count": 6,
+                "median_gap_m": 3.1814,
+                "existing_axis_median": -13.607,
+                "incoming_axis_median": -10.4256,
+                "tolerance_m": 2.3673
+              },
+              {
+                "cell": [
+                  39,
+                  11
+                ],
+                "existing_count": 23,
+                "incoming_count": 26,
+                "median_gap_m": 3.1804,
+                "existing_axis_median": -7.7803,
+                "incoming_axis_median": -4.5999,
+                "tolerance_m": 2.5749
+              }
+            ]
+          },
+          "yz_x": {
+            "overlap_cell_count": 40,
+            "flagged_overlap_cell_count": 8,
+            "flagged_overlap_cell_ratio": 0.2,
+            "median_abs_gap_m": 3.5986,
+            "p95_abs_gap_m": 33.1718,
+            "max_abs_gap_m": 85.2511,
+            "cell_size_m": 2.5204,
+            "examples": [
+              {
+                "cell": [
+                  24,
+                  15
+                ],
+                "existing_count": 197,
+                "incoming_count": 6,
+                "median_gap_m": 85.2511,
+                "existing_axis_median": -4.2359,
+                "incoming_axis_median": 81.0152,
+                "tolerance_m": 36.0398
+              },
+              {
+                "cell": [
+                  26,
+                  8
+                ],
+                "existing_count": 1353,
+                "incoming_count": 8,
+                "median_gap_m": 53.1799,
+                "existing_axis_median": -7.5558,
+                "incoming_axis_median": 45.6242,
+                "tolerance_m": 25.8191
+              },
+              {
+                "cell": [
+                  23,
+                  20
+                ],
+                "existing_count": 40,
+                "incoming_count": 14,
+                "median_gap_m": 33.1718,
+                "existing_axis_median": 7.2502,
+                "incoming_axis_median": 40.4219,
+                "tolerance_m": 22.0017
+              },
+              {
+                "cell": [
+                  27,
+                  10
+                ],
+                "existing_count": 8,
+                "incoming_count": 37,
+                "median_gap_m": 32.102,
+                "existing_axis_median": 23.1744,
+                "incoming_axis_median": -8.9275,
+                "tolerance_m": 12.0014
+              },
+              {
+                "cell": [
+                  24,
+                  16
+                ],
+                "existing_count": 157,
+                "incoming_count": 9,
+                "median_gap_m": 28.7702,
+                "existing_axis_median": 4.5775,
+                "incoming_axis_median": 33.3477,
+                "tolerance_m": 15.5488
+              },
+              {
+                "cell": [
+                  27,
+                  3
+                ],
+                "existing_count": 89,
+                "incoming_count": 6,
+                "median_gap_m": 17.0325,
+                "existing_axis_median": -19.0784,
+                "incoming_axis_median": -2.0459,
+                "tolerance_m": 15.8838
+              },
+              {
+                "cell": [
+                  28,
+                  6
+                ],
+                "existing_count": 70,
+                "incoming_count": 695,
+                "median_gap_m": 13.775,
+                "existing_axis_median": 9.7254,
+                "incoming_axis_median": -4.0497,
+                "tolerance_m": 10.716
+              },
+              {
+                "cell": [
+                  28,
+                  0
+                ],
+                "existing_count": 10,
+                "incoming_count": 6,
+                "median_gap_m": 3.0747,
+                "existing_axis_median": 1.5795,
+                "incoming_axis_median": -1.4952,
+                "tolerance_m": 2.0642
+              }
+            ]
+          }
+        },
+        "blocking_axis": "xy_z",
+        "max_flagged_overlap_cell_ratio": 0.5948,
+        "max_flagged_overlap_cell_count": 69,
+        "max_overlap_cell_count": 116
+      },
+      "post_overlap_surface_stats": {
+        "axis_reports": {
+          "xy_z": {
+            "overlap_cell_count": 104,
+            "flagged_overlap_cell_count": 8,
+            "flagged_overlap_cell_ratio": 0.0769,
+            "median_abs_gap_m": 0.7539,
+            "p95_abs_gap_m": 3.9126,
+            "max_abs_gap_m": 8.7605,
+            "cell_size_m": 3.0766,
+            "examples": [
+              {
+                "cell": [
+                  51,
+                  24
+                ],
+                "existing_count": 11,
+                "incoming_count": 117,
+                "median_gap_m": 8.7605,
+                "existing_axis_median": 5.1052,
+                "incoming_axis_median": -3.6553,
+                "tolerance_m": 6.4459
+              },
+              {
+                "cell": [
+                  42,
+                  15
+                ],
+                "existing_count": 9,
+                "incoming_count": 6,
+                "median_gap_m": 4.8299,
+                "existing_axis_median": 73.1696,
+                "incoming_axis_median": 68.3398,
+                "tolerance_m": 4.5477
+              },
+              {
+                "cell": [
+                  44,
+                  21
+                ],
+                "existing_count": 59,
+                "incoming_count": 57,
+                "median_gap_m": 4.6428,
+                "existing_axis_median": 19.5267,
+                "incoming_axis_median": 14.8839,
+                "tolerance_m": 2.9647
+              },
+              {
+                "cell": [
+                  38,
+                  21
+                ],
+                "existing_count": 11,
+                "incoming_count": 29,
+                "median_gap_m": 4.1707,
+                "existing_axis_median": 8.8953,
+                "incoming_axis_median": 13.066,
+                "tolerance_m": 3.3274
+              },
+              {
+                "cell": [
+                  49,
+                  18
+                ],
+                "existing_count": 34,
+                "incoming_count": 6,
+                "median_gap_m": 3.9126,
+                "existing_axis_median": 46.3201,
+                "incoming_axis_median": 50.2328,
+                "tolerance_m": 3.8506
+              },
+              {
+                "cell": [
+                  37,
+                  19
+                ],
+                "existing_count": 10,
+                "incoming_count": 19,
+                "median_gap_m": 3.4407,
+                "existing_axis_median": 30.9515,
+                "incoming_axis_median": 27.5108,
+                "tolerance_m": 3.2056
+              },
+              {
+                "cell": [
+                  44,
+                  19
+                ],
+                "existing_count": 10,
+                "incoming_count": 9,
+                "median_gap_m": 3.358,
+                "existing_axis_median": 36.2179,
+                "incoming_axis_median": 32.8599,
+                "tolerance_m": 3.1902
+              },
+              {
+                "cell": [
+                  41,
+                  19
+                ],
+                "existing_count": 16,
+                "incoming_count": 10,
+                "median_gap_m": 3.3004,
+                "existing_axis_median": 34.5924,
+                "incoming_axis_median": 31.2921,
+                "tolerance_m": 2.8761
+              }
+            ]
+          },
+          "xz_y": {
+            "overlap_cell_count": 175,
+            "flagged_overlap_cell_count": 0,
+            "flagged_overlap_cell_ratio": 0.0,
+            "median_abs_gap_m": 0.0684,
+            "p95_abs_gap_m": 0.286,
+            "max_abs_gap_m": 0.6445,
+            "cell_size_m": 3.0766,
+            "examples": []
+          },
+          "yz_x": {
+            "overlap_cell_count": 54,
+            "flagged_overlap_cell_count": 1,
+            "flagged_overlap_cell_ratio": 0.0185,
+            "median_abs_gap_m": 4.1774,
+            "p95_abs_gap_m": 14.4659,
+            "max_abs_gap_m": 22.0415,
+            "cell_size_m": 2.8587,
+            "examples": [
+              {
+                "cell": [
+                  18,
+                  31
+                ],
+                "existing_count": 22,
+                "incoming_count": 9,
+                "median_gap_m": 17.7525,
+                "existing_axis_median": -9.4385,
+                "incoming_axis_median": -27.191,
+                "tolerance_m": 15.6169
+              }
+            ]
+          }
+        },
+        "blocking_axis": "xy_z",
+        "max_flagged_overlap_cell_ratio": 0.0769,
+        "max_flagged_overlap_cell_count": 8,
+        "max_overlap_cell_count": 104
+      },
+      "surface_overlap_warning_score": 0.0769,
+      "gps_exif_residual": {
+        "status": "not_available",
+        "reason": "reducer inputs do not include raw EXIF/GPS priors in this local model format"
+      },
+      "decision": "accept",
+      "strict_decision": "accept",
+      "confidence": 147.391374
+    }
+  ],
+  "accepted_merge_tree": [
+    {
+      "leaf_a": 1,
+      "leaf_b": 2,
+      "confidence": 147.391374,
+      "shared_registered_images": 101,
+      "strict_decision": "accept",
+      "blockers": []
+    }
+  ],
+  "rejected_edges": [
+    {
+      "leaf_a": 0,
+      "leaf_b": 1,
+      "alignment_direction": "leaf_01_to_leaf_00",
+      "shared_registered_images": 178,
+      "shared_image_sample": [
+        "DJI_00204.JPG",
+        "DJI_00205.JPG",
+        "DJI_00206.JPG",
+        "DJI_00207.JPG",
+        "DJI_00208.JPG",
+        "DJI_00209.JPG",
+        "DJI_00215.JPG",
+        "DJI_00216.JPG",
+        "DJI_00217.JPG",
+        "DJI_00218.JPG",
+        "DJI_00219.JPG",
+        "DJI_00220.JPG",
+        "DJI_00221.JPG",
+        "DJI_00222.JPG",
+        "DJI_00223.JPG",
+        "DJI_00224.JPG"
+      ],
+      "blockers": [
+        "scale_delta_exceeds_gate"
+      ],
+      "warnings": [
+        "duplicate_surface_overlap_suspect"
+      ],
+      "shared_camera_distribution": {
+        "source_leaf_b": {
+          "rank": 3,
+          "baseline_m": 17.311152,
+          "singular_values": [
+            47.487011,
+            18.834909,
+            6.613232
+          ],
+          "normalized_singular_values": [
+            1.0,
+            0.396633,
+            0.139264
+          ]
+        },
+        "target_leaf_a": {
+          "rank": 3,
+          "baseline_m": 14.45195,
+          "singular_values": [
+            39.832754,
+            15.793122,
+            5.545648
+          ],
+          "normalized_singular_values": [
+            1.0,
+            0.396486,
+            0.139223
+          ]
+        },
+        "rank": 3
+      },
+      "sim3": {
+        "scale": 0.83876745,
+        "rotation": [
+          [
+            0.9879735907,
+            0.0446656334,
+            0.1480309602
+          ],
+          [
+            -0.0403406446,
+            0.9986704522,
+            -0.0320929944
+          ],
+          [
+            -0.1492675999,
+            0.0257353665,
+            0.9884618731
+          ]
+        ],
+        "translation": [
+          2.354203,
+          0.757123,
+          -1.566787
+        ]
+      },
+      "scale_delta": 0.16123255,
+      "sim3_residual_m": {
+        "count": 178,
+        "min": 0.000552,
+        "p50": 0.002008,
+        "p95": 0.007982,
+        "max": 0.023096
+      },
+      "baseline_normalized_residual": 0.00055231,
+      "heldout_shared_camera_residual": {
+        "status": "pass",
+        "heldout_count": 36,
+        "train_count": 142,
+        "residual_m": {
+          "count": 36,
+          "min": 0.000575,
+          "p50": 0.002211,
+          "p95": 0.006974,
+          "max": 0.010325
+        }
+      },
+      "pre_overlap_surface_stats": {
+        "axis_reports": {
+          "xy_z": {
+            "overlap_cell_count": 69,
+            "flagged_overlap_cell_count": 27,
+            "flagged_overlap_cell_ratio": 0.3913,
+            "median_abs_gap_m": 4.4508,
+            "p95_abs_gap_m": 12.4043,
+            "max_abs_gap_m": 14.2133,
+            "cell_size_m": 3.709,
+            "examples": [
+              {
+                "cell": [
+                  37,
+                  15
+                ],
+                "existing_count": 18,
+                "incoming_count": 10,
+                "median_gap_m": 14.2133,
+                "existing_axis_median": 40.6562,
+                "incoming_axis_median": 54.8695,
+                "tolerance_m": 3.3146
+              },
+              {
+                "cell": [
+                  35,
+                  20
+                ],
+                "existing_count": 885,
+                "incoming_count": 10,
+                "median_gap_m": 14.0211,
+                "existing_axis_median": -3.4473,
+                "incoming_axis_median": 10.5738,
+                "tolerance_m": 11.1015
+              },
+              {
+                "cell": [
+                  38,
+                  15
+                ],
+                "existing_count": 17,
+                "incoming_count": 7,
+                "median_gap_m": 12.6107,
+                "existing_axis_median": 40.478,
+                "incoming_axis_median": 53.0887,
+                "tolerance_m": 3.3371
+              },
+              {
+                "cell": [
+                  40,
+                  17
+                ],
+                "existing_count": 118,
+                "incoming_count": 6,
+                "median_gap_m": 12.4043,
+                "existing_axis_median": 20.8921,
+                "incoming_axis_median": 33.2963,
+                "tolerance_m": 5.4523
+              },
+              {
+                "cell": [
+                  39,
+                  17
+                ],
+                "existing_count": 149,
+                "incoming_count": 13,
+                "median_gap_m": 11.5763,
+                "existing_axis_median": 20.0525,
+                "incoming_axis_median": 31.6287,
+                "tolerance_m": 4.348
+              },
+              {
+                "cell": [
+                  35,
+                  14
+                ],
+                "existing_count": 9,
+                "incoming_count": 7,
+                "median_gap_m": 11.4067,
+                "existing_axis_median": 52.3573,
+                "incoming_axis_median": 63.764,
+                "tolerance_m": 3.0578
+              },
+              {
+                "cell": [
+                  39,
+                  18
+                ],
+                "existing_count": 533,
+                "incoming_count": 7,
+                "median_gap_m": 10.7664,
+                "existing_axis_median": 10.0957,
+                "incoming_axis_median": 20.8621,
+                "tolerance_m": 4.2354
+              },
+              {
+                "cell": [
+                  34,
+                  20
+                ],
+                "existing_count": 2046,
+                "incoming_count": 18,
+                "median_gap_m": 10.3032,
+                "existing_axis_median": -2.6226,
+                "incoming_axis_median": 7.6807,
+                "tolerance_m": 7.5372
+              },
+              {
+                "cell": [
+                  34,
+                  14
+                ],
+                "existing_count": 8,
+                "incoming_count": 12,
+                "median_gap_m": 9.9428,
+                "existing_axis_median": 52.4447,
+                "incoming_axis_median": 62.3875,
+                "tolerance_m": 3.8399
+              },
+              {
+                "cell": [
+                  36,
+                  15
+                ],
+                "existing_count": 14,
+                "incoming_count": 24,
+                "median_gap_m": 8.8685,
+                "existing_axis_median": 41.0715,
+                "incoming_axis_median": 49.94,
+                "tolerance_m": 3.6955
+              },
+              {
+                "cell": [
+                  34,
+                  13
+                ],
+                "existing_count": 7,
+                "incoming_count": 8,
+                "median_gap_m": 8.5027,
+                "existing_axis_median": 62.4632,
+                "incoming_axis_median": 70.9659,
+                "tolerance_m": 1.9759
+              },
+              {
+                "cell": [
+                  36,
+                  14
+                ],
+                "existing_count": 8,
+                "incoming_count": 10,
+                "median_gap_m": 8.3123,
+                "existing_axis_median": 52.6598,
+                "incoming_axis_median": 60.9721,
+                "tolerance_m": 3.0982
+              },
+              {
+                "cell": [
+                  37,
+                  16
+                ],
+                "existing_count": 56,
+                "incoming_count": 43,
+                "median_gap_m": 8.1632,
+                "existing_axis_median": 31.4322,
+                "incoming_axis_median": 39.5953,
+                "tolerance_m": 6.1835
+              },
+              {
+                "cell": [
+                  38,
+                  17
+                ],
+                "existing_count": 192,
+                "incoming_count": 49,
+                "median_gap_m": 7.4391,
+                "existing_axis_median": 21.965,
+                "incoming_axis_median": 29.4041,
+                "tolerance_m": 3.7628
+              },
+              {
+                "cell": [
+                  37,
+                  17
+                ],
+                "existing_count": 234,
+                "incoming_count": 83,
+                "median_gap_m": 7.2635,
+                "existing_axis_median": 21.2302,
+                "incoming_axis_median": 28.4937,
+                "tolerance_m": 5.7248
+              },
+              {
+                "cell": [
+                  38,
+                  16
+                ],
+                "existing_count": 66,
+                "incoming_count": 33,
+                "median_gap_m": 7.1531,
+                "existing_axis_median": 32.4075,
+                "incoming_axis_median": 39.5606,
+                "tolerance_m": 4.887
+              },
+              {
+                "cell": [
+                  37,
+                  18
+                ],
+                "existing_count": 1346,
+                "incoming_count": 197,
+                "median_gap_m": 7.0432,
+                "existing_axis_median": 10.4364,
+                "incoming_axis_median": 17.4796,
+                "tolerance_m": 6.7779
+              },
+              {
+                "cell": [
+                  37,
+                  14
+                ],
+                "existing_count": 15,
+                "incoming_count": 11,
+                "median_gap_m": 6.9,
+                "existing_axis_median": 53.72,
+                "incoming_axis_median": 60.6201,
+                "tolerance_m": 3.1645
+              },
+              {
+                "cell": [
+                  39,
+                  16
+                ],
+                "existing_count": 40,
+                "incoming_count": 11,
+                "median_gap_m": 6.8377,
+                "existing_axis_median": 31.1353,
+                "incoming_axis_median": 37.973,
+                "tolerance_m": 3.7228
+              },
+              {
+                "cell": [
+                  26,
+                  17
+                ],
+                "existing_count": 12,
+                "incoming_count": 95,
+                "median_gap_m": 6.5414,
+                "existing_axis_median": 27.3275,
+                "incoming_axis_median": 20.7861,
+                "tolerance_m": 4.2593
+              }
+            ]
+          },
+          "xz_y": {
+            "overlap_cell_count": 106,
+            "flagged_overlap_cell_count": 15,
+            "flagged_overlap_cell_ratio": 0.1415,
+            "median_abs_gap_m": 1.0162,
+            "p95_abs_gap_m": 2.8291,
+            "max_abs_gap_m": 3.4929,
+            "cell_size_m": 3.709,
+            "examples": [
+              {
+                "cell": [
+                  40,
+                  21
+                ],
+                "existing_count": 37,
+                "incoming_count": 6,
+                "median_gap_m": 3.4929,
+                "existing_axis_median": -7.0162,
+                "incoming_axis_median": -3.5233,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  39,
+                  25
+                ],
+                "existing_count": 6,
+                "incoming_count": 11,
+                "median_gap_m": 3.3796,
+                "existing_axis_median": -12.0465,
+                "incoming_axis_median": -8.6669,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  38,
+                  26
+                ],
+                "existing_count": 8,
+                "incoming_count": 9,
+                "median_gap_m": 2.97,
+                "existing_axis_median": -13.1908,
+                "incoming_axis_median": -10.2208,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  37,
+                  25
+                ],
+                "existing_count": 9,
+                "incoming_count": 19,
+                "median_gap_m": 2.9081,
+                "existing_axis_median": -12.2044,
+                "incoming_axis_median": -9.2964,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  37,
+                  26
+                ],
+                "existing_count": 11,
+                "incoming_count": 13,
+                "median_gap_m": 2.8291,
+                "existing_axis_median": -13.2808,
+                "incoming_axis_median": -10.4517,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  37,
+                  24
+                ],
+                "existing_count": 19,
+                "incoming_count": 18,
+                "median_gap_m": 2.7554,
+                "existing_axis_median": -10.6498,
+                "incoming_axis_median": -7.8944,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  38,
+                  22
+                ],
+                "existing_count": 30,
+                "incoming_count": 21,
+                "median_gap_m": 2.7064,
+                "existing_axis_median": -7.9159,
+                "incoming_axis_median": -5.2095,
+                "tolerance_m": 2.6135
+              },
+              {
+                "cell": [
+                  35,
+                  29
+                ],
+                "existing_count": 7,
+                "incoming_count": 8,
+                "median_gap_m": 2.6821,
+                "existing_axis_median": -17.4087,
+                "incoming_axis_median": -14.7265,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  38,
+                  23
+                ],
+                "existing_count": 26,
+                "incoming_count": 17,
+                "median_gap_m": 2.6477,
+                "existing_axis_median": -9.3621,
+                "incoming_axis_median": -6.7144,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  36,
+                  25
+                ],
+                "existing_count": 11,
+                "incoming_count": 22,
+                "median_gap_m": 2.5567,
+                "existing_axis_median": -12.0149,
+                "incoming_axis_median": -9.4582,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  37,
+                  23
+                ],
+                "existing_count": 17,
+                "incoming_count": 27,
+                "median_gap_m": 2.4494,
+                "existing_axis_median": -9.4298,
+                "incoming_axis_median": -6.9804,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  38,
+                  24
+                ],
+                "existing_count": 27,
+                "incoming_count": 12,
+                "median_gap_m": 2.4091,
+                "existing_axis_median": -10.5071,
+                "incoming_axis_median": -8.098,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  38,
+                  19
+                ],
+                "existing_count": 84,
+                "incoming_count": 6,
+                "median_gap_m": 2.2508,
+                "existing_axis_median": -4.1018,
+                "incoming_axis_median": -1.851,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  35,
+                  25
+                ],
+                "existing_count": 15,
+                "incoming_count": 35,
+                "median_gap_m": 2.1668,
+                "existing_axis_median": -11.6965,
+                "incoming_axis_median": -9.5298,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  37,
+                  20
+                ],
+                "existing_count": 125,
+                "incoming_count": 81,
+                "median_gap_m": 2.0085,
+                "existing_axis_median": -5.234,
+                "incoming_axis_median": -3.2255,
+                "tolerance_m": 1.9238
+              }
+            ]
+          },
+          "yz_x": {
+            "overlap_cell_count": 49,
+            "flagged_overlap_cell_count": 25,
+            "flagged_overlap_cell_ratio": 0.5102,
+            "median_abs_gap_m": 31.7978,
+            "p95_abs_gap_m": 128.6808,
+            "max_abs_gap_m": 138.5123,
+            "cell_size_m": 3.1757,
+            "examples": [
+              {
+                "cell": [
+                  15,
+                  36
+                ],
+                "existing_count": 12,
+                "incoming_count": 10,
+                "median_gap_m": 138.5123,
+                "existing_axis_median": 79.5157,
+                "incoming_axis_median": -58.9966,
+                "tolerance_m": 11.4493
+              },
+              {
+                "cell": [
+                  19,
+                  24
+                ],
+                "existing_count": 28,
+                "incoming_count": 10,
+                "median_gap_m": 131.7534,
+                "existing_axis_median": 85.2465,
+                "incoming_axis_median": -46.507,
+                "tolerance_m": 29.7636
+              },
+              {
+                "cell": [
+                  18,
+                  27
+                ],
+                "existing_count": 30,
+                "incoming_count": 11,
+                "median_gap_m": 128.6808,
+                "existing_axis_median": 82.4996,
+                "incoming_axis_median": -46.1812,
+                "tolerance_m": 26.5999
+              },
+              {
+                "cell": [
+                  17,
+                  30
+                ],
+                "existing_count": 23,
+                "incoming_count": 19,
+                "median_gap_m": 127.9052,
+                "existing_axis_median": 80.7259,
+                "incoming_axis_median": -47.1793,
+                "tolerance_m": 16.4524
+              },
+              {
+                "cell": [
+                  12,
+                  45
+                ],
+                "existing_count": 6,
+                "incoming_count": 6,
+                "median_gap_m": 107.5764,
+                "existing_axis_median": 55.0861,
+                "incoming_axis_median": -52.4903,
+                "tolerance_m": 10.4862
+              },
+              {
+                "cell": [
+                  19,
+                  25
+                ],
+                "existing_count": 46,
+                "incoming_count": 45,
+                "median_gap_m": 96.9472,
+                "existing_axis_median": 65.9353,
+                "incoming_axis_median": -31.0119,
+                "tolerance_m": 24.5371
+              },
+              {
+                "cell": [
+                  14,
+                  39
+                ],
+                "existing_count": 7,
+                "incoming_count": 10,
+                "median_gap_m": 96.9471,
+                "existing_axis_median": 35.459,
+                "incoming_axis_median": -61.4881,
+                "tolerance_m": 23.3679
+              },
+              {
+                "cell": [
+                  21,
+                  19
+                ],
+                "existing_count": 62,
+                "incoming_count": 53,
+                "median_gap_m": 92.8641,
+                "existing_axis_median": 62.7341,
+                "incoming_axis_median": -30.13,
+                "tolerance_m": 30.9984
+              },
+              {
+                "cell": [
+                  18,
+                  28
+                ],
+                "existing_count": 59,
+                "incoming_count": 41,
+                "median_gap_m": 90.4634,
+                "existing_axis_median": 51.2595,
+                "incoming_axis_median": -39.2039,
+                "tolerance_m": 29.3109
+              },
+              {
+                "cell": [
+                  20,
+                  22
+                ],
+                "existing_count": 36,
+                "incoming_count": 55,
+                "median_gap_m": 86.5065,
+                "existing_axis_median": 58.3178,
+                "incoming_axis_median": -28.1887,
+                "tolerance_m": 29.8657
+              },
+              {
+                "cell": [
+                  17,
+                  31
+                ],
+                "existing_count": 42,
+                "incoming_count": 31,
+                "median_gap_m": 85.7192,
+                "existing_axis_median": 46.2628,
+                "incoming_axis_median": -39.4564,
+                "tolerance_m": 24.8456
+              },
+              {
+                "cell": [
+                  11,
+                  48
+                ],
+                "existing_count": 6,
+                "incoming_count": 7,
+                "median_gap_m": 83.294,
+                "existing_axis_median": 47.2784,
+                "incoming_axis_median": -36.0156,
+                "tolerance_m": 14.6604
+              },
+              {
+                "cell": [
+                  13,
+                  43
+                ],
+                "existing_count": 6,
+                "incoming_count": 6,
+                "median_gap_m": 77.4564,
+                "existing_axis_median": 53.659,
+                "incoming_axis_median": -23.7975,
+                "tolerance_m": 22.4521
+              },
+              {
+                "cell": [
+                  14,
+                  40
+                ],
+                "existing_count": 16,
+                "incoming_count": 12,
+                "median_gap_m": 66.0642,
+                "existing_axis_median": 22.5197,
+                "incoming_axis_median": -43.5446,
+                "tolerance_m": 27.7113
+              },
+              {
+                "cell": [
+                  15,
+                  37
+                ],
+                "existing_count": 18,
+                "incoming_count": 7,
+                "median_gap_m": 61.5256,
+                "existing_axis_median": 17.5,
+                "incoming_axis_median": -44.0256,
+                "tolerance_m": 29.3217
+              },
+              {
+                "cell": [
+                  15,
+                  38
+                ],
+                "existing_count": 12,
+                "incoming_count": 13,
+                "median_gap_m": 58.7017,
+                "existing_axis_median": 12.8238,
+                "incoming_axis_median": -45.8779,
+                "tolerance_m": 29.9039
+              },
+              {
+                "cell": [
+                  16,
+                  34
+                ],
+                "existing_count": 30,
+                "incoming_count": 14,
+                "median_gap_m": 57.2964,
+                "existing_axis_median": 16.146,
+                "incoming_axis_median": -41.1505,
+                "tolerance_m": 27.6407
+              },
+              {
+                "cell": [
+                  17,
+                  32
+                ],
+                "existing_count": 57,
+                "incoming_count": 45,
+                "median_gap_m": 55.1754,
+                "existing_axis_median": 28.409,
+                "incoming_axis_median": -26.7664,
+                "tolerance_m": 40.1912
+              },
+              {
+                "cell": [
+                  16,
+                  35
+                ],
+                "existing_count": 32,
+                "incoming_count": 17,
+                "median_gap_m": 53.3134,
+                "existing_axis_median": 13.0774,
+                "incoming_axis_median": -40.2359,
+                "tolerance_m": 40.5728
+              },
+              {
+                "cell": [
+                  18,
+                  29
+                ],
+                "existing_count": 106,
+                "incoming_count": 78,
+                "median_gap_m": 48.8527,
+                "existing_axis_median": 17.7311,
+                "incoming_axis_median": -31.1216,
+                "tolerance_m": 40.3371
+              }
+            ]
+          }
+        },
+        "blocking_axis": "yz_x",
+        "max_flagged_overlap_cell_ratio": 0.5102,
+        "max_flagged_overlap_cell_count": 25,
+        "max_overlap_cell_count": 49
+      },
+      "post_overlap_surface_stats": {
+        "axis_reports": {
+          "xy_z": {
+            "overlap_cell_count": 86,
+            "flagged_overlap_cell_count": 2,
+            "flagged_overlap_cell_ratio": 0.0233,
+            "median_abs_gap_m": 0.5547,
+            "p95_abs_gap_m": 3.0057,
+            "max_abs_gap_m": 8.0672,
+            "cell_size_m": 3.3711,
+            "examples": [
+              {
+                "cell": [
+                  30,
+                  12
+                ],
+                "existing_count": 7,
+                "incoming_count": 6,
+                "median_gap_m": 3.0928,
+                "existing_axis_median": 60.0039,
+                "incoming_axis_median": 56.9111,
+                "tolerance_m": 2.9964
+              },
+              {
+                "cell": [
+                  29,
+                  12
+                ],
+                "existing_count": 6,
+                "incoming_count": 9,
+                "median_gap_m": 3.0057,
+                "existing_axis_median": 58.5088,
+                "incoming_axis_median": 55.5031,
+                "tolerance_m": 2.6265
+              }
+            ]
+          },
+          "xz_y": {
+            "overlap_cell_count": 135,
+            "flagged_overlap_cell_count": 0,
+            "flagged_overlap_cell_ratio": 0.0,
+            "median_abs_gap_m": 0.0926,
+            "p95_abs_gap_m": 0.3556,
+            "max_abs_gap_m": 0.5609,
+            "cell_size_m": 3.3711,
+            "examples": []
+          },
+          "yz_x": {
+            "overlap_cell_count": 46,
+            "flagged_overlap_cell_count": 3,
+            "flagged_overlap_cell_ratio": 0.0652,
+            "median_abs_gap_m": 8.1825,
+            "p95_abs_gap_m": 29.7248,
+            "max_abs_gap_m": 53.5308,
+            "cell_size_m": 2.8483,
+            "examples": [
+              {
+                "cell": [
+                  11,
+                  48
+                ],
+                "existing_count": 6,
+                "incoming_count": 13,
+                "median_gap_m": 53.5308,
+                "existing_axis_median": 53.659,
+                "incoming_axis_median": 0.1282,
+                "tolerance_m": 24.2289
+              },
+              {
+                "cell": [
+                  14,
+                  39
+                ],
+                "existing_count": 17,
+                "incoming_count": 11,
+                "median_gap_m": 35.3356,
+                "existing_axis_median": 46.8117,
+                "incoming_axis_median": 11.4761,
+                "tolerance_m": 27.5091
+              },
+              {
+                "cell": [
+                  15,
+                  36
+                ],
+                "existing_count": 24,
+                "incoming_count": 7,
+                "median_gap_m": 26.8473,
+                "existing_axis_median": 49.951,
+                "incoming_axis_median": 23.1037,
+                "tolerance_m": 25.1811
+              }
+            ]
+          }
+        },
+        "blocking_axis": "yz_x",
+        "max_flagged_overlap_cell_ratio": 0.0652,
+        "max_flagged_overlap_cell_count": 3,
+        "max_overlap_cell_count": 46
+      },
+      "surface_overlap_warning_score": 0.0652,
+      "gps_exif_residual": {
+        "status": "not_available",
+        "reason": "reducer inputs do not include raw EXIF/GPS priors in this local model format"
+      },
+      "decision": "reject",
+      "strict_decision": "reject",
+      "confidence": 114.62682
+    },
+    {
+      "leaf_a": 0,
+      "leaf_b": 2,
+      "alignment_direction": "leaf_02_to_leaf_00",
+      "shared_registered_images": 5,
+      "shared_image_sample": [
+        "DJI_00301.JPG",
+        "DJI_01450.JPG",
+        "DJI_01451.JPG",
+        "DJI_01452.JPG",
+        "DJI_01453.JPG"
+      ],
+      "blockers": [
+        "weak_shared_camera_count",
+        "scale_delta_exceeds_gate"
+      ],
+      "warnings": [
+        "duplicate_surface_overlap_suspect"
+      ],
+      "shared_camera_distribution": {
+        "source_leaf_b": {
+          "rank": 3,
+          "baseline_m": 1.90854,
+          "singular_values": [
+            1.622526,
+            0.228892,
+            0.011058
+          ],
+          "normalized_singular_values": [
+            1.0,
+            0.141072,
+            0.006815
+          ]
+        },
+        "target_leaf_a": {
+          "rank": 3,
+          "baseline_m": 1.599507,
+          "singular_values": [
+            1.335582,
+            0.188407,
+            0.009084
+          ],
+          "normalized_singular_values": [
+            1.0,
+            0.141067,
+            0.006802
+          ]
+        },
+        "rank": 3
+      },
+      "sim3": {
+        "scale": 0.82314921,
+        "rotation": [
+          [
+            0.5737599878,
+            0.2230388635,
+            -0.7880692493
+          ],
+          [
+            -0.2772381824,
+            0.9582936709,
+            0.0693702427
+          ],
+          [
+            0.770674034,
+            0.1786810167,
+            0.611665454
+          ]
+        ],
+        "translation": [
+          5.485545,
+          0.247839,
+          -0.34713
+        ]
+      },
+      "scale_delta": 0.17685079,
+      "sim3_residual_m": {
+        "count": 5,
+        "min": 1.8e-05,
+        "p50": 6.3e-05,
+        "p95": 0.000204,
+        "max": 0.000204
+      },
+      "baseline_normalized_residual": 0.00012754,
+      "heldout_shared_camera_residual": {
+        "status": "pass",
+        "heldout_count": 1,
+        "train_count": 4,
+        "residual_m": {
+          "count": 1,
+          "min": 0.003685,
+          "p50": 0.003685,
+          "p95": 0.003685,
+          "max": 0.003685
+        }
+      },
+      "pre_overlap_surface_stats": {
+        "axis_reports": {
+          "xy_z": {
+            "overlap_cell_count": 98,
+            "flagged_overlap_cell_count": 62,
+            "flagged_overlap_cell_ratio": 0.6327,
+            "median_abs_gap_m": 8.1023,
+            "p95_abs_gap_m": 16.1892,
+            "max_abs_gap_m": 18.7483,
+            "cell_size_m": 3.1688,
+            "examples": [
+              {
+                "cell": [
+                  33,
+                  13
+                ],
+                "existing_count": 12,
+                "incoming_count": 16,
+                "median_gap_m": 18.7483,
+                "existing_axis_median": 36.4334,
+                "incoming_axis_median": 55.1817,
+                "tolerance_m": 3.6327
+              },
+              {
+                "cell": [
+                  41,
+                  13
+                ],
+                "existing_count": 9,
+                "incoming_count": 6,
+                "median_gap_m": 18.4839,
+                "existing_axis_median": 34.3461,
+                "incoming_axis_median": 52.83,
+                "tolerance_m": 2.734
+              },
+              {
+                "cell": [
+                  34,
+                  13
+                ],
+                "existing_count": 9,
+                "incoming_count": 8,
+                "median_gap_m": 16.6522,
+                "existing_axis_median": 37.9665,
+                "incoming_axis_median": 54.6186,
+                "tolerance_m": 2.5076
+              },
+              {
+                "cell": [
+                  30,
+                  13
+                ],
+                "existing_count": 16,
+                "incoming_count": 19,
+                "median_gap_m": 16.3142,
+                "existing_axis_median": 38.552,
+                "incoming_axis_median": 54.8662,
+                "tolerance_m": 9.2571
+              },
+              {
+                "cell": [
+                  32,
+                  13
+                ],
+                "existing_count": 14,
+                "incoming_count": 7,
+                "median_gap_m": 16.1892,
+                "existing_axis_median": 39.4308,
+                "incoming_axis_median": 55.6201,
+                "tolerance_m": 2.7491
+              },
+              {
+                "cell": [
+                  28,
+                  13
+                ],
+                "existing_count": 19,
+                "incoming_count": 32,
+                "median_gap_m": 15.6981,
+                "existing_axis_median": 37.873,
+                "incoming_axis_median": 53.5711,
+                "tolerance_m": 3.8646
+              },
+              {
+                "cell": [
+                  31,
+                  12
+                ],
+                "existing_count": 9,
+                "incoming_count": 6,
+                "median_gap_m": 15.5483,
+                "existing_axis_median": 48.5688,
+                "incoming_axis_median": 64.1171,
+                "tolerance_m": 2.06
+              },
+              {
+                "cell": [
+                  31,
+                  13
+                ],
+                "existing_count": 22,
+                "incoming_count": 14,
+                "median_gap_m": 15.1932,
+                "existing_axis_median": 38.7832,
+                "incoming_axis_median": 53.9764,
+                "tolerance_m": 3.782
+              },
+              {
+                "cell": [
+                  30,
+                  14
+                ],
+                "existing_count": 55,
+                "incoming_count": 30,
+                "median_gap_m": 15.1313,
+                "existing_axis_median": 28.9146,
+                "incoming_axis_median": 44.0459,
+                "tolerance_m": 5.3886
+              },
+              {
+                "cell": [
+                  27,
+                  13
+                ],
+                "existing_count": 18,
+                "incoming_count": 29,
+                "median_gap_m": 15.0741,
+                "existing_axis_median": 37.8459,
+                "incoming_axis_median": 52.9199,
+                "tolerance_m": 3.5732
+              },
+              {
+                "cell": [
+                  24,
+                  14
+                ],
+                "existing_count": 18,
+                "incoming_count": 39,
+                "median_gap_m": 14.5793,
+                "existing_axis_median": 31.0299,
+                "incoming_axis_median": 45.6092,
+                "tolerance_m": 5.8129
+              },
+              {
+                "cell": [
+                  35,
+                  13
+                ],
+                "existing_count": 13,
+                "incoming_count": 9,
+                "median_gap_m": 14.448,
+                "existing_axis_median": 37.9101,
+                "incoming_axis_median": 52.3581,
+                "tolerance_m": 3.2775
+              },
+              {
+                "cell": [
+                  35,
+                  14
+                ],
+                "existing_count": 28,
+                "incoming_count": 16,
+                "median_gap_m": 14.3535,
+                "existing_axis_median": 27.4455,
+                "incoming_axis_median": 41.7991,
+                "tolerance_m": 4.0406
+              },
+              {
+                "cell": [
+                  27,
+                  12
+                ],
+                "existing_count": 6,
+                "incoming_count": 7,
+                "median_gap_m": 14.2408,
+                "existing_axis_median": 48.6068,
+                "incoming_axis_median": 62.8476,
+                "tolerance_m": 2.6545
+              },
+              {
+                "cell": [
+                  29,
+                  13
+                ],
+                "existing_count": 20,
+                "incoming_count": 20,
+                "median_gap_m": 14.2306,
+                "existing_axis_median": 39.7837,
+                "incoming_axis_median": 54.0143,
+                "tolerance_m": 3.1812
+              },
+              {
+                "cell": [
+                  27,
+                  14
+                ],
+                "existing_count": 47,
+                "incoming_count": 37,
+                "median_gap_m": 13.807,
+                "existing_axis_median": 31.2347,
+                "incoming_axis_median": 45.0417,
+                "tolerance_m": 3.798
+              },
+              {
+                "cell": [
+                  24,
+                  13
+                ],
+                "existing_count": 9,
+                "incoming_count": 25,
+                "median_gap_m": 13.2606,
+                "existing_axis_median": 39.6085,
+                "incoming_axis_median": 52.8692,
+                "tolerance_m": 6.0971
+              },
+              {
+                "cell": [
+                  26,
+                  13
+                ],
+                "existing_count": 6,
+                "incoming_count": 28,
+                "median_gap_m": 13.2203,
+                "existing_axis_median": 39.5604,
+                "incoming_axis_median": 52.7807,
+                "tolerance_m": 3.6212
+              },
+              {
+                "cell": [
+                  42,
+                  13
+                ],
+                "existing_count": 7,
+                "incoming_count": 6,
+                "median_gap_m": 13.2012,
+                "existing_axis_median": 35.9829,
+                "incoming_axis_median": 49.1842,
+                "tolerance_m": 2.5162
+              },
+              {
+                "cell": [
+                  34,
+                  14
+                ],
+                "existing_count": 27,
+                "incoming_count": 24,
+                "median_gap_m": 13.0772,
+                "existing_axis_median": 28.8167,
+                "incoming_axis_median": 41.894,
+                "tolerance_m": 5.1665
+              }
+            ]
+          },
+          "xz_y": {
+            "overlap_cell_count": 160,
+            "flagged_overlap_cell_count": 78,
+            "flagged_overlap_cell_ratio": 0.4875,
+            "median_abs_gap_m": 1.9944,
+            "p95_abs_gap_m": 3.6702,
+            "max_abs_gap_m": 5.6574,
+            "cell_size_m": 3.1688,
+            "examples": [
+              {
+                "cell": [
+                  30,
+                  34
+                ],
+                "existing_count": 8,
+                "incoming_count": 6,
+                "median_gap_m": 5.6574,
+                "existing_axis_median": -17.8534,
+                "incoming_axis_median": -12.196,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  32,
+                  30
+                ],
+                "existing_count": 6,
+                "incoming_count": 14,
+                "median_gap_m": 4.5461,
+                "existing_axis_median": -13.1353,
+                "incoming_axis_median": -8.5892,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  31,
+                  30
+                ],
+                "existing_count": 12,
+                "incoming_count": 8,
+                "median_gap_m": 4.2653,
+                "existing_axis_median": -12.8417,
+                "incoming_axis_median": -8.5764,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  29,
+                  30
+                ],
+                "existing_count": 9,
+                "incoming_count": 12,
+                "median_gap_m": 4.2095,
+                "existing_axis_median": -12.6862,
+                "incoming_axis_median": -8.4767,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  30,
+                  30
+                ],
+                "existing_count": 8,
+                "incoming_count": 10,
+                "median_gap_m": 3.9915,
+                "existing_axis_median": -12.671,
+                "incoming_axis_median": -8.6795,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  27,
+                  29
+                ],
+                "existing_count": 12,
+                "incoming_count": 11,
+                "median_gap_m": 3.9018,
+                "existing_axis_median": -11.5076,
+                "incoming_axis_median": -7.6058,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  31,
+                  28
+                ],
+                "existing_count": 21,
+                "incoming_count": 19,
+                "median_gap_m": 3.7485,
+                "existing_axis_median": -10.5011,
+                "incoming_axis_median": -6.7526,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  33,
+                  28
+                ],
+                "existing_count": 9,
+                "incoming_count": 9,
+                "median_gap_m": 3.6702,
+                "existing_axis_median": -10.9013,
+                "incoming_axis_median": -7.2311,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  28,
+                  29
+                ],
+                "existing_count": 16,
+                "incoming_count": 28,
+                "median_gap_m": 3.5896,
+                "existing_axis_median": -11.366,
+                "incoming_axis_median": -7.7764,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  26,
+                  29
+                ],
+                "existing_count": 6,
+                "incoming_count": 13,
+                "median_gap_m": 3.5484,
+                "existing_axis_median": -10.9972,
+                "incoming_axis_median": -7.4489,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  30,
+                  28
+                ],
+                "existing_count": 15,
+                "incoming_count": 10,
+                "median_gap_m": 3.5251,
+                "existing_axis_median": -10.5373,
+                "incoming_axis_median": -7.0122,
+                "tolerance_m": 2.291
+              },
+              {
+                "cell": [
+                  29,
+                  29
+                ],
+                "existing_count": 7,
+                "incoming_count": 20,
+                "median_gap_m": 3.5178,
+                "existing_axis_median": -11.0961,
+                "incoming_axis_median": -7.5784,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  32,
+                  27
+                ],
+                "existing_count": 14,
+                "incoming_count": 18,
+                "median_gap_m": 3.5149,
+                "existing_axis_median": -9.4934,
+                "incoming_axis_median": -5.9785,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  34,
+                  28
+                ],
+                "existing_count": 6,
+                "incoming_count": 10,
+                "median_gap_m": 3.5008,
+                "existing_axis_median": -10.713,
+                "incoming_axis_median": -7.2122,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  32,
+                  28
+                ],
+                "existing_count": 11,
+                "incoming_count": 18,
+                "median_gap_m": 3.4878,
+                "existing_axis_median": -10.5004,
+                "incoming_axis_median": -7.0125,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  34,
+                  27
+                ],
+                "existing_count": 7,
+                "incoming_count": 12,
+                "median_gap_m": 3.3999,
+                "existing_axis_median": -9.6831,
+                "incoming_axis_median": -6.2832,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  29,
+                  28
+                ],
+                "existing_count": 14,
+                "incoming_count": 39,
+                "median_gap_m": 3.3968,
+                "existing_axis_median": -10.2738,
+                "incoming_axis_median": -6.8769,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  33,
+                  27
+                ],
+                "existing_count": 11,
+                "incoming_count": 19,
+                "median_gap_m": 3.3525,
+                "existing_axis_median": -9.6498,
+                "incoming_axis_median": -6.2972,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  26,
+                  28
+                ],
+                "existing_count": 16,
+                "incoming_count": 14,
+                "median_gap_m": 3.3386,
+                "existing_axis_median": -10.0407,
+                "incoming_axis_median": -6.7021,
+                "tolerance_m": 1.5
+              },
+              {
+                "cell": [
+                  27,
+                  28
+                ],
+                "existing_count": 19,
+                "incoming_count": 24,
+                "median_gap_m": 3.3357,
+                "existing_axis_median": -10.0891,
+                "incoming_axis_median": -6.7534,
+                "tolerance_m": 1.5
+              }
+            ]
+          },
+          "yz_x": {
+            "overlap_cell_count": 19,
+            "flagged_overlap_cell_count": 3,
+            "flagged_overlap_cell_ratio": 0.1579,
+            "median_abs_gap_m": 8.5274,
+            "p95_abs_gap_m": 34.6687,
+            "max_abs_gap_m": 34.6687,
+            "cell_size_m": 3.0573,
+            "examples": [
+              {
+                "cell": [
+                  17,
+                  19
+                ],
+                "existing_count": 137,
+                "incoming_count": 27,
+                "median_gap_m": 34.6687,
+                "existing_axis_median": 34.4979,
+                "incoming_axis_median": -0.1708,
+                "tolerance_m": 32.6733
+              },
+              {
+                "cell": [
+                  19,
+                  20
+                ],
+                "existing_count": 20,
+                "incoming_count": 11,
+                "median_gap_m": 10.0495,
+                "existing_axis_median": 8.7389,
+                "incoming_axis_median": -1.3106,
+                "tolerance_m": 6.1895
+              },
+              {
+                "cell": [
+                  19,
+                  21
+                ],
+                "existing_count": 12,
+                "incoming_count": 7,
+                "median_gap_m": 9.6052,
+                "existing_axis_median": 8.2938,
+                "incoming_axis_median": -1.3114,
+                "tolerance_m": 5.8437
+              }
+            ]
+          }
+        },
+        "blocking_axis": "xy_z",
+        "max_flagged_overlap_cell_ratio": 0.6327,
+        "max_flagged_overlap_cell_count": 62,
+        "max_overlap_cell_count": 98
+      },
+      "post_overlap_surface_stats": {
+        "axis_reports": {
+          "xy_z": {
+            "overlap_cell_count": 46,
+            "flagged_overlap_cell_count": 1,
+            "flagged_overlap_cell_ratio": 0.0217,
+            "median_abs_gap_m": 0.8565,
+            "p95_abs_gap_m": 3.5284,
+            "max_abs_gap_m": 5.9163,
+            "cell_size_m": 3.8174,
+            "examples": [
+              {
+                "cell": [
+                  29,
+                  13
+                ],
+                "existing_count": 16,
+                "incoming_count": 89,
+                "median_gap_m": 5.7689,
+                "existing_axis_median": 21.3623,
+                "incoming_axis_median": 15.5935,
+                "tolerance_m": 4.2225
+              }
+            ]
+          },
+          "xz_y": {
+            "overlap_cell_count": 84,
+            "flagged_overlap_cell_count": 0,
+            "flagged_overlap_cell_ratio": 0.0,
+            "median_abs_gap_m": 0.1302,
+            "p95_abs_gap_m": 0.498,
+            "max_abs_gap_m": 0.7642,
+            "cell_size_m": 3.8174,
+            "examples": []
+          },
+          "yz_x": {
+            "overlap_cell_count": 55,
+            "flagged_overlap_cell_count": 14,
+            "flagged_overlap_cell_ratio": 0.2545,
+            "median_abs_gap_m": 15.626,
+            "p95_abs_gap_m": 44.0956,
+            "max_abs_gap_m": 56.6029,
+            "cell_size_m": 2.267,
+            "examples": [
+              {
+                "cell": [
+                  27,
+                  19
+                ],
+                "existing_count": 94,
+                "incoming_count": 7,
+                "median_gap_m": 56.6029,
+                "existing_axis_median": 16.5547,
+                "incoming_axis_median": -40.0481,
+                "tolerance_m": 9.0384
+              },
+              {
+                "cell": [
+                  22,
+                  30
+                ],
+                "existing_count": 213,
+                "incoming_count": 7,
+                "median_gap_m": 44.9145,
+                "existing_axis_median": 28.3084,
+                "incoming_axis_median": -16.606,
+                "tolerance_m": 27.6784
+              },
+              {
+                "cell": [
+                  27,
+                  17
+                ],
+                "existing_count": 104,
+                "incoming_count": 7,
+                "median_gap_m": 44.0956,
+                "existing_axis_median": 24.6921,
+                "incoming_axis_median": -19.4035,
+                "tolerance_m": 19.1829
+              },
+              {
+                "cell": [
+                  17,
+                  46
+                ],
+                "existing_count": 29,
+                "incoming_count": 22,
+                "median_gap_m": 42.8661,
+                "existing_axis_median": 16.8478,
+                "incoming_axis_median": -26.0183,
+                "tolerance_m": 31.4525
+              },
+              {
+                "cell": [
+                  18,
+                  43
+                ],
+                "existing_count": 46,
+                "incoming_count": 31,
+                "median_gap_m": 34.6618,
+                "existing_axis_median": 16.7103,
+                "incoming_axis_median": -17.9515,
+                "tolerance_m": 32.9452
+              },
+              {
+                "cell": [
+                  17,
+                  45
+                ],
+                "existing_count": 26,
+                "incoming_count": 13,
+                "median_gap_m": 34.0164,
+                "existing_axis_median": 27.6404,
+                "incoming_axis_median": -6.376,
+                "tolerance_m": 25.2904
+              },
+              {
+                "cell": [
+                  15,
+                  52
+                ],
+                "existing_count": 11,
+                "incoming_count": 6,
+                "median_gap_m": 30.7938,
+                "existing_axis_median": 4.6332,
+                "incoming_axis_median": -26.1606,
+                "tolerance_m": 24.9758
+              },
+              {
+                "cell": [
+                  18,
+                  44
+                ],
+                "existing_count": 26,
+                "incoming_count": 29,
+                "median_gap_m": 29.6344,
+                "existing_axis_median": 13.0366,
+                "incoming_axis_median": -16.5978,
+                "tolerance_m": 24.778
+              },
+              {
+                "cell": [
+                  26,
+                  20
+                ],
+                "existing_count": 268,
+                "incoming_count": 7,
+                "median_gap_m": 29.5839,
+                "existing_axis_median": 17.2026,
+                "incoming_axis_median": -12.3813,
+                "tolerance_m": 19.9231
+              },
+              {
+                "cell": [
+                  21,
+                  33
+                ],
+                "existing_count": 154,
+                "incoming_count": 6,
+                "median_gap_m": 25.4417,
+                "existing_axis_median": 27.3467,
+                "incoming_axis_median": 1.905,
+                "tolerance_m": 21.6558
+              },
+              {
+                "cell": [
+                  15,
+                  51
+                ],
+                "existing_count": 11,
+                "incoming_count": 11,
+                "median_gap_m": 24.214,
+                "existing_axis_median": 6.6344,
+                "incoming_axis_median": -17.5796,
+                "tolerance_m": 12.2411
+              },
+              {
+                "cell": [
+                  24,
+                  29
+                ],
+                "existing_count": 14,
+                "incoming_count": 50,
+                "median_gap_m": 23.55,
+                "existing_axis_median": 6.9458,
+                "incoming_axis_median": -16.6042,
+                "tolerance_m": 22.4204
+              },
+              {
+                "cell": [
+                  26,
+                  21
+                ],
+                "existing_count": 392,
+                "incoming_count": 78,
+                "median_gap_m": 20.8843,
+                "existing_axis_median": 14.1733,
+                "incoming_axis_median": -6.711,
+                "tolerance_m": 16.9628
+              },
+              {
+                "cell": [
+                  26,
+                  26
+                ],
+                "existing_count": 7,
+                "incoming_count": 6,
+                "median_gap_m": 7.6578,
+                "existing_axis_median": 7.8837,
+                "incoming_axis_median": 0.2259,
+                "tolerance_m": 6.6773
+              }
+            ]
+          }
+        },
+        "blocking_axis": "yz_x",
+        "max_flagged_overlap_cell_ratio": 0.2545,
+        "max_flagged_overlap_cell_count": 14,
+        "max_overlap_cell_count": 55
+      },
+      "surface_overlap_warning_score": 0.2545,
+      "gps_exif_residual": {
+        "status": "not_available",
+        "reason": "reducer inputs do not include raw EXIF/GPS priors in this local model format"
+      },
+      "decision": "reject",
+      "strict_decision": "reject",
+      "confidence": -161.6339
+    }
+  ],
+  "non_tree_accepted_edges": [],
+  "cycle_consistency": {
+    "status": "not_evaluated_until_root_transforms_are_known",
+    "non_tree_edge_count": 0
+  },
+  "post_merge_jurisdiction_culling": {
+    "status": "pending",
+    "removed_point_count": 0,
+    "by_reason": {},
+    "records": []
+  },
+  "seam_local_ba": {
+    "enabled": false,
+    "status": "not_run",
+    "reason": "local text reducer has no bounded COLMAP BA window implementation yet"
+  },
+  "promotion_blockers": [
+    "accepted_seam_graph_is_disconnected"
+  ],
+  "decision": "fail"
+}
