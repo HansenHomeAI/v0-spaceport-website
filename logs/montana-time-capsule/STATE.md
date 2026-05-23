@@ -184,6 +184,33 @@
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260523T102622Z.json
   - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260523T102622Z.json
 
+## 2026-05-23T14:04:11Z HEARTBEAT monitor (HMC) - no-spend reconfirm (awscli) + terminal canonical jobs + S3 supersplat bundle + preview viewer/proxy HTTP 200 + CI snapshot
+
+- Git: agent-40136728-montana-time-capsule @ 941fb560312039fb45c547b61dae285d73de5c55 ([skip ci]) (clean)
+- AWS (us-west-2):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260523T140411Z.json
+  - region: logs/montana-time-capsule/aws-configure-get-region-20260523T140411Z.txt
+- SageMaker (canonical jobs expected Completed; no HMC launches):
+  - SfM processing job Completed: logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260523T140411Z.json
+  - 3DGS training job Completed: logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260523T140411Z.json
+  - compression processing job Completed: logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260523T140411Z.json
+  - InProgress processing list: logs/montana-time-capsule/sagemaker-list-processing-jobs-InProgress-20260523T140411Z.json (non-HMC may appear; do not stop)
+  - InProgress training list: logs/montana-time-capsule/sagemaker-list-training-jobs-InProgress-20260523T140411Z.json
+- S3 (supersplat bundle present):
+  - bundle listing: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260523T140411Z.txt
+  - meta head: logs/montana-time-capsule/s3api-head-meta-json-hmc-mtc-20260520T2015Z-20260523T140411Z.json
+  - skybox head: logs/montana-time-capsule/s3api-head-background-skybox-webp-hmc-mtc-20260520T2015Z-20260523T140411Z.json
+- Cloudflare Pages preview:
+  - URL: logs/montana-time-capsule/pages-preview-url-20260523T140411Z.txt
+  - root headers (Origin set; HTTP 200): logs/montana-time-capsule/curlI-pages-root-20260523T140411Z.headers
+- Hosted preview viewer reachability (Origin set; HTTP 200):
+  - skybox headers: logs/montana-time-capsule/curlI-viewer-skybox-20260523T140411Z.headers
+  - no-sky headers: logs/montana-time-capsule/curlI-viewer-nosky-20260523T140411Z.headers
+  - proxy meta.json GET works (HTTP 200): logs/montana-time-capsule/curlI-proxy-meta-json-20260523T140411Z.headers (body=logs/montana-time-capsule/curl-proxy-meta-json-20260523T140411Z.body.json)
+- CI:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260523T140411Z.json
+  - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260523T140411Z.json
+
 ## 2026-05-23T10:14:00Z HEARTBEAT monitor (HMC) - terminal reconfirmed + AWS identity + S3 bundle + viewer HTTP 200 (skybox/no-sky/proxy) + CI proof (no launches)
 
 - Git: agent-40136728-montana-time-capsule @ b2486b4e58334475562f77f7d7d3cf8f446d75f7 ([skip ci]) (head=logs/montana-time-capsule/git-head-20260523T100322Z.txt; status=logs/montana-time-capsule/git-status-20260523T100322Z.txt)
