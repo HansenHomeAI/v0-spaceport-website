@@ -211,3 +211,4 @@
 [2026-05-23T14:27:16Z] montana heartbeat -> aws/sagemaker/s3/viewer/gha reconfirmed (no launches) -> idle
 [2026-05-23T14:47:36Z] heartbeat -> no-spend reconfirm + viewer screenshots captured -> remain idle
 [2026-05-23T14:48:30Z] push -> logs committed + pushed -> snapshot CI state
+[2026-05-23T15:03:53Z] montana heartbeat -> terminal jobs + S3 bundle + viewer/proxy HTTP200 + CI snapshot -> idle
