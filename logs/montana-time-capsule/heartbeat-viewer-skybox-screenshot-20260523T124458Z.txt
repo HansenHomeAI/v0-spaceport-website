@@ -1,0 +1,8 @@
+readyState=### Result
+"complete"
+### Ran Playwright code
+```js
+await page.evaluate('() => document.readyState');
+```
+screenshot=logs/montana-time-capsule/heartbeat-viewer-skybox-20260523T124458Z.png
+snapshot_head=### Page - Page URL: https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.us-west-2.amazonaws.com%2Fcompressed%2Fhmc-mtc-20260520T2015Z%2Fsupersplat_bundle%2Fmeta.json&skybox=background_skybox.webp - Page Title: sogs-migrated-viewer ### Snapshot ```yaml - generic [active] [ref=e1]: - main [ref=e2]: 

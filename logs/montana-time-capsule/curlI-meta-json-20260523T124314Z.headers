@@ -1,0 +1,15 @@
+HTTP/1.1 400 Bad Request
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: GET, HEAD
+Access-Control-Expose-Headers: ETag, Content-Length, Content-Type, Accept-Ranges, Content-Range, x-amz-version-id, x-amz-server-side-encryption
+Access-Control-Max-Age: 3600
+Vary: Origin, Access-Control-Request-Headers, Access-Control-Request-Method
+x-amz-request-id: PJPRTPP9RC07GAB1
+x-amz-id-2: SjLByvvCKp50/YZjDRLX/1cJPvu2mHfEhkhOVPcExuUbHgudgDJAgvGy99zFkBzcB8Uv2nqYIVg=
+x-amz-region: us-west-2
+Content-Type: application/xml
+Transfer-Encoding: chunked
+Date: Sat, 23 May 2026 12:43:14 GMT
+Connection: close
+Server: AmazonS3
+
