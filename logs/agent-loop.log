@@ -195,3 +195,4 @@
 [2026-05-23T11:04:06Z] montana post-push -> head recorded + exact-head CI empty (skip ci) -> idle
 [2026-05-23T11:24:17Z] heartbeat-verify -> aws/s3/viewer/gh ok -> update STATE.md
 [2026-05-23T11:25:48Z] post-push -> recorded git+gh exact-head -> commit+push
+[2026-05-23T11:44:10Z] heartbeat(hmc-mtc-20260520T2015Z) -> terminal confirmed; viewer 200; ci snapshot ok -> idle
