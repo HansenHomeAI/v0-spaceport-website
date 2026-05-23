@@ -1,0 +1,40 @@
+138:deploy	Select target Pages project per branch	2026-05-21T01:41:23.3115675Z [36;1m  TARGET="v0-spaceport-website-preview2"[0m
+145:deploy	Select target Pages project per branch	2026-05-21T01:41:23.3233242Z Using CF Pages project: v0-spaceport-website-preview2 for branch agent-40136728-montana-time-capsule
+154:deploy	Configure AWS credentials (staging via access keys)	2026-05-21T01:41:23.3385067Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+159:deploy	Resolve deployment context	2026-05-21T01:41:23.6216995Z [36;1mpython3 ../scripts/resolve_preview_context.py --branch "${GITHUB_REF_NAME}" --format shell > /tmp/pages-context.env[0m
+166:deploy	Resolve deployment context	2026-05-21T01:41:23.6253300Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+172:deploy	Resolve deployment context	2026-05-21T01:41:23.6843122Z DEPLOYMENT_CLASS=branch-preview
+181:deploy	Resolve deployment context	2026-05-21T01:41:23.6846909Z ENVIRONMENT_NAME=branch-preview
+182:deploy	Resolve deployment context	2026-05-21T01:41:23.6847220Z REUSE_SHARED_PREVIEW_RESOURCES=true
+183:deploy	Resolve deployment context	2026-05-21T01:41:23.6847549Z SHARED_PREVIEW_RESOURCE_SUFFIX=staging
+230:deploy	Wait for matching CDK Deploy run	2026-05-21T01:41:23.6939898Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+235:deploy	Wait for matching CDK Deploy run	2026-05-21T01:41:23.6941546Z   DEPLOYMENT_CLASS: branch-preview
+244:deploy	Wait for matching CDK Deploy run	2026-05-21T01:41:23.6944461Z   ENVIRONMENT_NAME: branch-preview
+245:deploy	Wait for matching CDK Deploy run	2026-05-21T01:41:23.6944753Z   REUSE_SHARED_PREVIEW_RESOURCES: true
+246:deploy	Wait for matching CDK Deploy run	2026-05-21T01:41:23.6945340Z   SHARED_PREVIEW_RESOURCE_SUFFIX: staging
+372:deploy	Resolve CloudFormation outputs	2026-05-21T01:45:11.7388932Z [36;1mSPACEPORT_OUTPUT_STACK="$(resolve_output_stack "$SPACEPORT_STACK_NAME" "$([ "$DEPLOYMENT_CLASS" = "branch-preview" ] && printf 'SpaceportStagingStack')")"[0m
+373:deploy	Resolve CloudFormation outputs	2026-05-21T01:45:11.7390388Z [36;1mML_OUTPUT_STACK="$(resolve_output_stack "$ML_STACK_NAME" "$([ "$DEPLOYMENT_CLASS" = "branch-preview" ] && printf 'SpaceportMLPipelineStagingStack')" "^(UPDATE_ROLLBACK_COMPLETE|UPDATE_ROLLBACK_FAILED)$")"[0m
+419:deploy	Resolve CloudFormation outputs	2026-05-21T01:45:11.7445802Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+424:deploy	Resolve CloudFormation outputs	2026-05-21T01:45:11.7447489Z   DEPLOYMENT_CLASS: branch-preview
+433:deploy	Resolve CloudFormation outputs	2026-05-21T01:45:11.7450279Z   ENVIRONMENT_NAME: branch-preview
+434:deploy	Resolve CloudFormation outputs	2026-05-21T01:45:11.7450581Z   REUSE_SHARED_PREVIEW_RESOURCES: true
+435:deploy	Resolve CloudFormation outputs	2026-05-21T01:45:11.7450883Z   SHARED_PREVIEW_RESOURCE_SUFFIX: staging
+446:deploy	Resolve CloudFormation outputs	2026-05-21T01:45:27.8718191Z Resolved deployment class: branch-preview
+465:deploy	Setup Node	2026-05-21T01:45:27.8827085Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+470:deploy	Setup Node	2026-05-21T01:45:27.8828650Z   DEPLOYMENT_CLASS: branch-preview
+479:deploy	Setup Node	2026-05-21T01:45:27.8831807Z   ENVIRONMENT_NAME: branch-preview
+480:deploy	Setup Node	2026-05-21T01:45:27.8832112Z   REUSE_SHARED_PREVIEW_RESOURCES: true
+481:deploy	Setup Node	2026-05-21T01:45:27.8832423Z   SHARED_PREVIEW_RESOURCE_SUFFIX: staging
+523:deploy	Install deps (tolerant to peer conflicts in CI)	2026-05-21T01:45:35.5804618Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+528:deploy	Install deps (tolerant to peer conflicts in CI)	2026-05-21T01:45:35.5806698Z   DEPLOYMENT_CLASS: branch-preview
+537:deploy	Install deps (tolerant to peer conflicts in CI)	2026-05-21T01:45:35.5809554Z   ENVIRONMENT_NAME: branch-preview
+538:deploy	Install deps (tolerant to peer conflicts in CI)	2026-05-21T01:45:35.5809838Z   REUSE_SHARED_PREVIEW_RESOURCES: true
+539:deploy	Install deps (tolerant to peer conflicts in CI)	2026-05-21T01:45:35.5810148Z   SHARED_PREVIEW_RESOURCE_SUFFIX: staging
+654:deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-05-21T01:46:15.7516571Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+659:deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-05-21T01:46:15.7518276Z   DEPLOYMENT_CLASS: branch-preview
+668:deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-05-21T01:46:15.7521648Z   ENVIRONMENT_NAME: branch-preview
+669:deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-05-21T01:46:15.7521980Z   REUSE_SHARED_PREVIEW_RESOURCES: true
+670:deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-05-21T01:46:15.7522322Z   SHARED_PREVIEW_RESOURCE_SUFFIX: staging
+710:deploy	Verify injected env values	2026-05-21T01:46:15.7707300Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+715:deploy	Verify injected env values	2026-05-21T01:46:15.7709152Z   DEPLOYMENT_CLASS: branch-preview
+724:deploy	Verify injected env values	2026-05-21T01:46:15.7712801Z   ENVIRONMENT_NAME: branch-preview
