@@ -1,5 +1,5 @@
 reason: HMC Montana time capsule monitor (SfM -> 3DGS -> compress -> viewer gates)
-last_step: 2026-05-23T13:04:40Z heartbeat verify (no-spend): awscli STS+SageMaker describes (canonical jobs Completed + no InProgress HMC), S3 supersplat bundle heads/lists recorded, viewer/proxy HTTP 200 + Origin/CORS observed, GitHub Actions branch snapshot recorded and Pages deploy log reconfirmed (exact-head empty due to `[skip ci]`); evidence in logs/montana-time-capsule/STATE.md.
+last_step: 2026-05-23T13:06:43Z postpush verify: recorded branch + exact-head GitHub Actions snapshots for new HEAD (exact-head empty due to `[skip ci]`); evidence in logs/montana-time-capsule/STATE.md.
 next_unblocked_step: idle; do not launch duplicate HMC jobs. Only proceed if a new explicit acceptance gate is requested (promotion/registry/public publish).
 [2026-05-22T15:36:42Z] heartbeat -> terminal reconfirmed (no spend) -> idle
 [2026-05-22T15:37:51Z] heartbeat -> fresh reconfirmed (no spend) -> commit+push evidence
@@ -10,3 +10,4 @@ next_unblocked_step: idle; do not launch duplicate HMC jobs. Only proceed if a n
 [2026-05-23T10:31:23Z] post-heartbeat -> recorded git head + exact-head GH runs -> commit+push ledger
 [2026-05-23T12:23:12Z] heartbeat -> boto3 aws/sm/s3 + viewer/proxy HTTP200 + GH REST snapshot -> commit+push ledger
 [2026-05-23T13:04:40Z] heartbeat -> awscli sm/s3 + viewer/proxy HTTP200 + gh snapshot -> idle
+[2026-05-23T13:06:43Z] postpush -> recorded gh runs for new head -> idle
