@@ -6043,3 +6043,24 @@ Next: remain idle for HMC; do not stop unrelated jobs.
   - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260522T160034Z.json (0; head commit is [skip ci])
 
 Next: remain idle for HMC; do not stop unrelated jobs; no launches.
+
+## 2026-05-23T12:03:12Z HEARTBEAT monitor (HMC) - terminal reconfirmed + S3 + viewer reachable + exact-head CI confirmed (no launches)
+
+- Git: agent-40136728-montana-time-capsule @ c5c4aeff08898985cb349869228538180019ab40 ([skip ci])
+- AWS (us-west-2):
+  - aws version: logs/montana-time-capsule/aws-version-20260523T120217Z.txt
+  - sts: logs/montana-time-capsule/aws-sts-get-caller-identity-20260523T120217Z.json
+  - describe sfm (processing): logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260523T120242Z.json (Completed)
+  - describe 3dgs (training): logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260523T120242Z.json (Completed)
+  - describe compression (processing): logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260523T120242Z.json (Completed)
+- S3 supersplat bundle (staging):
+  - listing: logs/montana-time-capsule/s3-ls-recursive-supersplat_bundle-20260523T120259Z.txt (objects=13 bytes=7124745)
+  - head-object meta.json: logs/montana-time-capsule/s3api-head-meta-json-20260523T120259Z.json (ContentLength=1359; LastModified=2026-05-21T20:25:10Z)
+- Hosted preview viewer reachability (curl -I; HTTP 200):
+  - skybox URL: logs/montana-time-capsule/heartbeat-viewer-skybox-url-20260523T120312Z.txt (headers=logs/montana-time-capsule/curlI-viewer-skybox-20260523T120312Z.headers)
+  - no-sky URL: logs/montana-time-capsule/heartbeat-viewer-nosky-url-20260523T120312Z.txt (headers=logs/montana-time-capsule/curlI-viewer-nosky-20260523T120312Z.headers)
+- GitHub Actions:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260523T120341Z.json (latest green Pages+CDK on 2026-05-21)
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260523T120341Z.json (0; head commit is [skip ci])
+
+Next: remain idle for HMC; no launches; acceptance gates remaining are visual proof screenshots (skybox + no-sky) beyond HTTP reachability.
