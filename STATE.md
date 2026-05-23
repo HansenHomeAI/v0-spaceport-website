@@ -1,5 +1,5 @@
 reason: HMC Montana time capsule monitor (SfM -> 3DGS -> compress -> viewer gates)
-last_step: 2026-05-23T18:44:30Z heartbeat verify: reconfirmed AWS identity, SageMaker canonical jobs terminal (Completed), S3 supersplat bundle present, Pages preview URL deterministically re-derived from deploy logs, viewer skybox/no-sky + proxy meta.json HTTP 200 with Origin, and branch/exact-head GitHub Actions snapshots (exact-head empty due to `[skip ci]`); evidence in logs/montana-time-capsule/STATE.md.
+last_step: 2026-05-23T18:45:28Z postpush verify: pushed heartbeat evidence commit (f5c4f529; [skip ci]) and recorded branch + exact-head GitHub Actions snapshots (exact-head empty due to `[skip ci]`); evidence in logs/montana-time-capsule/STATE.md.
 next_unblocked_step: idle; do not launch duplicate HMC jobs. Only proceed if a new explicit acceptance gate is requested (promotion/registry/public publish).
 [2026-05-22T15:36:42Z] heartbeat -> terminal reconfirmed (no spend) -> idle
 [2026-05-22T15:37:51Z] heartbeat -> fresh reconfirmed (no spend) -> commit+push evidence
