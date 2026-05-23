@@ -6502,6 +6502,13 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remain
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260523T172543Z.json
   - exact-head runs (expected 0 due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260523T172543Z.json
 
+### 2026-05-23T17:26:20Z post-push CI snapshot
+
+- Git: agent-40136728-montana-time-capsule @ a02800d6caea4598ccf87b0bfde800b61d937c80 ([skip ci]) (clean)
+- GitHub Actions:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260523T172616Z.json
+  - exact-head runs (expected 0 due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260523T172616Z.json
+
 ### 2026-05-23T16:06:56Z post-push CI snapshot
 
 - Git: agent-40136728-montana-time-capsule @ 5b27297ad997e854093ce920516b9cad7f1673a8 ([skip ci]) (clean)
