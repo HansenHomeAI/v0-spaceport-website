@@ -223,3 +223,4 @@
 [2026-05-23T17:01:06Z] heartbeat -> no-spend checks OK (SageMaker Completed; S3 bundle present; viewer+proxy HTTP 200; exact-head CI empty due [skip ci]) -> next: remain idle until new acceptance gate
 [2026-05-23T17:03:18Z] push-snapshot -> recorded branch + exact-head CI for new ledger commit (expected exact-head empty) -> idle
 [2026-05-23T17:25:04Z] heartbeat montana time capsule -> no-spend re-check OK (AWS terminal; S3 bundle present; viewer/proxy HTTP 200) -> commit+push ledger
+[2026-05-23T17:45:27Z] heartbeat(hmc-mtc-20260520T2015Z) -> terminal jobs + bundle present + preview+viewer 200 + sogs-proxy meta/skybox 200 -> next: keep monitoring acceptance visuals
