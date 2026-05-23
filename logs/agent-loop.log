@@ -186,3 +186,4 @@
 [2026-05-22T16:01:50Z] heartbeat(no-spend) -> HMC terminal; S3 bundle present; viewer+proxy HTTP200; GH exact-head=0 ([skip ci]); 1 unrelated processing InProgress -> commit/push evidence
 [2026-05-22T16:19:34Z] montana heartbeat -> terminal + viewer 200 + CI ok -> committed+push next
 [2026-05-23T08:44:30Z] montana heartbeat -> HMC terminal; S3 bundle present; viewer+proxy HTTP200; GH exact-head=0 ([skip ci]) -> commit+push evidence
+[20260523T090335Z] heartbeat -> ok (no spend) -> recorded
