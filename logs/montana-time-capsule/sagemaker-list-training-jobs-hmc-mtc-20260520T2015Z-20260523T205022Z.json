@@ -1,0 +1,13 @@
+{
+    "TrainingJobSummaries": [
+        {
+            "TrainingJobName": "hmc-mtc-20260520T2015Z-3dgs",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/hmc-mtc-20260520T2015Z-3dgs",
+            "CreationTime": "2026-05-21T10:35:46.448000-06:00",
+            "TrainingEndTime": "2026-05-21T14:12:00.258000-06:00",
+            "LastModifiedTime": "2026-05-21T14:12:00.606000-06:00",
+            "TrainingJobStatus": "Completed",
+            "SecondaryStatus": "Completed"
+        }
+    ]
+}
