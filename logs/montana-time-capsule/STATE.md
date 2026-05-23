@@ -7104,3 +7104,10 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remain
 - GitHub Actions (exact-head expected empty due to `[skip ci]`):
   - branch run list snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260523T234639Z.json
   - exact-head run list snapshot: logs/montana-time-capsule/gh-run-list-exacthead-e49d82d18e58df0437b55c210015c30451fea57d-20260523T234639Z.json
+
+## 2026-05-23T23:52:06Z postpush CI snapshot (exact-head expected empty due to `[skip ci]`)
+
+- Git: agent-40136728-montana-time-capsule @ 32acc7d3 (`[skip ci]`)
+- CI:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260523T234820Z.json
+  - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exacthead-32acc7d318c67dc45272c291f6ef0e58d66b7dbf-postpush-20260523T234820Z.json
