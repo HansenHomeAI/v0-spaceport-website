@@ -1,0 +1,57 @@
+{
+    "Contents": [
+        {
+            "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/background_manifest.json",
+            "LastModified": "2026-05-21T20:25:10+00:00",
+            "ETag": "\"8a1e6ae59e67c358ad3f5b41e08fa168\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 975,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/background_skybox.webp",
+            "LastModified": "2026-05-21T20:25:10+00:00",
+            "ETag": "\"fadaadb85f15b1b04091ecd20b2935c9\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 47786,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/export_manifest.json",
+            "LastModified": "2026-05-21T20:25:10+00:00",
+            "ETag": "\"b20f4a21ac5ec2e2dc57b4a12a03399d\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 948,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/means_l.webp",
+            "LastModified": "2026-05-21T20:25:10+00:00",
+            "ETag": "\"eac4c58b03ba5a9848b01309f2069c98\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 1287154,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/means_u.webp",
+            "LastModified": "2026-05-21T20:25:10+00:00",
+            "ETag": "\"8f3bf9b2e9c7558d73870c09a8e909f9\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 872990,
+            "StorageClass": "STANDARD"
+        }
+    ],
+    "RequestCharged": null,
+    "Prefix": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/",
+    "NextToken": "eyJDb250aW51YXRpb25Ub2tlbiI6IG51bGwsICJib3RvX3RydW5jYXRlX2Ftb3VudCI6IDV9"
+}

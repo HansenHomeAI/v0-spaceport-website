@@ -229,3 +229,4 @@
 [2026-05-23T18:05:17Z] heartbeat -> AWS+SageMaker+S3 ok; viewer skybox/no-sky 200; meta via /api/sogs-proxy 200; legacy /api/proxy 404 -> next: commit/push ledger
 [2026-05-23T18:23:52Z] heartbeat -> awscli terminal + S3 supersplat bundle present; viewer skybox/no-sky 200; meta via /api/sogs-proxy 200; exact-head runs 0 (skip ci) -> next: commit/push ledger
 [2026-05-23T18:25:50Z] postpush(ci) -> exact-head runs 0 (skip ci) -> next: passive monitor
+[2026-05-23T18:44:58Z] heartbeat(hmc-mtc-20260520T2015Z) -> aws/sm/s3 ok; preview+viewer 200; proxy meta.json 200; exact-head gh runs 0 (skip ci) -> next: commit+push ledger
