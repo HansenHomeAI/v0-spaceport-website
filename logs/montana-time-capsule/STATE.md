@@ -5,6 +5,25 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-23T21:40:40Z HEARTBEAT monitor (HMC) - no-spend reconfirm: AWS identity + canonical SageMaker jobs still Completed + S3 supersplat bundle still present + viewer skybox/no-sky HTTP 200 + CI snapshot (exact-head empty due to `[skip ci]`)
+
+- Git: agent-40136728-montana-time-capsule @ e3f172c0db26abeddf702f15ae56d504da7734f2 (`chore: postpush ci snapshot 2026-05-23T21:31Z [skip ci]`) (dirty: new logs pending commit)
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260523T214040Z.json
+  - region: logs/montana-time-capsule/aws-region-20260523T214040Z.txt
+  - version: logs/montana-time-capsule/aws-version-20260523T214040Z.txt
+- SageMaker (canonical HMC jobs still Completed; do not launch duplicate HMC jobs; do not stop other automations):
+  - SfM processing job Completed: logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260523T214040Z.json
+  - 3DGS training job Completed: logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260523T214040Z.json
+  - compression processing job Completed: logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260523T214040Z.json
+- S3 (supersplat bundle present): logs/montana-time-capsule/s3-ls-compressed-supersplat-bundle-20260523T214040Z.txt
+- Hosted preview viewer reachability (HTTP 200):
+  - skybox: logs/montana-time-capsule/curlI-viewer-skybox-20260523T214040Z.headers (url=logs/montana-time-capsule/heartbeat-viewer-skybox-url-20260523T214040Z.txt)
+  - no-sky: logs/montana-time-capsule/curlI-viewer-nosky-20260523T214040Z.headers (url=logs/montana-time-capsule/heartbeat-viewer-nosky-url-20260523T214040Z.txt)
+- CI snapshot:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260523T214040Z.json
+  - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260523T214040Z.json
+
 ## 2026-05-23T20:12:49Z postpush CI snapshot (exact-head expected empty due to `[skip ci]`)
 
 - Git: agent-40136728-montana-time-capsule @ d93b41b10e372b0fbcc1cdc575836b5ea9c60a45 ([skip ci]) (pushed)
