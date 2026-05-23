@@ -236,3 +236,4 @@
 [2026-05-23T19:34:33Z] postpush(ci) -> recorded branch + exact-head gh runs for new head (expected exact-head empty due [skip ci]) -> next: idle
 [2026-05-23T19:52:16Z] heartbeat no-spend -> HMC Completed + S3 + viewer/proxy 200 + gh exact-head empty ([skip ci]) -> next idle monitoring
 [2026-05-23T19:54:17Z] postpush(ci) -> recorded branch + exact-head gh runs for new head (expected exact-head empty due [skip ci]) -> next: idle
+[2026-05-23T20:10:15Z] heartbeat no-spend -> HMC Completed + S3 bundle + viewer/proxy 200 + gh exact-head empty ([skip ci]) -> next idle monitoring
