@@ -1,0 +1,4 @@
+run_id hmc-mtc-20260520T2015Z
+sfm_job_name hmc-mtc-20260520T2015Z-sfm
+compression_job_name hmc-mtc-20260520T2015Z-compression
+3dgs_job_name hmc-mtc-20260520T2015Z-3dgs
