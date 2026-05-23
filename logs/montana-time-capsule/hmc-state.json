@@ -259,8 +259,8 @@
   "input_image_count": 2063,
   "input_s3_uri": "s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip",
   "input_size_bytes": 8646557673,
-  "last_action": "completed",
-  "last_checked_utc": "2026-05-23T14:26:18Z",
+  "last_action": "heartbeat",
+  "last_checked_utc": "2026-05-23T18:23:52Z",
   "last_cloudwatch_event_at": "2026-05-21T16:46:58.947000Z",
   "last_images": [
     "hmc_2059_DJI_0715.JPG",
