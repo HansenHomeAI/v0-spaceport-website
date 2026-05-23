@@ -2181,6 +2181,7 @@ class ColmapGpsPriorTests(unittest.TestCase):
             root = Path(tmp)
             pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
             pipeline.enable_sequential_matcher = True
+            pipeline.chunk_allow_core_only_pass = True
             pipeline.exif_records = {
                 "IMG_01.jpg": {"local_x_m": 0.0, "local_y_m": 0.0, "heading_deg": 0.0},
                 "IMG_02.jpg": {"local_x_m": 1.0, "local_y_m": 0.0, "heading_deg": 0.0},
@@ -2296,6 +2297,7 @@ class ColmapGpsPriorTests(unittest.TestCase):
             root = Path(tmp)
             pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
             pipeline.enable_sequential_matcher = True
+            pipeline.chunk_allow_core_only_pass = True
             pipeline.exif_records = {
                 "IMG_01.jpg": {"local_x_m": 0.0, "local_y_m": 0.0, "heading_deg": 0.0},
                 "IMG_02.jpg": {"local_x_m": 1.0, "local_y_m": 0.0, "heading_deg": 0.0},
@@ -2371,6 +2373,7 @@ class ColmapGpsPriorTests(unittest.TestCase):
             pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
             pipeline.enable_sequential_matcher = True
             pipeline.chunk_min_core_registered_ratio = 0.75
+            pipeline.chunk_allow_core_only_pass = True
             pipeline.exif_records = {
                 "IMG_01.jpg": {"local_x_m": 0.0, "local_y_m": 0.0, "heading_deg": 0.0},
                 "IMG_02.jpg": {"local_x_m": 1.0, "local_y_m": 0.0, "heading_deg": 0.0},
@@ -2437,6 +2440,113 @@ class ColmapGpsPriorTests(unittest.TestCase):
             self.assertEqual(spatial_mock.call_count, 1)
             self.assertEqual(vocab_mock.call_count, 0)
             self.assertEqual(mapper_mock.call_count, 1)
+
+    def test_run_chunk_pipeline_recovers_when_total_ratio_fails_even_if_core_ratio_is_relaxed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.enable_sequential_matcher = True
+            pipeline.chunk_min_core_registered_ratio = 0.75
+            pipeline.gps_min_registered_ratio = 0.98
+            pipeline.exif_records = {
+                "IMG_01.jpg": {"local_x_m": 0.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_02.jpg": {"local_x_m": 1.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_03.jpg": {"local_x_m": 2.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_04.jpg": {"local_x_m": 3.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_05.jpg": {"local_x_m": 4.0, "local_y_m": 0.0, "heading_deg": 0.0},
+                "IMG_06.jpg": {"local_x_m": 5.0, "local_y_m": 0.0, "heading_deg": 0.0},
+            }
+            chunk = run_colmap_sfm.ChunkPlan(
+                index=0,
+                core_names=["IMG_01.jpg", "IMG_02.jpg", "IMG_03.jpg", "IMG_04.jpg"],
+                image_names=[
+                    "IMG_01.jpg",
+                    "IMG_02.jpg",
+                    "IMG_03.jpg",
+                    "IMG_04.jpg",
+                    "IMG_05.jpg",
+                    "IMG_06.jpg",
+                ],
+                overlap_names=["IMG_05.jpg", "IMG_06.jpg"],
+            )
+            initial_dir = root / "initial"
+            initial_dir.mkdir()
+            (initial_dir / "images.txt").write_text(
+                "\n".join(
+                    [
+                        "1 1 0 0 0 0 0 0 1 IMG_01.jpg",
+                        "0 0 -1",
+                        "2 1 0 0 0 0 0 0 1 IMG_02.jpg",
+                        "0 0 -1",
+                        "3 1 0 0 0 0 0 0 1 IMG_03.jpg",
+                        "0 0 -1",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            recovered_dir = root / "recovered"
+            recovered_dir.mkdir()
+            (recovered_dir / "images.txt").write_text(
+                "\n".join(
+                    [
+                        "1 1 0 0 0 0 0 0 1 IMG_01.jpg",
+                        "0 0 -1",
+                        "2 1 0 0 0 0 0 0 1 IMG_02.jpg",
+                        "0 0 -1",
+                        "3 1 0 0 0 0 0 0 1 IMG_03.jpg",
+                        "0 0 -1",
+                        "4 1 0 0 0 0 0 0 1 IMG_04.jpg",
+                        "0 0 -1",
+                        "5 1 0 0 0 0 0 0 1 IMG_05.jpg",
+                        "0 0 -1",
+                        "6 1 0 0 0 0 0 0 1 IMG_06.jpg",
+                        "0 0 -1",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            initial_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_00_mapper_initial",
+                text_dir=initial_dir,
+                cameras_registered=1,
+                images_registered=3,
+                points_3d=900,
+                binary_dir=initial_dir,
+                image_count=6,
+            )
+            recovered_model = run_colmap_sfm.ModelSummary(
+                stage="chunk_00_mapper_recovery",
+                text_dir=recovered_dir,
+                cameras_registered=1,
+                images_registered=6,
+                points_3d=1400,
+                binary_dir=recovered_dir,
+                image_count=6,
+            )
+
+            with mock.patch.object(
+                pipeline,
+                "prepare_chunk_database",
+                return_value=root / "chunk.db",
+            ), mock.patch.object(pipeline, "run_chunk_matchers"), mock.patch.object(
+                pipeline, "run_chunk_recovery_matchers"
+            ) as recovery_matchers, mock.patch.object(
+                pipeline,
+                "run_mapper",
+                side_effect=[initial_model, recovered_model],
+            ) as mapper_mock:
+                pipeline.timings["chunk_00_mapper_initial_seconds"] = 10.0
+                pipeline.timings["chunk_00_mapper_recovery_seconds"] = 5.0
+                best_model = pipeline.run_chunk_pipeline(chunk)
+
+            self.assertIs(best_model, recovered_model)
+            self.assertTrue(pipeline.boundary_recovery_triggered)
+            self.assertEqual(mapper_mock.call_count, 2)
+            self.assertEqual(recovery_matchers.call_count, 1)
+            self.assertEqual(
+                pipeline.chunk_run_metrics[-1]["recovered_registered_ratio"],
+                1.0,
+            )
 
     def test_run_chunk_pipeline_fails_fast_when_prior_retry_stays_below_threshold(self):
         with tempfile.TemporaryDirectory() as tmp:

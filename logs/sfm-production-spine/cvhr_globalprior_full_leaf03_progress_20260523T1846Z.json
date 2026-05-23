@@ -1,0 +1,28 @@
+{
+  "active_jobs_proof": "logs/sfm-production-spine/active-cvhr-processing-jobs-globalprior-full-poll-20260523T1846Z.json",
+  "active_training_jobs_proof": "logs/sfm-production-spine/active-cvhr-training-jobs-globalprior-full-poll-20260523T1846Z.json",
+  "artifact_kind": "cvhr_globalprior_full_leaf03_progress",
+  "created_at": "2026-05-23T18:46:50Z",
+  "jobs": [
+    {
+      "cloudwatch_last_event_timestamp_ms": 1779560162503,
+      "cloudwatch_stream": "cvhr-globalprior-full-l03-1779555542/algo-1-1779555579",
+      "cloudwatch_tail": "logs/sfm-production-spine/cvhr-globalprior-full-l03-1779555542_cloudwatch_tail_20260523T1846Z.json",
+      "describe": "logs/sfm-production-spine/cvhr-globalprior-full-l03-1779555542_describe_poll_20260523T1846Z.json",
+      "failure_reason": "AlgorithmError: , exit code: 1",
+      "job_name": "cvhr-globalprior-full-l03-1779555542",
+      "latest_feature_message": "",
+      "latest_mapper_message": "2026-05-23 18:38:01,074 - INFO - chunk_03_mapper_initial model 1 registered 34/360 images and 27172 points",
+      "latest_progress_message": "RuntimeError: Chunked merge registered 341/360 images",
+      "log_streams": "logs/sfm-production-spine/cvhr-globalprior-full-l03-1779555542_log_streams_20260523T1846Z.json",
+      "processing_end_time": "2026-05-23T12:38:55.823000-06:00",
+      "processing_start_time": "2026-05-23T10:59:40.079000-06:00",
+      "s3_poll": "logs/sfm-production-spine/cvhr-globalprior-full-l03-1779555542_s3_poll_20260523T1846Z.txt",
+      "s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z/leaves/leaf-03/colmap",
+      "status": "Failed",
+      "terminal_evidence_tail": [
+        "COLMAP[chunk_03_mapper_initial] I20260523 18:37:51.933583   645 timer.cc:90] Elapsed time: 76.285 [minutes]"
+      ]
+    }
+  ]
+}

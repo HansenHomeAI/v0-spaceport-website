@@ -1,0 +1,75 @@
+{
+  "artifact_kind": "cvhr_globalprior_full_leaf04_verification",
+  "created_at": "2026-05-23T18:16:50Z",
+  "facts": {
+    "core_filtered_points": 177051,
+    "expected_images": 360,
+    "filtered_points": 192742,
+    "model_alignment_status": "aligned",
+    "planner_global_pose_priors_applied": 360,
+    "raw_points": 308865,
+    "registered_images": 360,
+    "s3_objects": 376,
+    "status": "Completed/no FailureReason"
+  },
+  "job": "cvhr-globalprior-full-l04-1779555542",
+  "leaf_metadata": [
+    {
+      "chunk_index": 4,
+      "core_registered_ratio": 1.0,
+      "failure_reason": null,
+      "failure_stage": null,
+      "fallbacks_used": [],
+      "image_count": 360,
+      "mapper_mode": "incremental",
+      "peak_memory_mb": null,
+      "points3d_count": 308865,
+      "points_per_registered_image": 857.96,
+      "registered_count": 360,
+      "registered_ratio": 1.0,
+      "status": "passed",
+      "timings_sec": {
+        "mapper_initial": 2556.83
+      },
+      "verified_pair_count": 4069
+    }
+  ],
+  "reducer_metadata": {
+    "ba_policy": "local_or_deferred_global",
+    "branch": "agent-73948216-sfm-production-spine",
+    "expected_component_count": 1,
+    "failed_leaf_count": 0,
+    "head": "8ff88ab3c4078a3de81fcc3369ee29eec7fffc87",
+    "input_uri": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+    "leaf_count": 1,
+    "merge_strategy": "overlap_first_balanced",
+    "merged_component_count": 1,
+    "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z/leaves/leaf-04/colmap",
+    "passed_leaf_count": 1,
+    "planner_manifest": "chunk_planner_manifest.json",
+    "promotion_blockers": [],
+    "standard_sparse0_exists": true
+  },
+  "s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z/leaves/leaf-04/colmap",
+  "sfm_selected_fields": {
+    "model_alignment_reports": [
+      {
+        "aligned_images_registered": 360,
+        "aligned_points_3d": 308865,
+        "aligned_stage": "chunk_04_mapper_initial_gps_aligned",
+        "alignment_max_error_m": 25.0,
+        "enabled": true,
+        "gps_prior_coverage": 1.0,
+        "min_common_images": 20,
+        "ref_images_path": "/tmp/colmap_sfm_r_txvehx/gps_alignment/chunk_04_mapper_initial_ref_images.txt",
+        "reference_image_count": 360,
+        "registered_images": 360,
+        "required": true,
+        "stage": "chunk_04_mapper_initial",
+        "status": "aligned"
+      }
+    ],
+    "model_alignment_reports[0].registered_images": 360,
+    "model_alignment_reports[0].status": "aligned"
+  }
+}

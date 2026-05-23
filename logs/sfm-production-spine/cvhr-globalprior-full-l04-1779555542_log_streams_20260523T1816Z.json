@@ -1,0 +1,14 @@
+{
+  "logStreams": [
+    {
+      "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:cvhr-globalprior-full-l04-1779555542/algo-1-1779555580",
+      "creationTime": 1779555776102,
+      "firstEventTimestamp": 1779555757601,
+      "lastEventTimestamp": 1779558899475,
+      "lastIngestionTime": 1779558904535,
+      "logStreamName": "cvhr-globalprior-full-l04-1779555542/algo-1-1779555580",
+      "storedBytes": 0,
+      "uploadSequenceToken": "49039859673147959523725610738650227722017673275923651370"
+    }
+  ]
+}

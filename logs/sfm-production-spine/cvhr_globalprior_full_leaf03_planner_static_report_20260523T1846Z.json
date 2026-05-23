@@ -1,0 +1,35 @@
+{
+  "dataset_image_count": 360,
+  "gps_coverage_ratio": 1.0,
+  "orientation_coverage_ratio": 1.0,
+  "selected_orientation_source": "exif",
+  "candidate_pair_counts": {
+    "spatial": 17741,
+    "sequence": 3545,
+    "footprint": 5997,
+    "retrieval": 0
+  },
+  "verified_pair_count": 4143,
+  "connected_component_count": 1,
+  "chunk_count": 1,
+  "chunk_sizes": [
+    360
+  ],
+  "orphan_image_count": 0,
+  "risky_bridges": [],
+  "estimated_leaf_jobs": 1,
+  "expected_output_kind": "single_merged_model",
+  "visibility_cell_summary": {
+    "cell_count": 1,
+    "seam_overlap_percent": 15.0,
+    "owned_image_count": 1710,
+    "overlap_image_count": 999,
+    "min_shared_images": 0,
+    "min_required_adjacent_shared_images": 10,
+    "min_adjacent_shared_images": 0,
+    "weak_adjacent_seams_under_10": [],
+    "adjacent_seam_shared_images": [],
+    "cell_adjacency": {},
+    "horizon_context_image_count": 1463
+  }
+}

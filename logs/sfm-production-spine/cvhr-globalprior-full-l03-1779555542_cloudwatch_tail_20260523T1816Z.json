@@ -1,0 +1,1061 @@
+{
+  "events": [
+    {
+      "ingestionTime": 1779559258592,
+      "message": "COLMAP[chunk_03_mapper_initial] HEARTBEAT elapsed=2357s idle=60s",
+      "timestamp": 1779559253327
+    },
+    {
+      "ingestionTime": 1779559317949,
+      "message": "COLMAP[chunk_03_mapper_initial] HEARTBEAT elapsed=2417s idle=120s",
+      "timestamp": 1779559312518
+    },
+    {
+      "ingestionTime": 1779559378194,
+      "message": "COLMAP[chunk_03_mapper_initial] HEARTBEAT elapsed=2477s idle=180s",
+      "timestamp": 1779559372811
+    },
+    {
+      "ingestionTime": 1779559385245,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:02:59.376125   645 incremental_pipeline.cc:524] Registering image #140 (num_reg_frames=259)",
+      "timestamp": 1779559379834
+    },
+    {
+      "ingestionTime": 1779559385245,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:02:59.376195   645 incremental_pipeline.cc:527] => Image sees 2078 / 4399 points",
+      "timestamp": 1779559379834
+    },
+    {
+      "ingestionTime": 1779559385245,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:00.484501   645 incremental_pipeline.cc:524] Registering image #92 (num_reg_frames=260)",
+      "timestamp": 1779559380835
+    },
+    {
+      "ingestionTime": 1779559385245,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:00.484550   645 incremental_pipeline.cc:527] => Image sees 1578 / 5663 points",
+      "timestamp": 1779559380835
+    },
+    {
+      "ingestionTime": 1779559385245,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:00.601001   645 incremental_pipeline.cc:550] => Could not register, trying another image.",
+      "timestamp": 1779559380835
+    },
+    {
+      "ingestionTime": 1779559385245,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:00.601044   645 incremental_pipeline.cc:524] Registering image #93 (num_reg_frames=260)",
+      "timestamp": 1779559380835
+    },
+    {
+      "ingestionTime": 1779559385245,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:00.601055   645 incremental_pipeline.cc:527] => Image sees 1297 / 5408 points",
+      "timestamp": 1779559380835
+    },
+    {
+      "ingestionTime": 1779559385245,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:01.656656   645 incremental_pipeline.cc:524] Registering image #91 (num_reg_frames=261)",
+      "timestamp": 1779559381835
+    },
+    {
+      "ingestionTime": 1779559385245,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:01.656715   645 incremental_pipeline.cc:527] => Image sees 1032 / 5707 points",
+      "timestamp": 1779559381835
+    },
+    {
+      "ingestionTime": 1779559385245,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:02.630879   645 incremental_pipeline.cc:524] Registering image #179 (num_reg_frames=262)",
+      "timestamp": 1779559382835
+    },
+    {
+      "ingestionTime": 1779559385245,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:02.630926   645 incremental_pipeline.cc:527] => Image sees 1041 / 2505 points",
+      "timestamp": 1779559382835
+    },
+    {
+      "ingestionTime": 1779559385245,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:03.602631   645 incremental_pipeline.cc:524] Registering image #90 (num_reg_frames=263)",
+      "timestamp": 1779559383836
+    },
+    {
+      "ingestionTime": 1779559385245,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:03.602684   645 incremental_pipeline.cc:527] => Image sees 850 / 6212 points",
+      "timestamp": 1779559383836
+    },
+    {
+      "ingestionTime": 1779559390271,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:04.651973   645 incremental_pipeline.cc:524] Registering image #89 (num_reg_frames=264)",
+      "timestamp": 1779559384836
+    },
+    {
+      "ingestionTime": 1779559390271,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:04.652020   645 incremental_pipeline.cc:527] => Image sees 1728 / 5357 points",
+      "timestamp": 1779559384836
+    },
+    {
+      "ingestionTime": 1779559390271,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:05.684906   645 incremental_pipeline.cc:524] Registering image #88 (num_reg_frames=265)",
+      "timestamp": 1779559385836
+    },
+    {
+      "ingestionTime": 1779559390271,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:05.684952   645 incremental_pipeline.cc:527] => Image sees 2014 / 4870 points",
+      "timestamp": 1779559385836
+    },
+    {
+      "ingestionTime": 1779559390271,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:06.797626   645 incremental_pipeline.cc:524] Registering image #87 (num_reg_frames=266)",
+      "timestamp": 1779559386837
+    },
+    {
+      "ingestionTime": 1779559390271,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:06.797676   645 incremental_pipeline.cc:527] => Image sees 1437 / 5805 points",
+      "timestamp": 1779559386837
+    },
+    {
+      "ingestionTime": 1779559390271,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:07.889433   645 incremental_pipeline.cc:524] Registering image #86 (num_reg_frames=267)",
+      "timestamp": 1779559388837
+    },
+    {
+      "ingestionTime": 1779559390271,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:07.889482   645 incremental_pipeline.cc:527] => Image sees 1489 / 5394 points",
+      "timestamp": 1779559388837
+    },
+    {
+      "ingestionTime": 1779559395293,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:08.944919   645 incremental_pipeline.cc:524] Registering image #70 (num_reg_frames=268)",
+      "timestamp": 1779559389838
+    },
+    {
+      "ingestionTime": 1779559395293,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:08.944973   645 incremental_pipeline.cc:527] => Image sees 699 / 7316 points",
+      "timestamp": 1779559389838
+    },
+    {
+      "ingestionTime": 1779559395293,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:09.947327   645 incremental_pipeline.cc:524] Registering image #74 (num_reg_frames=269)",
+      "timestamp": 1779559390838
+    },
+    {
+      "ingestionTime": 1779559395293,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:09.947378   645 incremental_pipeline.cc:527] => Image sees 683 / 7102 points",
+      "timestamp": 1779559390838
+    },
+    {
+      "ingestionTime": 1779559395293,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:11.108820   645 incremental_pipeline.cc:524] Registering image #72 (num_reg_frames=270)",
+      "timestamp": 1779559391838
+    },
+    {
+      "ingestionTime": 1779559395293,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:11.108867   645 incremental_pipeline.cc:527] => Image sees 2158 / 7202 points",
+      "timestamp": 1779559391838
+    },
+    {
+      "ingestionTime": 1779559395293,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:12.292145   645 incremental_pipeline.cc:524] Registering image #69 (num_reg_frames=271)",
+      "timestamp": 1779559392842
+    },
+    {
+      "ingestionTime": 1779559395293,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:12.292194   645 incremental_pipeline.cc:527] => Image sees 2578 / 7648 points",
+      "timestamp": 1779559392842
+    },
+    {
+      "ingestionTime": 1779559395293,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:13.718848   645 incremental_pipeline.cc:524] Registering image #71 (num_reg_frames=272)",
+      "timestamp": 1779559393843
+    },
+    {
+      "ingestionTime": 1779559395293,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:13.718895   645 incremental_pipeline.cc:527] => Image sees 3726 / 6595 points",
+      "timestamp": 1779559393843
+    },
+    {
+      "ingestionTime": 1779559401354,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:15.302131   645 incremental_pipeline.cc:524] Registering image #68 (num_reg_frames=273)",
+      "timestamp": 1779559395844
+    },
+    {
+      "ingestionTime": 1779559401354,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:15.302179   645 incremental_pipeline.cc:527] => Image sees 3878 / 7177 points",
+      "timestamp": 1779559395844
+    },
+    {
+      "ingestionTime": 1779559401354,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:16.947727   645 incremental_pipeline.cc:524] Registering image #67 (num_reg_frames=274)",
+      "timestamp": 1779559397845
+    },
+    {
+      "ingestionTime": 1779559401354,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:16.947778   645 incremental_pipeline.cc:527] => Image sees 3875 / 7283 points",
+      "timestamp": 1779559397845
+    },
+    {
+      "ingestionTime": 1779559401354,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:18.459911   645 incremental_pipeline.cc:524] Registering image #65 (num_reg_frames=275)",
+      "timestamp": 1779559398845
+    },
+    {
+      "ingestionTime": 1779559401354,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:18.459962   645 incremental_pipeline.cc:527] => Image sees 3030 / 5739 points",
+      "timestamp": 1779559398845
+    },
+    {
+      "ingestionTime": 1779559406378,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:19.863442   645 incremental_pipeline.cc:524] Registering image #66 (num_reg_frames=276)",
+      "timestamp": 1779559400846
+    },
+    {
+      "ingestionTime": 1779559406378,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:19.863492   645 incremental_pipeline.cc:527] => Image sees 2851 / 5426 points",
+      "timestamp": 1779559400846
+    },
+    {
+      "ingestionTime": 1779559406378,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:21.190006   645 incremental_pipeline.cc:524] Registering image #73 (num_reg_frames=277)",
+      "timestamp": 1779559401846
+    },
+    {
+      "ingestionTime": 1779559406378,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:21.190060   645 incremental_pipeline.cc:527] => Image sees 2977 / 7211 points",
+      "timestamp": 1779559401846
+    },
+    {
+      "ingestionTime": 1779559406378,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:22.615309   645 incremental_pipeline.cc:524] Registering image #75 (num_reg_frames=278)",
+      "timestamp": 1779559402847
+    },
+    {
+      "ingestionTime": 1779559406378,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:22.615362   645 incremental_pipeline.cc:527] => Image sees 3218 / 6633 points",
+      "timestamp": 1779559402847
+    },
+    {
+      "ingestionTime": 1779559406378,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:23.994808   645 incremental_pipeline.cc:524] Registering image #63 (num_reg_frames=279)",
+      "timestamp": 1779559404852
+    },
+    {
+      "ingestionTime": 1779559406378,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:23.994860   645 incremental_pipeline.cc:527] => Image sees 2649 / 5283 points",
+      "timestamp": 1779559404852
+    },
+    {
+      "ingestionTime": 1779559411397,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:25.304344   645 incremental_pipeline.cc:524] Registering image #62 (num_reg_frames=280)",
+      "timestamp": 1779559405857
+    },
+    {
+      "ingestionTime": 1779559411397,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:25.304394   645 incremental_pipeline.cc:527] => Image sees 2689 / 5230 points",
+      "timestamp": 1779559405857
+    },
+    {
+      "ingestionTime": 1779559411397,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:26.537757   645 incremental_pipeline.cc:524] Registering image #64 (num_reg_frames=281)",
+      "timestamp": 1779559406857
+    },
+    {
+      "ingestionTime": 1779559411397,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:26.537804   645 incremental_pipeline.cc:527] => Image sees 3332 / 5510 points",
+      "timestamp": 1779559406857
+    },
+    {
+      "ingestionTime": 1779559411397,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:27.884783   645 incremental_pipeline.cc:524] Registering image #76 (num_reg_frames=282)",
+      "timestamp": 1779559408858
+    },
+    {
+      "ingestionTime": 1779559411397,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:27.884828   645 incremental_pipeline.cc:527] => Image sees 2202 / 4426 points",
+      "timestamp": 1779559408858
+    },
+    {
+      "ingestionTime": 1779559411397,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:29.119594   645 incremental_pipeline.cc:524] Registering image #78 (num_reg_frames=283)",
+      "timestamp": 1779559409858
+    },
+    {
+      "ingestionTime": 1779559411397,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:29.119647   645 incremental_pipeline.cc:527] => Image sees 2071 / 5259 points",
+      "timestamp": 1779559409858
+    },
+    {
+      "ingestionTime": 1779559416415,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:03:30.192265   645 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+      "timestamp": 1779559410859
+    },
+    {
+      "ingestionTime": 1779559477875,
+      "message": "COLMAP[chunk_03_mapper_initial] HEARTBEAT elapsed=2576s idle=60s",
+      "timestamp": 1779559472100
+    },
+    {
+      "ingestionTime": 1779559537186,
+      "message": "COLMAP[chunk_03_mapper_initial] HEARTBEAT elapsed=2636s idle=120s",
+      "timestamp": 1779559531367
+    },
+    {
+      "ingestionTime": 1779559597510,
+      "message": "COLMAP[chunk_03_mapper_initial] HEARTBEAT elapsed=2696s idle=180s",
+      "timestamp": 1779559591692
+    },
+    {
+      "ingestionTime": 1779559657868,
+      "message": "COLMAP[chunk_03_mapper_initial] HEARTBEAT elapsed=2756s idle=240s",
+      "timestamp": 1779559652070
+    },
+    {
+      "ingestionTime": 1779559717308,
+      "message": "COLMAP[chunk_03_mapper_initial] HEARTBEAT elapsed=2816s idle=300s",
+      "timestamp": 1779559711361
+    },
+    {
+      "ingestionTime": 1779559777673,
+      "message": "COLMAP[chunk_03_mapper_initial] HEARTBEAT elapsed=2876s idle=360s",
+      "timestamp": 1779559771762
+    },
+    {
+      "ingestionTime": 1779559782701,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:36.101444   645 incremental_pipeline.cc:524] Registering image #77 (num_reg_frames=284)",
+      "timestamp": 1779559776764
+    },
+    {
+      "ingestionTime": 1779559782701,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:36.101519   645 incremental_pipeline.cc:527] => Image sees 2262 / 5194 points",
+      "timestamp": 1779559776764
+    },
+    {
+      "ingestionTime": 1779559782701,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:37.432219   645 incremental_pipeline.cc:524] Registering image #61 (num_reg_frames=285)",
+      "timestamp": 1779559777764
+    },
+    {
+      "ingestionTime": 1779559782701,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:37.432268   645 incremental_pipeline.cc:527] => Image sees 585 / 3799 points",
+      "timestamp": 1779559777764
+    },
+    {
+      "ingestionTime": 1779559782701,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:38.451385   645 incremental_pipeline.cc:524] Registering image #59 (num_reg_frames=286)",
+      "timestamp": 1779559778764
+    },
+    {
+      "ingestionTime": 1779559782701,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:38.451435   645 incremental_pipeline.cc:527] => Image sees 692 / 4660 points",
+      "timestamp": 1779559778764
+    },
+    {
+      "ingestionTime": 1779559782701,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:39.505574   645 incremental_pipeline.cc:524] Registering image #60 (num_reg_frames=287)",
+      "timestamp": 1779559779765
+    },
+    {
+      "ingestionTime": 1779559782701,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:39.505630   645 incremental_pipeline.cc:527] => Image sees 1827 / 3502 points",
+      "timestamp": 1779559779765
+    },
+    {
+      "ingestionTime": 1779559782701,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:40.520975   645 incremental_pipeline.cc:524] Registering image #349 (num_reg_frames=288)",
+      "timestamp": 1779559780765
+    },
+    {
+      "ingestionTime": 1779559782701,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:40.521032   645 incremental_pipeline.cc:527] => Image sees 476 / 6585 points",
+      "timestamp": 1779559780765
+    },
+    {
+      "ingestionTime": 1779559787719,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:41.339498   645 incremental_pipeline.cc:524] Registering image #348 (num_reg_frames=289)",
+      "timestamp": 1779559781766
+    },
+    {
+      "ingestionTime": 1779559787719,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:41.339553   645 incremental_pipeline.cc:527] => Image sees 688 / 6019 points",
+      "timestamp": 1779559781766
+    },
+    {
+      "ingestionTime": 1779559787719,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:42.348891   645 incremental_pipeline.cc:524] Registering image #350 (num_reg_frames=290)",
+      "timestamp": 1779559782766
+    },
+    {
+      "ingestionTime": 1779559787719,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:42.348943   645 incremental_pipeline.cc:527] => Image sees 2263 / 5140 points",
+      "timestamp": 1779559782766
+    },
+    {
+      "ingestionTime": 1779559787719,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:43.438732   645 incremental_pipeline.cc:524] Registering image #352 (num_reg_frames=291)",
+      "timestamp": 1779559783766
+    },
+    {
+      "ingestionTime": 1779559787719,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:43.438786   645 incremental_pipeline.cc:527] => Image sees 1864 / 4578 points",
+      "timestamp": 1779559783766
+    },
+    {
+      "ingestionTime": 1779559787719,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:44.528162   645 incremental_pipeline.cc:524] Registering image #351 (num_reg_frames=292)",
+      "timestamp": 1779559784767
+    },
+    {
+      "ingestionTime": 1779559787719,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:44.528219   645 incremental_pipeline.cc:527] => Image sees 1676 / 3448 points",
+      "timestamp": 1779559784767
+    },
+    {
+      "ingestionTime": 1779559787719,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:45.620585   645 incremental_pipeline.cc:524] Registering image #354 (num_reg_frames=293)",
+      "timestamp": 1779559785767
+    },
+    {
+      "ingestionTime": 1779559787719,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:45.620643   645 incremental_pipeline.cc:527] => Image sees 803 / 5983 points",
+      "timestamp": 1779559785767
+    },
+    {
+      "ingestionTime": 1779559792741,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:46.631135   645 incremental_pipeline.cc:524] Registering image #353 (num_reg_frames=294)",
+      "timestamp": 1779559786768
+    },
+    {
+      "ingestionTime": 1779559792741,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:46.631191   645 incremental_pipeline.cc:527] => Image sees 1018 / 5532 points",
+      "timestamp": 1779559786768
+    },
+    {
+      "ingestionTime": 1779559792741,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:47.717985   645 incremental_pipeline.cc:524] Registering image #360 (num_reg_frames=295)",
+      "timestamp": 1779559787768
+    },
+    {
+      "ingestionTime": 1779559792741,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:47.718034   645 incremental_pipeline.cc:527] => Image sees 2018 / 7263 points",
+      "timestamp": 1779559787768
+    },
+    {
+      "ingestionTime": 1779559792741,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:48.915856   645 incremental_pipeline.cc:524] Registering image #359 (num_reg_frames=296)",
+      "timestamp": 1779559789769
+    },
+    {
+      "ingestionTime": 1779559792741,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:48.915910   645 incremental_pipeline.cc:527] => Image sees 2814 / 6875 points",
+      "timestamp": 1779559789769
+    },
+    {
+      "ingestionTime": 1779559792741,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:50.172273   645 incremental_pipeline.cc:524] Registering image #358 (num_reg_frames=297)",
+      "timestamp": 1779559790769
+    },
+    {
+      "ingestionTime": 1779559792741,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:50.172322   645 incremental_pipeline.cc:527] => Image sees 2773 / 5297 points",
+      "timestamp": 1779559790769
+    },
+    {
+      "ingestionTime": 1779559797765,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:51.537622   645 incremental_pipeline.cc:524] Registering image #357 (num_reg_frames=298)",
+      "timestamp": 1779559791769
+    },
+    {
+      "ingestionTime": 1779559797765,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:51.537669   645 incremental_pipeline.cc:527] => Image sees 1176 / 5515 points",
+      "timestamp": 1779559791769
+    },
+    {
+      "ingestionTime": 1779559797765,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:52.725128   645 incremental_pipeline.cc:524] Registering image #356 (num_reg_frames=299)",
+      "timestamp": 1779559792770
+    },
+    {
+      "ingestionTime": 1779559797765,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:52.725183   645 incremental_pipeline.cc:527] => Image sees 1526 / 5862 points",
+      "timestamp": 1779559792770
+    },
+    {
+      "ingestionTime": 1779559797765,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:53.970389   645 incremental_pipeline.cc:524] Registering image #355 (num_reg_frames=300)",
+      "timestamp": 1779559794771
+    },
+    {
+      "ingestionTime": 1779559797765,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:53.970451   645 incremental_pipeline.cc:527] => Image sees 2882 / 6191 points",
+      "timestamp": 1779559794771
+    },
+    {
+      "ingestionTime": 1779559797765,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:55.210932   645 incremental_pipeline.cc:524] Registering image #26 (num_reg_frames=301)",
+      "timestamp": 1779559795771
+    },
+    {
+      "ingestionTime": 1779559797765,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:55.210983   645 incremental_pipeline.cc:527] => Image sees 1142 / 7398 points",
+      "timestamp": 1779559795771
+    },
+    {
+      "ingestionTime": 1779559801780,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:56.343858   645 incremental_pipeline.cc:524] Registering image #27 (num_reg_frames=302)",
+      "timestamp": 1779559796772
+    },
+    {
+      "ingestionTime": 1779559801780,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:56.343917   645 incremental_pipeline.cc:527] => Image sees 1422 / 6409 points",
+      "timestamp": 1779559796772
+    },
+    {
+      "ingestionTime": 1779559801780,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:57.550894   645 incremental_pipeline.cc:524] Registering image #25 (num_reg_frames=303)",
+      "timestamp": 1779559797772
+    },
+    {
+      "ingestionTime": 1779559801780,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:57.550951   645 incremental_pipeline.cc:527] => Image sees 2918 / 6795 points",
+      "timestamp": 1779559797772
+    },
+    {
+      "ingestionTime": 1779559801780,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:58.803370   645 incremental_pipeline.cc:524] Registering image #1 (num_reg_frames=304)",
+      "timestamp": 1779559799773
+    },
+    {
+      "ingestionTime": 1779559801780,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:58.803434   645 incremental_pipeline.cc:527] => Image sees 403 / 972 points",
+      "timestamp": 1779559799773
+    },
+    {
+      "ingestionTime": 1779559801780,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:59.649955   645 incremental_pipeline.cc:524] Registering image #28 (num_reg_frames=305)",
+      "timestamp": 1779559799773
+    },
+    {
+      "ingestionTime": 1779559801780,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:09:59.650038   645 incremental_pipeline.cc:527] => Image sees 343 / 4925 points",
+      "timestamp": 1779559799773
+    },
+    {
+      "ingestionTime": 1779559801780,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:10:00.486223   645 incremental_pipeline.cc:524] Registering image #24 (num_reg_frames=306)",
+      "timestamp": 1779559800774
+    },
+    {
+      "ingestionTime": 1779559801780,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:10:00.486277   645 incremental_pipeline.cc:527] => Image sees 339 / 1149 points",
+      "timestamp": 1779559800774
+    },
+    {
+      "ingestionTime": 1779559806802,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:10:01.497661   645 incremental_pipeline.cc:524] Registering image #23 (num_reg_frames=307)",
+      "timestamp": 1779559801774
+    },
+    {
+      "ingestionTime": 1779559806802,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:10:01.497705   645 incremental_pipeline.cc:527] => Image sees 179 / 5458 points",
+      "timestamp": 1779559801774
+    },
+    {
+      "ingestionTime": 1779559806802,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:10:01.509011   645 incremental_pipeline.cc:550] => Could not register, trying another image.",
+      "timestamp": 1779559801774
+    },
+    {
+      "ingestionTime": 1779559806802,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:10:01.509042   645 incremental_pipeline.cc:524] Registering image #54 (num_reg_frames=307)",
+      "timestamp": 1779559801774
+    },
+    {
+      "ingestionTime": 1779559806802,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:10:01.509054   645 incremental_pipeline.cc:527] => Image sees 186 / 6770 points",
+      "timestamp": 1779559801774
+    },
+    {
+      "ingestionTime": 1779559806802,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:10:02.401042   645 incremental_pipeline.cc:524] Registering image #53 (num_reg_frames=308)",
+      "timestamp": 1779559802774
+    },
+    {
+      "ingestionTime": 1779559806802,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:10:02.401098   645 incremental_pipeline.cc:527] => Image sees 217 / 6894 points",
+      "timestamp": 1779559802774
+    },
+    {
+      "ingestionTime": 1779559806802,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:10:03.387092   645 incremental_pipeline.cc:524] Registering image #55 (num_reg_frames=309)",
+      "timestamp": 1779559803775
+    },
+    {
+      "ingestionTime": 1779559806802,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:10:03.387143   645 incremental_pipeline.cc:527] => Image sees 1458 / 6672 points",
+      "timestamp": 1779559803775
+    },
+    {
+      "ingestionTime": 1779559806802,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:10:04.518322   645 incremental_pipeline.cc:524] Registering image #56 (num_reg_frames=310)",
+      "timestamp": 1779559804775
+    },
+    {
+      "ingestionTime": 1779559806802,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:10:04.518375   645 incremental_pipeline.cc:527] => Image sees 2562 / 6998 points",
+      "timestamp": 1779559804775
+    },
+    {
+      "ingestionTime": 1779559806802,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:10:05.757858   645 incremental_pipeline.cc:524] Registering image #58 (num_reg_frames=311)",
+      "timestamp": 1779559805776
+    },
+    {
+      "ingestionTime": 1779559806802,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:10:05.757908   645 incremental_pipeline.cc:527] => Image sees 3494 / 6852 points",
+      "timestamp": 1779559805776
+    },
+    {
+      "ingestionTime": 1779559812841,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:10:07.161324   645 incremental_pipeline.cc:524] Registering image #57 (num_reg_frames=312)",
+      "timestamp": 1779559807782
+    },
+    {
+      "ingestionTime": 1779559812841,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:10:07.161388   645 incremental_pipeline.cc:527] => Image sees 2950 / 5424 points",
+      "timestamp": 1779559807782
+    },
+    {
+      "ingestionTime": 1779559812841,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:10:08.565348   645 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+      "timestamp": 1779559808782
+    },
+    {
+      "ingestionTime": 1779559875384,
+      "message": "COLMAP[chunk_03_mapper_initial] HEARTBEAT elapsed=2975s idle=60s",
+      "timestamp": 1779559870181
+    },
+    {
+      "ingestionTime": 1779559934917,
+      "message": "COLMAP[chunk_03_mapper_initial] HEARTBEAT elapsed=3035s idle=120s",
+      "timestamp": 1779559929590
+    },
+    {
+      "ingestionTime": 1779559995347,
+      "message": "COLMAP[chunk_03_mapper_initial] HEARTBEAT elapsed=3095s idle=180s",
+      "timestamp": 1779559989878
+    },
+    {
+      "ingestionTime": 1779560055929,
+      "message": "COLMAP[chunk_03_mapper_initial] HEARTBEAT elapsed=3155s idle=240s",
+      "timestamp": 1779560050084
+    },
+    {
+      "ingestionTime": 1779560116440,
+      "message": "COLMAP[chunk_03_mapper_initial] HEARTBEAT elapsed=3215s idle=300s",
+      "timestamp": 1779560110397
+    },
+    {
+      "ingestionTime": 1779560134554,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:28.611878   645 incremental_pipeline.cc:524] Registering image #52 (num_reg_frames=313)",
+      "timestamp": 1779560129482
+    },
+    {
+      "ingestionTime": 1779560134554,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:28.611954   645 incremental_pipeline.cc:527] => Image sees 3643 / 5712 points",
+      "timestamp": 1779560129482
+    },
+    {
+      "ingestionTime": 1779560134554,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:30.132048   645 incremental_pipeline.cc:524] Registering image #51 (num_reg_frames=314)",
+      "timestamp": 1779560130485
+    },
+    {
+      "ingestionTime": 1779560134554,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:30.132107   645 incremental_pipeline.cc:527] => Image sees 2018 / 6469 points",
+      "timestamp": 1779560130485
+    },
+    {
+      "ingestionTime": 1779560134554,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:31.384109   645 incremental_pipeline.cc:524] Registering image #50 (num_reg_frames=315)",
+      "timestamp": 1779560131485
+    },
+    {
+      "ingestionTime": 1779560134554,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:31.384164   645 incremental_pipeline.cc:527] => Image sees 2240 / 6264 points",
+      "timestamp": 1779560131485
+    },
+    {
+      "ingestionTime": 1779560134554,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:32.671623   645 incremental_pipeline.cc:524] Registering image #29 (num_reg_frames=316)",
+      "timestamp": 1779560133492
+    },
+    {
+      "ingestionTime": 1779560134554,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:32.671681   645 incremental_pipeline.cc:527] => Image sees 1128 / 4140 points",
+      "timestamp": 1779560133492
+    },
+    {
+      "ingestionTime": 1779560139579,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:33.864826   645 incremental_pipeline.cc:524] Registering image #30 (num_reg_frames=317)",
+      "timestamp": 1779560134492
+    },
+    {
+      "ingestionTime": 1779560139579,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:33.864882   645 incremental_pipeline.cc:527] => Image sees 733 / 4150 points",
+      "timestamp": 1779560134492
+    },
+    {
+      "ingestionTime": 1779560139579,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:34.966379   645 incremental_pipeline.cc:524] Registering image #31 (num_reg_frames=318)",
+      "timestamp": 1779560135493
+    },
+    {
+      "ingestionTime": 1779560139579,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:34.966434   645 incremental_pipeline.cc:527] => Image sees 1263 / 4438 points",
+      "timestamp": 1779560135493
+    },
+    {
+      "ingestionTime": 1779560139579,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:36.016088   645 incremental_pipeline.cc:524] Registering image #32 (num_reg_frames=319)",
+      "timestamp": 1779560136493
+    },
+    {
+      "ingestionTime": 1779560139579,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:36.016146   645 incremental_pipeline.cc:527] => Image sees 1284 / 6209 points",
+      "timestamp": 1779560136493
+    },
+    {
+      "ingestionTime": 1779560139579,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:37.016410   645 incremental_pipeline.cc:524] Registering image #33 (num_reg_frames=320)",
+      "timestamp": 1779560137493
+    },
+    {
+      "ingestionTime": 1779560139579,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:37.016466   645 incremental_pipeline.cc:527] => Image sees 1662 / 6587 points",
+      "timestamp": 1779560137493
+    },
+    {
+      "ingestionTime": 1779560139579,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:38.091518   645 incremental_pipeline.cc:524] Registering image #34 (num_reg_frames=321)",
+      "timestamp": 1779560138494
+    },
+    {
+      "ingestionTime": 1779560139579,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:38.091578   645 incremental_pipeline.cc:527] => Image sees 2311 / 5425 points",
+      "timestamp": 1779560138494
+    },
+    {
+      "ingestionTime": 1779560144598,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:39.329480   645 incremental_pipeline.cc:524] Registering image #35 (num_reg_frames=322)",
+      "timestamp": 1779560139494
+    },
+    {
+      "ingestionTime": 1779560144598,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:39.329537   645 incremental_pipeline.cc:527] => Image sees 2489 / 4964 points",
+      "timestamp": 1779560139494
+    },
+    {
+      "ingestionTime": 1779560144598,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:40.628676   645 incremental_pipeline.cc:524] Registering image #36 (num_reg_frames=323)",
+      "timestamp": 1779560141495
+    },
+    {
+      "ingestionTime": 1779560144598,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:40.628732   645 incremental_pipeline.cc:527] => Image sees 1789 / 3538 points",
+      "timestamp": 1779560141495
+    },
+    {
+      "ingestionTime": 1779560144598,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:41.847380   645 incremental_pipeline.cc:524] Registering image #39 (num_reg_frames=324)",
+      "timestamp": 1779560142495
+    },
+    {
+      "ingestionTime": 1779560144598,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:41.847440   645 incremental_pipeline.cc:527] => Image sees 1257 / 4300 points",
+      "timestamp": 1779560142495
+    },
+    {
+      "ingestionTime": 1779560144598,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:42.970788   645 incremental_pipeline.cc:524] Registering image #37 (num_reg_frames=325)",
+      "timestamp": 1779560143496
+    },
+    {
+      "ingestionTime": 1779560144598,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:42.970844   645 incremental_pipeline.cc:527] => Image sees 1375 / 3803 points",
+      "timestamp": 1779560143496
+    },
+    {
+      "ingestionTime": 1779560149618,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:44.097213   645 incremental_pipeline.cc:524] Registering image #38 (num_reg_frames=326)",
+      "timestamp": 1779560144496
+    },
+    {
+      "ingestionTime": 1779560149618,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:44.097290   645 incremental_pipeline.cc:527] => Image sees 2009 / 4100 points",
+      "timestamp": 1779560144496
+    },
+    {
+      "ingestionTime": 1779560149618,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:45.209549   645 incremental_pipeline.cc:524] Registering image #42 (num_reg_frames=327)",
+      "timestamp": 1779560145496
+    },
+    {
+      "ingestionTime": 1779560149618,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:45.209599   645 incremental_pipeline.cc:527] => Image sees 1820 / 3944 points",
+      "timestamp": 1779560145496
+    },
+    {
+      "ingestionTime": 1779560149618,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:46.279883   645 incremental_pipeline.cc:524] Registering image #40 (num_reg_frames=328)",
+      "timestamp": 1779560146497
+    },
+    {
+      "ingestionTime": 1779560149618,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:46.279940   645 incremental_pipeline.cc:527] => Image sees 1746 / 3582 points",
+      "timestamp": 1779560146497
+    },
+    {
+      "ingestionTime": 1779560149618,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:47.383438   645 incremental_pipeline.cc:524] Registering image #43 (num_reg_frames=329)",
+      "timestamp": 1779560147497
+    },
+    {
+      "ingestionTime": 1779560149618,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:47.383497   645 incremental_pipeline.cc:527] => Image sees 1143 / 4117 points",
+      "timestamp": 1779560147497
+    },
+    {
+      "ingestionTime": 1779560149618,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:48.376116   645 incremental_pipeline.cc:524] Registering image #41 (num_reg_frames=330)",
+      "timestamp": 1779560148498
+    },
+    {
+      "ingestionTime": 1779560149618,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:48.376171   645 incremental_pipeline.cc:527] => Image sees 1473 / 3262 points",
+      "timestamp": 1779560148498
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:49.506062   645 incremental_pipeline.cc:524] Registering image #81 (num_reg_frames=331)",
+      "timestamp": 1779560150498
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:49.506112   645 incremental_pipeline.cc:527] => Image sees 910 / 2485 points",
+      "timestamp": 1779560150498
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:50.626242   645 incremental_pipeline.cc:524] Registering image #80 (num_reg_frames=332)",
+      "timestamp": 1779560151499
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:50.626299   645 incremental_pipeline.cc:527] => Image sees 926 / 2460 points",
+      "timestamp": 1779560151499
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:51.785830   645 incremental_pipeline.cc:524] Registering image #82 (num_reg_frames=333)",
+      "timestamp": 1779560152499
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:51.785887   645 incremental_pipeline.cc:527] => Image sees 699 / 1305 points",
+      "timestamp": 1779560152499
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:52.958352   645 incremental_pipeline.cc:524] Registering image #84 (num_reg_frames=334)",
+      "timestamp": 1779560153499
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:52.958442   645 incremental_pipeline.cc:527] => Image sees 582 / 1575 points",
+      "timestamp": 1779560153499
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:53.711730   645 incremental_pipeline.cc:524] Registering image #83 (num_reg_frames=335)",
+      "timestamp": 1779560154500
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:53.711786   645 incremental_pipeline.cc:527] => Image sees 410 / 857 points",
+      "timestamp": 1779560154500
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:54.407528   645 incremental_pipeline.cc:524] Registering image #21 (num_reg_frames=336)",
+      "timestamp": 1779560154500
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:54.407586   645 incremental_pipeline.cc:527] => Image sees 156 / 4123 points",
+      "timestamp": 1779560154500
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:54.418131   645 incremental_pipeline.cc:550] => Could not register, trying another image.",
+      "timestamp": 1779560154500
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:54.418170   645 incremental_pipeline.cc:524] Registering image #22 (num_reg_frames=336)",
+      "timestamp": 1779560154500
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:54.418180   645 incremental_pipeline.cc:527] => Image sees 165 / 5490 points",
+      "timestamp": 1779560154500
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:54.428210   645 incremental_pipeline.cc:550] => Could not register, trying another image.",
+      "timestamp": 1779560154500
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:54.428242   645 incremental_pipeline.cc:524] Registering image #16 (num_reg_frames=336)",
+      "timestamp": 1779560154500
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:54.428252   645 incremental_pipeline.cc:527] => Image sees 154 / 3160 points",
+      "timestamp": 1779560154500
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:54.438526   645 incremental_pipeline.cc:550] => Could not register, trying another image.",
+      "timestamp": 1779560154500
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:54.438557   645 incremental_pipeline.cc:524] Registering image #12 (num_reg_frames=336)",
+      "timestamp": 1779560154500
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:54.438566   645 incremental_pipeline.cc:527] => Image sees 131 / 7442 points",
+      "timestamp": 1779560154500
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:54.448089   645 incremental_pipeline.cc:550] => Could not register, trying another image.",
+      "timestamp": 1779560154500
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:54.448118   645 incremental_pipeline.cc:524] Registering image #3 (num_reg_frames=336)",
+      "timestamp": 1779560154500
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:54.448128   645 incremental_pipeline.cc:527] => Image sees 134 / 7689 points",
+      "timestamp": 1779560154500
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:54.457433   645 incremental_pipeline.cc:550] => Could not register, trying another image.",
+      "timestamp": 1779560154500
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:54.457463   645 incremental_pipeline.cc:524] Registering image #13 (num_reg_frames=336)",
+      "timestamp": 1779560154500
+    },
+    {
+      "ingestionTime": 1779560155659,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:54.457476   645 incremental_pipeline.cc:527] => Image sees 114 / 7752 points",
+      "timestamp": 1779560154500
+    },
+    {
+      "ingestionTime": 1779560160682,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:55.314893   645 incremental_pipeline.cc:524] Registering image #15 (num_reg_frames=337)",
+      "timestamp": 1779560155501
+    },
+    {
+      "ingestionTime": 1779560160682,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:55.314944   645 incremental_pipeline.cc:527] => Image sees 137 / 5283 points",
+      "timestamp": 1779560155501
+    },
+    {
+      "ingestionTime": 1779560160682,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:56.259891   645 incremental_pipeline.cc:524] Registering image #14 (num_reg_frames=338)",
+      "timestamp": 1779560156501
+    },
+    {
+      "ingestionTime": 1779560160682,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:56.259948   645 incremental_pipeline.cc:527] => Image sees 747 / 6877 points",
+      "timestamp": 1779560156501
+    },
+    {
+      "ingestionTime": 1779560160682,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:57.210788   645 incremental_pipeline.cc:524] Registering image #10 (num_reg_frames=339)",
+      "timestamp": 1779560157501
+    },
+    {
+      "ingestionTime": 1779560160682,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:57.210843   645 incremental_pipeline.cc:527] => Image sees 546 / 7848 points",
+      "timestamp": 1779560157501
+    },
+    {
+      "ingestionTime": 1779560160682,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:57.993886   645 incremental_pipeline.cc:524] Registering image #11 (num_reg_frames=340)",
+      "timestamp": 1779560158502
+    },
+    {
+      "ingestionTime": 1779560160682,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:57.993942   645 incremental_pipeline.cc:527] => Image sees 497 / 6499 points",
+      "timestamp": 1779560158502
+    },
+    {
+      "ingestionTime": 1779560160682,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:58.830921   645 incremental_pipeline.cc:524] Registering image #9 (num_reg_frames=341)",
+      "timestamp": 1779560159502
+    },
+    {
+      "ingestionTime": 1779560160682,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:58.831007   645 incremental_pipeline.cc:527] => Image sees 373 / 7404 points",
+      "timestamp": 1779560159502
+    },
+    {
+      "ingestionTime": 1779560165701,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:59.551620   645 incremental_pipeline.cc:524] Registering image #6 (num_reg_frames=342)",
+      "timestamp": 1779560160502
+    },
+    {
+      "ingestionTime": 1779560165701,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:15:59.551677   645 incremental_pipeline.cc:527] => Image sees 304 / 5606 points",
+      "timestamp": 1779560160502
+    },
+    {
+      "ingestionTime": 1779560165701,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:16:00.493503   645 incremental_pipeline.cc:524] Registering image #5 (num_reg_frames=343)",
+      "timestamp": 1779560160502
+    },
+    {
+      "ingestionTime": 1779560165701,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:16:00.493558   645 incremental_pipeline.cc:527] => Image sees 477 / 5323 points",
+      "timestamp": 1779560160502
+    },
+    {
+      "ingestionTime": 1779560165701,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:16:01.354964   645 incremental_pipeline.cc:524] Registering image #8 (num_reg_frames=344)",
+      "timestamp": 1779560161503
+    },
+    {
+      "ingestionTime": 1779560165701,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:16:01.355026   645 incremental_pipeline.cc:527] => Image sees 671 / 5308 points",
+      "timestamp": 1779560161503
+    },
+    {
+      "ingestionTime": 1779560165701,
+      "message": "COLMAP[chunk_03_mapper_initial] I20260523 18:16:02.059597   645 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+      "timestamp": 1779560162503
+    },
+    {
+      "ingestionTime": 1779560229260,
+      "message": "COLMAP[chunk_03_mapper_initial] HEARTBEAT elapsed=3328s idle=60s",
+      "timestamp": 1779560223797
+    }
+  ],
+  "nextBackwardToken": "b/39685497474132836097446684984620992280885176456076460032/s",
+  "nextForwardToken": "f/39685519116337028915460526324255149663627672946036703232/s"
+}

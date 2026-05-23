@@ -1,0 +1,8 @@
+2026-05-23 12:38:49     818378 manual-validations/cvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z/leaves/leaf-03/colmap/chunk_planner_manifest.json
+2026-05-23 12:38:49        486 manual-validations/cvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z/leaves/leaf-03/colmap/leaf_metadata.json
+2026-05-23 12:38:49        914 manual-validations/cvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z/leaves/leaf-03/colmap/planner_static_report.json
+2026-05-23 12:38:49        708 manual-validations/cvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z/leaves/leaf-03/colmap/reducer_metadata.json
+2026-05-23 12:38:49     506297 manual-validations/cvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z/leaves/leaf-03/colmap/sfm_metadata.json
+
+Total Objects: 5
+   Total Size: 1326783

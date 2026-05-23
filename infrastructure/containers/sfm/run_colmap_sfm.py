@@ -810,6 +810,9 @@ class ColmapPipeline:
         self.chunk_min_core_registered_ratio = float(
             os.environ.get("COLMAP_CHUNK_MIN_CORE_REGISTERED_RATIO", "0.90")
         )
+        self.chunk_allow_core_only_pass = (
+            os.environ.get("COLMAP_CHUNK_ALLOW_CORE_ONLY_PASS", "0") == "1"
+        )
         self.seam_only_leaf_min_registered_ratio = float(
             os.environ.get("COLMAP_SEAM_ONLY_LEAF_MIN_REGISTERED_RATIO", "0.0")
         )
@@ -7157,7 +7160,10 @@ class ColmapPipeline:
                     }
                 )
                 return initial_model
-            if core_registered_ratio >= self.chunk_min_core_registered_ratio:
+            if (
+                self.chunk_allow_core_only_pass
+                and core_registered_ratio >= self.chunk_min_core_registered_ratio
+            ):
                 logger.info(
                     "Chunk %s registered %s/%s total images (%.2f%%) but %s/%s core images (%.2f%%); skipping boundary recovery",
                     chunk_plan.index,
@@ -7350,7 +7356,10 @@ class ColmapPipeline:
                     }
                 )
                 return recovered_model
-            if recovered_core_ratio >= self.chunk_min_core_registered_ratio:
+            if (
+                self.chunk_allow_core_only_pass
+                and recovered_core_ratio >= self.chunk_min_core_registered_ratio
+            ):
                 logger.info(
                     "Chunk %s recovered to %s/%s total images (%.2f%%) with %s/%s core images (%.2f%%); accepting retry result",
                     retry_chunk_plan.index,
@@ -9174,6 +9183,7 @@ class ColmapPipeline:
             "parent_seam_registration_cycles": self.parent_seam_registration_cycles,
             "top_level_ba_mode": self.top_level_ba_mode,
             "top_level_ba_image_threshold": self.top_level_ba_image_threshold,
+            "chunk_allow_core_only_pass": self.chunk_allow_core_only_pass,
             "seam_only_leaf_min_registered_ratio": self.seam_only_leaf_min_registered_ratio,
             "seam_only_leaf_min_core_ratio": self.seam_only_leaf_min_core_ratio,
             "bundle_adjusted_node_count": self.bundle_adjusted_node_count,

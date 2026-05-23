@@ -1,18 +1,18 @@
-reason: SfM-only seam_graph_sim3_v1 hardening is still active. MD1 strict replay passes. CV-HR weak-core/global-prior repair now has a bounded 02/06 seam pass after core-aware reducer diagnostics, but CV-HR is not production-ready until leaf08 and then full strict CV-HR seam graph, quality, and viewer/debug evidence pass. Downstream 3DGS/SOGS remain out of scope for this SfM-stage proof.
-last_step: 2026-05-23T13:25:00Z: No-spend root-cause analysis showed the CV-HR global-prior 02/06 all-camera residual tail is overlap-overlap support (DJI_01282.JPG..DJI_01297.JPG), while trusted core-involved cameras pass p95 0.110081m and baseline-normalized 0.0001735. Patched reducer mapping/diagnostics and reran strict 02/06 core-aware reducer: decision pass, 542 merged registered images, 180502 points, no promotion blockers, 16918 no-core-owned points culled. Evidence: logs/sfm-production-spine/cvhr_globalprior_0206_coreaware_reducer_patch_proof_20260523T1325Z.json and logs/sfm-production-spine/cvhr_globalprior_0206_coreaware_seam_merge_report_20260523T1325Z.json.
-next_unblocked_step: Launch/monitor only bounded CV-HR global-prior leaf08 from the existing gpsalign planner manifest, then run strict core-aware 02/06/08 seam_graph_sim3_v1 reducer before any full CV-HR fanout or production claim.
+reason: SfM-only seam_graph_sim3_v1 hardening is still active. MD1 strict replay passes. CV-HR global-prior repair now has bounded strict 02/06 and 02/06/08 seam_graph passes, but CV-HR is not production-ready until the full 9-leaf strict seam graph, sparse quality, and viewer/debug evidence pass. Downstream 3DGS/SOGS remain out of scope for this SfM-stage proof.
+last_step: 2026-05-23T18:53:00Z: full CV-HR global-prior leaf03 failed at the chunked merge registration gate after 341/360 images (94.72%) and 261/280 core images (93.21%); boundary recovery did not run because the old code allowed a relaxed core-only pass to skip recovery. Captured terminal SageMaker/CloudWatch/S3/active-job evidence, patched core-only pass to be opt-in, and verified py_compile plus 143 focused unit tests OK. Evidence: logs/sfm-production-spine/cvhr_globalprior_full_leaf03_failure_isolation_20260523T1846Z.json and logs/sfm-production-spine/cvhr_globalprior_full_leaf03_core_recovery_patch_proof_20260523T1853Z.json.
+next_unblocked_step: Commit/push the leaf03 recovery patch, wait for exact-head SfM container build/ECR digest, then relaunch only CV-HR leaf03 with a fresh output prefix/job name and COLMAP_CHUNK_ALLOW_CORE_ONLY_PASS unset before launching leaves 05/07.
 owner_action_needed: none
 active_jobs: []
-completed_jobs_cvhr: ["cvhr-viscell-plan-v1-1779214624", "cvhr-viscell-c03-1779215211", "cvhr-viscell-c04-1779215211", "cvhr-viscell-full-l00-1779219568", "cvhr-viscell-full-l01-1779219573", "cvhr-viscell-full-l02-1779220672", "cvhr-viscell-full-l05-1779224497", "cvhr-viscell-full-l06-1779225051", "cvhr-viscell-full-l07-1779229061", "cvhr-viscell-full-l08-1779230706", "cvhr-viscell-full-l09-1779233441", "cvhr-viscell-full-l10-1779234178", "cvhr-viscell-wcrepair-plan-v1-1779407138", "cvhr-wcrepair-l02-1779407790", "cvhr-wcrepair-l06-1779407814", "cvhr-wcrepair-l08-1779464068", "cvhr-viscell-gpsalign-plan-v1-1779528510", "cvhr-gpsalign-l02-1779528900", "cvhr-gpsalign-l06-1779528901"]
+completed_jobs_cvhr: ["cvhr-viscell-plan-v1-1779214624", "cvhr-viscell-c03-1779215211", "cvhr-viscell-c04-1779215211", "cvhr-viscell-full-l00-1779219568", "cvhr-viscell-full-l01-1779219573", "cvhr-viscell-full-l02-1779220672", "cvhr-viscell-full-l05-1779224497", "cvhr-viscell-full-l06-1779225051", "cvhr-viscell-full-l07-1779229061", "cvhr-viscell-full-l08-1779230706", "cvhr-viscell-full-l09-1779233441", "cvhr-viscell-full-l10-1779234178", "cvhr-viscell-wcrepair-plan-v1-1779407138", "cvhr-wcrepair-l02-1779407790", "cvhr-wcrepair-l06-1779407814", "cvhr-wcrepair-l08-1779464068", "cvhr-viscell-gpsalign-plan-v1-1779528510", "cvhr-gpsalign-l02-1779528900", "cvhr-gpsalign-l06-1779528901", "cvhr-globalprior-full-l00-1779549073", "cvhr-globalprior-full-l01-1779549138", "cvhr-globalprior-full-l04-1779555542"]
 completed_jobs: ["md1-viscell-plan-v1-1779135256", "md1-viscell-full-l00-1779141981", "md1-viscell-full-l01-1779141986", "md1-viscell-full-l02-1779143476", "md1-viscell-full-l03-1779145861", "md1-viscell-full-l04-1779146968", "md1-viscell-full-l05-1779147527", "md1-viscell-full-l06r2-1779154798", "md1-viscell-full-l07-1779151432", "md1-viscell-full-l08-1779155211", "md1-viscell-full-l09-1779157902", "md1-viscell-full-l10-1779158398", "md1-viscell-full-l11-1779161085", "md1-viscell-full-l12-1779161215", "md1-viscell-full-l13-1779164027", "md1-viscell-full-l14-1779164403", "md1-viscell-full-l15-1779167214", "md1-viscell-full-l16-1779167589", "md1-viscell-full-l17-1779168816", "md1-viscell-full-l18-1779170653"]
-failed_jobs: ["md1-viscell-full-l06-1779150311"]
+failed_jobs: ["md1-viscell-full-l06-1779150311", "cvhr-globalprior-full-l03-1779555542"]
 held_jobs: []
 unrelated_active_jobs: []
 branch: agent-73948216-sfm-production-spine
-head: 8ff88ab3c4078a3de81fcc3369ee29eec7fffc87
-current_rung: SFM_SEAM_GRAPH_SIM3_V1_CVHR_GLOBALPRIOR_0206_COREAWARE_PASS_LEAF08_PENDING
-project_final_decision: not_production_ready_cvhr_leaf08_020608_pending
-project_level_unresolved_caveats: ["Downstream 3DGS/SOGS render and AI visual gates are separate from this SfM-only deliverable", "prior global sparse double-surface grid had warning cells", "CV-HR strict seam graph proof is still pending until GPS-aligned leaves 02/06, then 02/06/08 if needed, pass strict seam graph gates"]
+head: dc774b48037cf9a72ff25f26cae38289d35900fe
+current_rung: SFM_SEAM_GRAPH_SIM3_V1_CVHR_GLOBALPRIOR_FULL_LEAF03_PATCH_READY
+project_final_decision: not_production_ready_cvhr_leaf03_failed_patch_pending_exact_head_build
+project_level_unresolved_caveats: ["Downstream 3DGS/SOGS render and AI visual gates are separate from this SfM-only deliverable", "prior global sparse double-surface grid had warning cells", "CV-HR full strict seam graph plus sparse quality plus viewer/debug proof is still pending"]
 final_sfm_output_uri: s3://spaceport-ml-processing-staging/manual-validations/md1-visibility-cell-v1-full-20260518T2206Z/merged-pruned-culled/colmap
 current_viewer_url: http://127.0.0.1:3000/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fmd1-visibility-cell-v1-full-20260518T2206Z%2Fmerged-pruned-culled%2Fcolmap&maxPoints=160000
 final_reducer_report: logs/sfm-production-spine/md1_visibility_cell_v1_full_reducer_pruned_culled_20260519T1531Z.json
@@ -72,17 +72,17 @@ sfm_stage_metrics:
 updated: 2026-05-20T01:15Z
 
 sfm_seam_graph_sim3_v1_hardening:
-  updated: 2026-05-23T13:25:00Z
-  scope: SfM reducer/viewer/planner/leaf-export hardening only. Active task-owned SageMaker jobs are empty; bounded CV-HR leaf08 is pending. No full fanout, 3DGS, or SOGS launched.
-  status: cvhr_globalprior_0206_coreaware_pass_leaf08_pending
+  updated: 2026-05-23T18:53:00Z
+  scope: SfM reducer/viewer/planner/leaf-export hardening only. Active task-owned SageMaker jobs are empty after bounded CV-HR full global-prior leaf03 failed. Leaves 00/01/04 completed and 02/06/08 are reused. No 3DGS or SOGS launched.
+  status: cvhr_globalprior_full_fanout_leaf03_failed_core_recovery_patch_tested
   accountability_automation:
     id: sfm-seam-graph-production-proof
     kind: heartbeat
     cadence: every 30 minutes
     status: ACTIVE
-  pushed_commit: 8ff88ab3c4078a3de81fcc3369ee29eec7fffc87
+  pushed_commit: dc774b48037cf9a72ff25f26cae38289d35900fe
   proof: logs/sfm-production-spine/seam_graph_sim3_v1_no_spend_proof_20260521T215008Z.json
-  latest_proof: logs/sfm-production-spine/cvhr_globalprior_0206_coreaware_reducer_patch_proof_20260523T1325Z.json
+  latest_proof: logs/sfm-production-spine/cvhr_globalprior_full_leaf03_core_recovery_patch_proof_20260523T1853Z.json
   exact_head_workflows_current:
     cdk_deploy: 26331423890 success for 8ff88ab3c4078a3de81fcc3369ee29eec7fffc87
     pages_deploy: not_triggered_for_8ff88ab3_container_only_patch; prior preview remains https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev
@@ -156,11 +156,35 @@ sfm_seam_graph_sim3_v1_hardening:
         budget_reason: logs/sfm-production-spine/cvhr_globalprior_leaf_canary_budget_reason_20260523T1142Z.json
         launch_summary: logs/sfm-production-spine/cvhr_globalprior_leaf02_leaf06_launch_summary_20260523T1147Z.json
         active_leaf_canary_jobs: []
-        held_leaf_canary_jobs: ["leaf08 held until leaf02/leaf06 strict seam result"]
+        held_leaf_canary_jobs: []
         output_prefix: s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z/
-        latest_poll: logs/sfm-production-spine/active-cvhr-processing-jobs-globalprior-terminal-20260523T1322Z.json
-        latest_status: "leaf02 and leaf06 Completed/no FailureReason; strict 02/06 core-aware reducer passed with 542 merged images, 180502 points, no promotion blockers, and 16918 no-core-owned points culled; leaf08/full fanout still held."
-        expected_next_gate: bounded_globalprior_leaf08_then_strict_020608_seam_graph_sim3_v1_replay
+        latest_poll: logs/sfm-production-spine/cvhr-globalprior-l08-1779543982_describe_poll_20260523T1503Z.json
+        latest_status: "leaf02/leaf06/leaf08 Completed/no FailureReason with 360/360 images each and planner-global pose priors applied; strict 02/06/08 core-aware reducer passed."
+        strict_020608_replay:
+          reducer_report: logs/sfm-production-spine/cvhr_globalprior_020608_coreaware_seam_graph_reducer_20260523T1504Z.json
+          seam_merge_report: logs/sfm-production-spine/cvhr_globalprior_020608_coreaware_seam_merge_report_20260523T1504Z.json
+          quality_report: logs/sfm-production-spine/cvhr_globalprior_020608_coreaware_quality_20260523T1508Z.json
+          result: pass_bounded_020608_only
+          facts: "801 merged images, 211109 points, no promotion blockers, 47083 no-core-owned points culled; sparse p95 reprojection 1.835, p99 1.9615, cross-leaf overlap ratio 0.0; quality remains needs_more_proof for full CV-HR and viewer/debug evidence."
+        globalprior_full_fanout:
+          budget_reason: logs/sfm-production-spine/cvhr_globalprior_full_fanout_budget_reason_20260523T1512Z.json
+          launch_summary: logs/sfm-production-spine/cvhr_globalprior_full_fanout_launch_summary_20260523T1512Z.json
+          output_prefix: s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z/
+          active_jobs: []
+          active_jobs_proof: logs/sfm-production-spine/active-cvhr-processing-jobs-globalprior-full-poll-20260523T1846Z.json
+          active_training_jobs_proof: logs/sfm-production-spine/active-cvhr-training-jobs-globalprior-full-poll-20260523T1846Z.json
+          completed_reused_leaves: ["leaf-02", "leaf-06", "leaf-08"]
+          completed_new_leaves: ["leaf-00", "leaf-01", "leaf-04"]
+          pending_leaves: ["leaf-03-repair", "leaf-05", "leaf-07"]
+          latest_poll: logs/sfm-production-spine/cvhr_globalprior_full_leaf03_progress_20260523T1846Z.json
+          leaf00: "Completed/no FailureReason; 360/360 images; 255250 raw points; 96019 filtered points; 360 planner-global pose priors applied; aligned output; 376 S3 objects"
+          leaf01: "Completed/no FailureReason; 360/360 images; 258646 raw points; 125774 filtered points; 360 planner-global pose priors applied; aligned output; 376 S3 objects"
+          leaf03: "Failed/AlgorithmError exit 1 after 341/360 registered images and 281531 points; boundary recovery skipped under old relaxed core-only pass; patched core-only pass to be opt-in and verified 143 focused tests OK"
+          leaf04: "Completed/no FailureReason; 360/360 images; 308865 raw points; 192742 filtered points; 360 planner-global pose priors applied; aligned output; 376 S3 objects"
+          launch_0304_summary: logs/sfm-production-spine/cvhr_globalprior_full_0304_launch_summary_20260523T1659Z.json
+          leaf03_failure_isolation: logs/sfm-production-spine/cvhr_globalprior_full_leaf03_failure_isolation_20260523T1846Z.json
+          leaf03_patch_proof: logs/sfm-production-spine/cvhr_globalprior_full_leaf03_core_recovery_patch_proof_20260523T1853Z.json
+          expected_next_gate: commit_push_exact_head_container_build_then_relaunch_only_leaf03_core_recovery
 
       coreaware_0206_replay:
         proof: logs/sfm-production-spine/cvhr_globalprior_0206_coreaware_reducer_patch_proof_20260523T1325Z.json
@@ -196,6 +220,8 @@ sfm_seam_graph_sim3_v1_hardening:
     - local COLMAP model_aligner probe succeeded with 50 reference images and zero alignment error; see logs/sfm-production-spine/model_aligner_probe_20260523T0841Z/model_aligner.log
     - python3 -m py_compile infrastructure/containers/sfm/run_colmap_sfm.py scripts/sfm/run_sfm_reducer_canary.py scripts/sfm/run_sfm_fanout_reducer.py
     - PYTHONPATH=. python3 -m unittest tests.unit.test_colmap_gps_priors tests.unit.test_sfm_fanout_contract tests.unit.test_sfm_reducer_canary tests.unit.test_sfm_fanout_reducer tests.unit.test_sfm_quality_eval (140 tests)
+    - python3 -m py_compile infrastructure/containers/sfm/run_colmap_sfm.py scripts/sfm/build_sfm_fanout_contract.py scripts/sfm/run_sfm_reducer_canary.py scripts/sfm/run_sfm_fanout_reducer.py scripts/sfm/evaluate_sfm_quality.py
+    - PYTHONPATH=. python3 -m unittest tests.unit.test_colmap_gps_priors tests.unit.test_sfm_fanout_contract tests.unit.test_sfm_reducer_canary tests.unit.test_sfm_fanout_reducer tests.unit.test_sfm_quality_eval (143 tests)
   real_artifact_replay:
     md1:
       report: logs/sfm-production-spine/md1_seam_graph_sim3_v1_report_replay_20260521T215008Z.json

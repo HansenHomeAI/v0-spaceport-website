@@ -1,0 +1,46 @@
+{
+  "active_jobs_proof": "logs/sfm-production-spine/active-cvhr-processing-jobs-globalprior-full-poll-20260523T1816Z.json",
+  "active_training_jobs_proof": "logs/sfm-production-spine/active-cvhr-training-jobs-globalprior-full-poll-20260523T1816Z.json",
+  "artifact_kind": "cvhr_globalprior_full_0304_progress",
+  "created_at": "2026-05-23T18:16:50Z",
+  "jobs": [
+    {
+      "cloudwatch_last_event_timestamp_ms": 1779558674011,
+      "cloudwatch_stream": "cvhr-globalprior-full-l03-1779555542/algo-1-1779555579",
+      "cloudwatch_tail": "logs/sfm-production-spine/cvhr-globalprior-full-l03-1779555542_cloudwatch_tail_20260523T1816Z.json",
+      "describe": "logs/sfm-production-spine/cvhr-globalprior-full-l03-1779555542_describe_poll_20260523T1816Z.json",
+      "failure_reason": "",
+      "job_name": "cvhr-globalprior-full-l03-1779555542",
+      "latest_feature_message": "",
+      "latest_mapper_message": "COLMAP[chunk_03_mapper_initial] HEARTBEAT elapsed=3328s idle=60s",
+      "latest_progress_message": "COLMAP[chunk_03_mapper_initial] I20260523 18:16:01.355026   645 incremental_pipeline.cc:527] => Image sees 671 / 5308 points",
+      "log_streams": "logs/sfm-production-spine/cvhr-globalprior-full-l03-1779555542_log_streams_20260523T1816Z.json",
+      "processing_end_time": "",
+      "processing_start_time": "2026-05-23T10:59:40.079000-06:00",
+      "s3_poll": "logs/sfm-production-spine/cvhr-globalprior-full-l03-1779555542_s3_poll_20260523T1816Z.txt",
+      "s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z/leaves/leaf-03/colmap",
+      "status": "InProgress",
+      "terminal_evidence_tail": []
+    },
+    {
+      "cloudwatch_last_event_timestamp_ms": 1779558899475,
+      "cloudwatch_stream": "cvhr-globalprior-full-l04-1779555542/algo-1-1779555580",
+      "cloudwatch_tail": "logs/sfm-production-spine/cvhr-globalprior-full-l04-1779555542_cloudwatch_tail_20260523T1816Z.json",
+      "describe": "logs/sfm-production-spine/cvhr-globalprior-full-l04-1779555542_describe_poll_20260523T1816Z.json",
+      "failure_reason": "",
+      "job_name": "cvhr-globalprior-full-l04-1779555542",
+      "latest_feature_message": "",
+      "latest_mapper_message": "2026-05-23 18:03:46,795 - INFO - Aligned chunk_04_mapper_initial output to EXIF/GPS local coordinates using 360 reference images",
+      "latest_progress_message": "\ud83c\udfaf 3D points: 192742",
+      "log_streams": "logs/sfm-production-spine/cvhr-globalprior-full-l04-1779555542_log_streams_20260523T1816Z.json",
+      "processing_end_time": "2026-05-23T12:04:40.413000-06:00",
+      "processing_start_time": "2026-05-23T10:59:40.461000-06:00",
+      "s3_poll": "logs/sfm-production-spine/cvhr-globalprior-full-l04-1779555542_s3_poll_20260523T1816Z.txt",
+      "s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z/leaves/leaf-04/colmap",
+      "status": "Completed",
+      "terminal_evidence_tail": [
+        "COLMAP[chunk_04_mapper_initial] I20260523 18:03:24.699265   621 timer.cc:90] Elapsed time: 42.589 [minutes]"
+      ]
+    }
+  ]
+}

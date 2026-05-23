@@ -1,0 +1,42 @@
+{
+  "artifact_kind": "cvhr_globalprior_full_leaf03_core_recovery_patch_proof",
+  "created_at": "2026-05-23T18:53:00Z",
+  "scope": "SfM-only bounded CV-HR leaf03 repair preflight; no 3DGS/SOGS work claimed or launched.",
+  "decision": "patch_ready_for_exact_head_container_build_then_bounded_leaf03_relaunch",
+  "failed_job": "cvhr-globalprior-full-l03-1779555542",
+  "failure_isolation": "logs/sfm-production-spine/cvhr_globalprior_full_leaf03_failure_isolation_20260523T1846Z.json",
+  "failure_summary": {
+    "sagemaker_status": "Failed",
+    "sagemaker_failure_reason": "AlgorithmError: , exit code: 1",
+    "failure_stage": "chunked_merge_threshold",
+    "failure_reason_detail": "Chunked merge registered 341/360 images",
+    "registered_ratio": 0.9472,
+    "core_registered_ratio": 0.9321,
+    "boundary_recovery_triggered": false,
+    "terminal_log_fact": "Chunk 3 registered 341/360 total images (94.72%) but 261/280 core images (93.21%); skipping boundary recovery"
+  },
+  "root_cause": "The leaf acceptance contract allowed a relaxed core-only pass to skip boundary recovery even when total registration was far below the strict CV-HR production gate, leaving no chance to recover the missing boundary/overlap images.",
+  "patch": {
+    "files": [
+      "infrastructure/containers/sfm/run_colmap_sfm.py",
+      "tests/unit/test_colmap_gps_priors.py"
+    ],
+    "summary": "Core-only leaf acceptance is now opt-in via COLMAP_CHUNK_ALLOW_CORE_ONLY_PASS=1. The default production path keeps attempting boundary recovery whenever total registration is below COLMAP_GPS_MIN_REGISTERED_RATIO, even if relaxed core registration is above COLMAP_CHUNK_MIN_CORE_REGISTERED_RATIO.",
+    "metadata_added": "sfm_metadata.chunk_allow_core_only_pass records whether the legacy opt-in path was enabled.",
+    "test_added": "test_run_chunk_pipeline_recovers_when_total_ratio_fails_even_if_core_ratio_is_relaxed"
+  },
+  "verification": {
+    "command": "python3 -m py_compile infrastructure/containers/sfm/run_colmap_sfm.py scripts/sfm/build_sfm_fanout_contract.py scripts/sfm/run_sfm_reducer_canary.py scripts/sfm/run_sfm_fanout_reducer.py scripts/sfm/evaluate_sfm_quality.py && PYTHONPATH=. python3 -m unittest tests.unit.test_colmap_gps_priors tests.unit.test_sfm_fanout_contract tests.unit.test_sfm_reducer_canary tests.unit.test_sfm_fanout_reducer tests.unit.test_sfm_quality_eval",
+    "result": "pass",
+    "unit_tests": 143,
+    "wall_time_seconds": 6.632
+  },
+  "active_jobs_after_failure": {
+    "processing_jobs": [],
+    "training_jobs": [],
+    "processing_jobs_proof": "logs/sfm-production-spine/active-cvhr-processing-jobs-globalprior-full-poll-20260523T1846Z.json",
+    "training_jobs_proof": "logs/sfm-production-spine/active-cvhr-training-jobs-globalprior-full-poll-20260523T1846Z.json"
+  },
+  "budget_reason": "Only leaf03 failed, leaves 00/01/04 are verified complete, leaves 02/06/08 are reused from the passed bounded global-prior canary, and active task-owned jobs are empty. A single leaf03 relaunch on the patched exact-head SfM image is the smallest paid step required before launching leaves 05/07 and the full strict seam_graph_sim3_v1 reducer.",
+  "next_step": "Commit and push the patch, wait for exact-head container build/ECR digest, then relaunch only CV-HR leaf03 with a fresh job name and fresh output prefix. Do not set COLMAP_CHUNK_ALLOW_CORE_ONLY_PASS."
+}
