@@ -6495,6 +6495,13 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remain
 
 Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remains visual screenshot proof in browser (skybox + off).
 
+### 2026-05-23T17:25:47Z post-push CI snapshot
+
+- Git: agent-40136728-montana-time-capsule @ 895792f3c7be48c1aa7a8ccf37ab5b1694f2a19e ([skip ci]) (clean)
+- GitHub Actions:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260523T172543Z.json
+  - exact-head runs (expected 0 due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260523T172543Z.json
+
 ### 2026-05-23T16:06:56Z post-push CI snapshot
 
 - Git: agent-40136728-montana-time-capsule @ 5b27297ad997e854093ce920516b9cad7f1673a8 ([skip ci]) (clean)
