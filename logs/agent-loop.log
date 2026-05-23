@@ -188,3 +188,4 @@
 [2026-05-23T08:44:30Z] montana heartbeat -> HMC terminal; S3 bundle present; viewer+proxy HTTP200; GH exact-head=0 ([skip ci]) -> commit+push evidence
 [20260523T090335Z] heartbeat -> ok (no spend) -> recorded
 [2026-05-23T09:23:35Z] heartbeat -> verified terminal SageMaker + S3 + viewer HTTP200 + CI proof -> ledger+push
+[2026-05-23T10:25:30Z] montana heartbeat -> HMC terminal; S3 bundle present; viewer+proxy HTTP200; GH exact-head=0 ([skip ci]); unrelated processing InProgress observed -> commit+push ledger
