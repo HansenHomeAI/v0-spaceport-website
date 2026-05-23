@@ -6807,6 +6807,33 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remain
 - Public bundle reachability gate (signed/proxied through viewer; expected 200):
   - NOTE: `/api/proxy/...` was a wrong path (returned HTML/404): logs/montana-time-capsule/curlI-proxy-meta-json-20260523T174229Z.headers (body=logs/montana-time-capsule/curl-proxy-meta-json-20260523T174229Z.body.json)
   - sogs-proxy meta.json (HTTP 200): logs/montana-time-capsule/curlI-sogs-proxy-meta-20260523T174442Z.headers (body=logs/montana-time-capsule/curl-sogs-proxy-meta-20260523T174442Z.body.json; validate=logs/montana-time-capsule/validate-sogs-proxy-meta-20260523T174442Z.txt)
+
+## 2026-05-23T20:52:40Z HEARTBEAT monitor (HMC) - no-spend reconfirm (aws+gh) + canonical jobs Completed + supersplat bundle present + preview viewer/proxy HTTP 200 + CI snapshot (no launches)
+
+- git:
+  - branch: agent-40136728-montana-time-capsule
+  - head: 8dcf02ebfb306704aa9e2d41301fb679d3474c96 (`[skip ci]`)
+- AWS identity (aws=/opt/homebrew/bin/aws):
+  - sts: logs/montana-time-capsule/aws-sts-get-caller-identity-20260523T204950Z.json
+- SageMaker terminal state (us-west-2; account=975050048887):
+  - sfm ProcessingJob Completed: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260523T204950Z.json
+  - 3dgs TrainingJob Completed: logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260523T205022Z.json
+  - compression ProcessingJob Completed: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260523T204950Z.json
+  - list-processing-jobs: logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260523T204950Z.json
+  - list-training-jobs: logs/montana-time-capsule/sagemaker-list-training-jobs-hmc-mtc-20260520T2015Z-20260523T205022Z.json
+- S3 bundle reachability (compressed supersplat bundle):
+  - listing: logs/montana-time-capsule/s3-ls-compressed-supersplat-bundle-20260523T205052Z.txt
+  - head-object meta.json: logs/montana-time-capsule/s3api-head-object-compressed-meta-json-20260523T205052Z.json
+- Hosted preview viewer reachability (Origin set; HTTP 200):
+  - skybox URL: logs/montana-time-capsule/heartbeat-viewer-skybox-url-20260523T205127Z.txt (headers=logs/montana-time-capsule/curlI-viewer-skybox-20260523T205127Z.headers)
+  - no-sky URL: logs/montana-time-capsule/heartbeat-viewer-nosky-url-20260523T205127Z.txt (headers=logs/montana-time-capsule/curlI-viewer-nosky-20260523T205127Z.headers)
+- Public bundle reachability gate (signed/proxied through viewer; expected 200 + CORS):
+  - proxy meta.json URL: logs/montana-time-capsule/heartbeat-proxy-meta-json-url-20260523T205127Z.txt (headers=logs/montana-time-capsule/curlI-proxy-meta-json-20260523T205127Z.headers; body=logs/montana-time-capsule/curl-proxy-meta-json-20260523T205127Z.body.json; validate=logs/montana-time-capsule/validate-proxy-meta-json-20260523T205127Z.txt)
+- GitHub Actions (gh=/opt/homebrew/bin/gh):
+  - branch run list snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260523T205218Z.json
+  - exact-head run list snapshot: logs/montana-time-capsule/gh-run-list-exact-head-20260523T205218Z.json (expected empty due to `[skip ci]` head)
+
+Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remains updated browser visual proof (screenshots) for skybox + no-sky in the hosted preview viewer.
   - sogs-proxy skybox (HTTP 200): logs/montana-time-capsule/curlI-sogs-proxy-skybox-20260523T174442Z.headers
   - URLs:
     - sogs-proxy meta URL: logs/montana-time-capsule/heartbeat-sogs-proxy-meta-url-20260523T174442Z.txt
