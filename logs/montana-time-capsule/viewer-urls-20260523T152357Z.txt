@@ -1,0 +1,4 @@
+PREVIEW_ALIAS=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev
+BUNDLE_URL=https://spaceport-ml-processing-staging.s3.us-west-2.amazonaws.com/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json
+SKYBOX_URL=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A//spaceport-ml-processing-staging.s3.us-west-2.amazonaws.com/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json&skybox=background_skybox.webp
+NO_SKY_URL=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A//spaceport-ml-processing-staging.s3.us-west-2.amazonaws.com/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json&skybox=off

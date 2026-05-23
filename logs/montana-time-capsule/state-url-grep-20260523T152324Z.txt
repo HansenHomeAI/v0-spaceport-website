@@ -1,0 +1,17 @@
+23:  - alias URL (from extract): https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev
+934:- Hosted preview viewer (alias): https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev
+1882:- Preview alias URL: `https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev`
+1883:- Preview hash URL: `https://9480e9f2.v0-spaceport-website-preview2.pages.dev`
+2381:  - `curl -fsS https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.us-west-2.amazonaws.com/compressed/cvhr-mtc-secondary-20260518t2113z/supersplat_bundle/meta.json`
+2386:  - Run: `https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26131478855`
+2388:  - Preview alias: `https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev`.
+2389:  - Hash URL: `https://2e89a848.v0-spaceport-website-preview2.pages.dev`.
+2391:  - Skybox URL: `https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.us-west-2.amazonaws.com%2Fcompressed%2Fcvhr-mtc-secondary-20260518t2113z%2Fsupersplat_bundle%2Fmeta.json&skybox=background_skybox.webp`
+2392:  - No-sky URL: `https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.us-west-2.amazonaws.com%2Fcompressed%2Fcvhr-mtc-secondary-20260518t2113z%2Fsupersplat_bundle%2Fmeta.json&skybox=off`
+2393:  - Skybox smoke command: `cd web && SOGS_MIGRATED_URL=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev SOGS_BUNDLE_URL=https://spaceport-ml-processing-staging.s3.us-west-2.amazonaws.com/compressed/cvhr-mtc-secondary-20260518t2113z/supersplat_bundle/meta.json SOGS_SKYBOX_OVERRIDE=background_skybox.webp SOGS_EXPECT_SKYBOX_SUBSTRING=background_skybox.webp SOGS_EXPECT_BUNDLED_SKYBOX=1 node scripts/test-sogs-migrated-viewer.mjs`
+2395:  - No-sky smoke command: `cd web && SOGS_MIGRATED_URL=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev SOGS_BUNDLE_URL=https://spaceport-ml-processing-staging.s3.us-west-2.amazonaws.com/compressed/cvhr-mtc-secondary-20260518t2113z/supersplat_bundle/meta.json SOGS_DISABLE_SKYBOX=1 SOGS_EXPECT_SKYBOX_SUBSTRING=background_skybox.webp node scripts/test-sogs-migrated-viewer.mjs`
+4930:  - `https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.us-west-2.amazonaws.com%2Fcompressed%2Fcvhr-mtc-secondary-20260518t2113z%2Fsupersplat_bundle%2Fmeta.json&skybox=background_skybox.webp`
+4932:  - `https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.us-west-2.amazonaws.com%2Fcompressed%2Fcvhr-mtc-secondary-20260518t2113z%2Fsupersplat_bundle%2Fmeta.json&skybox=off`
+4933:- Branch Pages deploy proof: run `26131478855` succeeded for exact head `4659864d4478963a49d4e4fc922d4ab687efff99`; preview alias `https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev`, hash URL `https://2e89a848.v0-spaceport-website-preview2.pages.dev`.
+5488:  - Alias: `https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev`
+5489:  - Hash: `https://9480e9f2.v0-spaceport-website-preview2.pages.dev`
