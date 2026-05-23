@@ -222,3 +222,4 @@
 [2026-05-23T16:32:19Z] heartbeat monitor -> no-spend reconfirm (HMC terminal + S3 + viewer/proxy 200 + CI snapshot) -> next: idle
 [2026-05-23T17:01:06Z] heartbeat -> no-spend checks OK (SageMaker Completed; S3 bundle present; viewer+proxy HTTP 200; exact-head CI empty due [skip ci]) -> next: remain idle until new acceptance gate
 [2026-05-23T17:03:18Z] push-snapshot -> recorded branch + exact-head CI for new ledger commit (expected exact-head empty) -> idle
+[2026-05-23T17:25:04Z] heartbeat montana time capsule -> no-spend re-check OK (AWS terminal; S3 bundle present; viewer/proxy HTTP 200) -> commit+push ledger

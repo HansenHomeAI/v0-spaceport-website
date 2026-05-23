@@ -6471,6 +6471,30 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate is vis
 
 Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remains visual screenshot proof in browser (skybox + none) for `/md1-viewer`.
 
+### 2026-05-23T17:24:45Z heartbeat acceptance re-check (no-spend)
+
+- Git: agent-40136728-montana-time-capsule @ 9f8547160eb3df42f8cf9a628bded725881840b2 ([skip ci]) (pre-ledger commit)
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws): logs/montana-time-capsule/aws-sts-get-caller-identity-20260523T172228Z.json (region=logs/montana-time-capsule/aws-configure-get-region-20260523T172228Z.txt; cli=logs/montana-time-capsule/aws-version-20260523T172228Z.txt)
+- SageMaker (canonical jobs expected Completed; do not launch duplicates):
+  - SfM processing describe: logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260523T172429Z.json
+  - 3DGS training describe: logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260523T172429Z.json
+  - compression processing describe: logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260523T172429Z.json
+  - processing list (name contains run id): logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260523T172228Z.json (summary=logs/montana-time-capsule/processing-jobs-summary-hmc-mtc-20260520T2015Z-20260523T172228Z.txt)
+  - training list (name contains run id): logs/montana-time-capsule/sagemaker-list-training-jobs-hmc-mtc-20260520T2015Z-20260523T172254Z.json
+- S3 supersplat bundle (HMC staging):
+  - s3 ls: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260523T172228Z.txt
+- Viewer/proxy reachability (Origin/CORS; HTTP 200):
+  - pages root headers: logs/montana-time-capsule/curlI-pages-root-20260523T172335Z.headers
+  - direct meta.json headers: logs/montana-time-capsule/curlI-bundle-direct-20260523T172335Z.headers
+  - proxy meta.json URL: logs/montana-time-capsule/heartbeat-proxy-meta-json-url-20260523T172335Z.txt (headers=logs/montana-time-capsule/curlI-proxy-meta-json-20260523T172335Z.headers; body=logs/montana-time-capsule/curl-proxy-meta-json-20260523T172335Z.body.json; json=logs/montana-time-capsule/jq-validate-proxy-meta-json-20260523T172335Z.txt)
+  - viewer URL (skybox): logs/montana-time-capsule/heartbeat-viewer-skybox-url-20260523T172335Z.txt (headers=logs/montana-time-capsule/curlI-viewer-skybox-20260523T172335Z.headers)
+  - viewer URL (no-sky): logs/montana-time-capsule/heartbeat-viewer-nosky-url-20260523T172335Z.txt (headers=logs/montana-time-capsule/curlI-viewer-nosky-20260523T172335Z.headers)
+- CI snapshot:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260523T172352Z.json
+  - exact-head runs (expected 0 due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260523T172352Z.json
+
+Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remains visual screenshot proof in browser (skybox + off).
+
 ### 2026-05-23T16:06:56Z post-push CI snapshot
 
 - Git: agent-40136728-montana-time-capsule @ 5b27297ad997e854093ce920516b9cad7f1673a8 ([skip ci]) (clean)
