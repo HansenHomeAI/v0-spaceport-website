@@ -207,3 +207,4 @@
 [2026-05-23T13:44:21Z] heartbeat-no-spend -> aws/s3/viewer/gha reconfirmed (no launches) -> remain idle; next gate screenshots
 [2026-05-23T13:45:35Z] postpush -> recorded gh runs for new head (expected exact-head empty) -> idle
 [2026-05-23T14:04:11Z] montana heartbeat -> terminal jobs + S3 bundle + viewer/proxy HTTP200 + CI snapshot -> commit+push ledger
+[2026-05-23T14:05:08Z] montana postpush -> recorded gh runs for new head -> idle
