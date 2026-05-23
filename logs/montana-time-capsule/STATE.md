@@ -6296,3 +6296,10 @@ Next: remain idle for HMC; do not launch duplicate jobs. Next acceptance gate (i
   - Pages determinism extract: logs/montana-time-capsule/gh-run-view-pages-26200368328-20260523T144400Z.preview-grep.txt (log=logs/montana-time-capsule/gh-run-view-pages-26200368328-20260523T144400Z.log.txt)
 
 Next: remain idle; do not upload/launch duplicate HMC jobs; no action on unrelated in-progress jobs.
+
+### 2026-05-23T14:48:18Z post-push CI snapshot
+
+- Git: agent-40136728-montana-time-capsule @ d97609ad5f191424e52b21be9bbf0f9ca5c5e4da ([skip ci])
+- GitHub Actions:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260523T144818Z.json
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260523T144818Z.json (expected 0 due to `[skip ci]`)
