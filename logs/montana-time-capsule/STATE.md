@@ -23,6 +23,13 @@
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260523T114322Z.json (latest CDK Deploy success on 0e48d07a; latest Pages success on 88b1848f)
   - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260523T114322Z.json
 
+## 2026-05-23T11:44:56Z POST-PUSH monitor (HMC) - git head advanced + exact-head GH runs recorded (no launches)
+
+- Git: agent-40136728-montana-time-capsule @ 1af653345abb2c597d7bcf32674a9b1fa5464439 ([skip ci]) (pushed)
+- CI:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260523T114451Z.json
+  - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260523T114451Z.json
+
 ## 2026-05-23T11:24:17Z HEARTBEAT monitor (HMC) - terminal reconfirmed + AWS identity + S3 bundle + viewer HTTP 200 (skybox/no-sky) + CI snapshot (no launches)
 
 - Git: agent-40136728-montana-time-capsule @ a7aca00f3f19ad778a27f0c7b23e1b353cf68d35 ([skip ci]) (head=logs/montana-time-capsule/git-head-20260523T112417Z.txt; status=logs/montana-time-capsule/git-status-20260523T112417Z.txt)
