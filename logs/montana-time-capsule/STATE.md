@@ -6380,3 +6380,28 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate is vis
 - GitHub Actions:
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260523T152711Z.json
   - exact-head runs (expected 0 due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260523T152711Z.json
+
+### 2026-05-23T15:45:54Z heartbeat acceptance re-check (no-spend)
+
+- Git: agent-40136728-montana-time-capsule @ 250e9ba535e8ddd11650e0d71823c42e21a0a55e ([skip ci]) (clean)
+- AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260523T154307Z.json (region=logs/montana-time-capsule/aws-configure-get-region-20260523T154307Z.txt; cli=logs/montana-time-capsule/aws-version-20260523T154307Z.txt)
+- SageMaker (canonical jobs expected Completed; do not launch duplicates):
+  - SfM processing describe: logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260523T154307Z.json
+  - 3DGS training describe: logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260523T154307Z.json
+  - compression processing describe: logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260523T154307Z.json
+  - InProgress processing list (unrelated; recorded only): logs/montana-time-capsule/sagemaker-list-processing-jobs-InProgress-20260523T154307Z.json
+  - InProgress training list: logs/montana-time-capsule/sagemaker-list-training-jobs-InProgress-20260523T154307Z.json
+- S3 supersplat bundle (HMC staging):
+  - object list (13 keys): logs/montana-time-capsule/s3api-list-objects-supersplat_bundle-20260523T154307Z.json
+  - head meta.json: logs/montana-time-capsule/s3api-head-meta-json-20260523T154307Z.json
+  - head background_skybox.webp: logs/montana-time-capsule/s3api-head-background-skybox-webp-20260523T154307Z.json
+- Hosted preview URL (previously resolved from deploy logs; unchanged): logs/montana-time-capsule/preview-url-20260523T154331Z.txt
+- Viewer reachability (use `/md1-viewer` + `/api/sogs-proxy`, not `/viewer/*`):
+  - md1-viewer HTML (HTTP 200): logs/montana-time-capsule/curlI-md1-viewer-20260523T154554Z.headers (url=logs/montana-time-capsule/viewer-url-20260523T154554Z.txt)
+  - sogs-proxy meta.json (HTTP 200): logs/montana-time-capsule/curlI-sogs-proxy-meta-20260523T154554Z.headers (body=logs/montana-time-capsule/curl-sogs-proxy-meta-20260523T154554Z.body.json)
+  - sogs-proxy skybox (HTTP 200): logs/montana-time-capsule/curlI-sogs-proxy-skybox-20260523T154554Z.headers
+- CI snapshot:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260523T154331Z.json
+  - exact-head runs (expected 0 due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260523T154331Z.json
+
+Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate is visual screenshot proof in browser (skybox + none) for `/md1-viewer`.

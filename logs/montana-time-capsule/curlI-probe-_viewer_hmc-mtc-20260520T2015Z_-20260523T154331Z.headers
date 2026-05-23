@@ -1,0 +1,10 @@
+HTTP/2 308 
+date: Sat, 23 May 2026 15:44:29 GMT
+content-length: 0
+location: /viewer/hmc-mtc-20260520T2015Z
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=fbwHhQ5LBNmCQluc9quDdSQnQ2DufWHimUUcTe0tWp1agc4HBVpRoZTS341K5%2BInEQq5PZnGUwlKWhkxHf%2B3RCDO%2BDIcRGPmpAVNQ4yJZZfrXkOk5jLawTQQWlDc7eFKOVputJMHdmZ9nP2hdeWhiz%2BEXUNHD6UEgCdL3u59DtreZ4u%2FMSz3iFsrQ56kmDdiPz7SmU5gLW6oazSv1vKmhuWX"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: a0052ea53a8a52c1-SLC
+alt-svc: h3=":443"; ma=86400
+
