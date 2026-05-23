@@ -24,6 +24,8 @@
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260523T090335Z.txt
   - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260523T090335Z.txt (expected empty due to `[skip ci]`)
 
+Post-push sanity: Git HEAD is now 746a1c8abd8414b746b2f1cc0bc5a4ad2d5347c4 ([skip ci]) (head=logs/montana-time-capsule/git-head-postpush-20260523T090425Z.txt; exact-head runs=logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260523T090425Z.txt; branch runs=logs/montana-time-capsule/gh-run-list-branch-postpush-20260523T090425Z.txt).
+
 Next: remain idle unless a new acceptance gate is requested (browser screenshots / input-vs-render camera checks); do not launch or stop any jobs.
 
 ## 2026-05-23T08:44:07Z HEARTBEAT monitor (HMC) - terminal reconfirmed + S3 + viewer/proxy reachable + exact-head CI reconfirmed (no launches)
