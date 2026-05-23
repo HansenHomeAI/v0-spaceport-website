@@ -5,6 +5,15 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-23T22:27:37Z HEARTBEAT monitor (HMC) - bookkeeping: refresh exact HEAD + CI snapshot after new `[skip ci]` commits landed
+
+- Git: agent-40136728-montana-time-capsule @ 6c2dd0b7423a65bc82b9bb2b9da532cebaa726ff (`chore: record postpush ci snapshot 2026-05-23T22:24Z [skip ci]`) (clean)
+  - head: logs/montana-time-capsule/git-head-20260523T222737Z.txt
+  - status: logs/montana-time-capsule/git-status-20260523T222737Z.txt
+- CI snapshot:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260523T222737Z.json
+  - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260523T222737Z.json
+
 ## 2026-05-23T22:23:35Z HEARTBEAT monitor (HMC) - no-spend reconfirm: git/head cleanly identified + AWS identity + canonical HMC SageMaker jobs still Completed + S3 supersplat bundle still present + hosted preview viewer (skybox/no-sky) HTTP 200 + signed meta.json via `/api/sogs-proxy` HTTP 200 + CI snapshot (exact-head empty due to `[skip ci]`)
 
 - Git: agent-40136728-montana-time-capsule @ 17f280be399ac001e3193a751fe02bb42e562092 (`chore: record postpush ci snapshot 2026-05-23T21:42Z [skip ci]`) (dirty: new logs pending commit)

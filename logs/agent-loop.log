@@ -248,3 +248,4 @@
 [2026-05-23T22:09:53Z] heartbeat -> reconfirm terminal+S3+viewer+proxy200 + gh exact-head empty ([skip ci]) -> next: idle
 [2026-05-23T22:24:45Z] postpush(ci) -> recorded branch + exact-head gh runs for new head (expected exact-head empty due [skip ci]) -> next: idle
 [2026-05-23T22:24:53Z] heartbeat(hmc) -> verified AWS/SageMaker/S3/viewer/CI (no-spend) -> commit+push logs
+[2026-05-23T22:27:39Z] heartbeat(ci) -> refreshed git head + gh exact-head list for current HEAD -> next: commit+push
