@@ -5,6 +5,25 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-23T10:26:30Z HEARTBEAT monitor (HMC) - terminal reconfirmed + AWS identity + S3 bundle + viewer HTTP 200 (skybox/no-sky) (no launches)
+
+- Git: agent-40136728-montana-time-capsule @ dd7bed82 ([skip ci]) (head=logs/montana-time-capsule/git-head-20260523T100322Z.txt; status=logs/montana-time-capsule/git-status-20260523T100322Z.txt)
+- AWS STS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260523T102600Z.json
+- SageMaker (canonical jobs expected Completed):
+  - SfM describe: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260523T102600Z.json
+  - 3DGS describe: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260523T102641Z.json
+  - compression describe: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260523T102600Z.json
+  - InProgress list snapshot (non-HMC observed; do not stop): logs/montana-time-capsule/sagemaker-list-processing-jobs-inprogress-20260523T102600Z.json
+  - list snapshots: logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-20260523T102600Z.json ; logs/montana-time-capsule/sagemaker-list-training-jobs-hmc-mtc-20260520T2015Z-20260523T102641Z.json
+- S3 (supersplat bundle): logs/montana-time-capsule/s3-ls-supersplat_bundle-20260523T102600Z.txt (meta head=logs/montana-time-capsule/s3api-head-object-supersplat-meta.json-20260523T102600Z.json; skybox head=logs/montana-time-capsule/s3api-head-object-supersplat-background_skybox.webp-20260523T102600Z.json)
+- Hosted preview viewer reachability:
+  - skybox URL: logs/montana-time-capsule/heartbeat-viewer-skybox-url-20260523T102614Z.txt (headers=logs/montana-time-capsule/curlI-viewer-skybox-20260523T102614Z.headers; HTTP 200)
+  - no-sky URL: logs/montana-time-capsule/heartbeat-viewer-nosky-url-20260523T102614Z.txt (headers=logs/montana-time-capsule/curlI-viewer-nosky-20260523T102614Z.headers; HTTP 200)
+  - proxy meta URL: logs/montana-time-capsule/heartbeat-proxy-meta-url-20260523T102652Z.txt (headers=logs/montana-time-capsule/curlI-proxy-meta-20260523T102652Z.headers; HTTP 200)
+- CI:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260523T102622Z.json
+  - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260523T102622Z.json
+
 ## 2026-05-23T10:14:00Z HEARTBEAT monitor (HMC) - terminal reconfirmed + AWS identity + S3 bundle + viewer HTTP 200 (skybox/no-sky/proxy) + CI proof (no launches)
 
 - Git: agent-40136728-montana-time-capsule @ b2486b4e58334475562f77f7d7d3cf8f446d75f7 ([skip ci]) (head=logs/montana-time-capsule/git-head-20260523T100322Z.txt; status=logs/montana-time-capsule/git-status-20260523T100322Z.txt)
