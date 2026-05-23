@@ -1,0 +1,157 @@
+{
+  "hmc-mtc-20260520T2015Z-compression": {
+    "AppSpecification": {
+      "ContainerEntrypoint": [
+        "python3",
+        "compress.py"
+      ],
+      "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab"
+    },
+    "CreationTime": "2026-05-21T14:16:49.244000-06:00",
+    "Environment": {
+      "AWS_DEFAULT_REGION": "us-west-2",
+      "PYTHONUNBUFFERED": "1"
+    },
+    "LastModifiedTime": "2026-05-21T14:26:51.110000-06:00",
+    "ProcessingEndTime": "2026-05-21T14:25:14.447000-06:00",
+    "ProcessingInputs": [
+      {
+        "AppManaged": false,
+        "InputName": "gaussian-model",
+        "S3Input": {
+          "LocalPath": "/opt/ml/processing/input",
+          "S3CompressionType": "None",
+          "S3DataDistributionType": "FullyReplicated",
+          "S3DataType": "S3Prefix",
+          "S3InputMode": "File",
+          "S3Uri": "s3://spaceport-ml-processing-staging/3dgs/hmc-mtc-20260520T2015Z/hmc-mtc-20260520T2015Z-3dgs/output/model.tar.gz"
+        }
+      }
+    ],
+    "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/hmc-mtc-20260520T2015Z-compression",
+    "ProcessingJobName": "hmc-mtc-20260520T2015Z-compression",
+    "ProcessingJobStatus": "Completed",
+    "ProcessingOutputConfig": {
+      "Outputs": [
+        {
+          "AppManaged": false,
+          "OutputName": "compressed-model",
+          "S3Output": {
+            "LocalPath": "/opt/ml/processing/output",
+            "S3UploadMode": "EndOfJob",
+            "S3Uri": "s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/"
+          }
+        }
+      ]
+    },
+    "ProcessingResources": {
+      "ClusterConfig": {
+        "InstanceCount": 1,
+        "InstanceType": "ml.g4dn.xlarge",
+        "VolumeSizeInGB": 50
+      }
+    },
+    "ProcessingStartTime": "2026-05-21T14:17:28.807000-06:00",
+    "ResponseMetadata": {
+      "HTTPHeaders": {
+        "cache-control": "no-cache, no-store, must-revalidate",
+        "content-length": "1490",
+        "content-security-policy": "frame-ancestors 'none'",
+        "content-type": "application/x-amz-json-1.1",
+        "date": "Sat, 23 May 2026 12:22:27 GMT",
+        "strict-transport-security": "max-age=47304000; includeSubDomains",
+        "x-amzn-requestid": "296cd6fb-29ee-446b-8f49-fa7afbed8990",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY"
+      },
+      "HTTPStatusCode": 200,
+      "RequestId": "296cd6fb-29ee-446b-8f49-fa7afbed8990",
+      "RetryAttempts": 0
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "StoppingCondition": {
+      "MaxRuntimeInSeconds": 86400
+    }
+  },
+  "hmc-mtc-20260520T2015Z-sfm": {
+    "AppSpecification": {
+      "ContainerEntrypoint": [
+        "/opt/ml/code/run_sfm.sh"
+      ],
+      "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811"
+    },
+    "CreationTime": "2026-05-20T14:16:22.633000-06:00",
+    "Environment": {
+      "AWS_DEFAULT_REGION": "us-west-2",
+      "COLMAP_CHUNK_MIN_CORE_REGISTERED_RATIO": "0.90",
+      "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+      "PYTHONUNBUFFERED": "1",
+      "SFM_BENCHMARK_SUBSET_STRATEGY": "hmc_full_2063_montana_time_capsule",
+      "SFM_BRANCH_NAME": "agent-40136728-montana-time-capsule",
+      "SFM_GIT_HEAD": "c6e9377759144d46d4b4ee74b75bcf35b30eb3e1",
+      "SFM_INPUT_URI": "s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip",
+      "SFM_JOB_NAME": "hmc-mtc-20260520T2015Z-sfm",
+      "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/colmap"
+    },
+    "LastModifiedTime": "2026-05-21T10:16:44.875000-06:00",
+    "ProcessingEndTime": "2026-05-21T10:03:13.740000-06:00",
+    "ProcessingInputs": [
+      {
+        "AppManaged": false,
+        "InputName": "sfm-input",
+        "S3Input": {
+          "LocalPath": "/opt/ml/processing/input",
+          "S3CompressionType": "None",
+          "S3DataDistributionType": "FullyReplicated",
+          "S3DataType": "S3Prefix",
+          "S3InputMode": "File",
+          "S3Uri": "s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip"
+        }
+      }
+    ],
+    "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/hmc-mtc-20260520T2015Z-sfm",
+    "ProcessingJobName": "hmc-mtc-20260520T2015Z-sfm",
+    "ProcessingJobStatus": "Completed",
+    "ProcessingOutputConfig": {
+      "Outputs": [
+        {
+          "AppManaged": false,
+          "OutputName": "colmap-output",
+          "S3Output": {
+            "LocalPath": "/opt/ml/processing/output",
+            "S3UploadMode": "EndOfJob",
+            "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/colmap"
+          }
+        }
+      ]
+    },
+    "ProcessingResources": {
+      "ClusterConfig": {
+        "InstanceCount": 1,
+        "InstanceType": "ml.g4dn.xlarge",
+        "VolumeSizeInGB": 100
+      }
+    },
+    "ProcessingStartTime": "2026-05-20T14:17:11.438000-06:00",
+    "ResponseMetadata": {
+      "HTTPHeaders": {
+        "cache-control": "no-cache, no-store, must-revalidate",
+        "content-length": "1950",
+        "content-security-policy": "frame-ancestors 'none'",
+        "content-type": "application/x-amz-json-1.1",
+        "date": "Sat, 23 May 2026 12:22:27 GMT",
+        "strict-transport-security": "max-age=47304000; includeSubDomains",
+        "x-amzn-requestid": "b9228fe2-d325-4f7e-89d3-0fa3008549cf",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY"
+      },
+      "HTTPStatusCode": 200,
+      "RequestId": "b9228fe2-d325-4f7e-89d3-0fa3008549cf",
+      "RetryAttempts": 0
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "StoppingCondition": {
+      "MaxRuntimeInSeconds": 86400
+    }
+  }
+}

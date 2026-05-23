@@ -6065,3 +6065,24 @@ Next: remain idle for HMC; do not stop unrelated jobs; no launches.
   - exact-head post-push: logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260523T120540Z.json (0; head commit is [skip ci])
 
 Next: remain idle for HMC; no launches; acceptance gates remaining are visual proof screenshots (skybox + no-sky) beyond HTTP reachability.
+
+## 2026-05-23T12:23:12Z HEARTBEAT monitor (HMC) - no-spend reconfirmed via boto3 + viewer/proxy HTTP 200 + GitHub Actions REST snapshot (no launches)
+
+- Git: agent-40136728-montana-time-capsule @ 6a17a0fd6fe4d8a339c9ce0e236fb7e8aaf7d6a9 ([skip ci]) (clean)
+- AWS (boto3; region us-west-2):
+  - sts: logs/montana-time-capsule/boto3-sts-get-caller-identity-20260523T122227Z.json
+  - SageMaker describes (canonical jobs Completed): logs/montana-time-capsule/boto3-sagemaker-describe-processing-hmc-mtc-20260520T2015Z-20260523T122227Z.json; logs/montana-time-capsule/boto3-sagemaker-describe-training-hmc-mtc-20260520T2015Z-20260523T122227Z.json
+  - InProgress lists (no HMC jobs; 2 unrelated processing InProgress): logs/montana-time-capsule/boto3-sagemaker-list-processing-inprogress-20260523T122227Z.json; logs/montana-time-capsule/boto3-sagemaker-list-training-inprogress-20260523T122227Z.json
+- S3 supersplat bundle (staging):
+  - list-objects: logs/montana-time-capsule/boto3-s3-list-objects-supersplat_bundle-20260523T122300Z.json
+  - head meta.json: logs/montana-time-capsule/boto3-s3-head-meta-json-20260523T122300Z.json
+  - head background_skybox.webp: logs/montana-time-capsule/boto3-s3-head-background-skybox-webp-20260523T122300Z.json
+- Hosted preview viewer reachability (curl -I with Origin header; HTTP 200):
+  - skybox URL: logs/montana-time-capsule/heartbeat-skybox-url-20260523T122312Z.txt (headers=logs/montana-time-capsule/curlI-skybox-20260523T122312Z.headers)
+  - no-sky URL: logs/montana-time-capsule/heartbeat-nosky-url-20260523T122312Z.txt (headers=logs/montana-time-capsule/curlI-nosky-20260523T122312Z.headers)
+  - proxy meta URL: logs/montana-time-capsule/heartbeat-proxy-url-20260523T122312Z.txt (headers=logs/montana-time-capsule/curlI-proxy-20260523T122312Z.headers; includes `access-control-allow-origin: *`)
+- GitHub Actions (no `gh`; REST API snapshot):
+  - branch runs: logs/montana-time-capsule/github-actions-runs-branch-20260523T122402Z.json (latest Pages success 88b1848f; latest CDK Deploy success 0e48d07a)
+  - exact-head runs (expected 0 due to `[skip ci]`): logs/montana-time-capsule/github-actions-runs-exact-head-20260523T122402Z.json
+
+Next: remain idle for HMC; do not launch duplicate jobs. Next acceptance gate (if requested) is visual screenshots in skybox + no-sky modes (not just HTTP reachability).

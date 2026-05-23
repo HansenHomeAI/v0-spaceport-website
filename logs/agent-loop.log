@@ -198,3 +198,4 @@
 [2026-05-23T11:44:10Z] heartbeat(hmc-mtc-20260520T2015Z) -> terminal confirmed; viewer 200; ci snapshot ok -> idle
 [2026-05-23T12:04:33Z] heartbeat -> HMC terminal reconfirm + viewer 200 + S3 ok -> commit/push ledger
 [2026-05-23T12:05:54Z] post-push -> confirmed exact-head run list empty (skip ci) -> idle
+[2026-05-23T12:23:12Z] heartbeat(no-spend) -> boto3 STS+SageMaker Completed; S3 bundle ok; viewer/proxy HTTP200 (+CORS on proxy); GH REST exact-head=0 (skip ci); unrelated processing InProgress=2 -> commit+push ledger

@@ -1,0 +1,35 @@
+{
+  "bucket": "spaceport-ml-processing-staging",
+  "head": {
+    "AcceptRanges": "bytes",
+    "ContentLength": 47786,
+    "ContentType": "application/octet-stream",
+    "ETag": "\"fadaadb85f15b1b04091ecd20b2935c9\"",
+    "LastModified": "2026-05-21 20:25:10+00:00",
+    "Metadata": {},
+    "ResponseMetadata": {
+      "HTTPHeaders": {
+        "accept-ranges": "bytes",
+        "content-length": "47786",
+        "content-type": "application/octet-stream",
+        "date": "Sat, 23 May 2026 12:23:01 GMT",
+        "etag": "\"fadaadb85f15b1b04091ecd20b2935c9\"",
+        "last-modified": "Thu, 21 May 2026 20:25:10 GMT",
+        "server": "AmazonS3",
+        "x-amz-id-2": "z0puETqaqRB305MdzBbYf72QmRg4E+FvhoJc1SnRXCPch9ArY1fTbp0sdz3Sazqa9e9kpaKGZDM=",
+        "x-amz-request-id": "HRZ7G5C6XHP7GATS",
+        "x-amz-server-side-encryption": "aws:kms",
+        "x-amz-server-side-encryption-aws-kms-key-id": "arn:aws:kms:us-west-2:975050048887:key/e498a88e-6b23-44e3-90bd-f35b25d6e420",
+        "x-amz-version-id": "X6_ZOn.pJKZCLOsPW8nQjQ2i589NWpQK"
+      },
+      "HTTPStatusCode": 200,
+      "HostId": "z0puETqaqRB305MdzBbYf72QmRg4E+FvhoJc1SnRXCPch9ArY1fTbp0sdz3Sazqa9e9kpaKGZDM=",
+      "RequestId": "HRZ7G5C6XHP7GATS",
+      "RetryAttempts": 0
+    },
+    "SSEKMSKeyId": "arn:aws:kms:us-west-2:975050048887:key/e498a88e-6b23-44e3-90bd-f35b25d6e420",
+    "ServerSideEncryption": "aws:kms",
+    "VersionId": "X6_ZOn.pJKZCLOsPW8nQjQ2i589NWpQK"
+  },
+  "key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/background_skybox.webp"
+}
