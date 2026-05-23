@@ -31,6 +31,13 @@
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260523T190456Z.json
   - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260523T190456Z.json
 
+## 2026-05-23T19:05:53Z postpush CI snapshot (exact-head expected empty due to `[skip ci]`)
+
+- Git: agent-40136728-montana-time-capsule @ 584c795ccef9b2fdb2fa1655c1e498b44df33161 ([skip ci]) (pushed)
+- CI:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260523T190553Z.json
+  - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260523T190553Z.json
+
 ## 2026-05-23T18:23:52Z HEARTBEAT monitor (HMC) - no-spend reconfirm: AWS identity + SageMaker terminal (HMC jobs Completed) + S3 bundle present + viewer skybox/no-sky HTTP 200 + signed meta.json via `/api/sogs-proxy` HTTP 200 (exact-head empty due to `[skip ci]`)
 
 - Git: agent-40136728-montana-time-capsule @ a6e8fb6a58f09a9927e900839ab5daa07b2e0f5d ([skip ci]) (dirty=untracked logs only)
