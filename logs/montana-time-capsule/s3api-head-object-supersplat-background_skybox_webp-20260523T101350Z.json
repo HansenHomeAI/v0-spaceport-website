@@ -1,0 +1,31 @@
+{
+  "AcceptRanges": "bytes",
+  "ContentLength": 47786,
+  "ContentType": "application/octet-stream",
+  "ETag": "\"fadaadb85f15b1b04091ecd20b2935c9\"",
+  "LastModified": "2026-05-21 20:25:10+00:00",
+  "Metadata": {},
+  "ResponseMetadata": {
+    "HTTPHeaders": {
+      "accept-ranges": "bytes",
+      "content-length": "47786",
+      "content-type": "application/octet-stream",
+      "date": "Sat, 23 May 2026 10:13:52 GMT",
+      "etag": "\"fadaadb85f15b1b04091ecd20b2935c9\"",
+      "last-modified": "Thu, 21 May 2026 20:25:10 GMT",
+      "server": "AmazonS3",
+      "x-amz-id-2": "JgS9Ga1pV3PhQKtvouHoytLRoJxU1bXdTx1lLu1aCYZwbbB8r4XT1h7uVjXjxkLaNpW1EWgPxOE=",
+      "x-amz-request-id": "XR7W5ASFMPSW913V",
+      "x-amz-server-side-encryption": "aws:kms",
+      "x-amz-server-side-encryption-aws-kms-key-id": "arn:aws:kms:us-west-2:975050048887:key/e498a88e-6b23-44e3-90bd-f35b25d6e420",
+      "x-amz-version-id": "X6_ZOn.pJKZCLOsPW8nQjQ2i589NWpQK"
+    },
+    "HTTPStatusCode": 200,
+    "HostId": "JgS9Ga1pV3PhQKtvouHoytLRoJxU1bXdTx1lLu1aCYZwbbB8r4XT1h7uVjXjxkLaNpW1EWgPxOE=",
+    "RequestId": "XR7W5ASFMPSW913V",
+    "RetryAttempts": 0
+  },
+  "SSEKMSKeyId": "arn:aws:kms:us-west-2:975050048887:key/e498a88e-6b23-44e3-90bd-f35b25d6e420",
+  "ServerSideEncryption": "aws:kms",
+  "VersionId": "X6_ZOn.pJKZCLOsPW8nQjQ2i589NWpQK"
+}

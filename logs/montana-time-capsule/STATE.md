@@ -5,6 +5,28 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-23T10:13:50Z HEARTBEAT monitor (HMC) - terminal reconfirmed + S3 + viewer HTTP 200 + GH branch workflows enumerated (no launches)
+
+- Git: agent-40136728-montana-time-capsule @ b2486b4e58334475562f77f7d7d3cf8f446d75f7 ([skip ci]) (head=logs/montana-time-capsule/git-head-20260523T101350Z.txt; status=logs/montana-time-capsule/git-status-20260523T101350Z.txt)
+- AWS (us-west-2) via boto3: logs/montana-time-capsule/aws-sts-get-caller-identity-20260523T101350Z.json
+- SageMaker:
+  - SfM processing job: hmc-mtc-20260520T2015Z-sfm status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260523T101350Z.json)
+  - 3DGS training job: hmc-mtc-20260520T2015Z-3dgs status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260523T101350Z.json)
+  - compression processing job: hmc-mtc-20260520T2015Z-compression status=Completed (describe=logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260523T101350Z.json)
+  - list snapshots: logs/montana-time-capsule/sagemaker-list-processing-jobs-20260523T101350Z.json ; logs/montana-time-capsule/sagemaker-list-training-jobs-20260523T101350Z.json
+  - non-HMC InProgress observed (do not stop): cvhr-gpsalign-l06-1779528901 ; cvhr-gpsalign-l02-1779528900 (see logs/montana-time-capsule/sagemaker-list-processing-jobs-20260523T101350Z.json)
+- S3 (supersplat bundle present):
+  - bundle listing: logs/montana-time-capsule/s3-ls-supersplat_bundle-20260523T101350Z.txt
+  - bundle meta head-object: logs/montana-time-capsule/s3api-head-object-supersplat-meta_json-20260523T101350Z.json
+  - bundle background skybox head-object: logs/montana-time-capsule/s3api-head-object-supersplat-background_skybox_webp-20260523T101350Z.json
+- Hosted preview viewer reachability (canonical route):
+  - viewer URL (skybox): logs/montana-time-capsule/heartbeat-viewer-skybox-url-20260523T101350Z.txt (headers=logs/montana-time-capsule/curlI-viewer-skybox-20260523T101350Z.headers; HTTP 200)
+  - viewer URL (no-sky): logs/montana-time-capsule/heartbeat-viewer-nosky-url-20260523T101350Z.txt (headers=logs/montana-time-capsule/curlI-viewer-nosky-20260523T101350Z.headers; HTTP 200)
+  - proxy meta URL: logs/montana-time-capsule/heartbeat-proxy-meta-url-20260523T101350Z.txt (headers=logs/montana-time-capsule/curlI-proxy-meta-20260523T101350Z.headers; HTTP 200)
+- CI (gh=logs/montana-time-capsule/gh-version-20260523T101350Z.txt):
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260523T101350Z.json
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260523T101350Z.json (expected empty due to `[skip ci]`)
+
 ## 2026-05-23T09:23:31Z HEARTBEAT monitor (HMC) - terminal reconfirmed + S3 + viewer HTTP 200 + GH branch workflows confirmed (no launches)
 
 - Git: agent-40136728-montana-time-capsule @ 65c2e2cef711fab4522a8bb9f08e9fb08dbd0db7 ([skip ci]) (head=logs/montana-time-capsule/git-head-20260523T092331Z.txt; status=logs/montana-time-capsule/git-status-20260523T092331Z.txt)

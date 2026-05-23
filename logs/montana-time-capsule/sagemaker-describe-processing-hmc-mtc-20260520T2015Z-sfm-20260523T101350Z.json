@@ -1,0 +1,81 @@
+{
+  "AppSpecification": {
+    "ContainerEntrypoint": [
+      "/opt/ml/code/run_sfm.sh"
+    ],
+    "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811"
+  },
+  "CreationTime": "2026-05-20 14:16:22.633000-06:00",
+  "Environment": {
+    "AWS_DEFAULT_REGION": "us-west-2",
+    "COLMAP_CHUNK_MIN_CORE_REGISTERED_RATIO": "0.90",
+    "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+    "PYTHONUNBUFFERED": "1",
+    "SFM_BENCHMARK_SUBSET_STRATEGY": "hmc_full_2063_montana_time_capsule",
+    "SFM_BRANCH_NAME": "agent-40136728-montana-time-capsule",
+    "SFM_GIT_HEAD": "c6e9377759144d46d4b4ee74b75bcf35b30eb3e1",
+    "SFM_INPUT_URI": "s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip",
+    "SFM_JOB_NAME": "hmc-mtc-20260520T2015Z-sfm",
+    "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/colmap"
+  },
+  "LastModifiedTime": "2026-05-21 10:16:44.875000-06:00",
+  "ProcessingEndTime": "2026-05-21 10:03:13.740000-06:00",
+  "ProcessingInputs": [
+    {
+      "AppManaged": false,
+      "InputName": "sfm-input",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input",
+        "S3CompressionType": "None",
+        "S3DataDistributionType": "FullyReplicated",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip"
+      }
+    }
+  ],
+  "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/hmc-mtc-20260520T2015Z-sfm",
+  "ProcessingJobName": "hmc-mtc-20260520T2015Z-sfm",
+  "ProcessingJobStatus": "Completed",
+  "ProcessingOutputConfig": {
+    "Outputs": [
+      {
+        "AppManaged": false,
+        "OutputName": "colmap-output",
+        "S3Output": {
+          "LocalPath": "/opt/ml/processing/output",
+          "S3UploadMode": "EndOfJob",
+          "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/hmc-mtc-20260520T2015Z/colmap"
+        }
+      }
+    ]
+  },
+  "ProcessingResources": {
+    "ClusterConfig": {
+      "InstanceCount": 1,
+      "InstanceType": "ml.g4dn.xlarge",
+      "VolumeSizeInGB": 100
+    }
+  },
+  "ProcessingStartTime": "2026-05-20 14:17:11.438000-06:00",
+  "ResponseMetadata": {
+    "HTTPHeaders": {
+      "cache-control": "no-cache, no-store, must-revalidate",
+      "content-length": "1950",
+      "content-security-policy": "frame-ancestors 'none'",
+      "content-type": "application/x-amz-json-1.1",
+      "date": "Sat, 23 May 2026 10:13:50 GMT",
+      "strict-transport-security": "max-age=47304000; includeSubDomains",
+      "x-amzn-requestid": "d3f1520e-4f50-40be-824a-31628b27abee",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY"
+    },
+    "HTTPStatusCode": 200,
+    "RequestId": "d3f1520e-4f50-40be-824a-31628b27abee",
+    "RetryAttempts": 0
+  },
+  "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+  "StoppingCondition": {
+    "MaxRuntimeInSeconds": 86400
+  }
+}
