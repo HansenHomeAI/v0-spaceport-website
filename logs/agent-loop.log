@@ -218,3 +218,4 @@
 [2026-05-23T15:45:54Z] montana heartbeat -> HMC jobs Completed; S3 bundle present; md1-viewer + sogs-proxy HTTP200 (Origin); exact-head gh runs empty (skip ci) -> commit+push ledger
 [2026-05-23T15:47:01Z] postpush -> recorded gh runs for new head (expected exact-head empty) -> idle
 [2026-05-23T16:05:22Z] montana heartbeat -> HMC jobs still Completed; S3 bundle present; md1-viewer HTML 200; sogs-proxy meta.json 200 (Origin) -> commit+push ledger
+[2026-05-23T16:06:56Z] push -> heartbeat logs committed + pushed -> snapshot CI state (expected skip ci empty exact-head)
