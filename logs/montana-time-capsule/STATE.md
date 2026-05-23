@@ -6062,5 +6062,6 @@ Next: remain idle for HMC; do not stop unrelated jobs; no launches.
 - GitHub Actions:
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260523T120341Z.json (latest green Pages+CDK on 2026-05-21)
   - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260523T120341Z.json (0; head commit is [skip ci])
+  - exact-head post-push: logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260523T120540Z.json (0; head commit is [skip ci])
 
 Next: remain idle for HMC; no launches; acceptance gates remaining are visual proof screenshots (skybox + no-sky) beyond HTTP reachability.
