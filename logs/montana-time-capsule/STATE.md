@@ -24,6 +24,13 @@
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260523T214040Z.json
   - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260523T214040Z.json
 
+## 2026-05-23T21:42:55Z postpush CI snapshot (exact-head expected empty due to `[skip ci]`)
+
+- Git: agent-40136728-montana-time-capsule @ fdb9cae7d1d1a679350d99db50f4c0f7fc66dfb5 ([skip ci]) (pushed)
+- CI:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260523T214255Z.json
+  - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260523T214255Z.json
+
 ## 2026-05-23T20:12:49Z postpush CI snapshot (exact-head expected empty due to `[skip ci]`)
 
 - Git: agent-40136728-montana-time-capsule @ d93b41b10e372b0fbcc1cdc575836b5ea9c60a45 ([skip ci]) (pushed)
