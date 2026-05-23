@@ -202,3 +202,4 @@
 [2026-05-23T12:55:15Z] heartbeat(no-spend) -> STS ok; HMC jobs Completed; proxy meta.json HTTP200 (+CORS); viewer HTTP200 + screenshots -> commit+push ledger
 [2026-05-23T13:05:46Z] heartbeat -> awscli sm/s3 + viewer/proxy HTTP200 + gh snapshot -> idle
 [2026-05-23T13:07:15Z] postpush -> recorded exact-head gh runs -> idle
+[2026-05-23T13:24:28Z] heartbeat(hmc-mtc-20260520T2015Z) -> terminal+S3+viewer/proxy 200+CI snapshot (no launches) -> next: wait
