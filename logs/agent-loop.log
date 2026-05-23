@@ -205,3 +205,4 @@
 [2026-05-23T13:24:28Z] heartbeat(hmc-mtc-20260520T2015Z) -> terminal+S3+viewer/proxy 200+CI snapshot (no launches) -> next: wait
 [2026-05-23T13:25:37Z] postpush -> recorded gh runs for new head (expected exact-head empty) -> idle
 [2026-05-23T13:44:21Z] heartbeat-no-spend -> aws/s3/viewer/gha reconfirmed (no launches) -> remain idle; next gate screenshots
+[2026-05-23T13:45:35Z] postpush -> recorded gh runs for new head (expected exact-head empty) -> idle

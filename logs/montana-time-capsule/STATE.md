@@ -6189,3 +6189,12 @@ Next: remain idle for HMC; do not launch duplicate jobs. Next acceptance gate (i
   - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260523T134340Z.json (0; head commit is `[skip ci]`)
 
 Next: remain idle for HMC; do not launch duplicate jobs. Acceptance gate still remaining (if requested) is visual screenshots (skybox + no-sky), beyond HTTP reachability.
+
+## 2026-05-23T13:45:25Z HEARTBEAT monitor (HMC) - ledger push recorded; post-push exact-head CI snapshot captured (no launches)
+
+- Git: agent-40136728-montana-time-capsule @ 67b93f63615cf747d4031eec6d97d74f13f0c27a ([skip ci]) (pushed)
+- GitHub Actions:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260523T134508Z.json
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260523T134508Z.json (0; head commit is `[skip ci]`)
+
+Next: remain idle for HMC; do not launch duplicate jobs. Next acceptance gate (if requested) remains visual screenshots in skybox + no-sky modes.
