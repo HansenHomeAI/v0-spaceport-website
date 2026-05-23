@@ -1,0 +1,49 @@
+{
+  "timestamp_utc": "20260523T1025Z",
+  "jobs": {
+    "cvhr-gpsalign-l02-1779528900": {
+      "status": "InProgress",
+      "failure_reason": null,
+      "start": "2026-05-23T03:43:41.145000-06:00",
+      "end": null,
+      "max_runtime": 86400,
+      "log_stream": "cvhr-gpsalign-l02-1779528900/algo-1-1779529420",
+      "last_log_messages": [
+        "COLMAP[chunk_02_mapper_initial] I20260523 10:24:56.227005   546 incremental_pipeline.cc:527] => Image sees 5423 / 7015 points",
+        "COLMAP[chunk_02_mapper_initial] I20260523 10:24:58.181380   546 incremental_pipeline.cc:524] Registering image #255 (num_reg_frames=294)",
+        "COLMAP[chunk_02_mapper_initial] I20260523 10:24:58.181427   546 incremental_pipeline.cc:527] => Image sees 4661 / 9706 points",
+        "COLMAP[chunk_02_mapper_initial] I20260523 10:24:59.999071   546 incremental_pipeline.cc:524] Registering image #256 (num_reg_frames=295)",
+        "COLMAP[chunk_02_mapper_initial] I20260523 10:24:59.999119   546 incremental_pipeline.cc:527] => Image sees 5354 / 9797 points",
+        "COLMAP[chunk_02_mapper_initial] I20260523 10:25:02.031473   546 incremental_pipeline.cc:524] Registering image #257 (num_reg_frames=296)",
+        "COLMAP[chunk_02_mapper_initial] I20260523 10:25:02.031522   546 incremental_pipeline.cc:527] => Image sees 5262 / 9216 points",
+        "COLMAP[chunk_02_mapper_initial] I20260523 10:25:04.020587   546 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment"
+      ]
+    },
+    "cvhr-gpsalign-l06-1779528901": {
+      "status": "InProgress",
+      "failure_reason": null,
+      "start": "2026-05-23T03:43:39.052000-06:00",
+      "end": null,
+      "max_runtime": 86400,
+      "log_stream": "cvhr-gpsalign-l06-1779528901/algo-1-1779529418",
+      "last_log_messages": [
+        "COLMAP[chunk_06_mapper_initial] I20260523 10:25:09.629952   573 incremental_pipeline.cc:527] => Image sees 4813 / 8192 points",
+        "COLMAP[chunk_06_mapper_initial] I20260523 10:25:11.854686   573 incremental_pipeline.cc:524] Registering image #324 (num_reg_frames=254)",
+        "COLMAP[chunk_06_mapper_initial] I20260523 10:25:11.854748   573 incremental_pipeline.cc:527] => Image sees 4587 / 5746 points",
+        "COLMAP[chunk_06_mapper_initial] I20260523 10:25:14.045010   573 incremental_pipeline.cc:524] Registering image #6 (num_reg_frames=255)",
+        "COLMAP[chunk_06_mapper_initial] I20260523 10:25:14.045071   573 incremental_pipeline.cc:527] => Image sees 3341 / 6340 points",
+        "COLMAP[chunk_06_mapper_initial] I20260523 10:25:15.643316   573 incremental_pipeline.cc:524] Registering image #23 (num_reg_frames=256)",
+        "COLMAP[chunk_06_mapper_initial] I20260523 10:25:15.643375   573 incremental_pipeline.cc:527] => Image sees 3546 / 6421 points",
+        "COLMAP[chunk_06_mapper_initial] I20260523 10:25:17.211649   573 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment"
+      ]
+    }
+  },
+  "files": {
+    "cvhr-gpsalign-l02-1779528900_cloudwatch_tail": "logs/sfm-production-spine/cvhr_gpsalign_l02_cloudwatch_tail_20260523T1025Z.json",
+    "cvhr-gpsalign-l02-1779528900_describe": "logs/sfm-production-spine/cvhr-gpsalign-l02-1779528900_describe_poll_20260523T1025Z.json",
+    "cvhr-gpsalign-l06-1779528901_cloudwatch_tail": "logs/sfm-production-spine/cvhr_gpsalign_l06_cloudwatch_tail_20260523T1025Z.json",
+    "cvhr-gpsalign-l06-1779528901_describe": "logs/sfm-production-spine/cvhr-gpsalign-l06-1779528901_describe_poll_20260523T1025Z.json",
+    "s3_listing": "logs/sfm-production-spine/cvhr_gpsalign_leaf02_leaf06_s3_poll_20260523T1025Z.txt"
+  },
+  "s3_listing_line_count": 0
+}

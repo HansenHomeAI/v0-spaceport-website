@@ -162,6 +162,62 @@ class ColmapGpsPriorTests(unittest.TestCase):
                 ],
             )
 
+    def test_input_manifest_pose_priors_override_subset_local_origin(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
+            os.environ,
+            {
+                "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+                "COLMAP_CHUNK_PLANNER": "visibility_cell_v1",
+            },
+            clear=True,
+        ):
+            root = Path(tmp)
+            pipeline = run_colmap_sfm.ColmapPipeline(root / "input", root / "output")
+            pipeline.exif_records = {
+                "IMG_001.JPG": self.make_visibility_exif_record(
+                    "IMG_001.JPG",
+                    x=0.0,
+                    y=0.0,
+                    capture_time_s=1.0,
+                ),
+                "IMG_002.JPG": self.make_visibility_exif_record(
+                    "IMG_002.JPG",
+                    x=10.0,
+                    y=5.0,
+                    capture_time_s=2.0,
+                ),
+            }
+
+            applied = pipeline.apply_input_manifest_pose_priors(
+                {
+                    "image_pose_priors_local": {
+                        "IMG_001.JPG": {"local_x_m": 350.0, "local_y_m": -200.0, "local_z_m": -20.0},
+                        "IMG_002.JPG": {"local_x_m": 360.0, "local_y_m": -195.0, "local_z_m": -19.5},
+                        "MISSING.JPG": {"local_x_m": 1.0, "local_y_m": 2.0, "local_z_m": 3.0},
+                    }
+                }
+            )
+            ref_path = root / "refs.txt"
+            count = pipeline.write_model_aligner_ref_images(
+                registered_names={"IMG_001.JPG", "IMG_002.JPG"},
+                ref_images_path=ref_path,
+            )
+
+            self.assertEqual(applied, 2)
+            self.assertEqual(pipeline.input_manifest_pose_priors_applied_count, 2)
+            self.assertEqual(count, 2)
+            self.assertEqual(
+                ref_path.read_text(encoding="utf-8").splitlines(),
+                [
+                    "IMG_001.JPG 350.000000000 -200.000000000 -20.000000000",
+                    "IMG_002.JPG 360.000000000 -195.000000000 -19.500000000",
+                ],
+            )
+            self.assertEqual(
+                pipeline.exif_records["IMG_001.JPG"]["local_pose_prior_source"],
+                "input_chunk_planner_manifest",
+            )
+
     def test_visibility_cell_planner_merges_weak_core_cells(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(
             os.environ,

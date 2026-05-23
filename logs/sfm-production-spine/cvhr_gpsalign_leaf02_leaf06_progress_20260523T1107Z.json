@@ -1,0 +1,73 @@
+{
+  "timestamp_utc": "20260523T1107Z",
+  "jobs": {
+    "cvhr-gpsalign-l02-1779528900": {
+      "status": "Completed",
+      "failure_reason": null,
+      "start": "2026-05-23T03:43:41.145000-06:00",
+      "end": "2026-05-23T04:40:45.327000-06:00",
+      "max_runtime": 86400,
+      "log_stream": "cvhr-gpsalign-l02-1779528900/algo-1-1779529420",
+      "last_log_messages": [
+        "\ud83d\udcf7 Cameras registered: 1",
+        "\ud83d\uddbc\ufe0f Images registered: 360",
+        "\ud83d\uddbc\ufe0f Images copied for 3DGS: 360",
+        "\ud83c\udfaf 3D points: 104918",
+        "\u23f1\ufe0f Processing time: 3182.89 seconds",
+        "\ud83d\udef0\ufe0f GPS priors detected: 360",
+        "\ud83d\udd17 Matchers: chunk_matches_importer",
+        "\ud83e\udded Match profile: P3",
+        "\u27a1\ufe0f Sequential matcher enabled: False",
+        "\u21a9\ufe0f Fallback reason: not_needed",
+        "\ud83c\udfaf Vocab tree candidates: 40",
+        "\ud83d\udccc SIFT max features: 8192",
+        "============================================================",
+        "\ud83c\udf89 SPACEPORT COLMAP GPU SfM COMPLETED SUCCESSFULLY!",
+        "============================================================",
+        "\u2705 GPU-accelerated COLMAP SfM completed",
+        "\ud83d\udcc1 Output files ready for 3D Gaussian Splatting training",
+        "\ud83d\udd17 COLMAP TXT handoff maintained",
+        "\ud83d\udcc5 Completed at: Sat May 23 10:39:34 UTC 2026",
+        "============================================================"
+      ]
+    },
+    "cvhr-gpsalign-l06-1779528901": {
+      "status": "Completed",
+      "failure_reason": null,
+      "start": "2026-05-23T03:43:39.052000-06:00",
+      "end": "2026-05-23T04:50:34.944000-06:00",
+      "max_runtime": 86400,
+      "log_stream": "cvhr-gpsalign-l06-1779528901/algo-1-1779529418",
+      "last_log_messages": [
+        "\ud83d\udcf7 Cameras registered: 1",
+        "\ud83d\uddbc\ufe0f Images registered: 360",
+        "\ud83d\uddbc\ufe0f Images copied for 3DGS: 360",
+        "\ud83c\udfaf 3D points: 138150",
+        "\u23f1\ufe0f Processing time: 3810.4 seconds",
+        "\ud83d\udef0\ufe0f GPS priors detected: 360",
+        "\ud83d\udd17 Matchers: chunk_matches_importer",
+        "\ud83e\udded Match profile: P3",
+        "\u27a1\ufe0f Sequential matcher enabled: False",
+        "\u21a9\ufe0f Fallback reason: not_needed",
+        "\ud83c\udfaf Vocab tree candidates: 40",
+        "\ud83d\udccc SIFT max features: 8192",
+        "============================================================",
+        "\ud83c\udf89 SPACEPORT COLMAP GPU SfM COMPLETED SUCCESSFULLY!",
+        "============================================================",
+        "\u2705 GPU-accelerated COLMAP SfM completed",
+        "\ud83d\udcc1 Output files ready for 3D Gaussian Splatting training",
+        "\ud83d\udd17 COLMAP TXT handoff maintained",
+        "\ud83d\udcc5 Completed at: Sat May 23 10:50:01 UTC 2026",
+        "============================================================"
+      ]
+    }
+  },
+  "files": {
+    "cvhr-gpsalign-l02-1779528900_cloudwatch_tail": "logs/sfm-production-spine/cvhr_gpsalign_l02_cloudwatch_tail_20260523T1107Z.json",
+    "cvhr-gpsalign-l02-1779528900_describe": "logs/sfm-production-spine/cvhr-gpsalign-l02-1779528900_describe_poll_20260523T1107Z.json",
+    "cvhr-gpsalign-l06-1779528901_cloudwatch_tail": "logs/sfm-production-spine/cvhr_gpsalign_l06_cloudwatch_tail_20260523T1107Z.json",
+    "cvhr-gpsalign-l06-1779528901_describe": "logs/sfm-production-spine/cvhr-gpsalign-l06-1779528901_describe_poll_20260523T1107Z.json",
+    "s3_listing": "logs/sfm-production-spine/cvhr_gpsalign_leaf02_leaf06_s3_poll_20260523T1107Z.txt"
+  },
+  "s3_listing_line_count": 752
+}

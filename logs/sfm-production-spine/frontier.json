@@ -20,34 +20,37 @@
   "automation_recommendation": "delete after final code/evidence commit and push; downstream 3DGS/SOGS should use a separate monitor if needed",
   "block_reasons": [],
   "blockers": [
-    "CV-HR strict seam graph production proof is still pending: repaired 02/06/08 replay remains disconnected because leaf02-leaf06 scale_delta=0.16123255 exceeds the 0.15 strict gate; GPS-aligned leaf export patch is locally verified but not yet rebuilt/run in SageMaker."
+    "CV-HR strict seam graph proof is still pending: GPS-aligned leaf02/leaf06 terminal canary fixed scale_delta to 0.00089087 but failed strict sim3_p95=0.478704m and gps_exif_p95=405.216623m because leaf output alignment used subset-local priors. Patch is verified locally and needs exact-head rebuild plus bounded 02/06 relaunch."
   ],
   "branch": "agent-73948216-sfm-production-spine",
   "caveats": [],
   "completed_jobs": [
+    "cvhr-gpsalign-l06-1779528901",
+    "cvhr-gpsalign-l02-1779528900",
+    "cvhr-viscell-gpsalign-plan-v1-1779528510",
+    "cvhr-viscell-wcrepair-plan-v1-1779407138",
+    "cvhr-wcrepair-l02-1779407790",
+    "cvhr-wcrepair-l06-1779407814",
+    "cvhr-wcrepair-l08-1779464068",
     "md1-sogs-gpulist-r35-1778949968",
     "md1-sogs-nvgpu-r37-1778950600",
     "md1-sogs-vulkan-r36-1778950260",
     "md1-tile00-ds1000-r30-1778869168",
+    "md1-tile00-h1i1lod-r40-1778978757",
     "md1-tile00-split-r32-1778899939",
     "md1-tile01-ds1000-r30-1778869169",
-    "md1-tile02-ds1000-r30-1778869170",
-    "md1-tile03-ds1000-r30-1778869171",
-    "md1-tile04-ds1000-r30-1778869172",
-    "md1-tile00-h1i1lod-r40-1778978757",
     "md1-tile01-h1i1lod-r41-1778982712",
+    "md1-tile02-ds1000-r30-1778869170",
     "md1-tile02-h1i1lod-r41-1778982713",
+    "md1-tile03-ds1000-r30-1778869171",
     "md1-tile03-h1i1lod-r41-1778982714",
-    "md1-tile04-h1i1lod-r41-1778982715",
-    "cvhr-viscell-wcrepair-plan-v1-1779407138",
-    "cvhr-wcrepair-l02-1779407790",
-    "cvhr-wcrepair-l06-1779407814",
-    "cvhr-wcrepair-l08-1779464068"
+    "md1-tile04-ds1000-r30-1778869172",
+    "md1-tile04-h1i1lod-r41-1778982715"
   ],
-  "current_branch_head": "99d1c2d6805a861a80cd6f815df548fb858be779",
+  "current_branch_head": "7aaaa663eb2b26bf6c8433db07495a164e40b75a",
   "current_goal": "Production-ready huge-scene tiled SfM: same-MD1 quality, meaningfully faster, restartable, distributed, promotion-safe, and backed by sparse, viewer, render, and AI visual proof.",
-  "current_rung": "SFM_SEAM_GRAPH_SIM3_V1_CVHR_GPS_ALIGNMENT_PATCH_LOCAL_VERIFIED",
-  "decision": "not_production_ready_gps_alignment_patch_local_verified_next_exact_head_build",
+  "current_rung": "SFM_SEAM_GRAPH_SIM3_V1_CVHR_GLOBAL_PRIOR_PATCH_READY_FOR_BUILD",
+  "decision": "not_production_ready_cvhr_global_prior_patch_needs_exact_head_canary",
   "ecr_digest_transition": {
     "from": "sha256:e56a0d0ad6c6eeac2e2966c29360243330ff18a2fd11882d19fdfdd87cc810ac",
     "proof": "logs/sfm-production-spine/ecr-3dgs-agent73948216-20260514T0435Z.json",
@@ -500,7 +503,7 @@
     "sfm_image_digest": "sha256:05e85850abcfd623e8ec7f3debc70ce2dcd9861548311290db901e0c661d4940",
     "status": "bridge_leaf_in_colmap_matching_after_initial_reducer_disconnected_leaf0"
   },
-  "head": "99d1c2d6805a861a80cd6f815df548fb858be779",
+  "head": "7aaaa663eb2b26bf6c8433db07495a164e40b75a",
   "historical_nonblocking_notes": [
     "r24/r25 full-MD1 monolithic 3DGS failed and were not used as the production proof path.",
     "r29 worst447 ds1000 49152 passed only as bounded proof.",
@@ -571,7 +574,7 @@
     "ssim": 0.7207,
     "successful_render_count": 431
   },
-  "last_step": "2026-05-22T16:11Z: CV-HR weak-core repair leaf08 cvhr-wcrepair-l08-1779464068 remains InProgress/no FailureReason; mapper active at num_reg_frames=224, S3 output empty before EndOfJob.",
+  "last_step": "Exact-head GPS-alignment patch build succeeded (CDK 26328873138, ML container 26328873133, ECR digest sha256:d119f5973fd1ec5500c8d2f3eb3d4ecd295a350651bc9f6691482b4eb7d426fa); planner cvhr-viscell-gpsalign-plan-v1-1779528510 completed with 9 chunks, no weak core chunks, min_adjacent_shared_images=13, and 1710 image_pose_priors_local; launched GPS-aligned leaves 02/06 only as cvhr-gpsalign-l02-1779528900 and cvhr-gpsalign-l06-1779528901.",
   "latest_artifacts": {
     "ecr_3dgs_r27_poll": "logs/sfm-production-spine/ecr-3dgs-agent73948216-r27-poll-20260515T1203Z.json",
     "github_runs_exact_head_r27_poll": "logs/sfm-production-spine/github-runs-r27-poll-20260515T1203Z.json",
@@ -676,7 +679,7 @@
     "speed_audit": "logs/sfm-production-spine/md1_speed_proof_audit.json",
     "speedup_percent": 26.14
   },
-  "next_unblocked_step": "Monitor cvhr-wcrepair-l08-1779464068 to terminal. If it succeeds, run strict seam_graph_sim3_v1 reducer replay on repaired leaves 02/06/08; do not launch full CV-HR fanout unless that canary reconnects under strict gates.",
+  "next_unblocked_step": "Monitor leaves 02/06 to terminal, run strict seam_graph_sim3_v1 02/06 reducer if both complete, then launch held leaf08 only if needed before any full CV-HR fanout.",
   "owner_action_needed": "none",
   "owner_wait_poll": {
     "active_md1_processing_jobs": [],
@@ -952,7 +955,7 @@
     "status": "complete",
     "updated": "2026-05-17T05:28Z"
   },
-  "project_final_decision": "patched_cvhr_manifest_contract_leaf02_leaf06_completed_leaf08_active",
+  "project_final_decision": "not_production_ready_cvhr_global_prior_patch_needs_exact_head_canary",
   "project_level_caveats": [
     "production-scale r23 reducer and final viewer proof still pending; bridge leaf is active and progressing to resolve disconnected leaf00 overlap"
   ],
@@ -3149,7 +3152,7 @@
       "evidence": "logs/sfm-production-spine/visibility_cell_v1_final_cdk_run_view_20260519T1621Z.json"
     }
   },
-  "status": "cvhr_weak_core_repair_leaf_canary_active",
+  "status": "cvhr_global_prior_patch_ready_for_exact_head_build",
   "unrelated_active_job_describes": [
     "logs/sfm-production-spine/unrelated-training-md1shrunk1456-1778880862-3dgs-describe-20260515T2222Z.json"
   ],
@@ -3160,8 +3163,8 @@
     "prior global sparse double-surface grid had warning cells",
     "CV-HR prior 11-leaf output passed older gates but fails new seam_graph_sim3_v1 strict replay because accepted seam graph is disconnected; weak-core leaves 00/10 and scale-blocked leaves 02/10 require patched planner replay before production promotion"
   ],
-  "updated": "2026-05-23T08:59:00Z",
-  "updated_at": "2026-05-22T16:11:00Z",
+  "updated": "2026-05-23T09:43:00Z",
+  "updated_at": "2026-05-23T09:43:00Z",
   "cvhr_visibility_cell_v1_pressure_test": {
     "updated": "2026-05-20T01:15Z",
     "status": "full_sfm_pressure_test_passed",
@@ -3478,7 +3481,7 @@
     "active_cvhr_training_jobs": "logs/sfm-production-spine/active-cvhr-training-jobs-20260522T1611Z.json"
   },
   "sfm_scope_only": true,
-  "seam_graph_sim3_v1_latest_proof": "logs/sfm-production-spine/cvhr_weakcore_repair_020608_scale_blocker_gps_alignment_next_proof_20260523T0859Z.json",
+  "seam_graph_sim3_v1_latest_proof": "logs/sfm-production-spine/cvhr_gpsalign_canary_status_20260523T0943Z.json",
   "cvhr_weakcore_repair_latest": {
     "updated": "2026-05-23T08:59:00Z",
     "leaf08_status": "Completed/no FailureReason; 360/360 images; 98326 sparse points",
@@ -3497,10 +3500,10 @@
     "proof": "logs/sfm-production-spine/cvhr_weakcore_repair_020608_scale_blocker_gps_alignment_next_proof_20260523T0859Z.json"
   },
   "sfm_seam_graph_sim3_v1_hardening": {
-    "updated": "2026-05-23T08:59:00Z",
-    "status": "cvhr_gps_alignment_patch_local_verified_next_exact_head_build",
-    "scope": "SfM reducer/planner/leaf-export hardening only; no 3DGS/SOGS launched.",
-    "latest_proof": "logs/sfm-production-spine/cvhr_weakcore_repair_020608_scale_blocker_gps_alignment_next_proof_20260523T0859Z.json",
+    "updated": "2026-05-23T11:22:00Z",
+    "status": "cvhr_global_prior_patch_ready_for_exact_head_build",
+    "scope": "SfM-only; active task-owned SageMaker jobs are empty; no full fanout, 3DGS, or SOGS launched",
+    "latest_proof": "logs/sfm-production-spine/cvhr_gpsalign_0206_global_prior_blocker_isolation_20260523T1122Z.json",
     "active_leaf_canary_jobs": [],
     "latest_leaf_canary_poll": {
       "updated": "2026-05-23T08:12:00Z",
@@ -3524,6 +3527,45 @@
         "python3 -m py_compile infrastructure/containers/sfm/run_colmap_sfm.py scripts/sfm/run_sfm_reducer_canary.py scripts/sfm/run_sfm_fanout_reducer.py",
         "PYTHONPATH=. python3 -m unittest tests.unit.test_colmap_gps_priors tests.unit.test_sfm_fanout_contract tests.unit.test_sfm_reducer_canary tests.unit.test_sfm_fanout_reducer tests.unit.test_sfm_quality_eval (140 tests OK)"
       ]
+    },
+    "pushed_commit": "7aaaa663eb2b26bf6c8433db07495a164e40b75a",
+    "exact_head_workflows_current": {
+      "cdk_deploy": "26328873138 success for 7aaaa663eb2b26bf6c8433db07495a164e40b75a",
+      "ml_container_build": "26328873133 success for 7aaaa663eb2b26bf6c8433db07495a164e40b75a",
+      "codebuild": "spaceport-ml-containers:689f41c6-1874-4e44-8d39-86f9790b8d7d success",
+      "ecr_digest": "sha256:d119f5973fd1ec5500c8d2f3eb3d4ecd295a350651bc9f6691482b4eb7d426fa",
+      "pages_deploy": "not_triggered_for_7aaaa663_container_only_patch; prior preview remains live"
+    },
+    "gpsalign_planner": {
+      "job": "cvhr-viscell-gpsalign-plan-v1-1779528510",
+      "describe": "logs/sfm-production-spine/cvhr-viscell-gpsalign-plan-v1-1779528510_describe_poll_20260523T0926Z.json",
+      "manifest": "logs/sfm-production-spine/cvhr_visibility_cell_v1_gpsalign_planner_20260523T0924Z/chunk_planner_manifest.json",
+      "contract": "logs/sfm-production-spine/cvhr_gpsalign_fanout_contract_20260523T0934Z.json",
+      "result": "Completed/no FailureReason; 9 chunks; 1710 image_pose_priors_local; weak_core_chunks=[]; min_adjacent_shared_images=13; dry_run_contract_ready"
+    },
+    "gpsalign_leaf_canary": {
+      "budget_reason": "logs/sfm-production-spine/cvhr_gpsalign_leaf_canary_budget_reason_20260523T0934Z.json",
+      "launch_summary": "logs/sfm-production-spine/cvhr_gpsalign_leaf02_leaf06_launch_summary_20260523T0934Z.json",
+      "active_leaf_canary_jobs": [],
+      "held_leaf_canary_jobs": [
+        "leaf08 held until leaf02/leaf06 seam result"
+      ],
+      "latest_poll": "logs/sfm-production-spine/cvhr_gpsalign_leaf02_leaf06_progress_20260523T1107Z.json",
+      "latest_status": "2026-05-23T10:44Z: leaf02 Completed/no FailureReason with 376 S3 objects; leaf06 InProgress/no FailureReason and mapper reached num_reg_frames=359 before retriangulation/global BA.",
+      "terminal_status": "leaf02 and leaf06 Completed/no FailureReason with 360/360 images each; leaf02 filtered sparse points=104918, leaf06 filtered sparse points=138150, combined S3 objects=752",
+      "strict_0206_replay": {
+        "reducer_report": "logs/sfm-production-spine/cvhr_gpsalign_0206_seam_graph_reducer_20260523T1108Z.json",
+        "seam_merge_report": "logs/sfm-production-spine/cvhr_gpsalign_0206_seam_merge_report_20260523T1108Z.json",
+        "result": "fail_accepted_seam_graph_disconnected",
+        "blocker": "scale_delta fixed to 0.00089087, but sim3_p95=0.478704m and gps_exif_p95=405.216623m fail strict gates"
+      },
+      "global_prior_patch": {
+        "blocker_isolation": "logs/sfm-production-spine/cvhr_gpsalign_0206_global_prior_blocker_isolation_20260523T1122Z.json",
+        "patch": "Leaf jobs now apply immutable planner image_pose_priors_local to exif_records before COLMAP model_aligner so every leaf aligns to the same global planner-local frame instead of a subset-local origin.",
+        "verification": "py_compile passed; 141 focused unit tests passed",
+        "next": "commit/push, wait exact-head CDK/container build, then relaunch only bounded CV-HR leaves 02/06 before leaf08/full fanout"
+      }
     }
-  }
+  },
+  "latest_proof": "logs/sfm-production-spine/cvhr_gpsalign_0206_global_prior_blocker_isolation_20260523T1122Z.json"
 }

@@ -1,0 +1,34 @@
+{
+  "artifact_kind": "cvhr_gpsalign_0206_global_prior_blocker_isolation",
+  "timestamp_utc": "2026-05-23T11:22:00Z",
+  "scope": "SfM-only no-spend blocker isolation after GPS-aligned leaf02/leaf06 canary",
+  "inputs": {
+    "leaf02_job": "cvhr-gpsalign-l02-1779528900",
+    "leaf06_job": "cvhr-gpsalign-l06-1779528901",
+    "planner_manifest": "logs/sfm-production-spine/cvhr_visibility_cell_v1_gpsalign_planner_20260523T0924Z/chunk_planner_manifest.json",
+    "reducer_report": "logs/sfm-production-spine/cvhr_gpsalign_0206_seam_graph_reducer_20260523T1108Z.json",
+    "seam_report": "logs/sfm-production-spine/cvhr_gpsalign_0206_seam_merge_report_20260523T1108Z.json",
+    "camera_prior_probe": "logs/sfm-production-spine/cvhr_gpsalign_camera_prior_probe_20260523T1114Z.json",
+    "leaf_metadata_summary": "logs/sfm-production-spine/cvhr_gpsalign_leaf_metadata_summary_20260523T1107Z.json"
+  },
+  "terminal_leaf_facts": {
+    "leaf02": "Completed/no FailureReason; 360/360 images; 104918 filtered sparse points; COLMAP model_aligner reported aligned with 360 references and mean custom alignment error 1.130780 against its reference file",
+    "leaf06": "Completed/no FailureReason; 360/360 images; 138150 filtered sparse points; COLMAP model_aligner reported aligned with 360 references and mean custom alignment error 1.095483 against its reference file"
+  },
+  "strict_reducer_result": {
+    "decision": "fail",
+    "edge": "leaf02-leaf06",
+    "shared_registered_images": 178,
+    "scale_delta": 0.00089087,
+    "sim3_p95_residual_m": 0.478704,
+    "gps_exif_p95_residual_m": 405.216623,
+    "blockers": ["sim3_p95_residual_exceeds_gate", "gps_exif_residual_exceeds_gate", "accepted_seam_graph_is_disconnected"]
+  },
+  "root_cause": "Leaf export alignment used each leaf job's subset-local EXIF coordinates instead of the immutable planner manifest's global image_pose_priors_local coordinates. That let COLMAP model_aligner report success inside each leaf's local frame while the reducer still saw leaf02 cameras shifted about [350.646, -200.712, -20.634]m from planner priors and leaf06 shifted about [205.916, 28.117, 12.253]m from planner priors.",
+  "patch": "run_colmap_sfm.py now applies image_pose_priors_local from COLMAP_INPUT_CHUNK_PLANNER_MANIFEST_URI to exif_records before graph-planned leaf matching/alignment; sfm_metadata records input_manifest_pose_priors_applied_count; test_colmap_gps_priors covers ref_images using manifest-global coordinates instead of subset-local origin.",
+  "verification": [
+    "python3 -m py_compile infrastructure/containers/sfm/run_colmap_sfm.py scripts/sfm/run_sfm_reducer_canary.py scripts/sfm/run_sfm_fanout_reducer.py",
+    "PYTHONPATH=. python3 -m unittest tests.unit.test_colmap_gps_priors tests.unit.test_sfm_fanout_contract tests.unit.test_sfm_reducer_canary tests.unit.test_sfm_fanout_reducer tests.unit.test_sfm_quality_eval (141 tests OK)"
+  ],
+  "next_budget_reason": "Bounded relaunch of only CV-HR leaves 02 and 06 is justified after exact-head container rebuild because the previous paid canary isolated a leaf-frame origin bug and the patched code must be exercised in the actual SageMaker/COLMAP runtime before any leaf08/full CV-HR fanout."
+}

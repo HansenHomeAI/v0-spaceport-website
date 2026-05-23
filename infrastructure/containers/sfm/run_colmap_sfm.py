@@ -983,6 +983,7 @@ class ColmapPipeline:
         self.chunk_merge_summary: dict[str, object] = {}
         self.filtered_sparse_summary: dict[str, object] = {}
         self.model_alignment_reports: List[dict[str, object]] = []
+        self.input_manifest_pose_priors_applied_count = 0
         self.probe_subset_details: Dict[str, dict[str, object]] = {}
         self.ladder_subsets: Dict[str, List[str]] = {}
         self.ladder_subset_details: Dict[str, dict[str, object]] = {}
@@ -1361,6 +1362,7 @@ class ColmapPipeline:
         manifest = self.load_input_chunk_planner_manifest()
         if manifest is None:
             return None
+        self.apply_input_manifest_pose_priors(manifest)
         self.chunk_matcher_strategy = str(
             manifest.get("chunk_matcher_strategy")
             or ("pair_list" if self.colmap_capabilities.get("supports_matches_importer") else "exhaustive")
@@ -1466,6 +1468,32 @@ class ColmapPipeline:
             self.input_chunk_planner_manifest_uri,
         )
         return chunk_plans
+
+    def apply_input_manifest_pose_priors(self, manifest: dict[str, object]) -> int:
+        raw_priors = manifest.get("image_pose_priors_local") or {}
+        if not isinstance(raw_priors, dict):
+            return 0
+        applied_count = 0
+        for image_name, payload in raw_priors.items():
+            if not isinstance(payload, dict):
+                continue
+            if "local_x_m" not in payload or "local_y_m" not in payload:
+                continue
+            record = self.exif_records.get(str(image_name))
+            if record is None:
+                continue
+            record["local_x_m"] = float(payload["local_x_m"])
+            record["local_y_m"] = float(payload["local_y_m"])
+            record["local_z_m"] = float(payload.get("local_z_m", 0.0))
+            record["local_pose_prior_source"] = "input_chunk_planner_manifest"
+            applied_count += 1
+        self.input_manifest_pose_priors_applied_count = applied_count
+        if applied_count:
+            logger.info(
+                "Applied %s image_pose_priors_local records from immutable planner manifest",
+                applied_count,
+            )
+        return applied_count
 
     def populate_local_coordinates(
         self, exif_records: Dict[str, Dict[str, float | str | None]]
@@ -9107,6 +9135,7 @@ class ColmapPipeline:
             "pitch_prior_dispersion_deg": self.pitch_prior_dispersion_deg,
             "pose_priors_written_count": self.pose_priors_written_count,
             "pose_priors_source": self.pose_priors_source,
+            "input_manifest_pose_priors_applied_count": self.input_manifest_pose_priors_applied_count,
             "gps_prior_coverage": self.gps_prior_coverage,
             "matchers_run": self.matchers_run,
             "matcher_pair_deltas": self.matcher_pair_deltas,

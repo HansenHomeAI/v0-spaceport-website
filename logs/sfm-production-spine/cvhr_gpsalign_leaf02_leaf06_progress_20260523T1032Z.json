@@ -1,0 +1,57 @@
+{
+  "timestamp_utc": "20260523T1032Z",
+  "jobs": {
+    "cvhr-gpsalign-l02-1779528900": {
+      "status": "InProgress",
+      "failure_reason": null,
+      "start": "2026-05-23T03:43:41.145000-06:00",
+      "end": null,
+      "max_runtime": 86400,
+      "log_stream": "cvhr-gpsalign-l02-1779528900/algo-1-1779529420",
+      "last_log_messages": [
+        "COLMAP[chunk_02_mapper_initial] I20260523 10:32:13.211172   546 incremental_pipeline.cc:527] => Image sees 2244 / 7201 points",
+        "COLMAP[chunk_02_mapper_initial] I20260523 10:32:14.642436   546 incremental_pipeline.cc:524] Registering image #322 (num_reg_frames=347)",
+        "COLMAP[chunk_02_mapper_initial] I20260523 10:32:14.642484   546 incremental_pipeline.cc:527] => Image sees 1775 / 6601 points",
+        "COLMAP[chunk_02_mapper_initial] I20260523 10:32:16.063712   546 incremental_pipeline.cc:524] Registering image #323 (num_reg_frames=348)",
+        "COLMAP[chunk_02_mapper_initial] I20260523 10:32:16.063794   546 incremental_pipeline.cc:527] => Image sees 2227 / 6395 points",
+        "COLMAP[chunk_02_mapper_initial] I20260523 10:32:17.541019   546 incremental_pipeline.cc:524] Registering image #324 (num_reg_frames=349)",
+        "COLMAP[chunk_02_mapper_initial] I20260523 10:32:17.541085   546 incremental_pipeline.cc:527] => Image sees 2576 / 6303 points",
+        "COLMAP[chunk_02_mapper_initial] I20260523 10:32:19.074811   546 incremental_pipeline.cc:524] Registering image #325 (num_reg_frames=350)",
+        "COLMAP[chunk_02_mapper_initial] I20260523 10:32:19.074858   546 incremental_pipeline.cc:527] => Image sees 2813 / 6539 points",
+        "COLMAP[chunk_02_mapper_initial] I20260523 10:32:20.533627   546 incremental_pipeline.cc:524] Registering image #326 (num_reg_frames=351)",
+        "COLMAP[chunk_02_mapper_initial] I20260523 10:32:20.533675   546 incremental_pipeline.cc:527] => Image sees 2110 / 5995 points",
+        "COLMAP[chunk_02_mapper_initial] I20260523 10:32:21.954789   546 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment"
+      ]
+    },
+    "cvhr-gpsalign-l06-1779528901": {
+      "status": "InProgress",
+      "failure_reason": null,
+      "start": "2026-05-23T03:43:39.052000-06:00",
+      "end": null,
+      "max_runtime": 86400,
+      "log_stream": "cvhr-gpsalign-l06-1779528901/algo-1-1779529418",
+      "last_log_messages": [
+        "COLMAP[chunk_06_mapper_initial] I20260523 10:30:05.304932   573 incremental_pipeline.cc:527] => Image sees 2553 / 7084 points",
+        "COLMAP[chunk_06_mapper_initial] I20260523 10:30:06.884641   573 incremental_pipeline.cc:524] Registering image #174 (num_reg_frames=301)",
+        "COLMAP[chunk_06_mapper_initial] I20260523 10:30:06.884688   573 incremental_pipeline.cc:527] => Image sees 2744 / 6258 points",
+        "COLMAP[chunk_06_mapper_initial] I20260523 10:30:08.463936   573 incremental_pipeline.cc:524] Registering image #203 (num_reg_frames=302)",
+        "COLMAP[chunk_06_mapper_initial] I20260523 10:30:08.464023   573 incremental_pipeline.cc:527] => Image sees 1915 / 5517 points",
+        "COLMAP[chunk_06_mapper_initial] I20260523 10:30:09.844565   573 incremental_pipeline.cc:524] Registering image #201 (num_reg_frames=303)",
+        "COLMAP[chunk_06_mapper_initial] I20260523 10:30:09.844615   573 incremental_pipeline.cc:527] => Image sees 2018 / 6657 points",
+        "COLMAP[chunk_06_mapper_initial] I20260523 10:30:11.312414   573 incremental_pipeline.cc:524] Registering image #202 (num_reg_frames=304)",
+        "COLMAP[chunk_06_mapper_initial] I20260523 10:30:11.312469   573 incremental_pipeline.cc:527] => Image sees 2858 / 6358 points",
+        "COLMAP[chunk_06_mapper_initial] I20260523 10:30:12.805279   573 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment",
+        "COLMAP[chunk_06_mapper_initial] HEARTBEAT elapsed=1682s idle=60s",
+        "COLMAP[chunk_06_mapper_initial] HEARTBEAT elapsed=1742s idle=120s"
+      ]
+    }
+  },
+  "files": {
+    "cvhr-gpsalign-l02-1779528900_cloudwatch_tail": "logs/sfm-production-spine/cvhr_gpsalign_l02_cloudwatch_tail_20260523T1032Z.json",
+    "cvhr-gpsalign-l02-1779528900_describe": "logs/sfm-production-spine/cvhr-gpsalign-l02-1779528900_describe_poll_20260523T1032Z.json",
+    "cvhr-gpsalign-l06-1779528901_cloudwatch_tail": "logs/sfm-production-spine/cvhr_gpsalign_l06_cloudwatch_tail_20260523T1032Z.json",
+    "cvhr-gpsalign-l06-1779528901_describe": "logs/sfm-production-spine/cvhr-gpsalign-l06-1779528901_describe_poll_20260523T1032Z.json",
+    "s3_listing": "logs/sfm-production-spine/cvhr_gpsalign_leaf02_leaf06_s3_poll_20260523T1032Z.txt"
+  },
+  "s3_listing_line_count": 0
+}

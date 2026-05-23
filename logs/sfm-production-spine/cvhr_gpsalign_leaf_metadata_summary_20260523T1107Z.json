@@ -1,0 +1,490 @@
+{
+  "leaves": {
+    "leaf02": {
+      "leaf_metadata": [
+        {
+          "chunk_index": 2,
+          "status": "passed",
+          "mapper_mode": "incremental",
+          "image_count": 360,
+          "registered_count": 360,
+          "registered_ratio": 1.0,
+          "core_registered_ratio": 1.0,
+          "verified_pair_count": 4220,
+          "points3d_count": 242665,
+          "points_per_registered_image": 674.07,
+          "timings_sec": {
+            "mapper_initial": 2230.68
+          },
+          "peak_memory_mb": null,
+          "failure_stage": null,
+          "failure_reason": null,
+          "fallbacks_used": []
+        }
+      ],
+      "top_level_keys": [
+        "adjacent_chunk_merge_triggered",
+        "benchmark_subset_strategy",
+        "boundary_recovery_triggered",
+        "bundle_adjusted_node_count",
+        "cameras_registered",
+        "capability_snapshot_only",
+        "chunk_count",
+        "chunk_execution_image_count",
+        "chunk_group_count",
+        "chunk_mapper_seconds",
+        "chunk_matcher_strategy",
+        "chunk_merge_proof",
+        "chunk_merge_seconds",
+        "chunk_merge_summary",
+        "chunk_overlap_image_count",
+        "chunk_pair_budget",
+        "chunk_planner",
+        "chunk_recovery_mode",
+        "chunk_role_counts",
+        "chunk_run_metrics",
+        "chunk_segment_count",
+        "chunk_sizes",
+        "chunking_attempted",
+        "chunking_enabled",
+        "chunking_skipped_reason",
+        "colmap_capabilities",
+        "dataset_image_count",
+        "failed_chunk_core_registered_ratio",
+        "failed_chunk_index",
+        "failed_chunk_registered_ratio",
+        "failure_reason_detail",
+        "failure_stage",
+        "fallback_reason",
+        "fallback_triggered",
+        "filtered_sparse_summary",
+        "final_matcher_mode",
+        "final_points_per_registered_image",
+        "gps_exif_count",
+        "gps_first_attempted",
+        "gps_first_skipped_reason",
+        "gps_prior_coverage",
+        "gps_priors_detected",
+        "gpu_enabled",
+        "heading_prior_dispersion_deg",
+        "heading_prior_source",
+        "hierarchy_mode",
+        "image_name_aliases",
+        "images_registered",
+        "input_chunk_planner_manifest_uri",
+        "input_subset_manifest_uri",
+        "input_subset_name",
+        "input_subset_requested",
+        "input_subset_requested_image_count",
+        "ladder_subset_details",
+        "ladder_subsets",
+        "leaf_hard_cap_images",
+        "leaf_target_images",
+        "mapper_seconds_per_registered_image",
+        "match_profile",
+        "matcher_pair_deltas",
+        "matchers_run",
+        "max_bundle_adjusted_image_count",
+        "merge_bridge_recovery_triggered",
+        "merge_node_records",
+        "merged_component_count",
+        "model_alignment_reports",
+        "model_summaries",
+        "orientation_prior_count",
+        "pair_cap_local",
+        "pair_cap_revisit",
+        "pair_cap_seam",
+        "parent_merge_mode",
+        "parent_seam_registration_cycles",
+        "pipeline",
+        "pipeline_mode",
+        "pitch_prior_dispersion_deg",
+        "pitch_prior_source",
+        "planner_report_only",
+        "planner_snapshot_only",
+        "planner_static_report",
+        "points_3d",
+        "pose_priors_source",
+        "pose_priors_written_count",
+        "probe_subset_details",
+        "probe_subsets",
+        "processing_time_seconds",
+        "quality_check_passed",
+        "reducer_metadata",
+        "renamed_image_count",
+        "seam_frontier_mode",
+        "seam_only_leaf_min_core_ratio",
+        "seam_only_leaf_min_registered_ratio",
+        "selected_chunk_indexes",
+        "sequential_matcher_enabled",
+        "sequential_pair_delta",
+        "sift_max_num_features",
+        "skipped_seam_merge_count",
+        "spatial_matcher_distance_m",
+        "spatial_matcher_enabled",
+        "spatial_matcher_neighbors",
+        "timed_out",
+        "timestamp",
+        "timings",
+        "top_level_ba_image_threshold",
+        "top_level_ba_mode",
+        "verified_pairs_total",
+        "visibility_cell_count",
+        "visibility_cell_manifest",
+        "visibility_point_jurisdiction_enabled",
+        "vocab_tree_bytes",
+        "vocab_tree_max_num_descriptors",
+        "vocab_tree_num_images",
+        "vocab_tree_num_visual_words",
+        "vocab_tree_path",
+        "vocab_tree_source"
+      ],
+      "registered_images": 360,
+      "points3d": null,
+      "gps_align_key_hits": [
+        [
+          "model_alignment_reports",
+          "list"
+        ],
+        [
+          "model_alignment_reports[0].alignment_max_error_m",
+          25.0
+        ],
+        [
+          "model_alignment_reports[0].aligned_stage",
+          "chunk_02_mapper_initial_gps_aligned"
+        ],
+        [
+          "model_alignment_reports[0].aligned_images_registered",
+          360
+        ],
+        [
+          "model_alignment_reports[0].aligned_points_3d",
+          242665
+        ],
+        [
+          "colmap_capabilities.supports_model_aligner",
+          true
+        ],
+        [
+          "gps_priors_detected",
+          360
+        ],
+        [
+          "gps_exif_count",
+          360
+        ],
+        [
+          "gps_prior_coverage",
+          1.0
+        ],
+        [
+          "gps_first_attempted",
+          false
+        ],
+        [
+          "gps_first_skipped_reason",
+          "eligible"
+        ],
+        [
+          "model_alignment_reports[0].gps_prior_coverage",
+          1.0
+        ],
+        [
+          "planner_static_report.gps_coverage_ratio",
+          1.0
+        ],
+        [
+          "gps_priors_detected",
+          360
+        ],
+        [
+          "orientation_prior_count",
+          360
+        ],
+        [
+          "heading_prior_source",
+          "flight_yaw"
+        ],
+        [
+          "heading_prior_dispersion_deg",
+          83.38
+        ],
+        [
+          "pitch_prior_source",
+          "flight_pitch"
+        ],
+        [
+          "pitch_prior_dispersion_deg",
+          45.8
+        ],
+        [
+          "pose_priors_written_count",
+          360
+        ],
+        [
+          "pose_priors_source",
+          "feature_extractor"
+        ],
+        [
+          "gps_prior_coverage",
+          1.0
+        ],
+        [
+          "model_alignment_reports[0].gps_prior_coverage",
+          1.0
+        ],
+        [
+          "colmap_capabilities.supports_pose_prior_mapper",
+          true
+        ]
+      ]
+    },
+    "leaf06": {
+      "leaf_metadata": [
+        {
+          "chunk_index": 6,
+          "status": "passed",
+          "mapper_mode": "incremental",
+          "image_count": 360,
+          "registered_count": 360,
+          "registered_ratio": 1.0,
+          "core_registered_ratio": 1.0,
+          "verified_pair_count": 4265,
+          "points3d_count": 263895,
+          "points_per_registered_image": 733.04,
+          "timings_sec": {
+            "mapper_initial": 2779.15
+          },
+          "peak_memory_mb": null,
+          "failure_stage": null,
+          "failure_reason": null,
+          "fallbacks_used": []
+        }
+      ],
+      "top_level_keys": [
+        "adjacent_chunk_merge_triggered",
+        "benchmark_subset_strategy",
+        "boundary_recovery_triggered",
+        "bundle_adjusted_node_count",
+        "cameras_registered",
+        "capability_snapshot_only",
+        "chunk_count",
+        "chunk_execution_image_count",
+        "chunk_group_count",
+        "chunk_mapper_seconds",
+        "chunk_matcher_strategy",
+        "chunk_merge_proof",
+        "chunk_merge_seconds",
+        "chunk_merge_summary",
+        "chunk_overlap_image_count",
+        "chunk_pair_budget",
+        "chunk_planner",
+        "chunk_recovery_mode",
+        "chunk_role_counts",
+        "chunk_run_metrics",
+        "chunk_segment_count",
+        "chunk_sizes",
+        "chunking_attempted",
+        "chunking_enabled",
+        "chunking_skipped_reason",
+        "colmap_capabilities",
+        "dataset_image_count",
+        "failed_chunk_core_registered_ratio",
+        "failed_chunk_index",
+        "failed_chunk_registered_ratio",
+        "failure_reason_detail",
+        "failure_stage",
+        "fallback_reason",
+        "fallback_triggered",
+        "filtered_sparse_summary",
+        "final_matcher_mode",
+        "final_points_per_registered_image",
+        "gps_exif_count",
+        "gps_first_attempted",
+        "gps_first_skipped_reason",
+        "gps_prior_coverage",
+        "gps_priors_detected",
+        "gpu_enabled",
+        "heading_prior_dispersion_deg",
+        "heading_prior_source",
+        "hierarchy_mode",
+        "image_name_aliases",
+        "images_registered",
+        "input_chunk_planner_manifest_uri",
+        "input_subset_manifest_uri",
+        "input_subset_name",
+        "input_subset_requested",
+        "input_subset_requested_image_count",
+        "ladder_subset_details",
+        "ladder_subsets",
+        "leaf_hard_cap_images",
+        "leaf_target_images",
+        "mapper_seconds_per_registered_image",
+        "match_profile",
+        "matcher_pair_deltas",
+        "matchers_run",
+        "max_bundle_adjusted_image_count",
+        "merge_bridge_recovery_triggered",
+        "merge_node_records",
+        "merged_component_count",
+        "model_alignment_reports",
+        "model_summaries",
+        "orientation_prior_count",
+        "pair_cap_local",
+        "pair_cap_revisit",
+        "pair_cap_seam",
+        "parent_merge_mode",
+        "parent_seam_registration_cycles",
+        "pipeline",
+        "pipeline_mode",
+        "pitch_prior_dispersion_deg",
+        "pitch_prior_source",
+        "planner_report_only",
+        "planner_snapshot_only",
+        "planner_static_report",
+        "points_3d",
+        "pose_priors_source",
+        "pose_priors_written_count",
+        "probe_subset_details",
+        "probe_subsets",
+        "processing_time_seconds",
+        "quality_check_passed",
+        "reducer_metadata",
+        "renamed_image_count",
+        "seam_frontier_mode",
+        "seam_only_leaf_min_core_ratio",
+        "seam_only_leaf_min_registered_ratio",
+        "selected_chunk_indexes",
+        "sequential_matcher_enabled",
+        "sequential_pair_delta",
+        "sift_max_num_features",
+        "skipped_seam_merge_count",
+        "spatial_matcher_distance_m",
+        "spatial_matcher_enabled",
+        "spatial_matcher_neighbors",
+        "timed_out",
+        "timestamp",
+        "timings",
+        "top_level_ba_image_threshold",
+        "top_level_ba_mode",
+        "verified_pairs_total",
+        "visibility_cell_count",
+        "visibility_cell_manifest",
+        "visibility_point_jurisdiction_enabled",
+        "vocab_tree_bytes",
+        "vocab_tree_max_num_descriptors",
+        "vocab_tree_num_images",
+        "vocab_tree_num_visual_words",
+        "vocab_tree_path",
+        "vocab_tree_source"
+      ],
+      "registered_images": 360,
+      "points3d": null,
+      "gps_align_key_hits": [
+        [
+          "model_alignment_reports",
+          "list"
+        ],
+        [
+          "model_alignment_reports[0].alignment_max_error_m",
+          25.0
+        ],
+        [
+          "model_alignment_reports[0].aligned_stage",
+          "chunk_06_mapper_initial_gps_aligned"
+        ],
+        [
+          "model_alignment_reports[0].aligned_images_registered",
+          360
+        ],
+        [
+          "model_alignment_reports[0].aligned_points_3d",
+          263895
+        ],
+        [
+          "colmap_capabilities.supports_model_aligner",
+          true
+        ],
+        [
+          "gps_priors_detected",
+          360
+        ],
+        [
+          "gps_exif_count",
+          360
+        ],
+        [
+          "gps_prior_coverage",
+          1.0
+        ],
+        [
+          "gps_first_attempted",
+          false
+        ],
+        [
+          "gps_first_skipped_reason",
+          "eligible"
+        ],
+        [
+          "model_alignment_reports[0].gps_prior_coverage",
+          1.0
+        ],
+        [
+          "planner_static_report.gps_coverage_ratio",
+          1.0
+        ],
+        [
+          "gps_priors_detected",
+          360
+        ],
+        [
+          "orientation_prior_count",
+          360
+        ],
+        [
+          "heading_prior_source",
+          "flight_yaw"
+        ],
+        [
+          "heading_prior_dispersion_deg",
+          111.79
+        ],
+        [
+          "pitch_prior_source",
+          "flight_pitch"
+        ],
+        [
+          "pitch_prior_dispersion_deg",
+          45.8
+        ],
+        [
+          "pose_priors_written_count",
+          360
+        ],
+        [
+          "pose_priors_source",
+          "feature_extractor"
+        ],
+        [
+          "gps_prior_coverage",
+          1.0
+        ],
+        [
+          "model_alignment_reports[0].gps_prior_coverage",
+          1.0
+        ],
+        [
+          "colmap_capabilities.supports_pose_prior_mapper",
+          true
+        ]
+      ]
+    }
+  },
+  "files": {
+    "leaf02_sfm_metadata": "logs/sfm-production-spine/cvhr_gpsalign_leaf_metadata_20260523T1107Z/leaf02_sfm_metadata.json",
+    "leaf02_leaf_metadata": "logs/sfm-production-spine/cvhr_gpsalign_leaf_metadata_20260523T1107Z/leaf02_leaf_metadata.json",
+    "leaf06_sfm_metadata": "logs/sfm-production-spine/cvhr_gpsalign_leaf_metadata_20260523T1107Z/leaf06_sfm_metadata.json",
+    "leaf06_leaf_metadata": "logs/sfm-production-spine/cvhr_gpsalign_leaf_metadata_20260523T1107Z/leaf06_leaf_metadata.json"
+  }
+}
