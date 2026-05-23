@@ -231,3 +231,4 @@
 [2026-05-23T18:25:50Z] postpush(ci) -> exact-head runs 0 (skip ci) -> next: passive monitor
 [2026-05-23T18:44:58Z] heartbeat(hmc-mtc-20260520T2015Z) -> aws/sm/s3 ok; preview+viewer 200; proxy meta.json 200; exact-head gh runs 0 (skip ci) -> next: commit+push ledger
 [2026-05-23T18:45:47Z] postpush(ci) -> recorded branch + exact-head gh runs for new head (expected exact-head empty due [skip ci]) -> next: idle
+[2026-05-23T19:05:28Z] heartbeat -> verified terminal + viewer 200 + ci snapshot -> idle
