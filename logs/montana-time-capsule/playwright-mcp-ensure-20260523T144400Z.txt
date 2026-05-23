@@ -1,0 +1,1 @@
+Playwright MCP server started via npx @playwright/mcp@latest --headless --port 5174 (PID: 27555)

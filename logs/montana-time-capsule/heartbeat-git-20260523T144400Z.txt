@@ -1,0 +1,3 @@
+branch=agent-40136728-montana-time-capsule
+head=e0b29791f0025c82dc36a58ef505d72d22c576bc
+?? logs/montana-time-capsule/heartbeat-git-20260523T144400Z.txt

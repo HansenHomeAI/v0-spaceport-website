@@ -73,6 +73,7 @@ tests/pipeline/*.log
 logs/*.png
 logs/*.jpg
 logs/*.jpeg
+.playwright-mcp/
 .next/
 .vercel/
 web/.next/
