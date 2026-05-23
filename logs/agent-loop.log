@@ -214,3 +214,4 @@
 [2026-05-23T15:03:53Z] montana heartbeat -> terminal jobs + S3 bundle + viewer/proxy HTTP200 + CI snapshot -> idle
 [2026-05-23T15:06:33Z] push -> heartbeat ledger committed + pushed -> snapshot CI state
 [2026-05-23T15:25:30Z] montana heartbeat -> HMC bundle/proxy/viewer HTTP200 (Origin) + confirm HMC jobs Completed + note unrelated InProgress jobs -> idle
+[2026-05-23T15:27:11Z] push -> heartbeat logs committed + pushed -> snapshot CI state

@@ -6373,3 +6373,10 @@ Next: remain idle; do not upload/launch duplicate HMC jobs; acceptance gates rem
   - exact-head runs (expected 0 due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260523T152405Z.json
 
 Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate is visual screenshot proof in browser (skybox + off).
+
+### 2026-05-23T15:27:11Z post-push CI snapshot
+
+- Git: agent-40136728-montana-time-capsule @ bc6db5d1dadb915f68e84a76ce78b111ea2b0994 ([skip ci])
+- GitHub Actions:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260523T152711Z.json
+  - exact-head runs (expected 0 due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260523T152711Z.json
