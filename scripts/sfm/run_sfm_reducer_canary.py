@@ -530,6 +530,7 @@ def evaluate_seam_edge(
     surface_a: list[tuple[float, float, float]] | None = None,
     surface_b: list[tuple[float, float, float]] | None = None,
     pose_priors: dict[str, tuple[float, float, float]] | None = None,
+    image_roles_by_leaf: dict[int, dict[str, str]] | None = None,
 ) -> tuple[dict[str, object], SimilarityTransform | None]:
     shared_names = sorted(set(leaf_a_by_name).intersection(leaf_b_by_name))
     report: dict[str, object] = {
@@ -573,11 +574,31 @@ def evaluate_seam_edge(
         report["sim3_error"] = str(exc)
 
     if transform is not None:
+        residual_rows = residual_rows_for_shared_cameras(
+            shared_names=shared_names,
+            residuals=transform.residuals,
+            leaf_a=leaf_a,
+            leaf_b=leaf_b,
+            image_roles_by_leaf=image_roles_by_leaf,
+        )
+        residual_role_stats = residual_role_report(
+            residual_rows,
+            thresholds=thresholds,
+            target_baseline_m=max(float(target_layout.get("baseline_m") or 0.0), 1e-9),
+        )
         residuals = sorted(transform.residuals)
         residual_report = residual_summary(residuals)
         p95 = float(residual_report["p95"] or 0.0)
         baseline = max(float(target_layout.get("baseline_m") or 0.0), 1e-9)
         baseline_normalized = p95 / baseline
+        trusted_residual_report = residual_role_stats["trusted_core_involved_residual_m"]
+        trusted_p95_raw = (trusted_residual_report if isinstance(trusted_residual_report, dict) else {}).get("p95")
+        trusted_p95 = float(trusted_p95_raw) if trusted_p95_raw is not None else p95
+        trusted_baseline_raw = residual_role_stats.get("trusted_core_involved_baseline_normalized_residual")
+        trusted_baseline_normalized = (
+            float(trusted_baseline_raw) if trusted_baseline_raw is not None else baseline_normalized
+        )
+        trusted_count = int(residual_role_stats.get("trusted_core_involved_count") or 0)
         scale_delta = abs(transform.scale - 1.0)
         report.update(
             {
@@ -589,15 +610,26 @@ def evaluate_seam_edge(
                 "scale_delta": round(scale_delta, 8),
                 "sim3_residual_m": residual_report,
                 "baseline_normalized_residual": round(baseline_normalized, 8),
+                "shared_camera_residual_roles": residual_role_stats,
                 "heldout_shared_camera_residual": heldout_similarity_residual(source, target),
             }
         )
         if scale_delta > thresholds.max_scale_delta:
             blockers.append("scale_delta_exceeds_gate")
-        if p95 > thresholds.max_sim3_p95_residual_m:
+        p95_blocked = p95 > thresholds.max_sim3_p95_residual_m
+        baseline_blocked = baseline_normalized > thresholds.max_baseline_normalized_residual
+        trusted_camera_evidence_passes = (
+            image_roles_by_leaf is not None
+            and trusted_count >= thresholds.min_shared_images
+            and trusted_p95 <= thresholds.max_sim3_p95_residual_m
+            and trusted_baseline_normalized <= thresholds.max_baseline_normalized_residual
+        )
+        if p95_blocked and not trusted_camera_evidence_passes:
             blockers.append("sim3_p95_residual_exceeds_gate")
-        if baseline_normalized > thresholds.max_baseline_normalized_residual:
+        if baseline_blocked and not trusted_camera_evidence_passes:
             blockers.append("baseline_normalized_residual_exceeds_gate")
+        if (p95_blocked or baseline_blocked) and trusted_camera_evidence_passes:
+            warnings.append("overlap_only_camera_residual_tail_quarantined")
         if surface_a is not None and surface_b is not None:
             transformed_b = transform_coords(surface_b, transform)
             report["pre_overlap_surface_stats"] = cross_leaf_duplicate_surface_stats(surface_a, surface_b)
@@ -665,6 +697,10 @@ def build_seam_merge_graph(
     leaf_by_name = [{parts[9]: (parts, points_line) for parts, points_line in pairs} for pairs in leaf_pairs]
     surface_points = [point_coords(path / "points3D.txt") for path in normalized_dirs]
     pose_priors = pose_priors_from_planner_manifest(planner_manifest)
+    planner_leaf_maps = planner_chunk_leaf_maps(normalized_dirs, planner_manifest)
+    image_roles_by_leaf = planner_leaf_maps.get("image_roles_by_leaf")
+    if not isinstance(image_roles_by_leaf, dict):
+        image_roles_by_leaf = {}
     edge_reports: list[dict[str, object]] = []
     edge_lookup: dict[tuple[int, int], dict[str, object]] = {}
     for leaf_a, leaf_b in combinations(range(len(normalized_dirs)), 2):
@@ -677,6 +713,7 @@ def build_seam_merge_graph(
             surface_a=surface_points[leaf_a],
             surface_b=surface_points[leaf_b],
             pose_priors=pose_priors,
+            image_roles_by_leaf=image_roles_by_leaf,
         )
         edge_reports.append(report)
         edge_lookup[(leaf_a, leaf_b)] = report
@@ -748,6 +785,13 @@ def build_seam_merge_graph(
         },
         "leaf_count": len(normalized_dirs),
         "root_leaf": root_leaf,
+        "planner_leaf_mapping": {
+            "status": planner_leaf_maps.get("status"),
+            "assignments": planner_leaf_maps.get("assignments") or [],
+            "leaf_to_chunk_index": {
+                str(key): value for key, value in (planner_leaf_maps.get("leaf_to_chunk_index") or {}).items()
+            },
+        },
         "candidate_edges": edge_reports,
         "accepted_merge_tree": tree,
         "rejected_edges": [edge for edge in edge_reports if edge.get("decision") == "reject"],
@@ -828,6 +872,204 @@ def pose_priors_from_planner_manifest(
             float(payload.get("local_z_m", 0.0)),
         )
     return priors
+
+
+def planner_chunk_leaf_maps(
+    normalized_dirs: list[Path],
+    planner_manifest: dict[str, Any] | None,
+) -> dict[str, object]:
+    if not isinstance(planner_manifest, dict):
+        return {
+            "status": "not_available",
+            "leaf_to_chunk_index": {},
+            "image_roles_by_leaf": {},
+            "core_names_by_leaf": {},
+        }
+    chunks = planner_manifest.get("chunks") or planner_manifest.get("chunk_plans") or []
+    if not isinstance(chunks, list):
+        return {
+            "status": "not_available",
+            "leaf_to_chunk_index": {},
+            "image_roles_by_leaf": {},
+            "core_names_by_leaf": {},
+        }
+
+    chunk_records: list[dict[str, object]] = []
+    for fallback_index, chunk in enumerate(chunks):
+        if not isinstance(chunk, dict):
+            continue
+        chunk_index = int(chunk.get("index", fallback_index))
+        image_names = {str(name) for name in (chunk.get("image_names") or [])}
+        core_names = {str(name) for name in (chunk.get("core_names") or chunk.get("coreNames") or [])}
+        overlap_names = {str(name) for name in (chunk.get("overlap_names") or chunk.get("overlapNames") or [])}
+        if image_names or core_names or overlap_names:
+            chunk_records.append(
+                {
+                    "chunk_index": chunk_index,
+                    "image_names": image_names,
+                    "core_names": core_names,
+                    "overlap_names": overlap_names,
+                }
+            )
+
+    leaf_to_chunk: dict[int, int] = {}
+    image_roles_by_leaf: dict[int, dict[str, str]] = {}
+    core_names_by_leaf: dict[int, set[str]] = {}
+    assignments: list[dict[str, object]] = []
+    used_chunks: set[int] = set()
+    for leaf_index, model_dir in enumerate(normalized_dirs):
+        leaf_names = stats_for_model(model_dir).image_names
+        best_record: dict[str, object] | None = None
+        best_score = -1.0
+        best_intersection = 0
+        for record in chunk_records:
+            chunk_index = int(record["chunk_index"])
+            if chunk_index in used_chunks:
+                continue
+            chunk_names = record["image_names"]
+            if not isinstance(chunk_names, set):
+                continue
+            intersection = len(leaf_names.intersection(chunk_names))
+            union = len(leaf_names.union(chunk_names)) or 1
+            score = intersection / union
+            if score > best_score:
+                best_record = record
+                best_score = score
+                best_intersection = intersection
+        if best_record is None or best_score <= 0.0:
+            fallback_record = next(
+                (
+                    record
+                    for record in chunk_records
+                    if int(record["chunk_index"]) == leaf_index and int(record["chunk_index"]) not in used_chunks
+                ),
+                None,
+            )
+            if fallback_record is not None:
+                best_record = fallback_record
+                best_score = 0.0
+                best_intersection = 0
+            else:
+                assignments.append(
+                    {
+                        "leaf_index": leaf_index,
+                        "chunk_index": None,
+                        "match_score": 0.0,
+                        "intersection_image_count": 0,
+                        "leaf_image_count": len(leaf_names),
+                        "status": "unmatched",
+                    }
+                )
+                continue
+        if best_record is None:
+            assignments.append(
+                {
+                    "leaf_index": leaf_index,
+                    "chunk_index": None,
+                    "match_score": 0.0,
+                    "intersection_image_count": 0,
+                    "leaf_image_count": len(leaf_names),
+                    "status": "unmatched",
+                }
+            )
+            continue
+        chunk_index = int(best_record["chunk_index"])
+        used_chunks.add(chunk_index)
+        leaf_to_chunk[leaf_index] = chunk_index
+        core_names = best_record["core_names"] if isinstance(best_record["core_names"], set) else set()
+        overlap_names = best_record["overlap_names"] if isinstance(best_record["overlap_names"], set) else set()
+        roles: dict[str, str] = {}
+        for name in leaf_names:
+            if name in core_names:
+                roles[name] = "core"
+            elif name in overlap_names:
+                roles[name] = "overlap"
+            else:
+                roles[name] = "unknown"
+        image_roles_by_leaf[leaf_index] = roles
+        core_names_by_leaf[leaf_index] = set(core_names)
+        assignments.append(
+            {
+                "leaf_index": leaf_index,
+                "chunk_index": chunk_index,
+                "match_score": round(best_score, 6),
+                "intersection_image_count": best_intersection,
+                "leaf_image_count": len(leaf_names),
+                "status": "matched" if best_score >= 0.8 else "index_fallback",
+            }
+        )
+
+    return {
+        "status": "matched" if len(leaf_to_chunk) == len(normalized_dirs) else "partial",
+        "leaf_to_chunk_index": leaf_to_chunk,
+        "image_roles_by_leaf": image_roles_by_leaf,
+        "core_names_by_leaf": core_names_by_leaf,
+        "assignments": assignments,
+    }
+
+
+def residual_rows_for_shared_cameras(
+    *,
+    shared_names: list[str],
+    residuals: list[float],
+    leaf_a: int,
+    leaf_b: int,
+    image_roles_by_leaf: dict[int, dict[str, str]] | None,
+) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    roles_a = (image_roles_by_leaf or {}).get(leaf_a, {})
+    roles_b = (image_roles_by_leaf or {}).get(leaf_b, {})
+    for name, residual in zip(shared_names, residuals):
+        role_a = roles_a.get(name, "unknown")
+        role_b = roles_b.get(name, "unknown")
+        rows.append(
+            {
+                "image_name": name,
+                "residual_m": round(float(residual), 6),
+                "leaf_a_role": role_a,
+                "leaf_b_role": role_b,
+                "role_pair": f"{role_a}|{role_b}",
+                "trusted_core_involved": "core" in {role_a, role_b},
+            }
+        )
+    return rows
+
+
+def residual_role_report(
+    rows: list[dict[str, object]],
+    *,
+    thresholds: SeamThresholds,
+    target_baseline_m: float,
+) -> dict[str, object]:
+    by_role: dict[str, list[float]] = {}
+    trusted_residuals: list[float] = []
+    untrusted_residuals: list[float] = []
+    for row in rows:
+        residual = float(row["residual_m"])
+        role_pair = str(row["role_pair"])
+        by_role.setdefault(role_pair, []).append(residual)
+        if bool(row.get("trusted_core_involved")):
+            trusted_residuals.append(residual)
+        else:
+            untrusted_residuals.append(residual)
+    role_stats = {role_pair: residual_summary(values) for role_pair, values in sorted(by_role.items())}
+    trusted_summary = residual_summary(sorted(trusted_residuals))
+    trusted_p95 = float(trusted_summary.get("p95") or 0.0)
+    trusted_baseline_normalized = trusted_p95 / max(target_baseline_m, 1e-9)
+    high_outliers = [
+        row
+        for row in sorted(rows, key=lambda item: float(item["residual_m"]), reverse=True)
+        if float(row["residual_m"]) > thresholds.max_sim3_p95_residual_m
+    ][:24]
+    return {
+        "role_pair_stats": role_stats,
+        "trusted_core_involved_count": len(trusted_residuals),
+        "trusted_core_involved_residual_m": trusted_summary,
+        "trusted_core_involved_baseline_normalized_residual": round(trusted_baseline_normalized, 8),
+        "untrusted_overlap_only_count": len(untrusted_residuals),
+        "untrusted_overlap_only_residual_m": residual_summary(sorted(untrusted_residuals)),
+        "top_outlier_images": high_outliers,
+    }
 
 
 def kept_point_lines_and_coords(
@@ -1037,17 +1279,11 @@ def write_pose_aligned_merge(
         missing = sorted(set(range(len(normalized_dirs))) - visited)
         raise RuntimeError(f"accepted seam graph is disconnected; missing leaves {missing}")
 
-    chunks = []
-    if isinstance(planner_manifest, dict):
-        chunks = planner_manifest.get("chunks") or planner_manifest.get("chunk_plans") or []
-    core_names_by_leaf: dict[int, set[str]] = {}
-    for fallback_index, chunk in enumerate(chunks if isinstance(chunks, list) else []):
-        if not isinstance(chunk, dict):
-            continue
-        chunk_index = int(chunk.get("index", fallback_index))
-        core_names = chunk.get("core_names") or chunk.get("coreNames") or []
-        if isinstance(core_names, list):
-            core_names_by_leaf[chunk_index] = {str(name) for name in core_names}
+    planner_leaf_maps = planner_chunk_leaf_maps(normalized_dirs, planner_manifest)
+    raw_core_names_by_leaf = planner_leaf_maps.get("core_names_by_leaf") if isinstance(planner_leaf_maps, dict) else {}
+    core_names_by_leaf: dict[int, set[str]] = (
+        raw_core_names_by_leaf if isinstance(raw_core_names_by_leaf, dict) else {}
+    )
 
     anchor = normalized_dirs[root_index]
     output_dir.mkdir(parents=True, exist_ok=True)

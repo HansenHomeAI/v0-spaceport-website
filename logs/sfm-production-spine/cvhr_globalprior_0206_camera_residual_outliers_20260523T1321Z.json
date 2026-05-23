@@ -1,0 +1,852 @@
+{
+  "created_at": "2026-05-23T13:21:00Z",
+  "scope": "no-spend camera-center residual isolation for CV-HR global-prior leaf02/leaf06 strict seam failure",
+  "inputs": {
+    "reducer_report": "logs/sfm-production-spine/cvhr_globalprior_0206_seam_graph_reducer_20260523T1308Z.json",
+    "planner_manifest": "logs/sfm-production-spine/cvhr_visibility_cell_v1_gpsalign_planner_20260523T0924Z/chunk_planner_manifest.json",
+    "leaf02_images_txt": "/tmp/cvhr_globalprior_0206_sparse/leaf02/sparse/0/images.txt",
+    "leaf06_images_txt": "/tmp/cvhr_globalprior_0206_sparse/leaf06/sparse/0/images.txt"
+  },
+  "seam_gate_result": {
+    "decision": "reject",
+    "blockers": [
+      "sim3_p95_residual_exceeds_gate",
+      "baseline_normalized_residual_exceeds_gate"
+    ],
+    "shared_registered_images": 178,
+    "scale_delta": 0.00864605,
+    "sim3_p50_reported_m": 0.054423,
+    "sim3_p95_reported_m": 11.775927,
+    "baseline_normalized_residual": 0.01856045,
+    "gps_exif_p95_m": 12.226991,
+    "warnings": [
+      "duplicate_surface_overlap_suspect"
+    ]
+  },
+  "computed_residual_stats_m": {
+    "count": 178,
+    "min": 0.007796,
+    "p50": 0.054423,
+    "p90": 0.762153,
+    "p95_linear": 11.396803,
+    "p95_nearest": 11.329899,
+    "p99": 12.801505,
+    "max": 13.067286
+  },
+  "computed_residual_threshold_counts": {
+    "0.25": 33,
+    "1.0": 17,
+    "2.5": 16,
+    "5.0": 16,
+    "10.0": 16
+  },
+  "high_residual_image_index_ranges_over_5m": [
+    [
+      1282,
+      1297
+    ]
+  ],
+  "role_pair_residual_stats_m": {
+    "core|overlap": {
+      "count": 73,
+      "min": 0.007796,
+      "p50": 0.049324,
+      "p90": 0.080047,
+      "p95_linear": 0.114788,
+      "p95_nearest": 0.110081,
+      "p99": 0.528724,
+      "max": 0.962416,
+      "over_0_25m": 2,
+      "over_1m": 0,
+      "over_5m": 0,
+      "over_10m": 0
+    },
+    "overlap|core": {
+      "count": 63,
+      "min": 0.009061,
+      "p50": 0.046397,
+      "p90": 0.086559,
+      "p95_linear": 0.091616,
+      "p95_nearest": 0.092112,
+      "p99": 0.337655,
+      "max": 0.345851,
+      "over_0_25m": 2,
+      "over_1m": 0,
+      "over_5m": 0,
+      "over_10m": 0
+    },
+    "overlap|overlap": {
+      "count": 42,
+      "min": 0.083976,
+      "p50": 0.480125,
+      "p90": 12.399406,
+      "p95_linear": 12.764325,
+      "p95_nearest": 12.771825,
+      "p99": 12.999055,
+      "max": 13.067286,
+      "over_0_25m": 29,
+      "over_1m": 17,
+      "over_5m": 16,
+      "over_10m": 16
+    }
+  },
+  "top_residual_images": [
+    {
+      "image_name": "DJI_01297.JPG",
+      "leaf02_image_id": 330,
+      "leaf06_image_id": 237,
+      "residual_m": 13.067286,
+      "delta_xyz_m": [
+        -12.825391,
+        -2.29482,
+        0.998552
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 0.964371,
+      "leaf06_transformed_to_prior_m": 13.711406
+    },
+    {
+      "image_name": "DJI_01296.JPG",
+      "leaf02_image_id": 329,
+      "leaf06_image_id": 236,
+      "residual_m": 12.90087,
+      "delta_xyz_m": [
+        -12.645542,
+        -2.343565,
+        1.015105
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 0.96505,
+      "leaf06_transformed_to_prior_m": 13.517331
+    },
+    {
+      "image_name": "DJI_01295.JPG",
+      "leaf02_image_id": 328,
+      "leaf06_image_id": 235,
+      "residual_m": 12.771825,
+      "delta_xyz_m": [
+        -12.509023,
+        -2.370427,
+        1.012386
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 0.986068,
+      "leaf06_transformed_to_prior_m": 13.150583
+    },
+    {
+      "image_name": "DJI_01294.JPG",
+      "leaf02_image_id": 327,
+      "leaf06_image_id": 234,
+      "residual_m": 12.621828,
+      "delta_xyz_m": [
+        -12.346477,
+        -2.416644,
+        1.017292
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 0.89051,
+      "leaf06_transformed_to_prior_m": 13.012738
+    },
+    {
+      "image_name": "DJI_01293.JPG",
+      "leaf02_image_id": 326,
+      "leaf06_image_id": 233,
+      "residual_m": 12.424412,
+      "delta_xyz_m": [
+        -12.141253,
+        -2.43384,
+        1.016077
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 1.031156,
+      "leaf06_transformed_to_prior_m": 12.893033
+    },
+    {
+      "image_name": "DJI_01292.JPG",
+      "leaf02_image_id": 325,
+      "leaf06_image_id": 232,
+      "residual_m": 12.174357,
+      "delta_xyz_m": [
+        -11.882539,
+        -2.455178,
+        0.996165
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 0.914316,
+      "leaf06_transformed_to_prior_m": 12.590131
+    },
+    {
+      "image_name": "DJI_01291.JPG",
+      "leaf02_image_id": 324,
+      "leaf06_image_id": 231,
+      "residual_m": 11.979559,
+      "delta_xyz_m": [
+        -11.680191,
+        -2.46565,
+        1.001771
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 0.94863,
+      "leaf06_transformed_to_prior_m": 12.432184
+    },
+    {
+      "image_name": "DJI_01290.JPG",
+      "leaf02_image_id": 323,
+      "leaf06_image_id": 230,
+      "residual_m": 11.799855,
+      "delta_xyz_m": [
+        -11.495096,
+        -2.47799,
+        0.979237
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 0.995941,
+      "leaf06_transformed_to_prior_m": 12.3176
+    },
+    {
+      "image_name": "DJI_01289.JPG",
+      "leaf02_image_id": 322,
+      "leaf06_image_id": 229,
+      "residual_m": 11.775927,
+      "delta_xyz_m": [
+        -11.467653,
+        -2.487177,
+        0.989617
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 0.991549,
+      "leaf06_transformed_to_prior_m": 12.226991
+    },
+    {
+      "image_name": "DJI_01288.JPG",
+      "leaf02_image_id": 321,
+      "leaf06_image_id": 228,
+      "residual_m": 11.329899,
+      "delta_xyz_m": [
+        -11.014949,
+        -2.470318,
+        0.966983
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 1.240546,
+      "leaf06_transformed_to_prior_m": 12.005119
+    },
+    {
+      "image_name": "DJI_01287.JPG",
+      "leaf02_image_id": 320,
+      "leaf06_image_id": 227,
+      "residual_m": 11.17349,
+      "delta_xyz_m": [
+        -10.853542,
+        -2.47605,
+        0.957434
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 1.284123,
+      "leaf06_transformed_to_prior_m": 11.88888
+    },
+    {
+      "image_name": "DJI_01286.JPG",
+      "leaf02_image_id": 319,
+      "leaf06_image_id": 226,
+      "residual_m": 10.979005,
+      "delta_xyz_m": [
+        -10.655136,
+        -2.478998,
+        0.927999
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 1.436725,
+      "leaf06_transformed_to_prior_m": 11.670677
+    },
+    {
+      "image_name": "DJI_01285.JPG",
+      "leaf02_image_id": 317,
+      "leaf06_image_id": 225,
+      "residual_m": 10.838592,
+      "delta_xyz_m": [
+        -10.513368,
+        -2.468542,
+        0.922213
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 1.641503,
+      "leaf06_transformed_to_prior_m": 11.713015
+    },
+    {
+      "image_name": "DJI_01283.JPG",
+      "leaf02_image_id": 316,
+      "leaf06_image_id": 223,
+      "residual_m": 10.714268,
+      "delta_xyz_m": [
+        -10.378718,
+        -2.455082,
+        1.024862
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 1.890404,
+      "leaf06_transformed_to_prior_m": 11.741045
+    },
+    {
+      "image_name": "DJI_01282.JPG",
+      "leaf02_image_id": 315,
+      "leaf06_image_id": 222,
+      "residual_m": 10.713019,
+      "delta_xyz_m": [
+        -10.374762,
+        -2.448662,
+        1.066371
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 1.887365,
+      "leaf06_transformed_to_prior_m": 11.776895
+    },
+    {
+      "image_name": "DJI_01284.JPG",
+      "leaf02_image_id": 318,
+      "leaf06_image_id": 224,
+      "residual_m": 10.709317,
+      "delta_xyz_m": [
+        -10.384849,
+        -2.450445,
+        0.916357
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 1.673066,
+      "leaf06_transformed_to_prior_m": 11.628936
+    },
+    {
+      "image_name": "DJI_00943.JPG",
+      "leaf02_image_id": 279,
+      "leaf06_image_id": 214,
+      "residual_m": 1.116321,
+      "delta_xyz_m": [
+        0.012597,
+        -0.974,
+        -0.545287
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 1.548147,
+      "leaf06_transformed_to_prior_m": 0.444708
+    },
+    {
+      "image_name": "DJI_01076.JPG",
+      "leaf02_image_id": 314,
+      "leaf06_image_id": 216,
+      "residual_m": 0.962416,
+      "delta_xyz_m": [
+        0.7667,
+        -0.206264,
+        0.54394
+      ],
+      "leaf02_role": "core",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 1.171513,
+      "leaf06_transformed_to_prior_m": 1.533468
+    },
+    {
+      "image_name": "DJI_00955.JPG",
+      "leaf02_image_id": 291,
+      "leaf06_image_id": 215,
+      "residual_m": 0.676326,
+      "delta_xyz_m": [
+        -0.0391,
+        -0.538383,
+        -0.40747
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 1.094496,
+      "leaf06_transformed_to_prior_m": 0.45819
+    },
+    {
+      "image_name": "DJI_01317.JPG",
+      "leaf02_image_id": 335,
+      "leaf06_image_id": 246,
+      "residual_m": 0.484308,
+      "delta_xyz_m": [
+        0.115969,
+        -0.324449,
+        -0.34035
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 1.036298,
+      "leaf06_transformed_to_prior_m": 0.638785
+    },
+    {
+      "image_name": "DJI_01318.JPG",
+      "leaf02_image_id": 336,
+      "leaf06_image_id": 247,
+      "residual_m": 0.483812,
+      "delta_xyz_m": [
+        0.036966,
+        -0.337165,
+        -0.345003
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 0.807451,
+      "leaf06_transformed_to_prior_m": 0.657591
+    },
+    {
+      "image_name": "DJI_01320.JPG",
+      "leaf02_image_id": 338,
+      "leaf06_image_id": 249,
+      "residual_m": 0.480349,
+      "delta_xyz_m": [
+        -0.127161,
+        -0.335891,
+        -0.318971
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 1.132207,
+      "leaf06_transformed_to_prior_m": 1.165308
+    },
+    {
+      "image_name": "DJI_01319.JPG",
+      "leaf02_image_id": 337,
+      "leaf06_image_id": 248,
+      "residual_m": 0.479902,
+      "delta_xyz_m": [
+        -0.039792,
+        -0.342226,
+        -0.334071
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 1.18073,
+      "leaf06_transformed_to_prior_m": 1.206242
+    },
+    {
+      "image_name": "DJI_01316.JPG",
+      "leaf02_image_id": 334,
+      "leaf06_image_id": 245,
+      "residual_m": 0.475465,
+      "delta_xyz_m": [
+        0.212196,
+        -0.288642,
+        -0.312612
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 1.084914,
+      "leaf06_transformed_to_prior_m": 0.78674
+    },
+    {
+      "image_name": "DJI_01315.JPG",
+      "leaf02_image_id": 333,
+      "leaf06_image_id": 244,
+      "residual_m": 0.465736,
+      "delta_xyz_m": [
+        0.26424,
+        -0.254919,
+        -0.286537
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 0.943157,
+      "leaf06_transformed_to_prior_m": 0.671223
+    },
+    {
+      "image_name": "DJI_01314.JPG",
+      "leaf02_image_id": 332,
+      "leaf06_image_id": 243,
+      "residual_m": 0.455365,
+      "delta_xyz_m": [
+        0.289172,
+        -0.222902,
+        -0.272125
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 1.039243,
+      "leaf06_transformed_to_prior_m": 0.94987
+    },
+    {
+      "image_name": "DJI_01313.JPG",
+      "leaf02_image_id": 331,
+      "leaf06_image_id": 242,
+      "residual_m": 0.451461,
+      "delta_xyz_m": [
+        0.288916,
+        -0.20872,
+        -0.277093
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 0.936803,
+      "leaf06_transformed_to_prior_m": 0.880613
+    },
+    {
+      "image_name": "DJI_01611.JPG",
+      "leaf02_image_id": 343,
+      "leaf06_image_id": 342,
+      "residual_m": 0.360066,
+      "delta_xyz_m": [
+        -0.3562,
+        0.044973,
+        0.027332
+      ],
+      "leaf02_role": "core",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 1.850011,
+      "leaf06_transformed_to_prior_m": 1.911093
+    },
+    {
+      "image_name": "DJI_01612.JPG",
+      "leaf02_image_id": 344,
+      "leaf06_image_id": 343,
+      "residual_m": 0.345851,
+      "delta_xyz_m": [
+        -0.345558,
+        0.001875,
+        0.014116
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "core",
+      "leaf02_to_prior_m": 1.884153,
+      "leaf06_transformed_to_prior_m": 1.971747
+    },
+    {
+      "image_name": "DJI_00826.JPG",
+      "leaf02_image_id": 256,
+      "leaf06_image_id": 212,
+      "residual_m": 0.341651,
+      "delta_xyz_m": [
+        0.050191,
+        -0.270092,
+        -0.203117
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 2.494515,
+      "leaf06_transformed_to_prior_m": 2.190343
+    },
+    {
+      "image_name": "DJI_00825.JPG",
+      "leaf02_image_id": 255,
+      "leaf06_image_id": 211,
+      "residual_m": 0.337575,
+      "delta_xyz_m": [
+        0.047308,
+        -0.267199,
+        -0.200806
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 2.426921,
+      "leaf06_transformed_to_prior_m": 2.121735
+    },
+    {
+      "image_name": "DJI_01613.JPG",
+      "leaf02_image_id": 346,
+      "leaf06_image_id": 344,
+      "residual_m": 0.332631,
+      "delta_xyz_m": [
+        -0.330266,
+        -0.012654,
+        0.037516
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "core",
+      "leaf02_to_prior_m": 1.314748,
+      "leaf06_transformed_to_prior_m": 1.522348
+    },
+    {
+      "image_name": "DJI_00827.JPG",
+      "leaf02_image_id": 257,
+      "leaf06_image_id": 213,
+      "residual_m": 0.301312,
+      "delta_xyz_m": [
+        0.014442,
+        -0.239746,
+        -0.18194
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 2.170544,
+      "leaf06_transformed_to_prior_m": 1.897022
+    },
+    {
+      "image_name": "DJI_00222.JPG",
+      "leaf02_image_id": 14,
+      "leaf06_image_id": 21,
+      "residual_m": 0.229174,
+      "delta_xyz_m": [
+        0.042374,
+        -0.165631,
+        -0.152617
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 0.567412,
+      "leaf06_transformed_to_prior_m": 0.764602
+    },
+    {
+      "image_name": "DJI_00221.JPG",
+      "leaf02_image_id": 13,
+      "leaf06_image_id": 20,
+      "residual_m": 0.224979,
+      "delta_xyz_m": [
+        0.046232,
+        -0.162773,
+        -0.148268
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 0.722214,
+      "leaf06_transformed_to_prior_m": 0.794879
+    },
+    {
+      "image_name": "DJI_00223.JPG",
+      "leaf02_image_id": 15,
+      "leaf06_image_id": 22,
+      "residual_m": 0.214795,
+      "delta_xyz_m": [
+        0.057179,
+        -0.150989,
+        -0.141668
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 0.526755,
+      "leaf06_transformed_to_prior_m": 0.65371
+    },
+    {
+      "image_name": "DJI_00220.JPG",
+      "leaf02_image_id": 12,
+      "leaf06_image_id": 19,
+      "residual_m": 0.19998,
+      "delta_xyz_m": [
+        0.064054,
+        -0.135928,
+        -0.131958
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 0.780063,
+      "leaf06_transformed_to_prior_m": 0.837957
+    },
+    {
+      "image_name": "DJI_00805.JPG",
+      "leaf02_image_id": 252,
+      "leaf06_image_id": 210,
+      "residual_m": 0.182895,
+      "delta_xyz_m": [
+        0.010566,
+        -0.126682,
+        -0.131493
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 2.516104,
+      "leaf06_transformed_to_prior_m": 2.341358
+    },
+    {
+      "image_name": "DJI_00224.JPG",
+      "leaf02_image_id": 16,
+      "leaf06_image_id": 23,
+      "residual_m": 0.18202,
+      "delta_xyz_m": [
+        0.073216,
+        -0.113134,
+        -0.122358
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 0.437843,
+      "leaf06_transformed_to_prior_m": 0.550767
+    },
+    {
+      "image_name": "DJI_00219.JPG",
+      "leaf02_image_id": 11,
+      "leaf06_image_id": 18,
+      "residual_m": 0.145931,
+      "delta_xyz_m": [
+        0.07131,
+        -0.082875,
+        -0.096657
+      ],
+      "leaf02_role": "core",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 0.687976,
+      "leaf06_transformed_to_prior_m": 0.761008
+    },
+    {
+      "image_name": "DJI_00204.JPG",
+      "leaf02_image_id": 1,
+      "leaf06_image_id": 3,
+      "residual_m": 0.137829,
+      "delta_xyz_m": [
+        0.003711,
+        -0.091233,
+        -0.103245
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 0.804545,
+      "leaf06_transformed_to_prior_m": 0.922748
+    },
+    {
+      "image_name": "DJI_00205.JPG",
+      "leaf02_image_id": 2,
+      "leaf06_image_id": 4,
+      "residual_m": 0.125468,
+      "delta_xyz_m": [
+        0.011414,
+        -0.081087,
+        -0.095063
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 0.566362,
+      "leaf06_transformed_to_prior_m": 0.647661
+    },
+    {
+      "image_name": "DJI_00225.JPG",
+      "leaf02_image_id": 17,
+      "leaf06_image_id": 24,
+      "residual_m": 0.121848,
+      "delta_xyz_m": [
+        0.075261,
+        -0.054827,
+        -0.078592
+      ],
+      "leaf02_role": "core",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 0.57193,
+      "leaf06_transformed_to_prior_m": 0.586318
+    },
+    {
+      "image_name": "DJI_00241.JPG",
+      "leaf02_image_id": 27,
+      "leaf06_image_id": 40,
+      "residual_m": 0.110081,
+      "delta_xyz_m": [
+        0.07527,
+        -0.027486,
+        -0.075477
+      ],
+      "leaf02_role": "core",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 0.902524,
+      "leaf06_transformed_to_prior_m": 1.003578
+    },
+    {
+      "image_name": "DJI_01622.JPG",
+      "leaf02_image_id": 354,
+      "leaf06_image_id": 353,
+      "residual_m": 0.108236,
+      "delta_xyz_m": [
+        0.089837,
+        -0.05583,
+        0.022965
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "core",
+      "leaf02_to_prior_m": 1.1158,
+      "leaf06_transformed_to_prior_m": 1.070326
+    },
+    {
+      "image_name": "DJI_00236.JPG",
+      "leaf02_image_id": 22,
+      "leaf06_image_id": 35,
+      "residual_m": 0.092112,
+      "delta_xyz_m": [
+        -0.07697,
+        -0.033215,
+        0.03817
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "core",
+      "leaf02_to_prior_m": 0.709043,
+      "leaf06_transformed_to_prior_m": 0.655315
+    },
+    {
+      "image_name": "DJI_00206.JPG",
+      "leaf02_image_id": 3,
+      "leaf06_image_id": 5,
+      "residual_m": 0.090462,
+      "delta_xyz_m": [
+        0.022091,
+        -0.061811,
+        -0.062248
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 0.658769,
+      "leaf06_transformed_to_prior_m": 0.665554
+    },
+    {
+      "image_name": "DJI_00662.JPG",
+      "leaf02_image_id": 251,
+      "leaf06_image_id": 171,
+      "residual_m": 0.089196,
+      "delta_xyz_m": [
+        -0.050182,
+        -0.069903,
+        -0.023478
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 3.560251,
+      "leaf06_transformed_to_prior_m": 3.603217
+    },
+    {
+      "image_name": "DJI_00475.JPG",
+      "leaf02_image_id": 240,
+      "leaf06_image_id": 159,
+      "residual_m": 0.087975,
+      "delta_xyz_m": [
+        0.074337,
+        -0.020459,
+        -0.042369
+      ],
+      "leaf02_role": "core",
+      "leaf06_role": "overlap",
+      "leaf02_to_prior_m": 1.026556,
+      "leaf06_transformed_to_prior_m": 1.083009
+    },
+    {
+      "image_name": "DJI_01452.JPG",
+      "leaf02_image_id": 341,
+      "leaf06_image_id": 292,
+      "residual_m": 0.087151,
+      "delta_xyz_m": [
+        0.080871,
+        0.00381,
+        -0.032258
+      ],
+      "leaf02_role": "overlap",
+      "leaf06_role": "core",
+      "leaf02_to_prior_m": 1.413419,
+      "leaf06_transformed_to_prior_m": 1.350523
+    }
+  ],
+  "interpretation": [
+    "Scale and planner-global GPS/EXIF consistency now pass strict gates; the former subset-local origin bug is fixed.",
+    "The Sim3 residual failure is concentrated in a tail of shared cameras, not the median: reported p50 is 0.054423 m while reported p95 is 11.775927 m.",
+    "The high-residual tail is a contiguous DJI_01282.JPG..DJI_01297.JPG run and all 16 cameras over 5 m are overlap-overlap support for the 02/06 seam, not core-core ownership evidence.",
+    "Core-overlap and overlap-core shared cameras are tight (p95 below 0.12 m), so the next no-spend reducer patch should report outlier image names and test core-aware robust seam acceptance/trimming rather than weakening the production gates.",
+    "Full CV-HR fanout remains blocked until the strict 02/06 seam passes with duplicate-surface warnings resolved or explicitly blocked with a named planner/leaf contract fix."
+  ]
+}

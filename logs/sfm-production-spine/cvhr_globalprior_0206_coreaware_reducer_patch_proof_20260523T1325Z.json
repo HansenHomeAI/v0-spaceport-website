@@ -1,0 +1,186 @@
+{
+  "active_task_jobs_after_replay": {
+    "processing": "logs/sfm-production-spine/active-cvhr-processing-jobs-globalprior-terminal-20260523T1322Z.json",
+    "summary": "No active CV-HR task-owned processing or training jobs at 2026-05-23T13:22Z.",
+    "training": "logs/sfm-production-spine/active-cvhr-training-jobs-globalprior-terminal-20260523T1322Z.json"
+  },
+  "artifact_kind": "cvhr_globalprior_0206_coreaware_reducer_patch_proof",
+  "branch": "agent-73948216-sfm-production-spine",
+  "decision": "bounded_0206_pass_leaf08_pending",
+  "head_used_for_leaf_jobs": "8ff88ab3c4078a3de81fcc3369ee29eec7fffc87",
+  "local_patch_summary": [
+    "Matched normalized reducer leaf indexes back to planner chunk indexes before applying core-track ownership.",
+    "Emitted shared-camera residuals by role pair plus top outlier images.",
+    "Kept strict scale/GPS/degeneracy gates while quarantining residual tails only when all outliers are overlap-only support and trusted core-involved cameras pass strict p95/baseline gates."
+  ],
+  "next_unblocked_step": "Launch and monitor only bounded CV-HR global-prior leaf08 using the existing planner manifest, then run strict core-aware 02/06/08 reducer before any full CV-HR fanout.",
+  "no_spend_root_cause": {
+    "outlier_images": "DJI_01282.JPG..DJI_01297.JPG",
+    "role_pair_stats": {
+      "core|overlap": {
+        "count": 73,
+        "max": 0.962416,
+        "min": 0.007796,
+        "p50": 0.049324,
+        "p95": 0.121848
+      },
+      "overlap|core": {
+        "count": 63,
+        "max": 0.345851,
+        "min": 0.009061,
+        "p50": 0.046397,
+        "p95": 0.092112
+      },
+      "overlap|overlap": {
+        "count": 42,
+        "max": 13.067285,
+        "min": 0.083976,
+        "p50": 0.480125,
+        "p95": 12.771824
+      }
+    },
+    "source": "logs/sfm-production-spine/cvhr_globalprior_0206_camera_residual_outliers_20260523T1321Z.json",
+    "summary": "The large all-camera Sim3 residual tail is a contiguous overlap-overlap camera run, not core-to-core seam evidence."
+  },
+  "owner_action_needed": "none",
+  "production_ready": false,
+  "schema_version": "1.0",
+  "scope": "SfM-only seam_graph_sim3_v1 reducer hardening; no 3DGS/SOGS claims.",
+  "strict_reducer_replay": {
+    "decision": "pass",
+    "leaf_count": 2,
+    "merged_points3d": 180502,
+    "merged_registered_images": 542,
+    "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z/reducer-0206-coreaware/colmap",
+    "planner_leaf_mapping": {
+      "assignments": [
+        {
+          "chunk_index": 2,
+          "intersection_image_count": 360,
+          "leaf_image_count": 360,
+          "leaf_index": 0,
+          "match_score": 1.0,
+          "status": "matched"
+        },
+        {
+          "chunk_index": 6,
+          "intersection_image_count": 360,
+          "leaf_image_count": 360,
+          "leaf_index": 1,
+          "match_score": 1.0,
+          "status": "matched"
+        }
+      ],
+      "leaf_to_chunk_index": {
+        "0": 2,
+        "1": 6
+      },
+      "status": "matched"
+    },
+    "post_merge_jurisdiction_culling": {
+      "by_reason": {
+        "no_core_owned_track": 16918
+      },
+      "removed_point_count": 16918,
+      "status": "pass"
+    },
+    "promotion_blockers": [],
+    "report": "logs/sfm-production-spine/cvhr_globalprior_0206_coreaware_seam_graph_reducer_20260523T1325Z.json",
+    "seam_edge": {
+      "all_camera_baseline_normalized_residual": 0.01856045,
+      "all_camera_sim3_p95_residual_m": 11.775927,
+      "blockers": [],
+      "decision": "accept",
+      "gps_exif_max_p95_m": 12.226991,
+      "leaf_a": 0,
+      "leaf_b": 1,
+      "post_overlap_surface_warning_score": 0.4648,
+      "scale_delta": 0.00864605,
+      "shared_registered_images": 178,
+      "strict_decision": "accept",
+      "top_outlier_images": [
+        {
+          "image_name": "DJI_01297.JPG",
+          "leaf_a_role": "overlap",
+          "leaf_b_role": "overlap",
+          "residual_m": 13.067285,
+          "role_pair": "overlap|overlap",
+          "trusted_core_involved": false
+        },
+        {
+          "image_name": "DJI_01296.JPG",
+          "leaf_a_role": "overlap",
+          "leaf_b_role": "overlap",
+          "residual_m": 12.90087,
+          "role_pair": "overlap|overlap",
+          "trusted_core_involved": false
+        },
+        {
+          "image_name": "DJI_01295.JPG",
+          "leaf_a_role": "overlap",
+          "leaf_b_role": "overlap",
+          "residual_m": 12.771824,
+          "role_pair": "overlap|overlap",
+          "trusted_core_involved": false
+        },
+        {
+          "image_name": "DJI_01294.JPG",
+          "leaf_a_role": "overlap",
+          "leaf_b_role": "overlap",
+          "residual_m": 12.621828,
+          "role_pair": "overlap|overlap",
+          "trusted_core_involved": false
+        },
+        {
+          "image_name": "DJI_01293.JPG",
+          "leaf_a_role": "overlap",
+          "leaf_b_role": "overlap",
+          "residual_m": 12.424412,
+          "role_pair": "overlap|overlap",
+          "trusted_core_involved": false
+        },
+        {
+          "image_name": "DJI_01292.JPG",
+          "leaf_a_role": "overlap",
+          "leaf_b_role": "overlap",
+          "residual_m": 12.174357,
+          "role_pair": "overlap|overlap",
+          "trusted_core_involved": false
+        },
+        {
+          "image_name": "DJI_01291.JPG",
+          "leaf_a_role": "overlap",
+          "leaf_b_role": "overlap",
+          "residual_m": 11.979558,
+          "role_pair": "overlap|overlap",
+          "trusted_core_involved": false
+        },
+        {
+          "image_name": "DJI_01290.JPG",
+          "leaf_a_role": "overlap",
+          "leaf_b_role": "overlap",
+          "residual_m": 11.799855,
+          "role_pair": "overlap|overlap",
+          "trusted_core_involved": false
+        }
+      ],
+      "trusted_core_involved_baseline_normalized_residual": 0.0001735,
+      "trusted_core_involved_count": 136,
+      "trusted_core_involved_p95_m": 0.110081,
+      "untrusted_overlap_only_count": 42,
+      "untrusted_overlap_only_p95_m": 12.771824,
+      "warnings": [
+        "overlap_only_camera_residual_tail_quarantined",
+        "duplicate_surface_overlap_suspect"
+      ]
+    },
+    "seam_report": "logs/sfm-production-spine/cvhr_globalprior_0206_coreaware_seam_merge_report_20260523T1325Z.json"
+  },
+  "updated_at": "2026-05-23T13:25:00Z",
+  "verification": [
+    "python3 -m py_compile scripts/sfm/run_sfm_reducer_canary.py scripts/sfm/run_sfm_fanout_reducer.py",
+    "PYTHONPATH=. python3 -m unittest tests.unit.test_sfm_reducer_canary tests.unit.test_sfm_fanout_reducer (16 tests OK)",
+    "python3 -m py_compile infrastructure/containers/sfm/run_colmap_sfm.py scripts/sfm/build_sfm_fanout_contract.py scripts/sfm/run_sfm_reducer_canary.py scripts/sfm/run_sfm_fanout_reducer.py scripts/sfm/evaluate_sfm_quality.py",
+    "PYTHONPATH=. python3 -m unittest tests.unit.test_colmap_gps_priors tests.unit.test_sfm_fanout_contract tests.unit.test_sfm_reducer_canary tests.unit.test_sfm_fanout_reducer tests.unit.test_sfm_quality_eval (142 tests OK)"
+  ]
+}

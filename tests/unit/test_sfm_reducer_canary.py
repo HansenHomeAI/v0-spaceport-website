@@ -128,6 +128,56 @@ class SfmReducerCanaryTest(unittest.TestCase):
         self.assertEqual(gps["shared_reference_count"], 22)
         self.assertEqual(gps["max_p95_m"], 0.0)
 
+    def test_overlap_only_camera_outlier_tail_is_reported_and_quarantined(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            core_names = [f"CORE_{index:04d}.JPG" for index in range(22)]
+            overlap_names = [f"OVERLAP_{index:04d}.JPG" for index in range(6)]
+            all_names = core_names + overlap_names
+            base_positions = self.grid_positions(all_names)
+            shifted_overlap_positions = {
+                **{name: base_positions[name] for name in core_names},
+                **{
+                    name: (base_positions[name][0] + 12.0, base_positions[name][1], base_positions[name][2])
+                    for name in overlap_names
+                },
+            }
+            self.write_model(root / "leaf0", all_names, [(core_names[0], core_names[1])], camera_positions=base_positions)
+            self.write_model(
+                root / "leaf1",
+                all_names,
+                [(core_names[2], core_names[3])],
+                camera_positions=shifted_overlap_positions,
+            )
+
+            report = reducer_canary.build_seam_merge_graph(
+                normalized_dirs=[root / "leaf0", root / "leaf1"],
+                thresholds=reducer_canary.SeamThresholds(
+                    min_shared_images=20,
+                    max_scale_delta=0.15,
+                    max_sim3_p95_residual_m=0.25,
+                    max_baseline_normalized_residual=0.01,
+                    strict_production_gates=True,
+                ),
+                planner_manifest={
+                    "chunks": [
+                        {"index": 2, "image_names": all_names, "core_names": core_names, "overlap_names": overlap_names},
+                        {"index": 6, "image_names": all_names, "core_names": core_names, "overlap_names": overlap_names},
+                    ]
+                },
+            )
+
+        edge = report["candidate_edges"][0]
+        role_report = edge["shared_camera_residual_roles"]
+        self.assertEqual(report["decision"], "pass")
+        self.assertEqual(edge["decision"], "accept")
+        self.assertIn("overlap_only_camera_residual_tail_quarantined", edge["warnings"])
+        self.assertGreater(edge["sim3_residual_m"]["p95"], 0.25)
+        self.assertLess(role_report["trusted_core_involved_residual_m"]["p95"], 0.25)
+        self.assertEqual(role_report["trusted_core_involved_count"], 22)
+        self.assertEqual(role_report["top_outlier_images"][0]["role_pair"], "overlap|overlap")
+        self.assertEqual(report["planner_leaf_mapping"]["leaf_to_chunk_index"], {"0": 2, "1": 6})
+
     def test_scaled_duplicate_wall_fails_strict_seam_gate(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
