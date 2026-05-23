@@ -250,3 +250,4 @@
 [2026-05-23T22:24:53Z] heartbeat(hmc) -> verified AWS/SageMaker/S3/viewer/CI (no-spend) -> commit+push logs
 [2026-05-23T22:27:39Z] heartbeat(ci) -> refreshed git head + gh exact-head list for current HEAD -> next: commit+push
 [2026-05-23T22:48:51Z] heartbeat(hmc) -> verified AWS/SageMaker/S3 bundle present; preview viewer skybox/no-sky 200; proxy meta.json 200; exact-head gh runs 0 (skip ci) -> next: commit+push ledger
+[2026-05-23T23:16:12Z] heartbeat(hmc) -> reconfirmed terminal SageMaker (sfm+3dgs+compression Completed); S3 supersplat present; viewer skybox/no-sky 200; proxy meta 200+CORS; gh exact-head 0 (skip ci) -> next: idle
