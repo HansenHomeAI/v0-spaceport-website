@@ -253,3 +253,4 @@
 [2026-05-23T23:16:12Z] heartbeat(hmc) -> reconfirmed terminal SageMaker (sfm+3dgs+compression Completed); S3 supersplat present; viewer skybox/no-sky 200; proxy meta 200+CORS; gh exact-head 0 (skip ci) -> next: idle
 [2026-05-23T23:19:06Z] postpush(ci) -> recorded branch + exact-head gh runs for new head (expected exact-head empty due [skip ci]) -> next: idle
 [2026-05-23T23:27:11Z] heartbeat-no-spend -> reconfirmed terminal + bundle + viewer -> commit/push
+[2026-05-23T23:47:52Z] montana-time-capsule heartbeat -> no-spend gates pass (SageMaker Completed; S3 present; viewer+proxy 200; CI snapshot) -> commit+push
