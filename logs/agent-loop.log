@@ -241,3 +241,4 @@
 [2026-05-23T20:28:54Z] heartbeat no-spend -> HMC Completed + S3 bundle + viewer/proxy 200 + gh exact-head empty ([skip ci]) -> next idle monitoring
 [2026-05-23T20:31:30Z] postpush(ci) -> recorded branch + exact-head gh runs for new head (expected exact-head empty due [skip ci]) -> next: idle
 [2026-05-23T20:58:50Z] heartbeat -> reconfirm terminal+S3+viewer+CI -> next idle
+[2026-05-23T21:29:09Z] heartbeat -> reconfirm terminal+S3+viewer+CI -> next idle
