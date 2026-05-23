@@ -6335,3 +6335,10 @@ Next: remain idle; do not upload/launch duplicate HMC jobs; no action on unrelat
   - exact-head runs (expected empty if head commit is `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260523T150353Z.json
 
 Next: remain idle; do not upload/launch duplicate HMC jobs; acceptance gates remain visual proof + public/proxy reachability (currently passing).
+
+### 2026-05-23T15:06:33Z post-push CI snapshot
+
+- Git: agent-40136728-montana-time-capsule @ 4f8572b2fe4d1e4d09bd8aa8f32fe802a5ab763c ([skip ci])
+- GitHub Actions:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260523T150633Z.json
+  - exact-head runs (expected 0 due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260523T150633Z.json
