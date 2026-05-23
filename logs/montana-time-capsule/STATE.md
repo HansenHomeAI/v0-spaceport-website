@@ -6577,3 +6577,19 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remain
 - CI:
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260523T174442Z.json
   - exact-head runs (may be empty due to `[skip ci]` on HEAD): logs/montana-time-capsule/gh-run-list-exact-head-20260523T174442Z.json
+
+## 2026-05-23T17:46:03Z postpush CI snapshot (exact-head expected empty due to )
+
+- Git: agent-40136728-montana-time-capsule @ bf95fe61ca381c091c95b2aedc94428c86140dcf ([skip ci])
+- CI:
+  - git head: logs/montana-time-capsule/git-head-20260523T174603Z.txt
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260523T174603Z.json
+  - exact-head runs (expected empty due to ): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260523T174603Z.json
+
+## 2026-05-23T17:45:52Z postpush CI snapshot (exact-head expected empty due to `[skip ci]`)
+
+- Git: agent-40136728-montana-time-capsule @ bf95fe61bdff0d5348945dfebdc127d3b82b105f ([skip ci])
+- CI:
+  - git head: logs/montana-time-capsule/git-head-20260523T174552Z.txt
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260523T174552Z.json
+  - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260523T174552Z.json
