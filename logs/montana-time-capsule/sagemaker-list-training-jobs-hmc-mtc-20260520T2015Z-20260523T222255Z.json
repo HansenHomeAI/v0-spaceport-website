@@ -1,0 +1,14 @@
+{
+    "TrainingJobSummaries": [
+        {
+            "TrainingJobName": "hmc-mtc-20260520T2015Z-3dgs",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/hmc-mtc-20260520T2015Z-3dgs",
+            "CreationTime": "2026-05-21T10:35:46.448000-06:00",
+            "TrainingEndTime": "2026-05-21T14:12:00.258000-06:00",
+            "LastModifiedTime": "2026-05-21T14:12:00.606000-06:00",
+            "TrainingJobStatus": "Completed",
+            "SecondaryStatus": "Completed"
+        }
+    ],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTRGI0hzek/VRxXj4DyLe9ebY2FHsGTZcZeADOXKZtIQc/g4uLX2oebOOWn7jBduUtM4q1OkFx0n8B6INwc+4MIAh4ItOzTcGDoOvOawivakCfpXJW+31VbhraAAoOabXxIuUu9gmwmW8AIQ7IzRvILTQJ1WKW8GiLyLeUKbSmCKqiH0UVasszCgKqq655llGfAuTzFEAwFQTgkppeMHt/Vyo/OX0xqZcPnec2lnmarnJmm+Rxzx8zW76pMaK8fuHkADO9T5ehpZuHzQe7YtlccVnWdHV9lH+9Uq0ghZJxOtau3Swilv92HgEUUHCx5bJ0Jcjp6/pidI3DDgEMIzW2R+FfK0BLWu0A/EndvIp/Bekl41zvUZkHAOLVz01KLPzss30+dNufTA1kU7WUvnBeefmVCtnqkkr9JK+t4l/aebFJV09xkWw7sd4wpaRP2rp2rFvGYy18MdlYk6ZHczKCVFzkeas/h9E7uIEdRvk5xa70syAaJYImmG+ZdubyTfeP3WIlFthyig9YWylHXd4N9WtKryQB6U8="
+}
