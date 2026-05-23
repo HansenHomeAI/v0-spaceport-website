@@ -24,6 +24,13 @@
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260523T110152Z.json (latest CDK Deploy success at 2026-05-21T11:38:18Z)
   - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260523T110152Z.json
 
+## 2026-05-23T11:04:06Z POST-PUSH monitor (HMC) - git head + exact-head GH runs recorded (no launches)
+
+- Git: agent-40136728-montana-time-capsule @ 42ebe312a2df7e5ceccb1c0a64513b9d1f3dd6a2 ([skip ci]) (head=logs/montana-time-capsule/git-head-20260523T110406Z.txt; status=logs/montana-time-capsule/git-status-20260523T110406Z.txt)
+- CI:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260523T110406Z.json
+  - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260523T110406Z.json
+
 ## 2026-05-23T10:31:23Z POST-HEARTBEAT monitor (HMC) - git head + exact-head GH runs recorded (no launches)
 
 - Git: agent-40136728-montana-time-capsule @ 649c0eec ([skip ci]) (head=logs/montana-time-capsule/git-head-20260523T103123Z.txt; status=logs/montana-time-capsule/git-status-20260523T103123Z.txt)
