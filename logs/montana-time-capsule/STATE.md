@@ -541,6 +541,16 @@
   - exact-head runs for e5c6c580… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T104603Z.json (count: logs/montana-time-capsule/gh-run-count-exact-head-e5c6c58068c4530a42024b3c2bc5b1b06dd4f873-20260524T104603Z.txt)
 - Summary JSON (refreshed): logs/montana-time-capsule/hmc-state.json
 
+## 2026-05-24T16:47:02Z HEARTBEAT monitor - post-push exact-head workflow check (expected empty due `[skip ci]`)
+
+- Git: agent-40136728-montana-time-capsule @ a089526bb2d424ed47e0718eb53817440d875043 (`chore: hmc mtc heartbeat 20260524T1644Z [skip ci]`)
+- Evidence stamp: 20260524T164702Z
+- Git proof: logs/montana-time-capsule/git-proof-20260524T164702Z.txt
+- GitHub Actions:
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-20260524T164702Z.json
+  - exact-head runs count=0: logs/montana-time-capsule/gh-run-list-exact-head-a089526bb2d424ed47e0718eb53817440d875043-20260524T164702Z.json
+- Summary JSON (refreshed): logs/montana-time-capsule/hmc-state.json
+
 ## 2026-05-24T16:44:26Z HEARTBEAT monitor - no-spend acceptance refresh: canonical HMC still terminal; staging bundle present; preview proxy+viewer HTTP 200; public bundle still not published; exact-head CI empty due `[skip ci]`
 
 - Git: agent-40136728-montana-time-capsule @ c8c8a3408d03f547a008587d582547ea94baf815 (`chore: post-push gh exact-head proof 20260524T1629Z [skip ci]`)
