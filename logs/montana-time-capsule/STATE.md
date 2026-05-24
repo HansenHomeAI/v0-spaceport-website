@@ -11022,3 +11022,28 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260524T214434Z.json
   - exact-head runs (0 expected due [skip ci]): logs/montana-time-capsule/gh-run-list-exact-head-4396c94ef18b2ff03af70e3ae1e341ccc321b1f8-20260524T214434Z.json
 - State snapshot updated: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T214434Z)
+
+## 2026-05-24T23:08:04Z HEARTBEAT monitor (HMC canonical): no-spend re-verify; terminal SageMaker jobs confirmed; staging bundle reachable; public meta.json still 404; hosted viewer sky/no-sky HTTP 200; exact-head GitHub workflows=0 (skip ci)
+
+- Git: agent-40136728-montana-time-capsule @ 804e554876f20c6976699773623805c0ac8edb95 (`chore: friday mtc postpush gh snapshot 20260524T225014Z [skip ci]`)
+- Evidence stamps:
+  - AWS/S3/SageMaker: 20260524T230713Z
+  - Viewer/GitHub: 20260524T230804Z
+- AWS (us-west-2; /opt/homebrew/bin/aws; no spend):
+  - identity: logs/montana-time-capsule/aws-sts-20260524T230713Z.json
+  - InProgress guardrail: logs/montana-time-capsule/sm-list-processing-inprogress-20260524T230713Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260524T230713Z.json (counts: 0/0)
+  - canonical HMC run describes (all Completed):
+    - logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T230713Z.json
+    - logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T230713Z.json
+    - logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T230713Z.json
+- S3 outputs (canonical HMC compressed supersplat bundle):
+  - listing: logs/montana-time-capsule/s3ls-staging-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T230713Z.txt
+  - staging meta head (OK): logs/montana-time-capsule/s3head-staging-meta-hmc-mtc-20260520T2015Z-20260524T230713Z.json
+  - public meta head (still 404): logs/montana-time-capsule/s3head-public-meta-hmc-mtc-20260520T2015Z-20260524T230713Z.err
+- Hosted viewer reachability (HTTP):
+  - preview url used: logs/montana-time-capsule/PREVIEW_URL-used-20260524T230804Z.txt
+  - base/sky/no-sky/proxy: logs/montana-time-capsule/curlI-viewer-base-20260524T230804Z.headers + logs/montana-time-capsule/curlI-viewer-sky-20260524T230804Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-20260524T230804Z.headers + logs/montana-time-capsule/curlI-viewer-proxy-20260524T230804Z.headers
+- GitHub Actions (`/opt/homebrew/bin/gh`):
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T230804Z.json
+  - exact-head runs (0 expected due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-804e554-20260524T230804Z.json
+- State snapshot updated: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T230804Z)
