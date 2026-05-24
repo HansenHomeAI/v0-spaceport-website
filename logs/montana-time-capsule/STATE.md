@@ -10142,3 +10142,9 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - GitHub Actions (gh; exact-head empty due `[skip ci]`):
   - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T174836Z.json
   - exact-head runs (0): logs/montana-time-capsule/gh-run-list-exact-head-02044ff8dc63e9d7799975831b5f506d8d08897c-20260524T174836Z.json
+
+## 2026-05-24T17:49:58Z HEARTBEAT monitor - post-push GitHub confirmation: exact-head workflows empty due `[skip ci]`
+
+- Git: agent-40136728-montana-time-capsule @ a2c05767d58cfe7969842ad5ae7e24f101217a2c (`chore: friday mtc heartbeat proof 20260524T1749Z [skip ci]`)
+- Evidence stamp: 20260524T174958Z
+- GitHub Actions exact-head runs (0): logs/montana-time-capsule/gh-run-list-exact-head-a2c05767d58cfe7969842ad5ae7e24f101217a2c-postpush-20260524T174958Z.json
