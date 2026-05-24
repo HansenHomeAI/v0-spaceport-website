@@ -1,5 +1,15 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-24T18:27:36Z HEARTBEAT monitor - post-push reconfirm: exact-head CI empty due `[skip ci]`; hmc-state refreshed
+
+- Git: agent-40136728-montana-time-capsule @ cac8e7303575bb9575a233110d9ae9338943907b (`chore: mtc heartbeat post-push 20260524T182704Z [skip ci]`)
+- Evidence stamp: 20260524T182736Z
+- Git proof: logs/montana-time-capsule/git-status-20260524T182736Z.txt
+- GitHub Actions:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T182736Z.json
+  - exact-head runs (0; expected due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-cac8e7303575bb9575a233110d9ae9338943907b-20260524T182736Z.json
+- State snapshot: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T182736Z)
+
 ## 2026-05-24T18:27:04Z HEARTBEAT monitor - post-push reconfirm: exact-head CI empty due `[skip ci]`; hmc-state refreshed
 
 - Git: agent-40136728-montana-time-capsule @ f69d537eb0bfe211b33402945252ea0e389c14fd (`chore: mtc heartbeat hmc reconfirm 20260524T182450Z [skip ci]`)
