@@ -411,3 +411,4 @@
 [2026-05-24T18:09:36Z] heartbeat -> post-push exact-head=0 (skip ci) -> ledger updated
 [2026-05-24 12:26:13 MDT] heartbeat -> friday-mtc terminal reconfirmed; InProgress=0; no launches -> next: passive monitor
 [2026-05-24T18:26:38Z] heartbeat -> no-spend reconfirm HMC (InProgress=0, viewer 200, public meta 404) -> next: wait for public publish gate
+[2026-05-24T18:27:19Z] push -> verified exact-head workflows (0 due [skip ci]) -> next: idle/no-spend monitor
