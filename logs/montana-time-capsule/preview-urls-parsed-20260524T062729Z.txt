@@ -1,0 +1,2 @@
+alias=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev
+hash=https://3f41f4ae.v0-spaceport-website-preview2.pages.dev
