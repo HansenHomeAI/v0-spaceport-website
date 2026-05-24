@@ -1,0 +1,64 @@
+{
+    "ProcessingInputs": [
+        {
+            "InputName": "sfm-input",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.zip",
+                "LocalPath": "/opt/ml/processing/input",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated",
+                "S3CompressionType": "None"
+            }
+        }
+    ],
+    "ProcessingOutputConfig": {
+        "Outputs": [
+            {
+                "OutputName": "colmap-output",
+                "S3Output": {
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/friday-mtc-20260524T0001Z/colmap",
+                    "LocalPath": "/opt/ml/processing/output",
+                    "S3UploadMode": "EndOfJob"
+                },
+                "AppManaged": false
+            }
+        ]
+    },
+    "ProcessingJobName": "friday-mtc-20260524T0001Z-sfm",
+    "ProcessingResources": {
+        "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 100
+        }
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 86400
+    },
+    "AppSpecification": {
+        "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811",
+        "ContainerEntrypoint": [
+            "/opt/ml/code/run_sfm.sh"
+        ]
+    },
+    "Environment": {
+        "AWS_DEFAULT_REGION": "us-west-2",
+        "COLMAP_CHUNK_MIN_CORE_REGISTERED_RATIO": "0.90",
+        "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+        "PYTHONUNBUFFERED": "1",
+        "SFM_BENCHMARK_SUBSET_STRATEGY": "friday_20260522_full_1776_montana_time_capsule",
+        "SFM_BRANCH_NAME": "agent-40136728-montana-time-capsule",
+        "SFM_GIT_HEAD": "0e3f3e57759cd2bf65effc60064bc2874fa97eb7",
+        "SFM_INPUT_URI": "s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.zip",
+        "SFM_JOB_NAME": "friday-mtc-20260524T0001Z-sfm",
+        "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/friday-mtc-20260524T0001Z/colmap"
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/friday-mtc-20260524T0001Z-sfm",
+    "ProcessingJobStatus": "InProgress",
+    "ProcessingStartTime": "2026-05-23T18:03:51.397000-06:00",
+    "LastModifiedTime": "2026-05-23T18:05:36.322000-06:00",
+    "CreationTime": "2026-05-23T18:03:05.148000-06:00"
+}
