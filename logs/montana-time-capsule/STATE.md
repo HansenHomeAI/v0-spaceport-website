@@ -18,7 +18,35 @@
   - colmap listing: logs/montana-time-capsule/s3-ls-colmap-friday-mtc-20260524T0001Z-20260524T104511Z.txt
 - Concise summary: logs/montana-time-capsule/friday-heartbeat-summary-20260524T104511Z.md
 - GitHub Actions (exact-head, expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-62ab3033e2441eff704fb23b498f88b21620d498-20260524T104632Z.json (count: logs/montana-time-capsule/gh-run-count-exact-head-62ab3033e2441eff704fb23b498f88b21620d498-20260524T104632Z.txt)
+- CloudWatch (Friday 3DGS latest events): logs/montana-time-capsule/cloudwatch-get-log-events-friday-mtc-20260524T0001Z-3dgs-20260524T104806Z.json (last event: 2026-05-24T09:14:16.268Z)
 - Next step: keep monitoring until `friday-mtc-20260524T0001Z-3dgs` is Completed, then advance to pinned compression stage without launching duplicates.
+
+## 2026-05-24T10:47:12Z HEARTBEAT monitor - no-spend acceptance checks refresh: canonical HMC still terminal; staging bundle still present; viewer/proxy still HTTP 200; public bucket meta.json still 404; exact-head CI empty due [skip ci]
+
+- Git: agent-40136728-montana-time-capsule @ e5c6c58068c4530a42024b3c2bc5b1b06dd4f873 (`chore: postpush gh snapshots 20260524T103057Z [skip ci]`) (clean)
+- Evidence stamp: 20260524T104712Z
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T104511Z.json
+  - describe HMC SfM (Completed): logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T104430Z.json
+  - describe HMC 3DGS training (Completed): logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T104430Z.json
+  - describe HMC compression (Completed): logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T104430Z.json
+- S3 (HMC canonical bundle):
+  - staging meta head: logs/montana-time-capsule/s3api-head-object-staging-hmc-mtc-20260520T2015Z-meta-20260524T104432Z.json
+  - staging bundle listing: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T104432Z.txt
+  - public head (expected 404): logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T104432Z.err
+- Public reachability (preview proxy -> staging meta.json):
+  - URL: logs/montana-time-capsule/sogs-proxy-meta-url-20260524T104542Z.txt
+  - headers: logs/montana-time-capsule/curlD-sogs-proxy-meta-20260524T104542Z.headers (HTTP 200)
+  - body: logs/montana-time-capsule/curl-sogs-proxy-meta-20260524T104542Z.json (valid JSON)
+- Hosted viewer reachability (preview):
+  - preview alias: logs/montana-time-capsule/preview-alias-url-20260524T104542Z.txt
+  - skybox URL: logs/montana-time-capsule/viewer-sky-url-20260524T104542Z.txt -> logs/montana-time-capsule/curlI-viewer-skybox-20260524T104542Z.headers (HTTP 200)
+  - no-sky URL: logs/montana-time-capsule/viewer-nosky-url-20260524T104542Z.txt -> logs/montana-time-capsule/curlI-viewer-nosky-20260524T104542Z.headers (HTTP 200)
+- GitHub Actions:
+  - Pages+CDK latest branch snapshots: logs/montana-time-capsule/gh-run-list-pages-branch-20260524T104614Z.json + logs/montana-time-capsule/gh-run-list-cdk-branch-20260524T104614Z.json
+  - exact-head runs for e5c6c580… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T104603Z.json (count: logs/montana-time-capsule/gh-run-count-exact-head-e5c6c58068c4530a42024b3c2bc5b1b06dd4f873-20260524T104603Z.txt)
+- Summary JSON (refreshed): logs/montana-time-capsule/hmc-state.json
+- Next step: continue no-spend monitoring; acceptance gate remaining is public bundle publish (non-staging) + visual proof refresh if requested.
 
 ## 2026-05-24T09:47:20Z HEARTBEAT monitor - no-spend acceptance checks: canonical HMC still terminal (SfM/3DGS/compression Completed); staging bundle still present; hosted viewer now verified at `/sogs-migrated-viewer` (sky/no-sky HTTP 200); public bucket meta.json still 404; exact-head CI empty due [skip ci]
 

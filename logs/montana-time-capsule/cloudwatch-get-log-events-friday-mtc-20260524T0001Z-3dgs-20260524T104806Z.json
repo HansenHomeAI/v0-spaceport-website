@@ -1,0 +1,131 @@
+{
+    "events": [
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,521 - INFO - 🔥 Starting NerfStudio training (splatfacto-w-light)",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,521 - INFO - ============================================================",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,521 - INFO - 🎯 Training Configuration:",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,521 - INFO -    Model: splatfacto-w-light",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,521 - INFO -    Max iterations: 30000",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,521 - INFO -    SH degree: 3",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,521 - INFO -    Rasterize mode: classic",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,521 - INFO -    Scale regularization: True",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,521 - INFO -    Cull alpha threshold: 0.12",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,521 - INFO -    Cull scale threshold: 0.35",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,522 - INFO -    Background model: True",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,522 - INFO -    Alpha loss: True",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,522 - INFO -    Robust sky masking: True",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,522 - INFO -    Background SH degree: 8",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,522 - INFO -    Appearance embedding dim: 64",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,522 - INFO -    Log interval: 100",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,522 - INFO -    Dataparser: transforms.json (via ns-process-data conversion)",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,522 - INFO - ℹ️  Bilateral guided processing disabled",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,522 - INFO - 🖥️  A10G GPU optimization enabled (max-gauss-ratio: 10.0)",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,522 - INFO - 🪟 Viewer disabled for headless SageMaker training (--vis tensorboard)",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,522 - INFO - 🚀 Executing NerfStudio training command:",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,522 - INFO -    ns-train splatfacto-w-light --data /tmp/nerfstudio_training/converted_data --output-dir /tmp/nerfstudio_training --vis tensorboard --max_num_iterations 30000 --pipeline.model.sh_degree 3 --logging.steps_per_log 100 --pipeline.model.rasterize_mode classic --pipeline.model.use_scale_regularization True --pipeline.model.cull_alpha_thresh 0.12 --pipeline.model.cull_scale_thresh 0.35 --pipeline.model.enable_bg_model True --pipeline.model.enable_alpha_loss True --pipeline.model.enable_robust_mask True --pipeline.model.bg_sh_degree 8 --pipeline.model.appearance_embed_dim 64 --pipeline.model.never_mask_upper 0.4 --pipeline.model.max-gauss-ratio 10.0",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,522 - INFO - ============================================================",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,522 - INFO - ⏱️  Training timeout: 14400 seconds",
+            "ingestionTime": 1779614061625
+        },
+        {
+            "timestamp": 1779614056268,
+            "message": "2026-05-24 09:14:15,522 - INFO - 🐍 PYTHONPATH for ns-train: /opt/ml/code:/opt/ml/code:",
+            "ingestionTime": 1779614061625
+        }
+    ],
+    "nextForwardToken": "f/39686719620556207204473470054040396473815380212431781973/s",
+    "nextBackwardToken": "b/39686719620556207204473470054040396473815380212431781949/s"
+}

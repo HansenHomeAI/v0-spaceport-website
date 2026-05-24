@@ -3,17 +3,18 @@
     "account": "975050048887",
     "arn": "arn:aws:iam::975050048887:root"
   },
-  "evidence_stamp": "20260524T102720Z",
+  "evidence_stamp": "20260524T104712Z",
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "d7fcf210f1f3c775904f2e9e329d20011c865fe7",
-    "head_checked_at": "20260524T102720Z"
+    "head": "81959550b125b6187ef156022095aade2349bdfd",
+    "head_checked_at": "20260524T104712Z"
   },
   "github": {
     "cdk_latest": {
       "conclusion": "success",
       "createdAt": "2026-05-24T06:15:37Z",
       "databaseId": 26353779598,
+      "displayTitle": "chore: trigger Pages preview 20260524T061531Z",
       "headSha": "16f29321bfe9c53c2c7822ff41ccfc8e12fdf482",
       "status": "completed",
       "updatedAt": "2026-05-24T06:19:58Z",
@@ -21,11 +22,12 @@
       "workflowName": "CDK Deploy"
     },
     "exact_head_run_count": 0,
-    "exact_head_sha": "d7fcf210f1f3c775904f2e9e329d20011c865fe7",
+    "exact_head_sha": "81959550b125b6187ef156022095aade2349bdfd",
     "pages_latest": {
       "conclusion": "success",
       "createdAt": "2026-05-24T06:15:37Z",
       "databaseId": 26353779608,
+      "displayTitle": "chore: trigger Pages preview 20260524T061531Z",
       "headSha": "16f29321bfe9c53c2c7822ff41ccfc8e12fdf482",
       "status": "completed",
       "updatedAt": "2026-05-24T06:24:23Z",
@@ -43,7 +45,7 @@
     "compression": "Completed",
     "sfm": "Completed"
   },
-  "updated_at": "2026-05-24T10:27:20Z",
+  "updated_at": "2026-05-24T10:47:12Z",
   "viewer": {
     "nosky_http": 200,
     "proxy_http": 200,
