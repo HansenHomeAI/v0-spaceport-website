@@ -5,6 +5,35 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-24T04:46:26Z HEARTBEAT monitor (HMC) - no-spend reconfirm: AWS identity + canonical HMC jobs still Completed + no InProgress HMC jobs + supersplat bundle still present + hosted preview viewer (skybox/no-sky) HTTP 200 + signed meta.json via `/api/sogs-proxy/...` HTTP 200 (+CORS) + CI snapshot captured
+
+- Git: agent-40136728-montana-time-capsule @ 30fe156f30b5f09588ab4d648a9e95232f448459 (`chore: record postpush gh snapshot 20260524T042932Z [skip ci]`) (dirty: new logs only)
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T044626Z.json
+  - region: logs/montana-time-capsule/aws-configure-get-region-20260524T044626Z.txt
+  - version: logs/montana-time-capsule/aws-version-20260524T044626Z.txt
+- Canonical HMC run (do not upload dataset again; do not launch duplicate HMC jobs):
+  - run id: `hmc-mtc-20260520T2015Z`
+  - archive: s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip (pinned images + pinned container digests)
+  - SfM processing job `hmc-mtc-20260520T2015Z-sfm` status=Completed: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260524T044626Z.json
+  - 3DGS training job `hmc-mtc-20260520T2015Z-3dgs` status=Completed: logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T044626Z.json
+  - Compression processing job `hmc-mtc-20260520T2015Z-compression` status=Completed: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260524T044626Z.json
+  - Guardrail: InProgress jobs matching run prefix (expected 0 / 0):
+    - processing: logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T044626Z.json
+    - training: logs/montana-time-capsule/sagemaker-list-training-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T044626Z.json
+- S3 supersplat bundle (still present):
+  - list: logs/montana-time-capsule/s3-ls-hmc-supersplat-bundle-20260524T044626Z.txt
+  - meta.json head: logs/montana-time-capsule/s3api-head-hmc-meta-json-20260524T044626Z.json
+- Hosted preview viewer reachability (Origin header set; HTTP 200):
+  - urls: logs/montana-time-capsule/heartbeat-urls-hmc-20260524T044626Z.txt
+  - base: logs/montana-time-capsule/curlI-hmc-preview-base-20260524T044626Z.headers
+  - skybox: logs/montana-time-capsule/curlI-hmc-viewer-sky-20260524T044626Z.headers
+  - no-sky: logs/montana-time-capsule/curlI-hmc-viewer-nosky-20260524T044626Z.headers
+  - proxy meta.json headers/body: logs/montana-time-capsule/curlI-hmc-proxy-meta-20260524T044626Z.headers + logs/montana-time-capsule/curl-hmc-proxy-meta-20260524T044626Z.body.json
+- GitHub Actions snapshot (gh=/opt/homebrew/bin/gh):
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T044626Z.json
+  - exact-head runs for `30fe156f...` (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T044626Z.json
+
 ## 2026-05-24T04:27:42Z HEARTBEAT monitor (FRIDAY) - canonical Friday SfM still InProgress; job appears stalled (no CloudWatch since 00:09Z; S3 colmap still empty); no duplicate Friday jobs launched
 
 - Git: agent-40136728-montana-time-capsule @ 56d405277a3b051467ddfb4e58cc5368d9d65f04 (`chore: friday heartbeat sfm still inprogress 2026-05-24T04:27Z [skip ci]`) (clean)
