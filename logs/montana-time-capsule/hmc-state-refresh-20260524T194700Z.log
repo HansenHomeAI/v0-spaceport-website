@@ -1,0 +1,33 @@
+{
+  "checked": [
+    {
+      "central_directory_entries": 2063,
+      "etag": "ed86661a82b28856997a09f129ce6bec-1031",
+      "first_images": [
+        "hmc_0001_DJI_0661.JPG",
+        "hmc_0002_DJI_0660.JPG",
+        "hmc_0003_DJI_0662.JPG",
+        "hmc_0004_DJI_0666.JPG",
+        "hmc_0005_DJI_0665.JPG"
+      ],
+      "image_count": 2063,
+      "last_images": [
+        "hmc_2059_DJI_0715.JPG",
+        "hmc_2060_DJI_0724.JPG",
+        "hmc_2061_DJI_0716.JPG",
+        "hmc_2062_DJI_0722.JPG",
+        "hmc_2063_DJI_0717.JPG"
+      ],
+      "ready": false,
+      "s3_uri": "s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip",
+      "size": 8646557673,
+      "zip_entries": 2063
+    }
+  ],
+  "dataset": "HMC",
+  "expected_image_count": 1710,
+  "profile": "brass-chunked",
+  "profile_note": "Exact Brass Lantern chunked SfM image; default reproducible Montana profile.",
+  "status": "waiting_for_upload",
+  "updated_at": "2026-05-24T13:27:34Z"
+}

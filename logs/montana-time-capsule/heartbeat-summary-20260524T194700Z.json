@@ -1,0 +1,18 @@
+{
+  "ts": "20260524T194700Z",
+  "sagemaker": {
+    "sfm": "Completed",
+    "dgs": "Completed",
+    "comp": "Completed"
+  },
+  "staging_meta": {
+    "lastModified": "2026-05-21T20:25:10+00:00",
+    "etag": "\"994e5d57f052e552b8cce2e05d4debf4\"",
+    "contentLength": 1359
+  },
+  "http": {
+    "sky": "HTTP/2 200 ",
+    "nosky": "HTTP/2 200 ",
+    "proxy": "HTTP/2 200 "
+  }
+}

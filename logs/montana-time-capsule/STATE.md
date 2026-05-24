@@ -180,6 +180,20 @@
 - Cloudflare Pages preview (branch):
   - URLs: logs/montana-time-capsule/pages-preview-urls-26362313633-20260524T132614Z.txt
 - Next step: monitor compression to completion; then launch/verify public bundle + viewer skybox/no-sky + visual proof.
+
+## 2026-05-24T13:37:40Z HEARTBEAT monitor - Friday 2026-05-22 Montana time capsule COMPLETION proof (friday-mtc-20260524T0001Z)
+
+- Evidence stamp: 20260524T133652Z
+- SageMaker:
+  - Compression ProcessingJobStatus=Completed: friday-mtc-20260524T0001Z-compression
+- S3 compressed supersplat bundle present (staging):
+  - Listing: logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-supersplat_bundle-20260524T133652Z.txt
+  - meta.json head: logs/montana-time-capsule/s3api-head-object-staging-friday-mtc-20260524T0001Z-meta-20260524T133652Z.json
+- Hosted viewer reachability (preview): HTTP 200 for no-sky + skybox + proxy meta.json:
+  - no-sky url: logs/montana-time-capsule/friday-viewer-nosky-url-20260524T133652Z.txt ; headers: logs/montana-time-capsule/curlI-friday-viewer-nosky-20260524T133652Z.headers
+  - skybox url: logs/montana-time-capsule/friday-viewer-sky-url-20260524T133652Z.txt ; headers: logs/montana-time-capsule/curlI-friday-viewer-skybox-20260524T133652Z.headers
+  - proxy meta.json url: logs/montana-time-capsule/friday-sogs-proxy-meta-url-20260524T133652Z.txt ; headers/body: logs/montana-time-capsule/curlD-friday-sogs-proxy-meta-20260524T133652Z.headers ; logs/montana-time-capsule/curl-friday-sogs-proxy-meta-20260524T133652Z.json
+- Next step: visual proof (screenshots/video) via Playwright MCP; then public bucket publish gate if required.
 - Next step: continue no-spend monitoring; acceptance gate remaining is public bundle publish (non-staging) + visual proof refresh if requested.
 
 ## 2026-05-24T09:47:20Z HEARTBEAT monitor - no-spend acceptance checks: canonical HMC still terminal (SfM/3DGS/compression Completed); staging bundle still present; hosted viewer now verified at `/sogs-migrated-viewer` (sky/no-sky HTTP 200); public bucket meta.json still 404; exact-head CI empty due [skip ci]
