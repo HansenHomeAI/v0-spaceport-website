@@ -24,6 +24,9 @@
   - Preview alias: https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev
   - Playwright smoke results: logs/montana-time-capsule/md1-production-viewer-results-20260524T190941Z.json
   - Screenshots: logs/montana-time-capsule/md1-production-viewer-desktop.png, logs/montana-time-capsule/md1-production-viewer-desktop-nosky.png, logs/montana-time-capsule/md1-production-viewer-mobile.png
+- Camera-pose check (derived from COLMAP `images.txt` head):
+  - source snippet: logs/montana-time-capsule/colmap-images-head-20260524T191105Z.txt (image=109MEDIA_DJI_0797.JPG)
+  - render: logs/montana-time-capsule/md1-camera-check-friday-mtc-20260524T0001Z-20260524T191155Z.png (camPos=-1.877418,-1.227755,7.185151 camTarget=-1.235023,-0.782182,7.808684 skybox=background_skybox.webp)
 - Decision: do **not** re-launch Friday compute (SfM/3DGS/compression already Completed); next optional gate is camera-pose checks via `web/scripts/render-md1-camera-check.mjs`.
 
 ## 2026-05-24T18:46:50Z HEARTBEAT monitor (Friday): no-spend verification; SfM/3DGS/compression all Completed; public meta.json still 404

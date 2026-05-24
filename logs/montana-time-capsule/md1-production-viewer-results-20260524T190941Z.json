@@ -1,0 +1,125 @@
+{
+  "lodUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json",
+  "results": [
+    {
+      "scenario": "desktop",
+      "metrics": {
+        "bundleKind": "single",
+        "rootFile": "meta.json",
+        "sourceUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json",
+        "viewerUrl": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json",
+        "lodLevels": null,
+        "chunkFiles": 0,
+        "chunkMetaRequests": 0,
+        "firstFrameMs": 1286.800000011921,
+        "lodMin": 0,
+        "lodMax": 3
+      },
+      "visualStats": {
+        "width": 1440,
+        "height": 960,
+        "sampled": 38400,
+        "visibleRatio": 0.99453125,
+        "brightRatio": 0.7534895833333334,
+        "darkRatio": 0.003515625,
+        "meanLuma": 154.30656526041628,
+        "lumaStdDev": 76.69310151371742,
+        "meanColorSpread": 22.099010416666665
+      },
+      "modelVisualStats": {
+        "width": 920,
+        "height": 960,
+        "sampled": 35328,
+        "visibleRatio": 0.9928102355072463,
+        "brightRatio": 0.8485903532608695,
+        "darkRatio": 0.004585597826086957,
+        "meanLuma": 182.62395109261521,
+        "lumaStdDev": 73.25092205134894,
+        "meanColorSpread": 20.725090579710145
+      },
+      "chunkMetaResponses": 2,
+      "screenshotPath": "/Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule/logs/md1-production-viewer-desktop.png",
+      "modelScreenshotPath": "/Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule/logs/md1-production-viewer-desktop-model.png"
+    },
+    {
+      "scenario": "mobile",
+      "metrics": {
+        "bundleKind": "single",
+        "rootFile": "meta.json",
+        "sourceUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json",
+        "viewerUrl": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json",
+        "lodLevels": null,
+        "chunkFiles": 0,
+        "chunkMetaRequests": 0,
+        "firstFrameMs": 508,
+        "lodMin": 2,
+        "lodMax": 3
+      },
+      "visualStats": {
+        "width": 414,
+        "height": 896,
+        "sampled": 92736,
+        "visibleRatio": 0.997918823326432,
+        "brightRatio": 0.5620686680469289,
+        "darkRatio": 0.0011861628709454797,
+        "meanLuma": 113.33577173697505,
+        "lumaStdDev": 69.63571522349511,
+        "meanColorSpread": 16.624342218771567
+      },
+      "modelVisualStats": {
+        "width": 1,
+        "height": 896,
+        "sampled": 896,
+        "visibleRatio": 0.9977678571428571,
+        "brightRatio": 0.9665178571428571,
+        "darkRatio": 0.002232142857142857,
+        "meanLuma": 204.3615482142857,
+        "lumaStdDev": 48.89476490144946,
+        "meanColorSpread": 13.128348214285714
+      },
+      "chunkMetaResponses": 2,
+      "screenshotPath": "/Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule/logs/md1-production-viewer-mobile.png",
+      "modelScreenshotPath": "/Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule/logs/md1-production-viewer-mobile-model.png"
+    },
+    {
+      "scenario": "desktop-nosky",
+      "metrics": {
+        "bundleKind": "single",
+        "rootFile": "meta.json",
+        "sourceUrl": "https://spaceport-ml-processing.s3.amazonaws.com/compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json",
+        "viewerUrl": "/api/sogs-proxy/https:/spaceport-ml-processing.s3.amazonaws.com/compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json",
+        "lodLevels": null,
+        "chunkFiles": 0,
+        "chunkMetaRequests": 0,
+        "firstFrameMs": 716.0999999940395,
+        "lodMin": 0,
+        "lodMax": 3
+      },
+      "visualStats": {
+        "width": 1440,
+        "height": 960,
+        "sampled": 38400,
+        "visibleRatio": 0.5740364583333334,
+        "brightRatio": 0.18854166666666666,
+        "darkRatio": 0.41161458333333334,
+        "meanLuma": 44.33992660937549,
+        "lumaStdDev": 58.68668426556296,
+        "meanColorSpread": 11.718776041666667
+      },
+      "modelVisualStats": {
+        "width": 920,
+        "height": 960,
+        "sampled": 35328,
+        "visibleRatio": 0.5655570652173914,
+        "brightRatio": 0.2290534420289855,
+        "darkRatio": 0.4173460144927536,
+        "meanLuma": 50.51772881567055,
+        "lumaStdDev": 61.73260171315315,
+        "meanColorSpread": 14.16796875
+      },
+      "chunkMetaResponses": 2,
+      "screenshotPath": "/Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule/logs/md1-production-viewer-desktop-nosky.png",
+      "modelScreenshotPath": "/Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule/logs/md1-production-viewer-desktop-nosky-model.png"
+    }
+  ]
+}

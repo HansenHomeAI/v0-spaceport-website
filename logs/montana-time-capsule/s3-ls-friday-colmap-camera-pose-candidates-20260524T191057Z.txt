@@ -1,0 +1,2 @@
+2026-05-24 02:33:38        196 manual-validations/friday-mtc-20260524T0001Z/colmap/sparse/0/cameras.txt
+2026-05-24 02:33:38  738376757 manual-validations/friday-mtc-20260524T0001Z/colmap/sparse/0/images.txt
