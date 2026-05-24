@@ -60,6 +60,15 @@
 - Summary JSON (refreshed): logs/montana-time-capsule/hmc-state.json
 - Next step: keep no-spend monitoring; acceptance gate remaining is publishing meta.json/bundle to public bucket + visual proof (screenshots) if requested.
 
+## 2026-05-24T10:27:20Z HEARTBEAT monitor - post-push ledger refresh: same acceptance state; exact-head still empty due [skip ci]
+
+- Git: agent-40136728-montana-time-capsule @ d7fcf210f1f3c775904f2e9e329d20011c865fe7 (`chore: montana heartbeat 20260524T102503Z [skip ci]`) (clean)
+- Evidence stamp: 20260524T102720Z
+- GitHub Actions:
+  - exact-head runs for d7fcf210… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-d7fcf210f1f3c775904f2e9e329d20011c865fe7-20260524T102720Z.json
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-20260524T102720Z.json (latest Pages+CDK remain green at 16f29321…)
+- Summary JSON (refreshed): logs/montana-time-capsule/hmc-state.json
+
 ## 2026-05-24T10:07:14Z HEARTBEAT monitor - no-spend acceptance checks refresh: canonical HMC still terminal; staging bundle still present; viewer/proxy still HTTP 200; public bucket meta.json still 404; exact-head CI empty due [skip ci]
 
 - Git: agent-40136728-montana-time-capsule @ fd85c6cb08c4545ceceb72dec3e1db58c09b0a8c (`chore: friday postpush evidence 20260524T0950Z [skip ci]`) (clean)
@@ -8805,3 +8814,20 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - git head: cfb7c1e6ffca4e9c6e1668829b6050e054413b64 (`[skip ci]`)
 - gh exact-head runs (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-cfb7c1e6ffca4e9c6e1668829b6050e054413b64-20260524T100756Z.json
 - gh branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T100756Z.json
+
+## 2026-05-24T10:26:51Z HEARTBEAT monitor - Friday 2026-05-22 run `friday-mtc-20260524T0001Z`: SfM Completed; 3DGS InProgress (no duplicate launch)
+
+- Git: agent-40136728-montana-time-capsule @ 7a2bfa2e9d28bcd367e493b415cb81fe7860287f (`chore: friday postpush evidence 20260524T1007Z [skip ci]`)
+- Evidence stamp: 20260524T102651Z
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T102516Z.json
+  - describe Friday SfM (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T102516Z.json
+  - describe Friday 3DGS (InProgress): logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T102516Z.json
+  - CloudWatch training stream: logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-3dgs-20260524T102644Z.json (logStream=`friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610`)
+- S3:
+  - SfM output (colmap, populated): logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T102549Z.txt (Total Objects: 1783; Total Size: 10.5 GiB)
+  - 3DGS output prefix (empty while InProgress): logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-3dgs-20260524T102549Z.txt (Total Objects: 0)
+- GitHub Actions (gh=/opt/homebrew/bin/gh):
+  - exact-head runs for 7a2bfa2e… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-7a2bfa2e9d28bcd367e493b415cb81fe7860287f-20260524T102609Z.json
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T102609Z.json (latest Pages+CDK green at headSha=16f29321…)
+- Next step: monitor `friday-mtc-20260524T0001Z-3dgs` to terminal; on Completion run pinned compression sha256:a0784727… (smallest next stage).

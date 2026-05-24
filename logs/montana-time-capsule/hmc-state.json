@@ -3,11 +3,11 @@
     "account": "975050048887",
     "arn": "arn:aws:iam::975050048887:root"
   },
-  "evidence_stamp": "20260524T102503Z",
+  "evidence_stamp": "20260524T102720Z",
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "7a2bfa2e9d28bcd367e493b415cb81fe7860287f",
-    "head_checked_at": "20260524T102503Z"
+    "head": "d7fcf210f1f3c775904f2e9e329d20011c865fe7",
+    "head_checked_at": "20260524T102720Z"
   },
   "github": {
     "cdk_latest": {
@@ -21,7 +21,7 @@
       "workflowName": "CDK Deploy"
     },
     "exact_head_run_count": 0,
-    "exact_head_sha": "7a2bfa2e9d28bcd367e493b415cb81fe7860287f",
+    "exact_head_sha": "d7fcf210f1f3c775904f2e9e329d20011c865fe7",
     "pages_latest": {
       "conclusion": "success",
       "createdAt": "2026-05-24T06:15:37Z",
@@ -43,7 +43,7 @@
     "compression": "Completed",
     "sfm": "Completed"
   },
-  "updated_at": "2026-05-24T10:25:03Z",
+  "updated_at": "2026-05-24T10:27:20Z",
   "viewer": {
     "nosky_http": 200,
     "proxy_http": 200,

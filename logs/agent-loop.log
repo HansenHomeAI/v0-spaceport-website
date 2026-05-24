@@ -331,3 +331,5 @@
 [2026-05-24T10:07:56Z] friday-mtc -> recorded postpush gh snapshots (cfb7c1e6; skip ci) -> idle monitoring
 [2026-05-24T10:07:14Z] montana heartbeat -> HMC canonical still terminal; staging bundle + viewer/proxy HTTP200; public meta 404; exact-head CI empty ([skip ci]) -> commit+push ledger
 [2026-05-24T10:25:03Z] montana heartbeat -> HMC canonical still terminal; staging bundle + viewer/proxy HTTP200; public meta 404; exact-head CI empty ([skip ci]) -> idle monitoring
+[2026-05-24T10:26:51Z] friday-mtc -> SfM Completed; 3DGS InProgress; S3 3dgs prefix empty; CW stream resolved -> monitor 3DGS
+[2026-05-24T10:27:20Z] montana heartbeat -> committed+push ledger refresh (d7fcf210; skip ci); gh exact-head empty; branch CI still green -> idle monitoring
