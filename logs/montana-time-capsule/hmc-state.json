@@ -1,11 +1,11 @@
 {
   "run_id": "hmc-mtc-20260520T2015Z",
-  "evidence_stamp": "20260524T200813Z",
-  "updated_at": "20260524T200813Z",
+  "evidence_stamp": "20260524T204116Z",
+  "updated_at": "20260524T204116Z",
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "5a11960e55da28a464cf08ab576cf90d04fcaffe",
-    "head_checked_at": "20260524T200637Z"
+    "head": "9cf62e28b890a281056ec6528dd15a623579d0bf",
+    "head_checked_at": "20260524T204116Z"
   },
   "aws": {
     "account": "975050048887",
@@ -35,7 +35,7 @@
   },
   "viewer": {
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
-    "checked_at": "20260524T200637Z",
+    "checked_at": "20260524T204116Z",
     "base_http": 200,
     "sky_http": 200,
     "nosky_http": 200,
@@ -43,29 +43,7 @@
   },
   "gh": {
     "gh_cli_available": true,
-    "exact_head_sha": "5a11960e55da28a464cf08ab576cf90d04fcaffe",
-    "exact_head_run_count": 0,
-    "pages_latest_success": {
-      "conclusion": "success",
-      "createdAt": "2026-05-24T13:17:03Z",
-      "databaseId": 26362313633,
-      "displayTitle": "chore: trigger Pages preview 20260524T131327Z",
-      "event": "push",
-      "headSha": "689eb3cf13b08cc1ca35ba6a498966dca4ec6e8a",
-      "status": "completed",
-      "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26362313633",
-      "workflowName": "Deploy Next.js to Cloudflare Pages"
-    },
-    "cdk_latest_success": {
-      "conclusion": "success",
-      "createdAt": "2026-05-24T13:36:39Z",
-      "databaseId": 26362748385,
-      "displayTitle": "chore: record CDK green 611bf180",
-      "event": "push",
-      "headSha": "c817529d848a5c54f19862298aac8e0f84f5bddb",
-      "status": "completed",
-      "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26362748385",
-      "workflowName": "CDK Deploy"
-    }
+    "exact_head_sha": "9cf62e28b890a281056ec6528dd15a623579d0bf",
+    "exact_head_run_count": 0
   }
 }

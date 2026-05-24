@@ -10647,3 +10647,23 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - GitHub Actions:
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T200729Z.json
   - exact-head runs (0; expected due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-415c50ae540c46b4c6f2d0db661ec5b4c7d843cc-20260524T200729Z.json
+
+## 2026-05-24T20:41:16Z HEARTBEAT monitor (HMC) - no-spend reconfirm: canonical HMC still Completed; staging meta.json still present; hosted preview viewer verified at /sogs-migrated-viewer (skybox/no-sky HTTP 200); signed meta.json via /api/sogs-proxy/<upstream-url> HTTP 200 (+CORS); public bucket meta.json still 404; exact-head CI empty due [skip ci]
+
+- Git:
+  - branch/head/status: logs/montana-time-capsule/git-branch-20260524T204116Z.txt; logs/montana-time-capsule/git-head-20260524T204116Z.txt; logs/montana-time-capsule/git-status-20260524T204116Z.txt
+- AWS:
+  - identity/region: logs/montana-time-capsule/aws-sts-20260524T204116Z.json; logs/montana-time-capsule/aws-region-20260524T204116Z.txt
+- SageMaker (canonical run hmc-mtc-20260520T2015Z):
+  - SfM/3DGS/compression describes: logs/montana-time-capsule/sagemaker-sfm-20260524T204116Z.json; logs/montana-time-capsule/sagemaker-3dgs-20260524T204116Z.json; logs/montana-time-capsule/sagemaker-compression-20260524T204116Z.json
+- S3:
+  - staging meta.json head: logs/montana-time-capsule/staging-meta-head-20260524T204116Z.json
+  - public meta.json head (expected 404 until publish): logs/montana-time-capsule/public-meta-head-20260524T204116Z.err
+- Hosted preview viewer (NOTE: /sky + /no-sky paths are 404; correct route is /sogs-migrated-viewer?url=...&skybox=...):
+  - urls: logs/montana-time-capsule/viewer-urls-hmc-20260524T204116Z.txt
+  - http codes: logs/montana-time-capsule/viewer-http-hmc-20260524T204116Z.txt
+  - headers: logs/montana-time-capsule/curlI-hmc-sogs-migrated-sky-20260524T204116Z.headers; logs/montana-time-capsule/curlI-hmc-sogs-migrated-nosky-20260524T204116Z.headers; logs/montana-time-capsule/curlI-hmc-sogs-proxy-meta-20260524T204116Z.headers
+- GitHub Actions:
+  - exact-head runs (0; expected when HEAD is [skip ci]): logs/montana-time-capsule/gh-run-list-exact-head-9cf62e28b890a281056ec6528dd15a623579d0bf-20260524T204116Z.json
+
+Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended public bucket (meta.json + assets) so direct public reachability passes.
