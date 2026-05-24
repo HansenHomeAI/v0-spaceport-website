@@ -419,3 +419,4 @@
 [2026-05-24T18:48:03Z] heartbeat -> refreshed HMC evidence after push; proxy 200; public meta 404 -> next: idle
 [2026-05-24T19:06:39Z] heartbeat-no-spend -> HMC Completed; staging meta OK; public meta 404; viewer 200; exact-head CI 0 ([skip ci]) -> next: wait for public publish gate
 [2026-05-24T19:07:55Z] post-push-reconfirm -> gh exact-head snapshot captured for 51346765 -> next: await public publish gate
+[2026-05-24T19:09:06Z] exact-head-recheck -> 0 runs expected ([skip ci]) for a30231e0
