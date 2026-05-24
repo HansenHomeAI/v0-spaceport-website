@@ -34,6 +34,32 @@
 - Summary JSON (refreshed viewer http 200s): logs/montana-time-capsule/hmc-state.json
 - Next step: continue no-spend monitoring; acceptance gate remaining is public bundle publish (non-staging) + visual proof refresh if requested.
 
+## 2026-05-24T10:25:03Z HEARTBEAT monitor - no-spend acceptance checks refresh: canonical HMC still terminal; staging bundle still present; viewer/proxy still HTTP 200; public bucket meta.json still 404; exact-head CI empty due [skip ci]
+
+- Git: agent-40136728-montana-time-capsule @ 7a2bfa2e9d28bcd367e493b415cb81fe7860287f (`chore: friday postpush evidence 20260524T1007Z [skip ci]`) (clean)
+- Evidence stamp: 20260524T102503Z
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T102503Z.json
+  - describe HMC SfM (Completed): logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T102503Z.json
+  - describe HMC 3DGS training (Completed): logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T102503Z.json
+  - describe HMC compression (Completed): logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T102503Z.json
+  - guardrail visibility (InProgress lists): logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T102503Z.json + logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T102503Z.json
+- S3 (HMC canonical bundle):
+  - staging bundle listing: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T102503Z.txt
+  - staging meta head: logs/montana-time-capsule/s3api-head-object-staging-hmc-mtc-20260520T2015Z-meta-20260524T102503Z.json (key: logs/montana-time-capsule/s3api-head-object-staging-hmc-mtc-20260520T2015Z-meta-key-20260524T102503Z.txt)
+  - public head (expected 404): logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T102503Z.err
+- Public reachability (preview proxy -> staging meta.json):
+  - headers: logs/montana-time-capsule/curlD-sogs-proxy-meta-20260524T102503Z.headers (HTTP 200)
+  - body: logs/montana-time-capsule/curl-sogs-proxy-meta-20260524T102503Z.json (valid JSON)
+- Hosted viewer reachability (preview):
+  - skybox: logs/montana-time-capsule/curlI-viewer-skybox-20260524T102503Z.headers (HTTP 200)
+  - no-sky: logs/montana-time-capsule/curlI-viewer-nosky-20260524T102503Z.headers (HTTP 200)
+- GitHub Actions:
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-20260524T102503Z.json (Pages+CDK latest are green, headSha 16f29321…)
+  - exact-head runs for 7a2bfa2e… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-7a2bfa2e9d28bcd367e493b415cb81fe7860287f-20260524T102503Z.json
+- Summary JSON (refreshed): logs/montana-time-capsule/hmc-state.json
+- Next step: keep no-spend monitoring; acceptance gate remaining is publishing meta.json/bundle to public bucket + visual proof (screenshots) if requested.
+
 ## 2026-05-24T10:07:14Z HEARTBEAT monitor - no-spend acceptance checks refresh: canonical HMC still terminal; staging bundle still present; viewer/proxy still HTTP 200; public bucket meta.json still 404; exact-head CI empty due [skip ci]
 
 - Git: agent-40136728-montana-time-capsule @ fd85c6cb08c4545ceceb72dec3e1db58c09b0a8c (`chore: friday postpush evidence 20260524T0950Z [skip ci]`) (clean)

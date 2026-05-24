@@ -330,3 +330,4 @@
 [2026-05-24T10:06:51Z] friday-mtc -> committed+push heartbeat evidence (7e412478; skip ci) -> idle monitoring
 [2026-05-24T10:07:56Z] friday-mtc -> recorded postpush gh snapshots (cfb7c1e6; skip ci) -> idle monitoring
 [2026-05-24T10:07:14Z] montana heartbeat -> HMC canonical still terminal; staging bundle + viewer/proxy HTTP200; public meta 404; exact-head CI empty ([skip ci]) -> commit+push ledger
+[2026-05-24T10:25:03Z] montana heartbeat -> HMC canonical still terminal; staging bundle + viewer/proxy HTTP200; public meta 404; exact-head CI empty ([skip ci]) -> idle monitoring
