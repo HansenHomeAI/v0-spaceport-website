@@ -2,10 +2,10 @@
   "aws": {
     "account": "975050048887",
     "arn": "arn:aws:iam::975050048887:root",
-    "region": "us-west-2",
-    "userId": "975050048887"
+    "userId": "975050048887",
+    "region": "us-west-2"
   },
-  "evidence_stamp": "20260524T140740Z",
+  "evidence_stamp": "20260524T144435Z",
   "gh": {
     "cdk_latest_success": {
       "conclusion": "success",
@@ -20,7 +20,7 @@
       "workflowName": "CDK Deploy"
     },
     "exact_head_run_count": 0,
-    "exact_head_sha": "5f1fa4ae56e861ab85c1969956c76757007aa75a",
+    "exact_head_sha": "f31dd3490d97d1c203de19ce7f6ee85b04a54b0f",
     "pages_latest_success": {
       "conclusion": "success",
       "createdAt": "2026-05-24T13:17:03Z",
@@ -36,28 +36,28 @@
   },
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "5f1fa4ae56e861ab85c1969956c76757007aa75a",
-    "head_checked_at": "20260524T140740Z"
+    "head": "f31dd3490d97d1c203de19ce7f6ee85b04a54b0f",
+    "head_checked_at": "20260524T144435Z"
   },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
     "compressed_prefix": "s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/",
-    "staging_meta_content_length": 1359,
     "staging_meta_etag": "\"994e5d57f052e552b8cce2e05d4debf4\"",
+    "staging_meta_content_length": 1359,
     "staging_meta_last_modified": "2026-05-21T20:25:10+00:00"
   },
   "sagemaker": {
-    "3dgs": "Completed",
-    "3dgs_job": "hmc-mtc-20260520T2015Z-3dgs",
-    "compression": "Completed",
-    "compression_job": "hmc-mtc-20260520T2015Z-compression",
+    "sfm_job": "hmc-mtc-20260520T2015Z-sfm",
     "sfm": "Completed",
-    "sfm_job": "hmc-mtc-20260520T2015Z-sfm"
+    "3dgs_job": "hmc-mtc-20260520T2015Z-3dgs",
+    "3dgs": "Completed",
+    "compression_job": "hmc-mtc-20260520T2015Z-compression",
+    "compression": "Completed"
   },
-  "updated_at": "20260524T140740Z",
+  "updated_at": "20260524T144435Z",
   "viewer": {
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
-    "checked_at": "20260524T140557Z",
+    "checked_at": "20260524T144435Z",
     "hash_url": "https://c4a0a4a0.v0-spaceport-website-preview2.pages.dev",
     "nosky_http": 200,
     "proxy_http": 200,

@@ -376,3 +376,4 @@
 [2026-05-24T14:26:44Z] montana heartbeat -> HMC terminal + viewer/proxy 200 + public 404 -> next: await public publish
 [2026-05-24T14:28:14Z] post-push gh check (9234dd1a) -> exact-head runs=0 -> done
 [2026-05-24T14:29:28Z] friday-mtc heartbeat -> verified SfM/3DGS/compression Completed; public meta.json 404 -> next: await publish gate
+[2026-05-24T14:46:06Z] montana heartbeat -> no-spend verified (HMC Completed; viewer/proxy 200; public bundle 404) -> next: wait for public publish gate
