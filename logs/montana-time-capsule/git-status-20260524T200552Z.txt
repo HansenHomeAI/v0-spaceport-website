@@ -1,0 +1,8 @@
+## agent-40136728-montana-time-capsule...origin/agent-40136728-montana-time-capsule
+?? logs/montana-time-capsule/aws-config-region-20260524T200455Z.txt
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T200455Z.json
+?? logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T200455Z.json
+?? logs/montana-time-capsule/git-status-20260524T200455Z.txt
+?? logs/montana-time-capsule/git-status-20260524T200552Z.txt
+?? logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T200455Z.json
+?? logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T200455Z.json

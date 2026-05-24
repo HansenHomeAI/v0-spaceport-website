@@ -1,5 +1,30 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-24T20:08:13Z HEARTBEAT monitor (HMC canonical): no-spend reconfirm; terminal jobs + staging bundle OK; public meta.json still 404; hosted viewer 200; exact-head CI=0 expected due `[skip ci]`
+
+- Git: agent-40136728-montana-time-capsule @ 5a11960e55da28a464cf08ab576cf90d04fcaffe (`chore: mtc post-push gh snapshot 20260524T2007Z [skip ci]`)
+- Evidence stamps: 20260524T200552Z (aws/sagemaker/s3) + 20260524T200637Z (viewer curl) + 20260524T200813Z (gh exact-head)
+- AWS (us-west-2; /opt/homebrew/bin/aws; no spend):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T200552Z.json (region: logs/montana-time-capsule/aws-config-region-20260524T200552Z.txt)
+  - guardrail visibility (InProgress lists; max-results=1): logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T200552Z.json + logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T200552Z.json
+  - canonical HMC run describes (all Completed):
+    - logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T200552Z.json
+    - logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T200552Z.json
+    - logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T200552Z.json
+- S3 outputs (canonical HMC compressed supersplat bundle):
+  - listing: logs/montana-time-capsule/s3ls-staging-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T200552Z.txt
+  - staging meta head (OK): logs/montana-time-capsule/s3api-head-object-staging-hmc-mtc-20260520T2015Z-meta-20260524T200552Z.json
+  - public meta head (still 404): logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T200552Z.err
+- Hosted viewer reachability (base + skybox/no-sky + proxy meta.json all HTTP 200):
+  - status summary: logs/montana-time-capsule/viewer-http-status-20260524T200637Z.txt
+  - sky URL: logs/montana-time-capsule/viewer-sky-url-used-20260524T200637Z.txt
+  - no-sky URL: logs/montana-time-capsule/viewer-nosky-url-used-20260524T200637Z.txt
+  - proxy URL: logs/montana-time-capsule/sogs-proxy-meta-url-20260524T200637Z.txt
+- GitHub Actions (exact-head):
+  - branch snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T200813Z.json
+  - exact-head runs (0; expected due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-5a11960e55da28a464cf08ab576cf90d04fcaffe-20260524T200813Z.json
+- State snapshot refreshed: logs/montana-time-capsule/hmc-state.json
+
 ## 2026-05-24T19:50:29Z HEARTBEAT monitor (post-push): exact-head CI recheck (expected empty due `[skip ci]`)
 
 - Git: agent-40136728-montana-time-capsule @ d1fb6744a77bb28f0cd7cbd78c9b5d3c1309eddf (`chore: friday mtc public bundle reachability proof 20260524T1948Z [skip ci]`)

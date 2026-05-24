@@ -1,26 +1,50 @@
 {
+  "run_id": "hmc-mtc-20260520T2015Z",
+  "evidence_stamp": "20260524T200813Z",
+  "updated_at": "20260524T200813Z",
+  "git": {
+    "branch": "agent-40136728-montana-time-capsule",
+    "head": "5a11960e55da28a464cf08ab576cf90d04fcaffe",
+    "head_checked_at": "20260524T200637Z"
+  },
   "aws": {
     "account": "975050048887",
     "arn": "arn:aws:iam::975050048887:root",
-    "region": "us-west-2",
-    "userId": "975050048887"
+    "userId": "975050048887",
+    "region": "us-west-2"
   },
-  "evidence_stamp": "20260524T194413Z",
+  "sagemaker": {
+    "sfm_job": "hmc-mtc-20260520T2015Z-sfm",
+    "sfm": "Completed",
+    "3dgs_job": "hmc-mtc-20260520T2015Z-3dgs",
+    "3dgs": "Completed",
+    "compression_job": "hmc-mtc-20260520T2015Z-compression",
+    "compression": "Completed",
+    "inprogress_processing": 0,
+    "inprogress_training": 0
+  },
+  "s3": {
+    "compressed_prefix": "s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/",
+    "public_meta_bucket": "spaceport-ml-processing-public",
+    "public_meta_key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json",
+    "public_meta_http": 404,
+    "public_meta_err_tail": "An error occurred (404) when calling the HeadObject operation: Not Found",
+    "staging_meta_content_length": 1359,
+    "staging_meta_etag": "\"994e5d57f052e552b8cce2e05d4debf4\"",
+    "staging_meta_last_modified": "2026-05-21T20:25:10+00:00"
+  },
+  "viewer": {
+    "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
+    "checked_at": "20260524T200637Z",
+    "base_http": 200,
+    "sky_http": 200,
+    "nosky_http": 200,
+    "proxy_http": 200
+  },
   "gh": {
-    "cdk_latest_success": {
-      "conclusion": "success",
-      "createdAt": "2026-05-24T13:36:39Z",
-      "databaseId": 26362748385,
-      "displayTitle": "chore: record CDK green 611bf180",
-      "event": "push",
-      "headSha": "c817529d848a5c54f19862298aac8e0f84f5bddb",
-      "status": "completed",
-      "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26362748385",
-      "workflowName": "CDK Deploy"
-    },
-    "exact_head_run_count": 0,
-    "exact_head_sha": "d47c10b584764dcd0adf6acd4ee2695b85fdcfa2",
     "gh_cli_available": true,
+    "exact_head_sha": "5a11960e55da28a464cf08ab576cf90d04fcaffe",
+    "exact_head_run_count": 0,
     "pages_latest_success": {
       "conclusion": "success",
       "createdAt": "2026-05-24T13:17:03Z",
@@ -31,40 +55,17 @@
       "status": "completed",
       "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26362313633",
       "workflowName": "Deploy Next.js to Cloudflare Pages"
+    },
+    "cdk_latest_success": {
+      "conclusion": "success",
+      "createdAt": "2026-05-24T13:36:39Z",
+      "databaseId": 26362748385,
+      "displayTitle": "chore: record CDK green 611bf180",
+      "event": "push",
+      "headSha": "c817529d848a5c54f19862298aac8e0f84f5bddb",
+      "status": "completed",
+      "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26362748385",
+      "workflowName": "CDK Deploy"
     }
-  },
-  "git": {
-    "branch": "agent-40136728-montana-time-capsule",
-    "head": "ce2baea6e06f52b58dc5106167ceba3b96132f6e",
-    "head_checked_at": "20260524T194413Z"
-  },
-  "run_id": "hmc-mtc-20260520T2015Z",
-  "s3": {
-    "compressed_prefix": "s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/",
-    "public_meta_bucket": "spaceport-ml-processing-public",
-    "public_meta_err_tail": "An error occurred (404) when calling the HeadObject operation: Not Found",
-    "public_meta_http": 404,
-    "public_meta_key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json",
-    "staging_meta_content_length": 1359,
-    "staging_meta_etag": "\"994e5d57f052e552b8cce2e05d4debf4\"",
-    "staging_meta_last_modified": "2026-05-21T20:25:10+00:00"
-  },
-  "sagemaker": {
-    "3dgs": "Completed",
-    "3dgs_job": "hmc-mtc-20260520T2015Z-3dgs",
-    "compression": "Completed",
-    "compression_job": "hmc-mtc-20260520T2015Z-compression",
-    "inprogress_processing": 0,
-    "inprogress_training": 0,
-    "sfm": "Completed",
-    "sfm_job": "hmc-mtc-20260520T2015Z-sfm"
-  },
-  "updated_at": "20260524T194413Z",
-  "viewer": {
-    "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
-    "checked_at": "20260524T194413Z",
-    "nosky_http": 200,
-    "proxy_http": 200,
-    "sky_http": 200
   }
 }

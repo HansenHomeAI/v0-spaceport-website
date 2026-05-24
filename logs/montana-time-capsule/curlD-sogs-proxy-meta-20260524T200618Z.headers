@@ -1,0 +1,21 @@
+HTTP/2 200 
+date: Sun, 24 May 2026 20:06:20 GMT
+content-type: application/octet-stream
+content-length: 1359
+cf-ray: a00eeb95390214fe-SLC
+cf-cache-status: DYNAMIC
+accept-ranges: bytes
+access-control-allow-origin: *
+etag: "994e5d57f052e552b8cce2e05d4debf4"
+last-modified: Thu, 21 May 2026 20:25:10 GMT
+server: cloudflare
+x-amz-id-2: +M1TXIVuyzFjl4H4TnjnrznSLlPeFi0F1chrHymUiJHrbejVWWV68FumSE8/xjZ417VL4jI3yOn7+hrJsk0sbfUwZM8/9i4J
+x-amz-request-id: GA797NW5DSN44JYY
+x-amz-server-side-encryption: aws:kms
+x-amz-server-side-encryption-aws-kms-key-id: arn:aws:kms:us-west-2:975050048887:key/e498a88e-6b23-44e3-90bd-f35b25d6e420
+x-amz-version-id: .DMI48S5bbpRJy04I8F2SEJ85.ppT_Ev
+x-matched-path: /api/sogs-proxy/[...resource]
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=n%2BGp78dsETMdcFNfuo9PYCvyURnTADB8Me5wADtdlvGWc1OZzeA%2FaMgc6HITae%2F8aGZNZ%2FUu9bRj4ktlCB%2FZRGxASpqz2W3YSTXBl%2FAFoiPJDr6i44oW0MC7OItmxmYCcu5oGcjLZPituagaUiGuGZM8KBPXRYFmsqAf9Mgo0S0QGnbdLhvOd5kh%2FMrsFNEl9FsJhD2MQovrmI4euxaL2Qyj"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+alt-svc: h3=":443"; ma=86400
+
