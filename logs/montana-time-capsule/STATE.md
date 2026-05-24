@@ -5,6 +5,32 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-24T14:24:48Z HEARTBEAT monitor - no-spend acceptance refresh: canonical HMC still terminal; staging bundle present; preview viewer/proxy HTTP 200; public bundle still 404; exact-head CI empty due `[skip ci]`
+
+- Git: agent-40136728-montana-time-capsule @ 5382b993d95a085372897156e2e7b1e37e7a6ce9 (clean)
+- Evidence stamp: 20260524T142448Z
+- AWS (us-west-2; no spend):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T142448Z.json
+  - guardrail visibility (InProgress lists empty): logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T142448Z.json + logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T142448Z.json
+  - describe HMC SfM (Completed): logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T142448Z.json
+  - describe HMC 3DGS (Completed): logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T142448Z.json
+  - describe HMC compression (Completed): logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T142448Z.json
+- S3 (canonical HMC bundle):
+  - staging meta head: logs/montana-time-capsule/s3api-head-object-staging-hmc-mtc-20260520T2015Z-meta-20260524T142448Z.json
+  - staging bundle listing: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T142448Z.txt
+  - public head (expected 404): logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T142448Z.err
+- Public reachability (preview proxy -> staging meta.json):
+  - URL: logs/montana-time-capsule/sogs-proxy-meta-url-20260524T142448Z.txt
+  - headers: logs/montana-time-capsule/curlD-sogs-proxy-meta-20260524T142448Z.headers (HTTP 200)
+  - body: logs/montana-time-capsule/curl-sogs-proxy-meta-20260524T142448Z.json
+- Hosted viewer reachability (preview):
+  - skybox URL: logs/montana-time-capsule/viewer-sky-url-20260524T142448Z.txt -> logs/montana-time-capsule/curlD-viewer-skybox-20260524T142448Z.headers (HTTP 200)
+  - no-sky URL: logs/montana-time-capsule/viewer-nosky-url-20260524T142448Z.txt -> logs/montana-time-capsule/curlD-viewer-nosky-20260524T142448Z.headers (HTTP 200)
+- GitHub Actions:
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-20260524T142448Z.json (latest known green Pages+CDK are earlier today)
+  - exact-head runs for 5382b993… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-5382b993d95a085372897156e2e7b1e37e7a6ce9-20260524T142448Z.json
+- Next step: remain no-spend; acceptance gate still blocked on publishing the canonical bundle to the public bucket (non-staging) + optional refreshed visual proof on request.
+
 ## 2026-05-24T14:14:30Z HEARTBEAT monitor - post-push GitHub confirmation: exact-head workflows empty due `[skip ci]`
 
 - Git: agent-40136728-montana-time-capsule @ a949871dd4a56fed13ef420f78051238127d5345 (`chore: friday mtc viewer proof + public 404 reconfirm 20260524T1412Z [skip ci]`)
@@ -9493,3 +9519,24 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - Git: agent-40136728-montana-time-capsule @ 5f1fa4ae56e861ab85c1969956c76757007aa75a (`chore: montana heartbeat no-spend tick 20260524T140557Z [skip ci]`)
 - GitHub Actions (exact-head runs count=0): logs/montana-time-capsule/gh-run-list-exact-head-5f1fa4ae56e861ab85c1969956c76757007aa75a-20260524T140740Z.json
 - Summary JSON updated: logs/montana-time-capsule/hmc-state.json
+
+### 2026-05-24T14:26:20Z HEARTBEAT monitor - Friday FRIDAY-20260522 terminal reconfirm (no duplicate launches); public meta still 404
+
+- Git: agent-40136728-montana-time-capsule @ 5382b993d95a085372897156e2e7b1e37e7a6ce9 (`chore: record post-push gh empty exact-head 20260524T1414Z [skip ci]`)
+- Evidence stamp: 20260524T142513Z / 20260524T142559Z
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T142513Z.json
+  - describe Friday SfM (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T142513Z.json
+  - describe Friday 3DGS (Completed): logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T142513Z.json
+  - describe Friday compression (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T142513Z.json
+- S3 outputs (Friday):
+  - SfM colmap listing (truncated): logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T142513Z.txt
+  - compressed output listing (truncated): logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-compressed-20260524T142513Z.txt
+- Public bucket publish gate (still missing; expected 404 until published):
+  - spaceport-ml-processing-public head meta.json (404): logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-public-friday-mtc-20260524T0001Z-meta-20260524T142559Z.err
+  - spaceport-public head meta.json (404): logs/montana-time-capsule/s3api-head-object-spaceport-public-friday-mtc-20260524T0001Z-meta-20260524T142559Z.err
+- GitHub Actions (gh=/opt/homebrew/bin/gh):
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-20260524T142513Z.txt
+  - exact-head runs for 5382b993… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T142513Z.txt
+- Decision: the guarded `cv_hr_time_capsule.py ... --launch` command was NOT re-run because Friday SfM/3DGS/compression are already terminal (avoid duplicate Friday launches).
+- Next step: no spend; acceptance gate remains publishing `compressed/friday-mtc-20260524T0001Z/meta.json` to a public bucket (and re-checking reachability) before calling public delivery complete.
