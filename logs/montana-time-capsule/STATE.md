@@ -551,6 +551,16 @@
   - exact-head runs count=0: logs/montana-time-capsule/gh-run-list-exact-head-8f08630aa31734f653c9b9d97c80b10c58609870-20260524T164822Z.json
 - Summary JSON (refreshed): logs/montana-time-capsule/hmc-state.json
 
+## 2026-05-24T16:50:50Z HEARTBEAT monitor - post-push exact-head workflow check (expected empty due `[skip ci]`)
+
+- Git: agent-40136728-montana-time-capsule @ 3832d7c59e4f5e7090bc71a0e9c5d829435ee633 (`chore: post-push gh exact-head proof 20260524T1648Z [skip ci]`)
+- Evidence stamp: 20260524T165050Z
+- Git proof: logs/montana-time-capsule/git-proof-20260524T165050Z.txt
+- GitHub Actions:
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-20260524T165050Z.json
+  - exact-head runs count=0: logs/montana-time-capsule/gh-run-list-exact-head-3832d7c59e4f5e7090bc71a0e9c5d829435ee633-20260524T165050Z.json
+- Summary JSON (refreshed): logs/montana-time-capsule/hmc-state.json
+
 ## 2026-05-24T16:47:02Z HEARTBEAT monitor - post-push exact-head workflow check (expected empty due `[skip ci]`)
 
 - Git: agent-40136728-montana-time-capsule @ a089526bb2d424ed47e0718eb53817440d875043 (`chore: hmc mtc heartbeat 20260524T1644Z [skip ci]`)

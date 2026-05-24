@@ -1,0 +1,6 @@
+# git-proof 20260524T165050Z
+Sun May 24 16:51:06 UTC 2026
+agent-40136728-montana-time-capsule
+3832d7c59e4f5e7090bc71a0e9c5d829435ee633
+?? logs/montana-time-capsule/git-proof-20260524T165050Z.txt
+3832d7c5 (HEAD -> agent-40136728-montana-time-capsule, origin/agent-40136728-montana-time-capsule) chore: post-push gh exact-head proof 20260524T1648Z [skip ci]

@@ -396,3 +396,4 @@
 [2026-05-24T16:46:49Z] heartbeat -> Friday canonical friday-mtc-20260524T0001Z verified Completed (SfM/3DGS/compression); InProgress=0; S3 outputs present; GH exact-head empty ([skip ci]) -> next: no-spend; needs public-bucket publish decision
 [2026-05-24T16:47:29Z] post-push -> commit a089526b (skip ci); gh exact-head runs=0 -> next: idle/no-spend
 [2026-05-24T16:48:48Z] post-push -> commit 4c7ad073 (skip ci); gh exact-head runs=0 -> next: idle/no-spend
+[2026-05-24T16:51:08Z] post-push -> commit 3832d7c5 (skip ci); gh exact-head runs=0 -> next: idle/no-spend
