@@ -18,6 +18,9 @@
 - GitHub Actions (`/opt/homebrew/bin/gh`):
   - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T220520Z.txt
   - exact-head runs snapshot (empty; expected for `[skip ci]` head): logs/montana-time-capsule/gh-run-list-exact-head-4a514da7bd58-20260524T220520Z.txt
+  - post-push branch/exact-head snapshots for head=7c0b126b (expected 0 new runs due `[skip ci]`):
+    - logs/montana-time-capsule/gh-run-list-branch-postpush-20260524T220905Z.txt
+    - logs/montana-time-capsule/gh-run-list-exact-head-postpush-7c0b126b74b7-20260524T220905Z.txt
 
 ## 2026-05-24T21:46:55Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: guarded runner executed; no duplicate jobs launched; SageMaker InProgress=0; SfM/3DGS/compression still Completed; S3 outputs re-verified
 
