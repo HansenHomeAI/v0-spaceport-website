@@ -3,14 +3,14 @@
     "account": "975050048887",
     "arn": "arn:aws:iam::975050048887:root"
   },
-  "evidence_stamp": "20260524T110557Z",
+  "evidence_stamp": "20260524T110748Z",
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "a8d5b272ca6f0e9caf6cbfdb14d8f7d72dda6b6f",
-    "head_checked_at": "20260524T110557Z"
+    "head": "199a8f80c25da9191f23b12ac36285842bcd3db7",
+    "head_checked_at": "20260524T110748Z"
   },
   "github": {
-    "exact_head_sha": "a8d5b272ca6f0e9caf6cbfdb14d8f7d72dda6b6f",
+    "exact_head_sha": "199a8f80c25da9191f23b12ac36285842bcd3db7",
     "exact_head_run_count": 0,
     "pages_latest": {
       "conclusion": "success",
@@ -50,5 +50,5 @@
     "nosky_http": 200,
     "proxy_http": 200
   },
-  "updated_at": "2026-05-24T11:05:57Z"
+  "updated_at": "2026-05-24T11:07:48Z"
 }
