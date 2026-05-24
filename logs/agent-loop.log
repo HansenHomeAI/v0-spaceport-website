@@ -275,3 +275,4 @@
 [2026-05-24T02:24:55Z] friday-20260522 heartbeat -> sfm InProgress (output is EndOfJob; no terminal artifacts yet) -> continue monitoring
 [2026-05-24T02:27:03Z] friday-20260522 postpush -> recorded gh exact-head=0 as expected ([skip ci]) -> continue monitoring SfM
 [2026-05-24T02:29:57Z] heartbeat(hmc) -> HMC terminal (sfm+3dgs+compression Completed); S3 supersplat present; viewer skybox/no-sky HTTP 200; screenshots captured; gh exact-head=0 ([skip ci]) -> idle (HMC)
+[2026-05-24T02:46:27Z] friday-20260522 heartbeat -> sfm InProgress (COLMAP mapper progressing; output EndOfJob so S3 prefix still empty) -> next: monitor SfM to Completed
