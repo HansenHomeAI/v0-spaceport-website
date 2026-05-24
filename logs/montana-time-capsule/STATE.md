@@ -1,5 +1,13 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-24T19:50:29Z HEARTBEAT monitor (post-push): exact-head CI recheck (expected empty due `[skip ci]`)
+
+- Git: agent-40136728-montana-time-capsule @ d1fb6744a77bb28f0cd7cbd78c9b5d3c1309eddf (`chore: friday mtc public bundle reachability proof 20260524T1948Z [skip ci]`)
+- Evidence stamp: 20260524T195029Z
+- GitHub Actions:
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260524T195029Z.json
+  - exact-head runs (0; expected due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-d1fb6744a77bb28f0cd7cbd78c9b5d3c1309eddf-postpush-20260524T195029Z.json
+
 ## 2026-05-24T19:48:16Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: public bundle reachability proven (spaceport-ml-processing); viewer sky/no-sky HTTP 200; no new compute launched
 
 - Git: agent-40136728-montana-time-capsule @ ce2baea6e06f52b58dc5106167ceba3b96132f6e (dirty: new heartbeat evidence files only)
