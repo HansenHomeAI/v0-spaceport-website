@@ -1,0 +1,76 @@
+== https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/
+HTTP/2 200 
+date: Sun, 24 May 2026 02:45:00 GMT
+content-type: text/html; charset=utf-8
+vary: RSC, Next-Router-State-Tree, Next-Router-Prefetch
+x-edge-runtime: 1
+x-matched-path: /
+x-powered-by: Next.js
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=%2B0UpJa69I2mWFO725oKeMS4XEg%2BL0eZU4emE%2FRYPWf%2FLbPErw7kPyTKSio%2ByKOMEuKiI3iNuGq%2FVPMhJFJO%2BxizVVI9MiCWpkmC8ryL2wSelm%2Fw1aItc8Zx5JXm0CtZcMLW3oWPDjpGIWUUuhJ13EXdjGZMFVEKPuo9WZAsfNjTj%2BGT%2BmMEM3zqRC6PQIdrDqbUKw1am4h2eExttXUAWnPIb"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: a008f6346c6b4cb3-SLC
+alt-svc: h3=":443"; ma=86400
+
+
+http_code=200 final_url=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/
+
+== https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.us-west-2.amazonaws.com%2Fcompressed%2Fhmc-mtc-20260520T2015Z%2Fsupersplat_bundle%2Fmeta.json&skybox=background_skybox.webp
+HTTP/2 200 
+date: Sun, 24 May 2026 02:45:00 GMT
+content-type: text/html; charset=utf-8
+vary: RSC, Next-Router-State-Tree, Next-Router-Prefetch
+x-edge-runtime: 1
+x-matched-path: /sogs-migrated-viewer
+x-powered-by: Next.js
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=oVs0WlSAgruhcdHcpo5aF7QnisDp%2B1I%2FjAHEbJujDUcdk3CpoEbJgwPLkNklgcH2FyXxAq9SBCHZYxu07pmu3%2B3epZJSKKM0lmpfW47ACcBMfDDnfwh17qfdgk850xtwoZbJKKyAh87%2BcWawT9dpYgKZOoifSghkFJAO9mqesyK9adT4WI1aEw7UXobbd11A5qUiWwqRvH6SrCHjgBBW6if7"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: a008f6357ea15305-SLC
+alt-svc: h3=":443"; ma=86400
+
+
+http_code=200 final_url=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.us-west-2.amazonaws.com%2Fcompressed%2Fhmc-mtc-20260520T2015Z%2Fsupersplat_bundle%2Fmeta.json&skybox=background_skybox.webp
+
+== https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.us-west-2.amazonaws.com%2Fcompressed%2Fhmc-mtc-20260520T2015Z%2Fsupersplat_bundle%2Fmeta.json&skybox=off
+HTTP/2 200 
+date: Sun, 24 May 2026 02:45:00 GMT
+content-type: text/html; charset=utf-8
+vary: RSC, Next-Router-State-Tree, Next-Router-Prefetch
+x-edge-runtime: 1
+x-matched-path: /sogs-migrated-viewer
+x-powered-by: Next.js
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=LAATbyIPgrXZqMufBqO4GBlLcuk81%2Bgl%2Ff7PZ5aE34NMC5sLnbr4ZWGNAaX%2Bp2%2FT1RZs6VpvetByZ1mYPOA%2FqctFa%2B4TyUIASNnh4vfF6%2F8BPNQc2dtiYMqHsson%2BDTzRR8jKbtjXABklJJ%2FduPDk%2FwUnICwW6u3Pb1Fvyd0fPA1ur7sTQWlHb3SGC84HBMd2s5K7Ix1RzykY1jJGOLlNAsK"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: a008f6361c9e13ed-SLC
+alt-svc: h3=":443"; ma=86400
+
+
+http_code=200 final_url=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.us-west-2.amazonaws.com%2Fcompressed%2Fhmc-mtc-20260520T2015Z%2Fsupersplat_bundle%2Fmeta.json&skybox=off
+
+== https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.us-west-2.amazonaws.com/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json
+HTTP/2 200 
+date: Sun, 24 May 2026 02:45:01 GMT
+content-type: application/octet-stream
+content-length: 1359
+cf-ray: a008f6368b5314fe-SLC
+cf-cache-status: DYNAMIC
+accept-ranges: bytes
+access-control-allow-origin: *
+etag: "994e5d57f052e552b8cce2e05d4debf4"
+last-modified: Thu, 21 May 2026 20:25:10 GMT
+server: cloudflare
+x-amz-id-2: 2BEW8Yz1cGbKBBvnlFjCsPHiY/1TPx7zSCY+U2PjPtD9QkXvAPMSOQZHipezIauJLz4U4/SyONM=
+x-amz-request-id: 00BJBYB37MJVGT9R
+x-amz-server-side-encryption: aws:kms
+x-amz-server-side-encryption-aws-kms-key-id: arn:aws:kms:us-west-2:975050048887:key/e498a88e-6b23-44e3-90bd-f35b25d6e420
+x-amz-version-id: .DMI48S5bbpRJy04I8F2SEJ85.ppT_Ev
+x-matched-path: /api/sogs-proxy/[...resource]
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=1We8TzTSxYfnRrYtMKITaxcN3RQQlQVPoeDcJRiXEbVcVOtwF15YlEhFm80F8XxBDPh5v3oYO6hHxfJHBNzzVOQ6btwNes1MKbpXdWpuhbn7ODfFdZ7tu7MylTr4z3FmgWPhye7V9MAuuRpuOqS5t3UwUC%2FLZLUcTmPS9sCp8U0TkICRvoClCnMwyzP0kEzrKnj5XMmubsxkAUKBGcm8x3Lb"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+alt-svc: h3=":443"; ma=86400
+
+
+http_code=200 final_url=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https:/spaceport-ml-processing-staging.s3.us-west-2.amazonaws.com/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json
+
