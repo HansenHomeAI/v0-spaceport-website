@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "<stdin>", line 3, in <module>
+FileNotFoundError: [Errno 2] No such file or directory: 'logs/montana-time-capsule/curl-sogs-proxy-meta-${ts}.body.json'
+OK loaded logs/montana-time-capsule/curl-sogs-proxy-meta-20260524T040512Z.body.json
+meta.keys ['means', 'quats', 'scales', 'sh0', 'shN']
