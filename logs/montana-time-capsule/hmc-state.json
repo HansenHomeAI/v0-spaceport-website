@@ -5,7 +5,7 @@
     "region": "us-west-2",
     "userId": "975050048887"
   },
-  "evidence_stamp": "20260524T170922Z",
+  "evidence_stamp": "20260524T171033Z",
   "gh": {
     "cdk_latest_success": {
       "conclusion": "success",
@@ -19,7 +19,7 @@
       "workflowName": "CDK Deploy"
     },
     "exact_head_run_count": 0,
-    "exact_head_sha": "30f84f0df76cda20c74c63f0ac437cd3db45e52f",
+    "exact_head_sha": "3f8446bba0db593d81cde261060c9d06a9d7d4e5",
     "pages_latest_success": {
       "conclusion": "success",
       "createdAt": "2026-05-24T13:17:03Z",
@@ -34,8 +34,8 @@
   },
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "30f84f0df76cda20c74c63f0ac437cd3db45e52f",
-    "head_checked_at": "20260524T170922Z"
+    "head": "3f8446bba0db593d81cde261060c9d06a9d7d4e5",
+    "head_checked_at": "20260524T171033Z"
   },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
@@ -55,7 +55,7 @@
     "sfm": "Completed",
     "sfm_job": "hmc-mtc-20260520T2015Z-sfm"
   },
-  "updated_at": "20260524T170922Z",
+  "updated_at": "20260524T171033Z",
   "viewer": {
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
     "checked_at": "20260524T170642Z",
