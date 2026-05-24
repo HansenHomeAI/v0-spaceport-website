@@ -1,5 +1,27 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-24T22:48:33Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: no-spend reconfirm; SageMaker terminal (Completed); public meta + hosted viewer still reachable; exact-head GH runs snapshot recorded
+
+- Git: agent-40136728-montana-time-capsule @ 0e140aa220b66c9a5dd1d990b3e3eb4eaa81287d (`chore: hmc mtc heartbeat proof 20260524T224421Z [skip ci]`)
+- Evidence stamp: 20260524T224833Z
+- Git/AWS/GH proof: logs/montana-time-capsule/git-proof-20260524T224833Z.txt
+- GitHub Actions (`/opt/homebrew/bin/gh`):
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T224833Z.json
+  - exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-0e140aa220b66c9a5dd1d990b3e3eb4eaa81287d-20260524T224833Z.json
+- AWS (us-west-2; `/opt/homebrew/bin/aws`; no spend):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T224833Z.json (region: logs/montana-time-capsule/aws-config-region-20260524T224833Z.txt)
+  - InProgress guardrail (max-results=20): logs/montana-time-capsule/sm-list-processing-inprogress-20260524T224833Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260524T224833Z.json (counts: 0/0)
+  - Friday canonical run describes (all Completed):
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T224833Z.json
+    - logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T224833Z.json
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T224833Z.json
+- S3 outputs:
+  - SfM COLMAP listing: logs/montana-time-capsule/s3ls-friday-colmap-20260524T224833Z.txt
+  - compressed bundle listing: logs/montana-time-capsule/s3ls-friday-compressed-20260524T224833Z.txt
+- Public reachability (HTTP HEAD):
+  - public meta: logs/montana-time-capsule/curl-head-friday-public-meta-20260524T224833Z.txt
+  - viewer sky/no-sky: logs/montana-time-capsule/curl-head-friday-viewer-sky-20260524T224833Z.txt + logs/montana-time-capsule/curl-head-friday-viewer-nosky-20260524T224833Z.txt
+
 ## 2026-05-24T22:44:21Z HEARTBEAT monitor (HMC canonical hmc-mtc-20260520T2015Z): no-spend re-verify; SageMaker terminal (Completed); staging bundle present; public meta.json still 404; hosted viewer base/sky/no-sky HTTP 200; elevation-proxy endpoint present (400 on missing center); GH exact-head runs empty (skip ci)
 
 - Git: agent-40136728-montana-time-capsule @ af321704e0ea418fd1083ceddebf9c8db4853419 (`chore: friday mtc postpush gh snapshot 20260524T223405Z [skip ci]`)

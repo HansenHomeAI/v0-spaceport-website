@@ -450,3 +450,4 @@
 [2026-05-24T22:28:18Z] friday-heartbeat -> verify aws/sm/s3/public+viewer+playwright -> ok -> commit+push
 [2026-05-24T22:34:20Z] postpush -> gh snapshots recorded for 853d6eba (skip ci) -> done
 [2026-05-24T22:46:33Z] heartbeat(hmc-mtc-20260520T2015Z) -> sagemaker terminal; staging meta OK; public meta 404; viewer 200/200/200; gh head runs 0 -> commit+push
+[2026-05-24T22:47:28Z] heartbeat -> friday-mtc terminal reconfirm (no spend); InProgress=0; meta+viewer reachable; gh snapshot -> commit+push ledger

@@ -1,0 +1,8 @@
+ts_utc=20260524T224833Z
+branch=agent-40136728-montana-time-capsule
+head=0e140aa220b66c9a5dd1d990b3e3eb4eaa81287d
+0e140aa2 chore: hmc mtc heartbeat proof 20260524T224421Z [skip ci]
+ M STATE.md
+ M logs/agent-loop.log
+ M logs/montana-time-capsule/STATE.md
+?? logs/montana-time-capsule/git-proof-20260524T224833Z.txt
