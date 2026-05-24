@@ -29,8 +29,32 @@
 - GitHub Actions snapshot (gh=/opt/homebrew/bin/gh):
   - exact-head runs for current head `262ee9a...` (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T052428Z.json
   - branch runs (latest history includes green Pages+CDK): logs/montana-time-capsule/gh-run-list-branch-20260524T052428Z.json
+  - post-push snapshot for commit `aa016f9...` (expected exact-head empty due `[skip ci]`):
+    - exact-head: logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T052734Z.json
+    - branch: logs/montana-time-capsule/gh-run-list-branch-postpush-20260524T052734Z.json
 - Note: non-canonical Friday SfM still InProgress (do not stop; do not duplicate):
   - describe: logs/montana-time-capsule/sagemaker-describe-friday-mtc-20260524T0001Z-sfm-20260524T052633Z.json
+
+## 2026-05-24T05:27:18Z HEARTBEAT monitor (FRIDAY) - canonical Friday SfM still InProgress; CloudWatch last event 2026-05-24T03:54:13Z; S3 colmap still empty (EndOfJob upload); no duplicate Friday jobs launched
+
+- Git: agent-40136728-montana-time-capsule @ 262ee9aa43956f173073d10b1e66b81833b804f8 (`chore: friday heartbeat sfm still inprogress 2026-05-24T05:07Z [skip ci]`) (dirty: new logs only)
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T052455Z.json
+  - region: logs/montana-time-capsule/aws-configure-get-region-20260524T052455Z.txt
+  - version: logs/montana-time-capsule/aws-version-20260524T052455Z.txt
+- Canonical Friday run (do not upload dataset again; do not launch duplicate Friday jobs):
+  - run id: `friday-mtc-20260524T0001Z`
+  - archive: s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.zip (expected 1776 images; state file: logs/montana-time-capsule/friday-20260522-state.json)
+  - SfM processing job `friday-mtc-20260524T0001Z-sfm` status: **InProgress**
+    - describe: logs/montana-time-capsule/sagemaker-describe-friday-mtc-20260524T0001Z-sfm-20260524T052633Z.json
+    - CloudWatch stream discovery: logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-sfm-20260524T052542Z.json (stream=friday-mtc-20260524T0001Z-sfm/algo-1-1779581031; last_event_utc=2026-05-24T03:54:13Z)
+    - S3 output prefix (still empty; upload is EndOfJob): logs/montana-time-capsule/s3api-list-objects-friday-mtc-20260524T0001Z-colmap-20260524T052639Z.json (KeyCount: 0)
+  - Guardrail: InProgress jobs matching run prefix (expected only Friday SfM):
+    - processing: logs/montana-time-capsule/sagemaker-list-processing-jobs-friday-mtc-20260524T0001Z-InProgress-20260524T052455Z.json
+    - training: logs/montana-time-capsule/sagemaker-list-training-jobs-friday-mtc-20260524T0001Z-InProgress-20260524T052455Z.json
+- GitHub Actions snapshot (gh=/opt/homebrew/bin/gh):
+  - exact-head runs for current head `262ee9a...` (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T052428Z.json
+  - branch runs (latest history includes green Pages+CDK): logs/montana-time-capsule/gh-run-list-branch-20260524T052428Z.json
 
 ## 2026-05-24T04:46:37Z HEARTBEAT monitor (FRIDAY) - canonical Friday SfM still InProgress; CloudWatch active (~03:54Z); S3 colmap still empty (EndOfJob upload); no duplicate Friday jobs launched
 
