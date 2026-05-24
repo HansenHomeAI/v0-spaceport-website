@@ -7,7 +7,7 @@
 
 ## 2026-05-24T06:07:20Z HEARTBEAT monitor (FRIDAY) - canonical Friday SfM still InProgress; CW advanced; S3 colmap still empty
 
-- Git: agent-40136728-montana-time-capsule @ 5483aec4a3750edba6d2361464e1f7c8e819f058 (`chore: record postpush gh snapshot 20260524T054951Z [skip ci]`) (dirty: new logs only)
+- Git: agent-40136728-montana-time-capsule @ 637677ebe57c5aad4ac655649264e601d935960e (`chore: clean up failed gh snapshot artifacts [skip ci]`) (clean)
 - AWS (us-west-2; aws=/opt/homebrew/bin/aws):
   - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T060530Z.json
   - describe SfM: logs/montana-time-capsule/sagemaker-describe-friday-mtc-20260524T0001Z-sfm-20260524T060530Z.json (status=InProgress; created=2026-05-23T18:03:05-06:00; last_modified=2026-05-23T18:05:36-06:00)
@@ -48,8 +48,9 @@
   - no-sky headers: logs/montana-time-capsule/curlI-viewer-nosky-20260524T060651Z.headers (url=logs/montana-time-capsule/viewer-nosky-url-20260524T052532Z.txt)
   - sogs-proxy meta.json headers: logs/montana-time-capsule/curlI-sogs-proxy-meta-20260524T060651Z.headers (url=logs/montana-time-capsule/sogs-proxy-meta-url-20260524T052532Z.txt)
 - GitHub Actions snapshot (gh=/opt/homebrew/bin/gh):
-  - exact-head runs for current head `5483aec...` (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T060540Z.json
-  - branch runs (latest history includes green Pages+CDK): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T060540Z.json
+  - exact-head runs for current head `637677e...` (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-637677ebe57c5aad4ac655649264e601d935960e-20260524T060957Z.json
+  - exact-head summary (latest known green Pages+CDK in branch history): logs/montana-time-capsule/gh-run-list-exact-head-summary-20260524T060957Z.txt
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T060957Z.json
   - Pages run log grep for preview URL (run 26200368328): logs/montana-time-capsule/gh-run-view-26200368328-preview-url-lines-20260524T060610Z.txt
 
 ## 2026-05-24T05:46:45Z HEARTBEAT monitor (FRIDAY) - canonical Friday SfM still InProgress; no new jobs launched
