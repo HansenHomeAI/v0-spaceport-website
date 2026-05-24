@@ -7504,3 +7504,27 @@ Next: remain idle; next acceptance gate remains updated browser visual proof (sc
 - gh exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T012733Z.json
 
 - note (2026-05-24T01:26:06Z): previous heartbeat line contained backticks; ignore shell warning; next command is scripts/montana_time_capsule/cv_hr_time_capsule.py --launch once SfM completes.
+
+## 2026-05-24T02:29:57Z HEARTBEAT monitor (HMC) - no-spend reconfirm: git clean + AWS identity + canonical SageMaker terminal (SfM/3DGS/compression Completed) + S3 supersplat bundle present + hosted preview viewer reachable (skybox/no-sky) + skybox/no-sky screenshots captured + CI snapshot (exact-head empty due to `[skip ci]`)
+
+- Git: agent-40136728-montana-time-capsule @ dda0a7b0ed4b1d96fdb81aaa65e0fe75849f4b19
+  - proof: logs/montana-time-capsule/git-head-and-status-20260524T022957Z.txt
+- AWS (us-west-2):
+  - sts: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T022426Z.json
+- SageMaker canonical run `hmc-mtc-20260520T2015Z` terminal:
+  - SfM (processing) Completed: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260524T022426Z.json
+  - 3DGS (training) Completed: logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T022516Z.json
+  - compression (processing) Completed: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260524T022426Z.json
+  - note: there is an unrelated InProgress job `friday-mtc-20260524T0001Z-sfm` (do not stop; not part of canonical HMC run)
+- S3 supersplat bundle evidence:
+  - ls + head meta.json: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T022519Z.txt ; logs/montana-time-capsule/s3api-head-object-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-meta.json-20260524T022519Z.json
+- Hosted preview viewer reachability (HTTP 200):
+  - proof: logs/montana-time-capsule/curl-viewer-reachability-20260524T022554Z.txt
+- Hosted preview viewer screenshots (visual proof):
+  - skybox: logs/montana-time-capsule/viewer-screenshot-skybox-20260524T022632Z.png (log: logs/montana-time-capsule/viewer-screenshot-skybox-20260524T022632Z.txt)
+  - no-sky: logs/montana-time-capsule/viewer-screenshot-nosky-20260524T022632Z.png (log: logs/montana-time-capsule/viewer-screenshot-nosky-20260524T022632Z.txt)
+- GitHub Actions snapshot:
+  - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T022925Z.json
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T022925Z.json
+
+Next: remain idle for HMC; continue monitoring friday-mtc SfM to terminal (separate run).

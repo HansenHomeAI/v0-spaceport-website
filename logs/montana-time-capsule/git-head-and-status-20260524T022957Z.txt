@@ -1,0 +1,9 @@
+branch=agent-40136728-montana-time-capsule
+head=dda0a7b0ed4b1d96fdb81aaa65e0fe75849f4b19
+?? logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T022850Z.json
+?? logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T022925Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-20260524T022850Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-20260524T022925Z.json
+?? logs/montana-time-capsule/gh-version-20260524T022850Z.txt
+?? logs/montana-time-capsule/gh-version-20260524T022925Z.txt
+?? logs/montana-time-capsule/git-head-and-status-20260524T022957Z.txt
