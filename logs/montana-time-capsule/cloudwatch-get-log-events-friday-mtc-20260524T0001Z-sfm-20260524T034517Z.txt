@@ -1,0 +1,201 @@
+b/39686273128929206483021484243068566931598700739823206559/s	f/39686279627968477455205394854913058966526994271188615175/s
+EVENTS	1779594043856	COLMAP[chunk_10_mapper_initial] I20260524 03:40:34.592816 19327 database_cache.cc:90] Loading cameras...	1779594034891
+EVENTS	1779594043856	COLMAP[chunk_10_mapper_initial] I20260524 03:40:34.592841 19327 database_cache.cc:108]  1 in 0.000s	1779594034891
+EVENTS	1779594043856	COLMAP[chunk_10_mapper_initial] I20260524 03:40:34.592856 19327 database_cache.cc:116] Loading frames...	1779594034891
+EVENTS	1779594043856	COLMAP[chunk_10_mapper_initial] I20260524 03:40:34.595194 19327 database_cache.cc:126]  1776 in 0.002s	1779594034891
+EVENTS	1779594043856	COLMAP[chunk_10_mapper_initial] I20260524 03:40:34.595225 19327 database_cache.cc:134] Loading matches...	1779594034891
+EVENTS	1779594043856	COLMAP[chunk_10_mapper_initial] I20260524 03:40:34.633422 19327 database_cache.cc:139]  1736 in 0.038s	1779594034891
+EVENTS	1779594043856	COLMAP[chunk_10_mapper_initial] I20260524 03:40:34.633494 19327 database_cache.cc:147] Loading images...	1779594034891
+EVENTS	1779594043856	COLMAP[chunk_10_mapper_initial] I20260524 03:40:34.707857 19327 database_cache.cc:241]  171 in 0.074s (connected 171, loaded 171)	1779594034891
+EVENTS	1779594043856	COLMAP[chunk_10_mapper_initial] I20260524 03:40:34.707927 19327 database_cache.cc:255] Loading pose priors...	1779594034891
+EVENTS	1779594043856	COLMAP[chunk_10_mapper_initial] I20260524 03:40:34.708901 19327 database_cache.cc:263]  1776 in 0.001s	1779594034892
+EVENTS	1779594043856	COLMAP[chunk_10_mapper_initial] I20260524 03:40:34.708937 19327 database_cache.cc:271] Building correspondence graph...	1779594034892
+EVENTS	1779594043856	COLMAP[chunk_10_mapper_initial] I20260524 03:40:35.335997 19327 database_cache.cc:300]  in 0.627s (ignored 0)	1779594035892
+EVENTS	1779594043856	COLMAP[chunk_10_mapper_initial] I20260524 03:40:35.336120 19327 timer.cc:90] Elapsed time: 0.012 [minutes]	1779594035893
+EVENTS	1779594043856	COLMAP[chunk_10_mapper_initial] I20260524 03:40:35.351680 19327 incremental_pipeline.cc:377] Finding good initial image pair	1779594035893
+EVENTS	1779594069754	COLMAP[chunk_10_mapper_initial] I20260524 03:40:57.140621 19327 incremental_pipeline.cc:381] => No good initial image pair found.	1779594057565
+EVENTS	1779594069754	COLMAP[chunk_10_mapper_initial] I20260524 03:40:57.140666 19327 incremental_pipeline.cc:684] Discarding reconstruction due to no initial pair	1779594057565
+EVENTS	1779594069754	COLMAP[chunk_10_mapper_initial] I20260524 03:40:57.141697 19327 incremental_pipeline.cc:341] => Relaxing the initialization constraints.	1779594057565
+EVENTS	1779594069754	COLMAP[chunk_10_mapper_initial] I20260524 03:40:57.157280 19327 incremental_pipeline.cc:377] Finding good initial image pair	1779594057565
+EVENTS	1779594085121	COLMAP[chunk_10_mapper_initial] I20260524 03:41:19.342099 19327 incremental_pipeline.cc:381] => No good initial image pair found.	1779594079537
+EVENTS	1779594085121	COLMAP[chunk_10_mapper_initial] I20260524 03:41:19.342161 19327 incremental_pipeline.cc:684] Discarding reconstruction due to no initial pair	1779594079537
+EVENTS	1779594085121	COLMAP[chunk_10_mapper_initial] I20260524 03:41:19.343405 19327 incremental_pipeline.cc:354] => Relaxing the initialization constraints.	1779594079537
+EVENTS	1779594085121	COLMAP[chunk_10_mapper_initial] I20260524 03:41:19.359221 19327 incremental_pipeline.cc:377] Finding good initial image pair	1779594079537
+EVENTS	1779594085121	COLMAP[chunk_10_mapper_initial] I20260524 03:41:21.788602 19327 incremental_pipeline.cc:401] Registering initial image pair #426 and #159	1779594082557
+EVENTS	1779594085121	COLMAP[chunk_10_mapper_initial] I20260524 03:41:21.808441 19327 incremental_pipeline.cc:419] Global bundle adjustment	1779594082557
+EVENTS	1779594085121	COLMAP[chunk_10_mapper_initial] I20260524 03:41:22.129195 19327 incremental_pipeline.cc:524] Registering image #164 (num_reg_frames=2)	1779594082557
+EVENTS	1779594085121	COLMAP[chunk_10_mapper_initial] I20260524 03:41:22.129244 19327 incremental_pipeline.cc:527] => Image sees 854 / 8868 points	1779594082557
+EVENTS	1779594085121	COLMAP[chunk_10_mapper_initial] I20260524 03:41:22.604365 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594083558
+EVENTS	1779594085121	COLMAP[chunk_10_mapper_initial] I20260524 03:41:22.767457 19327 incremental_pipeline.cc:524] Registering image #163 (num_reg_frames=3)	1779594083558
+EVENTS	1779594085121	COLMAP[chunk_10_mapper_initial] I20260524 03:41:22.767508 19327 incremental_pipeline.cc:527] => Image sees 1744 / 9610 points	1779594083558
+EVENTS	1779594090143	COLMAP[chunk_10_mapper_initial] I20260524 03:41:23.609345 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594084558
+EVENTS	1779594090143	COLMAP[chunk_10_mapper_initial] I20260524 03:41:24.030844 19327 incremental_pipeline.cc:524] Registering image #162 (num_reg_frames=4)	1779594084558
+EVENTS	1779594090143	COLMAP[chunk_10_mapper_initial] I20260524 03:41:24.030905 19327 incremental_pipeline.cc:527] => Image sees 3321 / 9766 points	1779594084558
+EVENTS	1779594090143	COLMAP[chunk_10_mapper_initial] I20260524 03:41:25.384836 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594085559
+EVENTS	1779594090143	COLMAP[chunk_10_mapper_initial] I20260524 03:41:25.771755 19327 incremental_pipeline.cc:524] Registering image #160 (num_reg_frames=5)	1779594086559
+EVENTS	1779594090143	COLMAP[chunk_10_mapper_initial] I20260524 03:41:25.771806 19327 incremental_pipeline.cc:527] => Image sees 4620 / 9533 points	1779594086559
+EVENTS	1779594090143	COLMAP[chunk_10_mapper_initial] I20260524 03:41:27.331030 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594087560
+EVENTS	1779594090143	COLMAP[chunk_10_mapper_initial] I20260524 03:41:28.128082 19327 incremental_pipeline.cc:524] Registering image #161 (num_reg_frames=6)	1779594088562
+EVENTS	1779594090143	COLMAP[chunk_10_mapper_initial] I20260524 03:41:28.128149 19327 incremental_pipeline.cc:527] => Image sees 4875 / 9644 points	1779594088562
+EVENTS	1779594095175	COLMAP[chunk_10_mapper_initial] I20260524 03:41:29.351101 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594089562
+EVENTS	1779594095175	COLMAP[chunk_10_mapper_initial] I20260524 03:41:30.391920 19327 incremental_pipeline.cc:524] Registering image #423 (num_reg_frames=7)	1779594090562
+EVENTS	1779594095175	COLMAP[chunk_10_mapper_initial] I20260524 03:41:30.391974 19327 incremental_pipeline.cc:527] => Image sees 4113 / 9826 points	1779594090563
+EVENTS	1779594095175	COLMAP[chunk_10_mapper_initial] I20260524 03:41:31.900676 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594092563
+EVENTS	1779594095175	COLMAP[chunk_10_mapper_initial] I20260524 03:41:33.227080 19327 incremental_pipeline.cc:524] Registering image #424 (num_reg_frames=8)	1779594093563
+EVENTS	1779594095175	COLMAP[chunk_10_mapper_initial] I20260524 03:41:33.227134 19327 incremental_pipeline.cc:527] => Image sees 5099 / 9942 points	1779594093563
+EVENTS	1779594101248	COLMAP[chunk_10_mapper_initial] I20260524 03:41:34.924520 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594095566
+EVENTS	1779594101248	COLMAP[chunk_10_mapper_initial] I20260524 03:41:36.503062 19327 incremental_pipeline.cc:524] Registering image #421 (num_reg_frames=9)	1779594096567
+EVENTS	1779594101248	COLMAP[chunk_10_mapper_initial] I20260524 03:41:36.503118 19327 incremental_pipeline.cc:527] => Image sees 5372 / 10007 points	1779594096567
+EVENTS	1779594101248	COLMAP[chunk_10_mapper_initial] I20260524 03:41:38.023429 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594098568
+EVENTS	1779594101248	COLMAP[chunk_10_mapper_initial] I20260524 03:41:38.853758 19327 incremental_pipeline.cc:524] Registering image #428 (num_reg_frames=10)	1779594099570
+EVENTS	1779594101248	COLMAP[chunk_10_mapper_initial] I20260524 03:41:38.853811 19327 incremental_pipeline.cc:527] => Image sees 4874 / 10001 points	1779594099570
+EVENTS	1779594107313	COLMAP[chunk_10_mapper_initial] I20260524 03:41:40.633468 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594101570
+EVENTS	1779594107313	COLMAP[chunk_10_mapper_initial] I20260524 03:41:41.695897 19327 incremental_pipeline.cc:524] Registering image #429 (num_reg_frames=11)	1779594102571
+EVENTS	1779594107313	COLMAP[chunk_10_mapper_initial] I20260524 03:41:41.695956 19327 incremental_pipeline.cc:527] => Image sees 5319 / 10107 points	1779594102571
+EVENTS	1779594107313	COLMAP[chunk_10_mapper_initial] I20260524 03:41:43.614872 19327 incremental_pipeline.cc:524] Registering image #430 (num_reg_frames=12)	1779594104574
+EVENTS	1779594107313	COLMAP[chunk_10_mapper_initial] I20260524 03:41:43.614925 19327 incremental_pipeline.cc:527] => Image sees 4806 / 9681 points	1779594104574
+EVENTS	1779594107313	COLMAP[chunk_10_mapper_initial] I20260524 03:41:45.500677 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594105575
+EVENTS	1779594113366	COLMAP[chunk_10_mapper_initial] I20260524 03:41:47.388617 19327 incremental_pipeline.cc:524] Registering image #420 (num_reg_frames=13)	1779594107584
+EVENTS	1779594113366	COLMAP[chunk_10_mapper_initial] I20260524 03:41:47.388670 19327 incremental_pipeline.cc:527] => Image sees 5486 / 9740 points	1779594107584
+EVENTS	1779594113366	COLMAP[chunk_10_mapper_initial] I20260524 03:41:49.456060 19327 incremental_pipeline.cc:524] Registering image #425 (num_reg_frames=14)	1779594109596
+EVENTS	1779594113366	COLMAP[chunk_10_mapper_initial] I20260524 03:41:49.456156 19327 incremental_pipeline.cc:527] => Image sees 6060 / 9475 points	1779594109596
+EVENTS	1779594118393	COLMAP[chunk_10_mapper_initial] I20260524 03:41:51.758109 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594112605
+EVENTS	1779594118393	COLMAP[chunk_10_mapper_initial] I20260524 03:41:53.379884 19327 incremental_pipeline.cc:524] Registering image #422 (num_reg_frames=15)	1779594113606
+EVENTS	1779594118393	COLMAP[chunk_10_mapper_initial] I20260524 03:41:53.380084 19327 incremental_pipeline.cc:527] => Image sees 5716 / 8723 points	1779594113606
+EVENTS	1779594118393	COLMAP[chunk_10_mapper_initial] I20260524 03:41:55.778151 19327 incremental_pipeline.cc:524] Registering image #427 (num_reg_frames=16)	1779594116616
+EVENTS	1779594118393	COLMAP[chunk_10_mapper_initial] I20260524 03:41:55.778203 19327 incremental_pipeline.cc:527] => Image sees 5956 / 8732 points	1779594116616
+EVENTS	1779594124452	COLMAP[chunk_10_mapper_initial] I20260524 03:41:57.807904 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594118619
+EVENTS	1779594124452	COLMAP[chunk_10_mapper_initial] I20260524 03:42:01.057574 19327 incremental_pipeline.cc:524] Registering image #431 (num_reg_frames=17)	1779594121622
+EVENTS	1779594124452	COLMAP[chunk_10_mapper_initial] I20260524 03:42:01.057628 19327 incremental_pipeline.cc:527] => Image sees 4752 / 8995 points	1779594121622
+EVENTS	1779594129500	COLMAP[chunk_10_mapper_initial] I20260524 03:42:03.008384 19327 incremental_pipeline.cc:524] Registering image #419 (num_reg_frames=18)	1779594123623
+EVENTS	1779594129500	COLMAP[chunk_10_mapper_initial] I20260524 03:42:03.008438 19327 incremental_pipeline.cc:527] => Image sees 4828 / 8532 points	1779594123623
+EVENTS	1779594129500	COLMAP[chunk_10_mapper_initial] I20260524 03:42:04.827508 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594125624
+EVENTS	1779594134550	COLMAP[chunk_10_mapper_initial] I20260524 03:42:08.339402 19327 incremental_pipeline.cc:524] Registering image #418 (num_reg_frames=19)	1779594128635
+EVENTS	1779594134550	COLMAP[chunk_10_mapper_initial] I20260524 03:42:08.339462 19327 incremental_pipeline.cc:527] => Image sees 4010 / 9032 points	1779594128635
+EVENTS	1779594134550	COLMAP[chunk_10_mapper_initial] I20260524 03:42:09.923625 19327 incremental_pipeline.cc:524] Registering image #432 (num_reg_frames=20)	1779594130638
+EVENTS	1779594134550	COLMAP[chunk_10_mapper_initial] I20260524 03:42:09.923681 19327 incremental_pipeline.cc:527] => Image sees 4739 / 9133 points	1779594130638
+EVENTS	1779594134550	COLMAP[chunk_10_mapper_initial] I20260524 03:42:11.552855 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594131638
+EVENTS	1779594141623	COLMAP[chunk_10_mapper_initial] I20260524 03:42:15.299934 19327 incremental_pipeline.cc:524] Registering image #165 (num_reg_frames=21)	1779594135643
+EVENTS	1779594141623	COLMAP[chunk_10_mapper_initial] I20260524 03:42:15.299988 19327 incremental_pipeline.cc:527] => Image sees 4158 / 8254 points	1779594135643
+EVENTS	1779594141623	COLMAP[chunk_10_mapper_initial] I20260524 03:42:16.795257 19327 incremental_pipeline.cc:524] Registering image #158 (num_reg_frames=22)	1779594137647
+EVENTS	1779594141623	COLMAP[chunk_10_mapper_initial] I20260524 03:42:16.795315 19327 incremental_pipeline.cc:527] => Image sees 4880 / 8345 points	1779594137647
+EVENTS	1779594141623	COLMAP[chunk_10_mapper_initial] I20260524 03:42:18.449811 19327 incremental_pipeline.cc:524] Registering image #417 (num_reg_frames=23)	1779594138647
+EVENTS	1779594141623	COLMAP[chunk_10_mapper_initial] I20260524 03:42:18.449863 19327 incremental_pipeline.cc:527] => Image sees 4330 / 8570 points	1779594138647
+EVENTS	1779594146672	COLMAP[chunk_10_mapper_initial] I20260524 03:42:19.870734 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594140692
+EVENTS	1779594146672	COLMAP[chunk_10_mapper_initial] I20260524 03:42:24.261723 19327 incremental_pipeline.cc:524] Registering image #433 (num_reg_frames=24)	1779594144703
+EVENTS	1779594146672	COLMAP[chunk_10_mapper_initial] I20260524 03:42:24.261777 19327 incremental_pipeline.cc:527] => Image sees 4778 / 8311 points	1779594144703
+EVENTS	1779594152752	COLMAP[chunk_10_mapper_initial] I20260524 03:42:25.848278 19327 incremental_pipeline.cc:524] Registering image #416 (num_reg_frames=25)	1779594146705
+EVENTS	1779594152752	COLMAP[chunk_10_mapper_initial] I20260524 03:42:25.848332 19327 incremental_pipeline.cc:527] => Image sees 3866 / 6077 points	1779594146705
+EVENTS	1779594152752	COLMAP[chunk_10_mapper_initial] I20260524 03:42:27.229657 19327 incremental_pipeline.cc:524] Registering image #415 (num_reg_frames=26)	1779594147707
+EVENTS	1779594152752	COLMAP[chunk_10_mapper_initial] I20260524 03:42:27.229712 19327 incremental_pipeline.cc:527] => Image sees 3911 / 8098 points	1779594147707
+EVENTS	1779594152752	COLMAP[chunk_10_mapper_initial] I20260524 03:42:28.415441 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594148708
+EVENTS	1779594160837	COLMAP[chunk_10_mapper_initial] I20260524 03:42:33.839547 19327 incremental_pipeline.cc:524] Registering image #166 (num_reg_frames=27)	1779594154745
+EVENTS	1779594160837	COLMAP[chunk_10_mapper_initial] I20260524 03:42:33.839608 19327 incremental_pipeline.cc:527] => Image sees 3743 / 7928 points	1779594154745
+EVENTS	1779594160837	COLMAP[chunk_10_mapper_initial] I20260524 03:42:35.272866 19327 incremental_pipeline.cc:524] Registering image #157 (num_reg_frames=28)	1779594155754
+EVENTS	1779594160837	COLMAP[chunk_10_mapper_initial] I20260524 03:42:35.272924 19327 incremental_pipeline.cc:527] => Image sees 4424 / 7788 points	1779594155754
+EVENTS	1779594160837	COLMAP[chunk_10_mapper_initial] I20260524 03:42:36.764053 19327 incremental_pipeline.cc:524] Registering image #167 (num_reg_frames=29)	1779594157755
+EVENTS	1779594160837	COLMAP[chunk_10_mapper_initial] I20260524 03:42:36.764110 19327 incremental_pipeline.cc:527] => Image sees 3748 / 7959 points	1779594157755
+EVENTS	1779594160837	COLMAP[chunk_10_mapper_initial] I20260524 03:42:37.825114 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594158761
+EVENTS	1779594169908	COLMAP[chunk_10_mapper_initial] I20260524 03:42:44.131577 19327 incremental_pipeline.cc:524] Registering image #434 (num_reg_frames=30)	1779594164805
+EVENTS	1779594169908	COLMAP[chunk_10_mapper_initial] I20260524 03:42:44.131637 19327 incremental_pipeline.cc:527] => Image sees 4486 / 7558 points	1779594164805
+EVENTS	1779594169908	COLMAP[chunk_10_mapper_initial] I20260524 03:42:45.617413 19327 incremental_pipeline.cc:524] Registering image #414 (num_reg_frames=31)	1779594165805
+EVENTS	1779594169908	COLMAP[chunk_10_mapper_initial] I20260524 03:42:45.617488 19327 incremental_pipeline.cc:527] => Image sees 3837 / 8086 points	1779594165805
+EVENTS	1779594169908	COLMAP[chunk_10_mapper_initial] I20260524 03:42:46.934082 19327 incremental_pipeline.cc:524] Registering image #435 (num_reg_frames=32)	1779594167806
+EVENTS	1779594169908	COLMAP[chunk_10_mapper_initial] I20260524 03:42:46.934134 19327 incremental_pipeline.cc:527] => Image sees 4598 / 7479 points	1779594167806
+EVENTS	1779594169908	COLMAP[chunk_10_mapper_initial] I20260524 03:42:48.260862 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594168806
+EVENTS	1779594179971	COLMAP[chunk_10_mapper_initial] I20260524 03:42:54.293586 19327 incremental_pipeline.cc:524] Registering image #413 (num_reg_frames=33)	1779594174886
+EVENTS	1779594179971	COLMAP[chunk_10_mapper_initial] I20260524 03:42:54.293661 19327 incremental_pipeline.cc:527] => Image sees 4271 / 8312 points	1779594174886
+EVENTS	1779594179971	COLMAP[chunk_10_mapper_initial] I20260524 03:42:55.665971 19327 incremental_pipeline.cc:524] Registering image #436 (num_reg_frames=34)	1779594175891
+EVENTS	1779594179971	COLMAP[chunk_10_mapper_initial] I20260524 03:42:55.666023 19327 incremental_pipeline.cc:527] => Image sees 4500 / 7410 points	1779594175891
+EVENTS	1779594179971	COLMAP[chunk_10_mapper_initial] I20260524 03:42:57.069885 19327 incremental_pipeline.cc:524] Registering image #412 (num_reg_frames=35)	1779594177896
+EVENTS	1779594179971	COLMAP[chunk_10_mapper_initial] I20260524 03:42:57.069940 19327 incremental_pipeline.cc:527] => Image sees 4116 / 8067 points	1779594177897
+EVENTS	1779594179971	COLMAP[chunk_10_mapper_initial] I20260524 03:42:58.434325 19327 incremental_pipeline.cc:524] Registering image #437 (num_reg_frames=36)	1779594178897
+EVENTS	1779594179971	COLMAP[chunk_10_mapper_initial] I20260524 03:42:58.434386 19327 incremental_pipeline.cc:527] => Image sees 4464 / 7596 points	1779594178897
+EVENTS	1779594185007	COLMAP[chunk_10_mapper_initial] I20260524 03:42:59.769537 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594179898
+EVENTS	1779594192072	COLMAP[chunk_10_mapper_initial] I20260524 03:43:06.553861 19327 incremental_pipeline.cc:524] Registering image #411 (num_reg_frames=37)	1779594186925
+EVENTS	1779594192072	COLMAP[chunk_10_mapper_initial] I20260524 03:43:06.553920 19327 incremental_pipeline.cc:527] => Image sees 4149 / 8311 points	1779594186926
+EVENTS	1779594192072	COLMAP[chunk_10_mapper_initial] I20260524 03:43:07.955875 19327 incremental_pipeline.cc:524] Registering image #438 (num_reg_frames=38)	1779594188926
+EVENTS	1779594192072	COLMAP[chunk_10_mapper_initial] I20260524 03:43:07.955927 19327 incremental_pipeline.cc:527] => Image sees 4383 / 7390 points	1779594188926
+EVENTS	1779594192072	COLMAP[chunk_10_mapper_initial] I20260524 03:43:09.400233 19327 incremental_pipeline.cc:524] Registering image #410 (num_reg_frames=39)	1779594189926
+EVENTS	1779594192072	COLMAP[chunk_10_mapper_initial] I20260524 03:43:09.400286 19327 incremental_pipeline.cc:527] => Image sees 4137 / 8283 points	1779594189926
+EVENTS	1779594192072	COLMAP[chunk_10_mapper_initial] I20260524 03:43:10.803797 19327 incremental_pipeline.cc:524] Registering image #439 (num_reg_frames=40)	1779594190927
+EVENTS	1779594192072	COLMAP[chunk_10_mapper_initial] I20260524 03:43:10.803849 19327 incremental_pipeline.cc:527] => Image sees 4392 / 7477 points	1779594190927
+EVENTS	1779594198167	COLMAP[chunk_10_mapper_initial] I20260524 03:43:12.153990 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594192927
+EVENTS	1779594205230	COLMAP[chunk_10_mapper_initial] I20260524 03:43:19.511547 19327 incremental_pipeline.cc:524] Registering image #409 (num_reg_frames=41)	1779594199937
+EVENTS	1779594205230	COLMAP[chunk_10_mapper_initial] I20260524 03:43:19.511605 19327 incremental_pipeline.cc:527] => Image sees 4062 / 8244 points	1779594199938
+EVENTS	1779594205230	COLMAP[chunk_10_mapper_initial] I20260524 03:43:20.895573 19327 incremental_pipeline.cc:524] Registering image #440 (num_reg_frames=42)	1779594200938
+EVENTS	1779594205230	COLMAP[chunk_10_mapper_initial] I20260524 03:43:20.895638 19327 incremental_pipeline.cc:527] => Image sees 4508 / 7672 points	1779594200938
+EVENTS	1779594205230	COLMAP[chunk_10_mapper_initial] I20260524 03:43:22.312145 19327 incremental_pipeline.cc:524] Registering image #408 (num_reg_frames=43)	1779594202939
+EVENTS	1779594205230	COLMAP[chunk_10_mapper_initial] I20260524 03:43:22.312198 19327 incremental_pipeline.cc:527] => Image sees 4020 / 8403 points	1779594202939
+EVENTS	1779594205230	COLMAP[chunk_10_mapper_initial] I20260524 03:43:23.692449 19327 incremental_pipeline.cc:524] Registering image #441 (num_reg_frames=44)	1779594203941
+EVENTS	1779594205230	COLMAP[chunk_10_mapper_initial] I20260524 03:43:23.692499 19327 incremental_pipeline.cc:527] => Image sees 4440 / 7628 points	1779594203941
+EVENTS	1779594211280	COLMAP[chunk_10_mapper_initial] I20260524 03:43:25.033636 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594205943
+EVENTS	1779594211280	COLMAP[chunk_10_mapper_initial] I20260524 03:43:29.937579 19327 incremental_pipeline.cc:524] Registering image #407 (num_reg_frames=45)	1779594209949
+EVENTS	1779594211280	COLMAP[chunk_10_mapper_initial] I20260524 03:43:29.937630 19327 incremental_pipeline.cc:527] => Image sees 3997 / 8525 points	1779594209949
+EVENTS	1779594217357	COLMAP[chunk_10_mapper_initial] I20260524 03:43:31.373991 19327 incremental_pipeline.cc:524] Registering image #443 (num_reg_frames=46)	1779594211952
+EVENTS	1779594217357	COLMAP[chunk_10_mapper_initial] I20260524 03:43:31.374042 19327 incremental_pipeline.cc:527] => Image sees 4476 / 7665 points	1779594211952
+EVENTS	1779594217357	COLMAP[chunk_10_mapper_initial] I20260524 03:43:32.815032 19327 incremental_pipeline.cc:524] Registering image #406 (num_reg_frames=47)	1779594212952
+EVENTS	1779594217357	COLMAP[chunk_10_mapper_initial] I20260524 03:43:32.815085 19327 incremental_pipeline.cc:527] => Image sees 3907 / 8776 points	1779594212952
+EVENTS	1779594217357	COLMAP[chunk_10_mapper_initial] I20260524 03:43:34.219496 19327 incremental_pipeline.cc:524] Registering image #442 (num_reg_frames=48)	1779594214953
+EVENTS	1779594217357	COLMAP[chunk_10_mapper_initial] I20260524 03:43:34.219549 19327 incremental_pipeline.cc:527] => Image sees 4528 / 7127 points	1779594214953
+EVENTS	1779594217357	COLMAP[chunk_10_mapper_initial] I20260524 03:43:35.595229 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594215953
+EVENTS	1779594229440	COLMAP[chunk_10_mapper_initial] I20260524 03:43:43.432987 19327 incremental_pipeline.cc:524] Registering image #405 (num_reg_frames=49)	1779594223976
+EVENTS	1779594229440	COLMAP[chunk_10_mapper_initial] I20260524 03:43:43.433045 19327 incremental_pipeline.cc:527] => Image sees 3884 / 9253 points	1779594223976
+EVENTS	1779594229440	COLMAP[chunk_10_mapper_initial] I20260524 03:43:44.879024 19327 incremental_pipeline.cc:524] Registering image #404 (num_reg_frames=50)	1779594224976
+EVENTS	1779594229440	COLMAP[chunk_10_mapper_initial] I20260524 03:43:44.879081 19327 incremental_pipeline.cc:527] => Image sees 4466 / 9510 points	1779594224976
+EVENTS	1779594229440	COLMAP[chunk_10_mapper_initial] I20260524 03:43:46.406750 19327 incremental_pipeline.cc:524] Registering image #481 (num_reg_frames=51)	1779594226983
+EVENTS	1779594229440	COLMAP[chunk_10_mapper_initial] I20260524 03:43:46.406806 19327 incremental_pipeline.cc:527] => Image sees 4724 / 8883 points	1779594226983
+EVENTS	1779594229440	COLMAP[chunk_10_mapper_initial] I20260524 03:43:47.952816 19327 incremental_pipeline.cc:524] Registering image #480 (num_reg_frames=52)	1779594227983
+EVENTS	1779594229440	COLMAP[chunk_10_mapper_initial] I20260524 03:43:47.952872 19327 incremental_pipeline.cc:527] => Image sees 5270 / 9680 points	1779594227983
+EVENTS	1779594235549	COLMAP[chunk_10_mapper_initial] I20260524 03:43:49.613569 19327 incremental_pipeline.cc:524] Registering image #482 (num_reg_frames=53)	1779594229985
+EVENTS	1779594235549	COLMAP[chunk_10_mapper_initial] I20260524 03:43:49.613622 19327 incremental_pipeline.cc:527] => Image sees 5267 / 8577 points	1779594229985
+EVENTS	1779594235549	COLMAP[chunk_10_mapper_initial] I20260524 03:43:51.197686 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594231985
+EVENTS	1779594250651	COLMAP[chunk_10_mapper_initial] I20260524 03:44:04.411309 19327 incremental_pipeline.cc:524] Registering image #483 (num_reg_frames=54)	1779594245009
+EVENTS	1779594250651	COLMAP[chunk_10_mapper_initial] I20260524 03:44:04.411383 19327 incremental_pipeline.cc:527] => Image sees 5172 / 8179 points	1779594245009
+EVENTS	1779594250651	COLMAP[chunk_10_mapper_initial] I20260524 03:44:06.161047 19327 incremental_pipeline.cc:524] Registering image #479 (num_reg_frames=55)	1779594247010
+EVENTS	1779594250651	COLMAP[chunk_10_mapper_initial] I20260524 03:44:06.161099 19327 incremental_pipeline.cc:527] => Image sees 5183 / 9208 points	1779594247010
+EVENTS	1779594250651	COLMAP[chunk_10_mapper_initial] I20260524 03:44:07.919389 19327 incremental_pipeline.cc:524] Registering image #403 (num_reg_frames=56)	1779594248010
+EVENTS	1779594250651	COLMAP[chunk_10_mapper_initial] I20260524 03:44:07.919442 19327 incremental_pipeline.cc:527] => Image sees 5345 / 8568 points	1779594248010
+EVENTS	1779594255671	COLMAP[chunk_10_mapper_initial] I20260524 03:44:09.715813 19327 incremental_pipeline.cc:524] Registering image #484 (num_reg_frames=57)	1779594250011
+EVENTS	1779594255671	COLMAP[chunk_10_mapper_initial] I20260524 03:44:09.715875 19327 incremental_pipeline.cc:527] => Image sees 5074 / 7916 points	1779594250011
+EVENTS	1779594255671	COLMAP[chunk_10_mapper_initial] I20260524 03:44:11.370026 19327 incremental_pipeline.cc:524] Registering image #485 (num_reg_frames=58)	1779594252015
+EVENTS	1779594255671	COLMAP[chunk_10_mapper_initial] I20260524 03:44:11.370075 19327 incremental_pipeline.cc:527] => Image sees 5014 / 7916 points	1779594252015
+EVENTS	1779594255671	COLMAP[chunk_10_mapper_initial] I20260524 03:44:12.989696 19327 incremental_pipeline.cc:524] Registering image #486 (num_reg_frames=59)	1779594253015
+EVENTS	1779594255671	COLMAP[chunk_10_mapper_initial] I20260524 03:44:12.989748 19327 incremental_pipeline.cc:527] => Image sees 4878 / 7848 points	1779594253015
+EVENTS	1779594260714	COLMAP[chunk_10_mapper_initial] I20260524 03:44:14.464658 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594255018
+EVENTS	1779594275777	COLMAP[chunk_10_mapper_initial] I20260524 03:44:29.327370 19327 incremental_pipeline.cc:524] Registering image #478 (num_reg_frames=60)	1779594270058
+EVENTS	1779594275777	COLMAP[chunk_10_mapper_initial] I20260524 03:44:29.327420 19327 incremental_pipeline.cc:527] => Image sees 4880 / 8621 points	1779594270058
+EVENTS	1779594275777	COLMAP[chunk_10_mapper_initial] I20260524 03:44:31.063216 19327 incremental_pipeline.cc:524] Registering image #402 (num_reg_frames=61)	1779594272066
+EVENTS	1779594275777	COLMAP[chunk_10_mapper_initial] I20260524 03:44:31.063275 19327 incremental_pipeline.cc:527] => Image sees 4680 / 7838 points	1779594272066
+EVENTS	1779594275777	COLMAP[chunk_10_mapper_initial] I20260524 03:44:32.753825 19327 incremental_pipeline.cc:524] Registering image #487 (num_reg_frames=62)	1779594273070
+EVENTS	1779594275777	COLMAP[chunk_10_mapper_initial] I20260524 03:44:32.753876 19327 incremental_pipeline.cc:527] => Image sees 4553 / 7742 points	1779594273070
+EVENTS	1779594280811	COLMAP[chunk_10_mapper_initial] I20260524 03:44:34.237279 19327 incremental_pipeline.cc:524] Registering image #477 (num_reg_frames=63)	1779594275101
+EVENTS	1779594280811	COLMAP[chunk_10_mapper_initial] I20260524 03:44:34.237335 19327 incremental_pipeline.cc:527] => Image sees 4620 / 8387 points	1779594275101
+EVENTS	1779594280811	COLMAP[chunk_10_mapper_initial] I20260524 03:44:35.943269 19327 incremental_pipeline.cc:524] Registering image #401 (num_reg_frames=64)	1779594276102
+EVENTS	1779594280811	COLMAP[chunk_10_mapper_initial] I20260524 03:44:35.943344 19327 incremental_pipeline.cc:527] => Image sees 4353 / 7494 points	1779594276102
+EVENTS	1779594280811	COLMAP[chunk_10_mapper_initial] I20260524 03:44:37.491946 19327 incremental_pipeline.cc:524] Registering image #476 (num_reg_frames=65)	1779594278111
+EVENTS	1779594280811	COLMAP[chunk_10_mapper_initial] I20260524 03:44:37.492000 19327 incremental_pipeline.cc:527] => Image sees 4518 / 8180 points	1779594278111
+EVENTS	1779594280811	COLMAP[chunk_10_mapper_initial] I20260524 03:44:38.936347 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594279111
+EVENTS	1779594300880	COLMAP[chunk_10_mapper_initial] I20260524 03:44:54.509352 19327 incremental_pipeline.cc:524] Registering image #400 (num_reg_frames=66)	1779594295184
+EVENTS	1779594300880	COLMAP[chunk_10_mapper_initial] I20260524 03:44:54.509409 19327 incremental_pipeline.cc:527] => Image sees 4051 / 6981 points	1779594295184
+EVENTS	1779594300880	COLMAP[chunk_10_mapper_initial] I20260524 03:44:55.937582 19327 incremental_pipeline.cc:524] Registering image #474 (num_reg_frames=67)	1779594296184
+EVENTS	1779594300880	COLMAP[chunk_10_mapper_initial] I20260524 03:44:55.937633 19327 incremental_pipeline.cc:527] => Image sees 4312 / 7999 points	1779594296185
+EVENTS	1779594300880	COLMAP[chunk_10_mapper_initial] I20260524 03:44:57.392865 19327 incremental_pipeline.cc:524] Registering image #488 (num_reg_frames=68)	1779594298192
+EVENTS	1779594300880	COLMAP[chunk_10_mapper_initial] I20260524 03:44:57.392918 19327 incremental_pipeline.cc:527] => Image sees 3809 / 7584 points	1779594298192
+EVENTS	1779594300880	COLMAP[chunk_10_mapper_initial] I20260524 03:44:58.741199 19327 incremental_pipeline.cc:524] Registering image #156 (num_reg_frames=69)	1779594299192
+EVENTS	1779594300880	COLMAP[chunk_10_mapper_initial] I20260524 03:44:58.741254 19327 incremental_pipeline.cc:527] => Image sees 4061 / 7270 points	1779594299192
+EVENTS	1779594305908	COLMAP[chunk_10_mapper_initial] I20260524 03:45:00.159698 19327 incremental_pipeline.cc:524] Registering image #168 (num_reg_frames=70)	1779594300192
+EVENTS	1779594305908	COLMAP[chunk_10_mapper_initial] I20260524 03:45:00.159750 19327 incremental_pipeline.cc:527] => Image sees 3815 / 8047 points	1779594300192
+EVENTS	1779594305908	COLMAP[chunk_10_mapper_initial] I20260524 03:45:01.526021 19327 incremental_pipeline.cc:524] Registering image #169 (num_reg_frames=71)	1779594302198
+EVENTS	1779594305908	COLMAP[chunk_10_mapper_initial] I20260524 03:45:01.526073 19327 incremental_pipeline.cc:527] => Image sees 3475 / 8017 points	1779594302198
+EVENTS	1779594305908	COLMAP[chunk_10_mapper_initial] I20260524 03:45:03.021508 19327 incremental_pipeline.cc:524] Registering image #155 (num_reg_frames=72)	1779594303198
+EVENTS	1779594305908	COLMAP[chunk_10_mapper_initial] I20260524 03:45:03.021566 19327 incremental_pipeline.cc:527] => Image sees 4510 / 7171 points	1779594303198
+EVENTS	1779594310928	COLMAP[chunk_10_mapper_initial] I20260524 03:45:04.466113 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment	1779594305199
+EVENTS	1779594328005	COLMAP[chunk_10_mapper_initial] I20260524 03:45:21.819954 19327 incremental_pipeline.cc:524] Registering image #170 (num_reg_frames=73)	1779594322309
+EVENTS	1779594328005	COLMAP[chunk_10_mapper_initial] I20260524 03:45:21.820034 19327 incremental_pipeline.cc:527] => Image sees 3489 / 7847 points	1779594322309
+EVENTS	1779594328005	COLMAP[chunk_10_mapper_initial] I20260524 03:45:23.120973 19327 incremental_pipeline.cc:524] Registering image #489 (num_reg_frames=74)	1779594323309
+EVENTS	1779594328005	COLMAP[chunk_10_mapper_initial] I20260524 03:45:23.121027 19327 incremental_pipeline.cc:527] => Image sees 3641 / 7904 points	1779594323309
+EVENTS	1779594328005	COLMAP[chunk_10_mapper_initial] I20260524 03:45:24.461892 19327 incremental_pipeline.cc:524] Registering image #490 (num_reg_frames=75)	1779594325310
+EVENTS	1779594328005	COLMAP[chunk_10_mapper_initial] I20260524 03:45:24.461943 19327 incremental_pipeline.cc:527] => Image sees 3631 / 8080 points	1779594325310
+EVENTS	1779594328005	COLMAP[chunk_10_mapper_initial] I20260524 03:45:25.781210 19327 incremental_pipeline.cc:524] Registering image #399 (num_reg_frames=76)	1779594326318
+EVENTS	1779594328005	COLMAP[chunk_10_mapper_initial] I20260524 03:45:25.781265 19327 incremental_pipeline.cc:527] => Image sees 3876 / 6056 points	1779594326318

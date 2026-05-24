@@ -5,6 +5,28 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-24T03:45:17Z HEARTBEAT monitor (FRIDAY) - canonical Friday run SfM still InProgress; captured exact SageMaker + CloudWatch + S3 + CI state (no duplicate Friday jobs launched)
+
+- Git: agent-40136728-montana-time-capsule @ 7c270922e26c3dad71fc62266eae114c9922d421 (`chore: normalize heartbeat logs 2026-05-24T03:28Z [skip ci]`) (dirty: new logs only)
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T034450Z.json
+  - region: logs/montana-time-capsule/aws-configure-get-region-20260524T034450Z.txt
+  - version: logs/montana-time-capsule/aws-version-20260524T034450Z.txt
+- Canonical Friday run (do not upload dataset again; do not launch duplicate Friday jobs):
+  - run id: `friday-mtc-20260524T0001Z`
+  - archive: s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.zip (expected 1776 images; state file: logs/montana-time-capsule/friday-20260522-state.json)
+  - SfM processing job `friday-mtc-20260524T0001Z-sfm` status: **InProgress**
+    - describe: logs/montana-time-capsule/sagemaker-describe-friday-mtc-20260524T0001Z-sfm-20260524T034450Z.json
+    - CloudWatch stream discovery: logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-sfm-20260524T034517Z.json
+    - CloudWatch recent events: logs/montana-time-capsule/cloudwatch-get-log-events-friday-mtc-20260524T0001Z-sfm-20260524T034517Z.txt
+    - S3 output prefix (expected empty while InProgress; outputs upload EndOfJob): logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T034450Z.txt
+  - Guardrail: current InProgress jobs matching run prefix (expected only Friday SfM):
+    - processing: logs/montana-time-capsule/sagemaker-list-processing-jobs-friday-mtc-20260524T0001Z-InProgress-20260524T034450Z.json
+    - training: logs/montana-time-capsule/sagemaker-list-training-jobs-friday-mtc-20260524T0001Z-InProgress-20260524T034450Z.json
+- GitHub Actions snapshot:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T034517Z.json
+  - exact-head runs (expected empty due to `[skip ci]` on current head): logs/montana-time-capsule/gh-run-list-exact-head-20260524T034517Z.json
+
 ## 2026-05-24T03:27:00Z HEARTBEAT monitor (FRIDAY) - canonical Friday run SfM still InProgress; captured exact SageMaker + CloudWatch + S3 + CI state (no duplicate jobs launched)
 
 - Git: agent-40136728-montana-time-capsule @ 8131c097b422ccf86fcc92f4c8ee17ea5204dbd7 (dirty: new logs only)
@@ -7711,3 +7733,32 @@ Next: wait for SfM to reach Completed, then run the single guarded `cv_hr_time_c
 - git head: 4822d1f13026c1a7dceda18aa7bfbab8be7c1dfa (`[skip ci]`)
 - gh branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260524T031458Z.json
 - gh exact-head runs (expected 0 due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T031458Z.json (count: logs/montana-time-capsule/gh-run-list-exact-head-postpush-count-20260524T031458Z.txt)
+
+## 2026-05-24T03:45Z HEARTBEAT monitor (HMC canonical) - no-spend reconfirm: SageMaker terminal + S3 bundle present + hosted preview reachability (viewer + sogs-proxy)
+
+- Git: agent-40136728-montana-time-capsule @ 7c270922e26c3dad71fc62266eae114c9922d421 (`[skip ci]`) (dirty: untracked log snapshots only)
+- AWS:
+  - sts: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T034417Z.json
+  - region: logs/montana-time-capsule/aws-configure-get-region-20260524T034417Z.txt
+  - version: logs/montana-time-capsule/aws-version-20260524T034417Z.txt
+- SageMaker canonical run `hmc-mtc-20260520T2015Z` terminal:
+  - SfM (processing) Completed: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260524T034417Z.json
+  - 3DGS (training) Completed: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260524T034417Z.json
+  - compression (processing) Completed: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260524T034417Z.json
+  - InProgress processing jobs matching run prefix (expected 0): logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T034417Z.json
+  - InProgress training jobs matching run prefix (expected 0): logs/montana-time-capsule/sagemaker-list-training-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T034417Z.json
+- S3 supersplat bundle still present:
+  - listing head200: logs/montana-time-capsule/s3-ls-recursive-supersplat_bundle-20260524T034417Z-head200.txt
+  - head meta.json: logs/montana-time-capsule/s3api-head-object-supersplat-meta-20260524T034417Z.json
+  - head background_skybox.webp: logs/montana-time-capsule/s3api-head-object-supersplat-background_skybox-webp-20260524T034417Z.json
+- Hosted preview viewer reachability:
+  - preview url: logs/montana-time-capsule/preview-url-20260524T034509Z.txt
+  - viewer skybox (HTTP 200): logs/montana-time-capsule/curlI-viewer-skybox-20260524T034509Z.headers
+  - viewer no-sky (HTTP 200): logs/montana-time-capsule/curlI-viewer-nosky-20260524T034509Z.headers
+  - sogs-proxy meta (HTTP 200 + `access-control-allow-origin: *`): logs/montana-time-capsule/curlI-sogs-proxy-meta-20260524T034539Z.headers (url: logs/montana-time-capsule/sogs-proxy-meta-url-20260524T034539Z.txt; body check: logs/montana-time-capsule/curl-sogs-proxy-meta-20260524T034539Z.body-check.txt)
+  - note: `/api/sogs-proxy` is a catch-all route; query-style probe returns 404 (kept as negative control): logs/montana-time-capsule/curlI-sogs-proxy-meta-20260524T034509Z.headers
+- GitHub Actions snapshot:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T034517Z.json
+  - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T034517Z.json
+
+Next: remain idle for HMC canonical; accept/reject gates are viewer visual proof + public bundle reachability only (no new compute).

@@ -282,3 +282,5 @@
 [2026-05-24T03:07:48Z] friday-mtc SfM heartbeat -> InProgress (CloudWatch shows COLMAP registering images) -> next: wait for Completed then run guarded launch
 [2026-05-24T03:26:15Z] heartbeat -> no-spend checks ok (HMC Completed; viewer 200; proxy meta 200) -> commit+push logs/state
 [2026-05-24T03:27:30Z] friday-mtc SfM status -> InProgress (CloudWatch active; S3 colmap empty) -> next: poll until Completed; then launch guarded cv_hr_time_capsule
+[2026-05-24T03:46:22Z] friday-20260522 heartbeat -> sfm InProgress (CW active; S3 colmap empty; exact-head gh 0 [skip ci]) -> next: poll until Completed; then run guarded cv_hr_time_capsule --launch
+[2026-05-24T03:46:43Z] heartbeat(hmc-canonical) -> sage/compressed/viewer ok; sogs-proxy ok; exact-head ci empty ([skip ci]) -> next idle
