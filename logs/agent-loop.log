@@ -367,3 +367,5 @@
 [2026-05-24T20:20:00Z] hmc-mtc-20260520T2015Z -> terminal; staging bundle meta ok; proxy/viewer 200; public meta 404; exact-head skip-ci -> monitoring idle
 [20260524T134539Z] friday-mtc heartbeat -> all terminal -> update STATE
 [2026-05-24T13:49:59Z] heartbeat refresh hmc-mtc-20260520T2015Z -> evidence 20260524T134949Z -> next: await public bundle publish
+[2026-05-24T13:51:43Z] post-push gh exact-head check -> runs=)))') (20260524T135141Z)
+[2026-05-24T13:51:52Z] post-push gh exact-head check -> runs=0 (20260524T135141Z)
