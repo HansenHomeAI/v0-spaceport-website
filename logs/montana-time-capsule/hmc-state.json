@@ -5,7 +5,7 @@
     "userId": "975050048887",
     "region": "us-west-2"
   },
-  "evidence_stamp": "20260524T152624Z",
+  "evidence_stamp": "20260524T152748Z",
   "gh": {
     "exact_head_sha": "b41a81caf97f4dda845da92bd7aa2feff916d653",
     "exact_head_run_count": 0,
@@ -44,7 +44,10 @@
     "compressed_prefix": "s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/",
     "staging_meta_etag": "\"994e5d57f052e552b8cce2e05d4debf4\"",
     "staging_meta_content_length": 1359,
-    "staging_meta_last_modified": "2026-05-21T20:25:10+00:00"
+    "staging_meta_last_modified": "2026-05-21T20:25:10+00:00",
+    "public_meta_key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json",
+    "public_meta_bucket": "spaceport-ml-processing-public",
+    "public_meta_http": 404
   },
   "sagemaker": {
     "sfm_job": "hmc-mtc-20260520T2015Z-sfm",
@@ -54,7 +57,7 @@
     "compression_job": "hmc-mtc-20260520T2015Z-compression",
     "compression": "Completed"
   },
-  "updated_at": "20260524T152624Z",
+  "updated_at": "20260524T152748Z",
   "viewer": {
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
     "checked_at": "20260524T152624Z",
