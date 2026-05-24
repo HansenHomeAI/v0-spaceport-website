@@ -7191,3 +7191,9 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remain
   - extracted image count: `1776`
   - EXIF priors: GPS on `1776` images; orientation priors on `1776` images
 - Next: continue polling SfM. S3 output remains EndOfJob, so empty COLMAP output is expected until the processing job finishes.
+
+## 2026-05-24T00:10:00Z Friday 2026-05-22 postpush CI proof
+
+- Git head pushed: `be03a58900e2bd2cd439ec7ba69fe664f0b63890` (`[skip ci]`)
+- Exact-head GitHub workflow runs: `[]` as expected for `[skip ci]`.
+- Snapshot: `logs/montana-time-capsule/gh-run-list-exacthead-be03a58900e2bd2cd439ec7ba69fe664f0b63890-20260524T001000Z.json`

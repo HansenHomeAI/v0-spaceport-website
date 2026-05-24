@@ -256,5 +256,6 @@
 [2026-05-23T23:47:52Z] montana-time-capsule heartbeat -> no-spend gates pass (SageMaker Completed; S3 present; viewer+proxy 200; CI snapshot) -> commit+push
 [2026-05-24T00:04:04Z] friday-20260522 ingest -> copied 1776 SD photos, streamed ZIP to spaceport-uploads-staging, validated remote ZIP count, launched SfM friday-mtc-20260524T0001Z-sfm -> next: heartbeat monitor SfM
 [2026-05-24T00:09:00Z] friday-20260522 sfm -> CloudWatch live; extracted 1776 images; GPS+orientation priors found on all images -> next: monitor SfM to terminal
+[2026-05-24T00:10:00Z] friday-20260522 postpush -> exact-head gh runs empty as expected for [skip ci] -> next: heartbeat monitor SfM
 [2026-05-24T00:06:18Z] heartbeat-no-spend -> HMC jobs Completed + viewer 200 + CI snapshot ok -> commit+push ledger
 [2026-05-24T00:07:28Z] postpush-ci-snapshot -> exact-head empty ([skip ci]); branch runs still green -> idle
