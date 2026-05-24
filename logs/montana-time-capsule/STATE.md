@@ -1,5 +1,34 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-24T18:46:50Z HEARTBEAT monitor (Friday): no-spend verification; SfM/3DGS/compression all Completed; public meta.json still 404
+
+- Git: agent-40136728-montana-time-capsule @ a0592fd5b97cfff047d9ddbb54a107d97b4a800d (`chore: mtc heartbeat post-push 20260524T182736Z [skip ci]`)
+- Evidence stamp: 20260524T184650Z
+- Git proof:
+  - logs/montana-time-capsule/git-head-20260524T184406Z.txt
+  - logs/montana-time-capsule/git-branch-20260524T184406Z.txt
+  - logs/montana-time-capsule/git-status-20260524T184406Z.txt
+  - logs/montana-time-capsule/git-log1-20260524T184406Z.txt
+- AWS (us-west-2):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T184539Z.json (region: logs/montana-time-capsule/aws-config-region-20260524T184539Z.txt)
+  - guardrail visibility (InProgress lists):
+    - logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T184539Z.json
+    - logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T184539Z.json
+  - Friday canonical run describes:
+    - logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T184539Z.json (Completed)
+    - logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T184548Z.json (Completed)
+    - logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T184548Z.json (Completed)
+- S3 outputs (Friday):
+  - SfM output listing (tail): logs/montana-time-capsule/s3-ls-friday-colmap-20260524T184602Z.txt
+  - 3DGS output listing (tail): logs/montana-time-capsule/s3-ls-friday-3dgs-20260524T184602Z.txt
+  - compressed bundle listing (tail): logs/montana-time-capsule/s3-ls-friday-compressed-20260524T184602Z.txt
+  - staging meta head (OK): logs/montana-time-capsule/s3api-head-object-staging-friday-meta-20260524T184602Z.json
+  - public meta head (404): logs/montana-time-capsule/s3api-head-object-public-friday-meta-20260524T184610Z.err
+- GitHub Actions:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T184633Z.json
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-a0592fd5b97cfff047d9ddbb54a107d97b4a800d-20260524T184633Z.json
+- Decision: do **not** re-launch Friday compute (`friday-mtc-20260524T0001Z` already Completed end-to-end); next gate remains public publish/reachability for `spaceport-ml-processing-public/.../meta.json`.
+
 ## 2026-05-24T18:27:36Z HEARTBEAT monitor - post-push reconfirm: exact-head CI empty due `[skip ci]`; hmc-state refreshed
 
 - Git: agent-40136728-montana-time-capsule @ cac8e7303575bb9575a233110d9ae9338943907b (`chore: mtc heartbeat post-push 20260524T182704Z [skip ci]`)
@@ -10314,3 +10343,9 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - GitHub Actions (gh):
   - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T184428Z.json
   - exact-head runs (0; expected due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-a0592fd5b97cfff047d9ddbb54a107d97b4a800d-20260524T184428Z.json
+
+## 2026-05-24T18:47:22Z HEARTBEAT monitor - post-push GitHub confirmation: exact-head workflows empty due `[skip ci]`
+
+- Git: agent-40136728-montana-time-capsule @ aff97ac33045f53b63b01b275a5cfe5937eb3af3 (`chore: hmc mtc heartbeat 20260524T1845Z [skip ci]`)
+- Evidence stamp: 20260524T184722Z
+- GitHub Actions exact-head runs (0): logs/montana-time-capsule/gh-run-list-exact-head-aff97ac33045f53b63b01b275a5cfe5937eb3af3-postpush-20260524T184722Z.json
