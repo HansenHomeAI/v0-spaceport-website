@@ -29,6 +29,17 @@
   - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-a0592fd5b97cfff047d9ddbb54a107d97b4a800d-20260524T184633Z.json
 - Decision: do **not** re-launch Friday compute (`friday-mtc-20260524T0001Z` already Completed end-to-end); next gate remains public publish/reachability for `spaceport-ml-processing-public/.../meta.json`.
 
+## 2026-05-24T18:48:05Z HEARTBEAT monitor - post-push reconfirm: exact-head CI empty due `[skip ci]`
+
+- Git: agent-40136728-montana-time-capsule @ 1ddc5abb47cfe35a91b971e2a93ef7ab73b426e4 (`chore: friday mtc heartbeat evidence 20260524T184650Z [skip ci]`)
+- Evidence stamp: 20260524T184805Z
+- Git proof:
+  - logs/montana-time-capsule/git-head-20260524T184805Z.txt
+  - logs/montana-time-capsule/git-branch-20260524T184805Z.txt
+  - logs/montana-time-capsule/git-status-20260524T184805Z.txt
+  - logs/montana-time-capsule/git-log1-20260524T184805Z.txt
+- GitHub Actions exact-head runs (0; expected due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-1ddc5abb47cfe35a91b971e2a93ef7ab73b426e4-20260524T184755Z.json
+
 ## 2026-05-24T18:27:36Z HEARTBEAT monitor - post-push reconfirm: exact-head CI empty due `[skip ci]`; hmc-state refreshed
 
 - Git: agent-40136728-montana-time-capsule @ cac8e7303575bb9575a233110d9ae9338943907b (`chore: mtc heartbeat post-push 20260524T182704Z [skip ci]`)
@@ -10349,3 +10360,15 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - Git: agent-40136728-montana-time-capsule @ aff97ac33045f53b63b01b275a5cfe5937eb3af3 (`chore: hmc mtc heartbeat 20260524T1845Z [skip ci]`)
 - Evidence stamp: 20260524T184722Z
 - GitHub Actions exact-head runs (0): logs/montana-time-capsule/gh-run-list-exact-head-aff97ac33045f53b63b01b275a5cfe5937eb3af3-postpush-20260524T184722Z.json
+
+## 2026-05-24T18:48:03Z HEARTBEAT monitor - HMC canonical hmc-mtc-20260520T2015Z: refreshed evidence after post-push (terminal + preview proxy 200; public meta still 404)
+
+- Evidence stamp: 20260524T184803Z
+- SageMaker terminal reconfirm:
+  - InProgress processing=0: logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T184803Z.json
+  - InProgress training=0: logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T184803Z.json
+- S3:
+  - staging meta.json head (200): logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-meta-20260524T184803Z.json
+  - public meta.json head remains 404 (spaceport-ml-processing): logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-hmc-mtc-20260520T2015Z-meta-20260524T184803Z.err
+- Preview proxy reachability:
+  - meta.json via /api/sogs-proxy (HTTP 200): logs/montana-time-capsule/curlD-sogs-proxy-meta-20260524T184803Z.headers (url: logs/montana-time-capsule/sogs-proxy-meta-url-20260524T184803Z.txt)
