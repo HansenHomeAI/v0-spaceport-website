@@ -19,33 +19,34 @@
   - list: logs/montana-time-capsule/s3api-list-objects-friday-mtc-20260524T0001Z-colmap-20260524T062932Z.json (KeyCount: 0)
 - Next step: wait for SfM to complete; then run the single guarded `--launch` command for pinned Montana 3DGS.
 
-## 2026-05-24T06:27:33Z HEARTBEAT monitor (HMC) - no-spend reconfirm: canonical HMC still terminal Completed + no InProgress HMC jobs + supersplat bundle present + Pages preview alias resolved (deterministic) + hosted viewer (skybox/no-sky) HTTP 200 + sogs-proxy meta.json HTTP 200 + exact-head Pages+CDK green
+## 2026-05-24T06:31:12Z HEARTBEAT monitor (HMC) - no-spend reconfirm: canonical HMC still terminal Completed + no InProgress HMC jobs + supersplat bundle present + hosted viewer (skybox/no-sky) HTTP 200 + sogs-proxy meta.json HTTP 200 + exact-head workflows empty due `[skip ci]` (preserve last green Pages+CDK from prior non-skip head)
 
-- Git: agent-40136728-montana-time-capsule @ 16f29321bfe9c53c2c7822ff41ccfc8e12fdf482 (`chore: trigger Pages preview 20260524T061531Z`) (clean)
+- Git: agent-40136728-montana-time-capsule @ cfd148ba6c08cd5b0844182d16708ada96ba5d80 (`chore: record Pages redeploy proof 20260524T0625Z [skip ci]`) (dirty: new logs only)
+- GitHub Actions (exact-head):
+  - exact-head list (count=0): logs/montana-time-capsule/gh-run-list-exact-head-cfd148ba-20260524T063112Z.json
+  - last green branch deploy for prior non-skip head 16f29321...: logs/montana-time-capsule/gh-run-list-pages-branch-20260524T063018Z.json + logs/montana-time-capsule/gh-run-list-cdk-branch-20260524T063018Z.json
+  - Pages run 26353779608 log (preview URL source): logs/montana-time-capsule/gh-run-view-pages-20260524T062442Z.log
+- Preview URL used for reachability checks:
+  - alias: logs/montana-time-capsule/preview-url-20260524T062440Z.txt
+  - hash: logs/montana-time-capsule/preview-hash-url-20260524T062440Z.txt
 - AWS (us-west-2; aws=/opt/homebrew/bin/aws):
-  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T062442Z.json
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T063112Z.json
   - canonical HMC SageMaker status (all Completed):
-    - SfM: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260524T062442Z.json
-    - 3DGS: logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T062442Z.json
-    - compression: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260524T062442Z.json
+    - SfM: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260524T063112Z.json
+    - 3DGS: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260524T063112Z.json
+    - compression: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260524T063112Z.json
   - guardrail (canonical run prefix; expected empty InProgress lists):
-    - processing: logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T062442Z.json
-    - training: logs/montana-time-capsule/sagemaker-list-training-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T062442Z.json
+    - processing: logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T063112Z.json
+    - training: logs/montana-time-capsule/sagemaker-list-training-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T063112Z.json
 - S3 supersplat bundle (still present):
-  - list: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T062442Z.txt
-  - head meta.json: logs/montana-time-capsule/s3api-head-object-compressed-hmc-mtc-20260520T2015Z-meta-20260524T062442Z.json
-  - head background_skybox.webp: logs/montana-time-capsule/s3api-head-object-compressed-hmc-mtc-20260520T2015Z-background_skybox-webp-20260524T062442Z.json
-- GitHub Actions (exact-head for current head 16f29321...):
-  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-agent-40136728-20260524T062658Z.json
-  - Pages run 26353779608 success log: logs/montana-time-capsule/gh-run-view-pages-20260524T062442Z.log
-- Preview URL discovery (from Pages run 26353779608):
-  - alias+hash: logs/montana-time-capsule/preview-url-20260524T062442Z.txt
-- Hosted preview viewer reachability (Origin header set):
-  - base headers (200): logs/montana-time-capsule/curlI-preview-base-20260524T062442Z.headers
-  - /viewer route check (404 evidence): logs/montana-time-capsule/curlI-viewer-skybox-20260524T062442Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-20260524T062442Z.headers
-  - /sogs-migrated-viewer skybox (200): logs/montana-time-capsule/curlI-viewer-skybox-fixed-20260524T062442Z.headers (url=logs/montana-time-capsule/viewer-sky-url-fixed-20260524T062442Z.txt)
-  - /sogs-migrated-viewer no-sky (200): logs/montana-time-capsule/curlI-viewer-nosky-fixed-20260524T062442Z.headers (url=logs/montana-time-capsule/viewer-nosky-url-fixed-20260524T062442Z.txt)
-  - sogs-proxy meta.json (200): logs/montana-time-capsule/curlI-sogs-proxy-meta-fixed-20260524T062442Z.headers (url=logs/montana-time-capsule/sogs-proxy-meta-url-fixed-20260524T062442Z.txt)
+  - list: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T063112Z.txt
+  - head meta.json: logs/montana-time-capsule/s3api-head-object-compressed-hmc-mtc-20260520T2015Z-meta-20260524T063112Z.json
+  - head background_skybox.webp: logs/montana-time-capsule/s3api-head-object-compressed-hmc-mtc-20260520T2015Z-background_skybox-webp-20260524T063112Z.json
+- Hosted preview viewer reachability (Origin header set; HTTP 200s):
+  - base headers: logs/montana-time-capsule/curlI-preview-base-20260524T063112Z.headers
+  - skybox headers: logs/montana-time-capsule/curlI-viewer-skybox-20260524T063112Z.headers (url=logs/montana-time-capsule/viewer-sky-url-20260524T063112Z.txt)
+  - no-sky headers: logs/montana-time-capsule/curlI-viewer-nosky-20260524T063112Z.headers (url=logs/montana-time-capsule/viewer-nosky-url-20260524T063112Z.txt)
+  - sogs-proxy meta.json headers: logs/montana-time-capsule/curlI-sogs-proxy-meta-20260524T063112Z.headers (url=logs/montana-time-capsule/sogs-proxy-meta-url-20260524T063112Z.txt)
 
 ## 2026-05-24T06:25:10Z HEARTBEAT monitor (HMC) - Pages preview redeployed (alias+hash resolved) + CDK Deploy green + canonical HMC still terminal Completed + viewer skybox/no-sky still HTTP 200
 
