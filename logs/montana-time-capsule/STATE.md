@@ -1,5 +1,27 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-24T20:25:02Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: SfM/3DGS/compression all Completed; public meta.json HTTP 200; viewer sky/no-sky HTTP 200 + screenshots; no new compute launched
+
+- Git: agent-40136728-montana-time-capsule @ 99926ed779f7e0b65d2a813f4c6572fa2f31ec10 (`chore: hmc mtc heartbeat evidence 20260524T2008Z [skip ci]`)
+- Evidence stamp: 20260524T202502Z
+- AWS (us-west-2; no spend):
+  - identity: logs/montana-time-capsule/aws-sts-20260524T202502Z.json (region: logs/montana-time-capsule/aws-region-20260524T202502Z.txt; aws bin: logs/montana-time-capsule/aws-bin-20260524T202502Z.txt)
+  - InProgress guardrail: logs/montana-time-capsule/sm-list-processing-inprogress-20260524T202502Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260524T202502Z.json (counts: 0/0)
+  - SfM describe: logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T202502Z.json (Completed)
+  - 3DGS describe: logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T202502Z.json (Completed)
+  - compression describe: logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T202502Z.json (Completed)
+- S3 outputs:
+  - SfM COLMAP listing (10.5 GiB): logs/montana-time-capsule/s3ls-friday-mtc-20260524T0001Z-colmap-20260524T202502Z.txt
+  - compressed staging listing: logs/montana-time-capsule/s3ls-friday-mtc-20260524T0001Z-compressed-20260524T202502Z.txt
+  - public meta head (OK): logs/montana-time-capsule/s3-head-public-meta-friday-mtc-20260524T0001Z-20260524T202502Z.json
+- Public reachability (HTTP):
+  - public meta HEAD: logs/montana-time-capsule/curl-head-public-meta-friday-mtc-20260524T0001Z-20260524T202502Z.txt
+  - viewer sky/no-sky HEAD: logs/montana-time-capsule/curl-head-viewer-sky-20260524T202502Z.txt + logs/montana-time-capsule/curl-head-viewer-nosky-20260524T202502Z.txt
+  - viewer screenshots: logs/montana-time-capsule/screenshots/viewer-sky-20260524T202502Z.png + logs/montana-time-capsule/screenshots/viewer-nosky-20260524T202502Z.png
+- GitHub Actions:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260524T202502Z.json
+  - exact-head runs (0 expected due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-99926ed779f7e0b65d2a813f4c6572fa2f31ec10-20260524T202502Z.json
+
 ## 2026-05-24T20:08:13Z HEARTBEAT monitor (HMC canonical): no-spend reconfirm; terminal jobs + staging bundle OK; public meta.json still 404; hosted viewer 200; exact-head CI=0 expected due `[skip ci]`
 
 - Git: agent-40136728-montana-time-capsule @ 5a11960e55da28a464cf08ab576cf90d04fcaffe (`chore: mtc post-push gh snapshot 20260524T2007Z [skip ci]`)

@@ -1,0 +1,17 @@
+=== stamp 20260524T202433Z ===
+--- git branch/head/status ---
+agent-40136728-montana-time-capsule
+99926ed779f7e0b65d2a813f4c6572fa2f31ec10
+?? logs/montana-time-capsule/_heartbeat_ts_20260524T202433Z.txt
+?? logs/montana-time-capsule/heartbeat-evidence-20260524T202433Z.txt
+--- aws identity/region ---
+--- sagemaker describe ---
+--- s3 staging bundle list (top) ---
+--- s3 staging meta head ---
+--- s3 public meta head (expected 404 if unpublished) ---
+--- viewer reachability ---
+/ 
+/sky 
+/no-sky 
+/proxy-meta.json 
+--- gh actions (exact head + branch) ---

@@ -1,0 +1,57 @@
+=== stamp 20260524T202525Z ===
+--- git ---
+branch=agent-40136728-montana-time-capsule
+head=99926ed779f7e0b65d2a813f4c6572fa2f31ec10
+?? logs/montana-time-capsule/_heartbeat_ts_20260524T202433Z.txt
+?? logs/montana-time-capsule/_heartbeat_ts_20260524T202451Z.txt
+?? logs/montana-time-capsule/_heartbeat_ts_20260524T202502Z.txt
+?? logs/montana-time-capsule/aws-bin-20260524T202502Z.txt
+?? logs/montana-time-capsule/aws-region-20260524T202502Z.txt
+?? logs/montana-time-capsule/aws-sts-20260524T202433Z.json
+?? logs/montana-time-capsule/aws-sts-20260524T202451Z.json
+?? logs/montana-time-capsule/aws-sts-20260524T202502Z.json
+?? logs/montana-time-capsule/git-branch-20260524T202433Z.txt
+?? logs/montana-time-capsule/git-branch-20260524T202451Z.txt
+?? logs/montana-time-capsule/git-branch-20260524T202502Z.txt
+?? logs/montana-time-capsule/git-head-20260524T202433Z.txt
+?? logs/montana-time-capsule/git-head-20260524T202451Z.txt
+?? logs/montana-time-capsule/git-head-20260524T202502Z.txt
+?? logs/montana-time-capsule/git-status-20260524T202433Z.txt
+?? logs/montana-time-capsule/git-status-20260524T202451Z.txt
+?? logs/montana-time-capsule/git-status-20260524T202502Z.txt
+?? logs/montana-time-capsule/heartbeat-evidence-20260524T202433Z.txt
+?? logs/montana-time-capsule/heartbeat-evidence-20260524T202525Z.txt
+?? logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T202502Z.json
+?? logs/montana-time-capsule/sm-list-processing-inprogress-20260524T202502Z.json
+?? logs/montana-time-capsule/sm-list-training-inprogress-20260524T202502Z.json
+--- aws identity ---
+{
+    "UserId": "975050048887",
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root"
+}
+region=us-west-2
+--- sagemaker statuses ---
+Completed
+Completed
+Completed
+--- s3 staging meta head ---
+{
+    "AcceptRanges": "bytes",
+    "LastModified": "2026-05-21T20:25:10+00:00",
+    "ContentLength": 1359,
+    "ETag": "\"994e5d57f052e552b8cce2e05d4debf4\"",
+    "VersionId": ".DMI48S5bbpRJy04I8F2SEJ85.ppT_Ev",
+    "ContentType": "application/octet-stream",
+    "ServerSideEncryption": "aws:kms",
+    "Metadata": {},
+    "SSEKMSKeyId": "arn:aws:kms:us-west-2:975050048887:key/e498a88e-6b23-44e3-90bd-f35b25d6e420"
+}
+--- s3 public meta head (may 404) ---
+--- viewer http codes ---
+/ 
+/sky 
+/no-sky 
+/proxy-meta.json 
+--- gh exact head runs ---
+--- gh branch runs ---
