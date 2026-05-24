@@ -7180,3 +7180,14 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remain
 - Automation:
   - Created active 20-minute heartbeat automation `friday-20260522-montana-heartbeat-monitor`.
   - Next unblocked step: monitor SfM until terminal. If SfM completes, run the same guarded runner command with `--launch` exactly once to start pinned Montana 3DGS. If SfM fails, capture exact SageMaker describe, CloudWatch logs, S3 listing, and failure reason before patching or retrying any smaller stage.
+
+## 2026-05-24T00:09:00Z Friday 2026-05-22 SfM live log proof
+
+- SageMaker processing job `friday-mtc-20260524T0001Z-sfm` is `InProgress` with `ProcessingStartTime=2026-05-23T18:03:51.397000-06:00`.
+- CloudWatch stream: `friday-mtc-20260524T0001Z-sfm/algo-1-1779581031`
+- Tail snapshot: `logs/montana-time-capsule/cloudwatch-get-log-events-friday-mtc-20260524T0001Z-sfm-20260524T000900Z-tail80.json`
+- Log proof:
+  - input ZIP present in container: `1779580731329-friday-20260522-new-property-flat.zip`, `7514816344` bytes
+  - extracted image count: `1776`
+  - EXIF priors: GPS on `1776` images; orientation priors on `1776` images
+- Next: continue polling SfM. S3 output remains EndOfJob, so empty COLMAP output is expected until the processing job finishes.
