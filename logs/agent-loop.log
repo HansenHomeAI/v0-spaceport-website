@@ -387,3 +387,4 @@
 [2026-05-24T15:49:08Z] friday heartbeat -> friday-mtc-20260524T0001Z terminal; public meta 404; preview viewer/proxy 200 -> next: no-spend monitor
 [2026-05-24T16:11:30Z] friday heartbeat -> SageMaker terminal; InProgress=0; public meta 404; fixed aws-cli resolution in cv_hr_time_capsule.py -> commit+push
 [2026-05-24T16:12:25Z] post-push -> gh exact-head run list empty (skip ci)
+[2026-05-24T16:14:43Z] hmc-mtc heartbeat -> verified terminal; InProgress=0; staging meta present; viewer/proxy 200; public meta 404; updated hmc-state.json@20260524T161312Z -> next: await public publish gate
