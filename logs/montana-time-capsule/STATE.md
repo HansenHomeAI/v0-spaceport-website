@@ -9446,3 +9446,15 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
   - exact-head runs (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-159fd3351e93a379226bab0745877c25c6b488cf-20260524T140557Z.json
 - Summary JSON refreshed: logs/montana-time-capsule/hmc-state.json
 - Next step: continue no-spend monitoring; acceptance gate remains publishing the HMC bundle to the public bucket + visual proof screenshots (sky/no-sky) on request.
+
+### 2026-05-24T14:07:40Z post-push exact-head workflow check (expected empty due [skip ci])
+
+- Git: agent-40136728-montana-time-capsule @ 5f1fa4ae56e861ab85c1969956c76757007aa75a ()
+- GitHub Actions (exact-head runs count=0): logs/montana-time-capsule/gh-run-list-exact-head-5f1fa4ae56e861ab85c1969956c76757007aa75a-20260524T140740Z.json
+- Summary JSON updated: logs/montana-time-capsule/hmc-state.json
+
+### 2026-05-24T14:07:40Z post-push exact-head workflow check (expected empty due [skip ci])
+
+- Git: agent-40136728-montana-time-capsule @ 5f1fa4ae56e861ab85c1969956c76757007aa75a (`chore: montana heartbeat no-spend tick 20260524T140557Z [skip ci]`)
+- GitHub Actions (exact-head runs count=0): logs/montana-time-capsule/gh-run-list-exact-head-5f1fa4ae56e861ab85c1969956c76757007aa75a-20260524T140740Z.json
+- Summary JSON updated: logs/montana-time-capsule/hmc-state.json
