@@ -7,7 +7,7 @@
 
 ## 2026-05-24T06:46:34Z HEARTBEAT monitor (FRIDAY) - canonical Friday SfM still InProgress; CW advanced (last_event_utc=2026-05-24T06:34:35.649Z); S3 colmap still empty; no new jobs launched
 
-- Git: agent-40136728-montana-time-capsule @ 80d7001949f971040b564330636563fe56d5b161 (`chore: record exact-head empty CI list 20260524T0634Z [skip ci]`) (clean; exact-head workflows expected 0)
+- Git: agent-40136728-montana-time-capsule @ 5a0515a55805302d1f116c2984188d3bae2c1125 (`chore: friday heartbeat 20260524T0646Z [skip ci]`) (clean; exact-head workflows expected 0)
 - AWS (us-west-2; aws=/opt/homebrew/bin/aws):
   - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T064439Z.json
   - describe SfM: logs/montana-time-capsule/sagemaker-describe-friday-mtc-20260524T0001Z-sfm-20260524T064452Z.json (status=InProgress)
@@ -18,7 +18,7 @@
 - S3 SfM output (EndOfJob upload; expected empty while InProgress):
   - list: logs/montana-time-capsule/s3-list-colmap-20260524T064458Z.json (KeyCount: 0)
 - GitHub Actions (exact-head):
-  - commit runs (count=0): logs/montana-time-capsule/gh-run-list-commit-20260524T064612Z.json
+  - commit runs (count=0): logs/montana-time-capsule/gh-run-list-exact-head-5a0515a5-20260524T064749Z.json
   - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-20260524T064611Z.json
 - Next step: wait for SfM to complete; then run the single guarded `--launch` command for pinned Montana 3DGS.
 
