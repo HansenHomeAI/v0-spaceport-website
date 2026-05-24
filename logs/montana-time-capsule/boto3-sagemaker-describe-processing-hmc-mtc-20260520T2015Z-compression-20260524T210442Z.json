@@ -1,0 +1,74 @@
+{
+  "AppSpecification": {
+    "ContainerEntrypoint": [
+      "python3",
+      "compress.py"
+    ],
+    "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab"
+  },
+  "CreationTime": "2026-05-21 14:16:49.244000-06:00",
+  "Environment": {
+    "AWS_DEFAULT_REGION": "us-west-2",
+    "PYTHONUNBUFFERED": "1"
+  },
+  "LastModifiedTime": "2026-05-21 14:26:51.110000-06:00",
+  "ProcessingEndTime": "2026-05-21 14:25:14.447000-06:00",
+  "ProcessingInputs": [
+    {
+      "AppManaged": false,
+      "InputName": "gaussian-model",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input",
+        "S3CompressionType": "None",
+        "S3DataDistributionType": "FullyReplicated",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/3dgs/hmc-mtc-20260520T2015Z/hmc-mtc-20260520T2015Z-3dgs/output/model.tar.gz"
+      }
+    }
+  ],
+  "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/hmc-mtc-20260520T2015Z-compression",
+  "ProcessingJobName": "hmc-mtc-20260520T2015Z-compression",
+  "ProcessingJobStatus": "Completed",
+  "ProcessingOutputConfig": {
+    "Outputs": [
+      {
+        "AppManaged": false,
+        "OutputName": "compressed-model",
+        "S3Output": {
+          "LocalPath": "/opt/ml/processing/output",
+          "S3UploadMode": "EndOfJob",
+          "S3Uri": "s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/"
+        }
+      }
+    ]
+  },
+  "ProcessingResources": {
+    "ClusterConfig": {
+      "InstanceCount": 1,
+      "InstanceType": "ml.g4dn.xlarge",
+      "VolumeSizeInGB": 50
+    }
+  },
+  "ProcessingStartTime": "2026-05-21 14:17:28.807000-06:00",
+  "ResponseMetadata": {
+    "HTTPHeaders": {
+      "cache-control": "no-cache, no-store, must-revalidate",
+      "content-length": "1490",
+      "content-security-policy": "frame-ancestors 'none'",
+      "content-type": "application/x-amz-json-1.1",
+      "date": "Sun, 24 May 2026 21:04:43 GMT",
+      "strict-transport-security": "max-age=47304000; includeSubDomains",
+      "x-amzn-requestid": "928dc099-aa77-434b-be10-58e55a334932",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY"
+    },
+    "HTTPStatusCode": 200,
+    "RequestId": "928dc099-aa77-434b-be10-58e55a334932",
+    "RetryAttempts": 0
+  },
+  "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+  "StoppingCondition": {
+    "MaxRuntimeInSeconds": 86400
+  }
+}

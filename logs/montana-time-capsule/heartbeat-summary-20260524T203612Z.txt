@@ -1,0 +1,16 @@
+stamp=20260524T203612Z
+branch=agent-40136728-montana-time-capsule
+head=9cf62e28b890a281056ec6528dd15a623579d0bf
+aws_account=975050048887
+aws_arn=arn:aws:iam::975050048887:root
+region=us-west-2
+sagemaker_sfm=Completed
+sagemaker_3dgs=Completed
+sagemaker_compression=Completed
+staging_meta_content_length=1359
+public_meta_http=404
+viewer_base_http=200
+viewer_sky_http=404
+viewer_nosky_http=404
+viewer_proxy_http=404
+gh_exact_head_run_count=0

@@ -1,0 +1,5 @@
+{
+  "bucket": "spaceport-ml-processing",
+  "error": "ClientError('An error occurred (404) when calling the HeadObject operation: Not Found')",
+  "key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json"
+}

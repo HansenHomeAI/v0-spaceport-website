@@ -1,0 +1,4 @@
+/ 200
+/sky 404
+/no-sky 404
+/proxy-meta.json 404
