@@ -21,6 +21,8 @@
 - GitHub Actions:
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260524T202502Z.json
   - exact-head runs (0 expected due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-99926ed779f7e0b65d2a813f4c6572fa2f31ec10-20260524T202502Z.json
+  - post-push branch snapshot: logs/montana-time-capsule/gh-run-list-branch-postpush-20260524T202851Z.json
+  - post-push exact-head runs (0 expected due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-3e37a0c59c07ea9bde6c65035f3fb2ff0f1fd080-postpush-20260524T202851Z.json
 
 ## 2026-05-24T20:08:13Z HEARTBEAT monitor (HMC canonical): no-spend reconfirm; terminal jobs + staging bundle OK; public meta.json still 404; hosted viewer 200; exact-head CI=0 expected due `[skip ci]`
 

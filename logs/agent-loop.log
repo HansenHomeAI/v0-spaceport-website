@@ -432,3 +432,4 @@
 [2026-05-24T20:07:29Z] post-push -> exact-head workflows=0 (skip ci) for 415c50ae -> next: idle/no-spend
 [2026-05-24T20:09:24Z] heartbeat hmc-mtc-20260520T2015Z -> verified terminal + viewer 200; public meta 404; exact-head CI 0 ([skip ci]) -> next: wait for explicit publish/public reachability gate
 [2026-05-24T20:25:02Z] heartbeat friday-mtc-20260524T0001Z -> terminal + public meta 200 + sky/no-sky screenshots -> next: optional deeper visual QA
+[2026-05-24T20:28:36Z] post-push -> exact-head workflows=0 (skip ci) for 3e37a0c5 -> next: idle/no-spend
