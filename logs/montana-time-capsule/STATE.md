@@ -21,6 +21,13 @@
   - no-sky: logs/montana-time-capsule/viewer-proof-nosky-friday-mtc-20260524T0001Z-20260524T151019Z.png
 - Next step: decide/pick the intended “public bundle” publish path for Friday (staging+proxy+viewer proof are green).
 
+## 2026-05-24T15:11:32Z HEARTBEAT monitor - post-push GitHub confirmation: exact-head workflows empty due `[skip ci]`
+
+- Git: agent-40136728-montana-time-capsule @ 1515e545ae20709f3b347a79c3b4b611e3254600 (`chore: friday mtc guarded refresh proof 20260524T1510Z [skip ci]`)
+- Evidence stamp: 20260524T151132Z
+- GitHub Actions:
+  - exact-head runs for 1515e545… (expected empty): logs/montana-time-capsule/gh-run-list-exact-head-1515e545ae20709f3b347a79c3b4b611e3254600-20260524T151131Z.json
+
 ## 2026-05-24T15:06:41Z HEARTBEAT monitor - no-spend acceptance refresh: canonical HMC still terminal; staging bundle present; preview viewer/proxy HTTP 200; public bundle still 404; exact-head CI empty due `[skip ci]`
 
 - Git: agent-40136728-montana-time-capsule @ 82a6d71936fece5387013e17df865c365001e683 (dirty -> heartbeat evidence files)
