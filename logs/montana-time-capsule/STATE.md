@@ -8089,3 +8089,9 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - GitHub Actions snapshots:
   - branch: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T054909Z.json
   - exact head: logs/montana-time-capsule/gh-run-list-exact-head-20260524T054909Z.json
+
+## 20260524T054951Z postpush gh snapshot
+
+- Git: agent-40136728-montana-time-capsule @ 3f77ff1754d621122037ff0fb9da3d404674d3d7
+- gh branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260524T054951Z.json
+- gh exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T054951Z.json
