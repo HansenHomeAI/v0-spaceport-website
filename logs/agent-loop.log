@@ -307,3 +307,5 @@
 [2026-05-24T06:33:02Z] hmc-acceptance-check -> exact-head skip ci; last Pages+CDK still green; viewer+sogs-proxy 200 -> next: await new gate
 [2026-05-24T06:47:06Z] HMC heartbeat -> Completed statuses + viewer 200 + exact-head ci empty (skip ci) -> commit ledger
 [2026-05-24T06:47:11Z] FRIDAY heartbeat -> SfM InProgress; CW last_event=2026-05-24T06:34:35.649Z; S3 KeyCount=0 -> wait
+[2026-05-24T07:07:00Z] FRIDAY heartbeat -> SfM InProgress; CW last_event=2026-05-24T07:05:44.701Z; S3 KeyCount=0 -> next wait for completion then launch 3DGS
+[2026-05-24T07:07:37Z] hmc-acceptance-check -> canonical jobs Completed; bundle present; preview base+viewer+sogs-proxy 200 -> next: await new gate
