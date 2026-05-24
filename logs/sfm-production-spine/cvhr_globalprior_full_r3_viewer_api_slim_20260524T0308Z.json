@@ -1,0 +1,15 @@
+{
+  "exactPointCount": 624046,
+  "registeredImageCount": 1702,
+  "sampledPointCount": 160000,
+  "sourceSizeBytes": 95682109,
+  "seamDebug": {
+    "strategy": "seam_graph_sim3_v1",
+    "decision": "pass",
+    "acceptedEdgeCount": 8,
+    "rejectedEdgeCount": 24,
+    "promotionBlockers": [],
+    "cycleStatus": "pass",
+    "culledPointCount": 77114
+  }
+}

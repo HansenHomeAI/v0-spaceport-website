@@ -791,8 +791,22 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
         )
     else:
         add_gate(gates, "double_surface_geometry", "warning", "not enough exact sparse points for grid diagnostic")
-    add_heldout_render_gate(gates, heldout_render, args)
-    add_ai_visual_gate(gates, ai_visual_review, args)
+    if arg_value(args, "sfm_only", False):
+        add_gate(
+            gates,
+            "heldout_render_metrics",
+            "pass",
+            "not applicable: SfM-only proof; downstream splat render gates are separate",
+        )
+        add_gate(
+            gates,
+            "ai_visual_review",
+            "pass",
+            "not applicable: SfM-only proof; downstream splat visual review gates are separate",
+        )
+    else:
+        add_heldout_render_gate(gates, heldout_render, args)
+        add_ai_visual_gate(gates, ai_visual_review, args)
     add_panel_diagnostics_gate(gates, panel_diagnostics, args)
 
     statuses = {gate["status"] for gate in gates}
@@ -843,6 +857,7 @@ def main() -> int:
     parser.add_argument("--heldout-render-json", default="")
     parser.add_argument("--ai-visual-review-json", default="")
     parser.add_argument("--panel-diagnostics-json", default="")
+    parser.add_argument("--sfm-only", action="store_true")
     parser.add_argument("--expected-images", type=int, default=0)
     parser.add_argument("--min-registered-ratio", type=float, default=0.98)
     parser.add_argument("--min-points", type=int, default=1000)

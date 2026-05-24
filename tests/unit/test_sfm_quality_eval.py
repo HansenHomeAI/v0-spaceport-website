@@ -84,11 +84,27 @@ class SfmQualityEvalTest(unittest.TestCase):
                     output=str(root / "report.json"),
                 )
             )
+            sfm_only_report = quality_eval.build_report(
+                SimpleNamespace(
+                    sparse_dir=str(sparse),
+                    viewer_api_json="",
+                    sfm_metadata=str(sfm),
+                    reducer_metadata=str(reducer),
+                    sfm_only=True,
+                    expected_images=2,
+                    min_registered_ratio=0.98,
+                    min_points=2,
+                    max_reprojection_error_p95=8.0,
+                    output=str(root / "sfm_only_report.json"),
+                )
+            )
 
         self.assertEqual(report["decision"], "needs_more_proof")
+        self.assertEqual(sfm_only_report["decision"], "promote")
         self.assertEqual(report["summary"]["registered_images"], 2)
         self.assertEqual(report["sparse_points"]["reprojection_error"]["p95"], 1.0)
         self.assertIn("not_run", {gate["status"] for gate in report["gates"]})
+        self.assertNotIn("not_run", {gate["status"] for gate in sfm_only_report["gates"]})
 
     def test_failed_reducer_blocks_promotion(self):
         report = quality_eval.build_report(

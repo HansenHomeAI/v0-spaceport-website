@@ -1090,6 +1090,124 @@ def kept_point_lines_and_coords(
     return point_lines, kept_point_ids, coords
 
 
+def rewrite_points_line_without_ids(points_line: str, removed_point_ids: set[int]) -> str:
+    point_parts = points_line.split()
+    rewritten: list[str] = []
+    for offset in range(0, len(point_parts), 3):
+        if offset + 2 >= len(point_parts):
+            break
+        point_id = int(float(point_parts[offset + 2]))
+        rewritten.extend(
+            (
+                point_parts[offset],
+                point_parts[offset + 1],
+                "-1" if point_id in removed_point_ids else point_parts[offset + 2],
+            )
+        )
+    return " ".join(rewritten)
+
+
+def cull_low_support_global_double_surface_points(
+    point_lines: list[str],
+    *,
+    max_points_per_cell: int = 32,
+) -> tuple[list[str], set[int], dict[str, object]]:
+    """Remove tiny, ambiguous post-merge layered cells without masking real large seams."""
+
+    point_records: list[dict[str, object]] = []
+    coords: list[tuple[float, float, float]] = []
+    for line in point_lines:
+        parts = line.split()
+        if len(parts) < 8:
+            continue
+        coord = (float(parts[1]), float(parts[2]), float(parts[3]))
+        point_records.append(
+            {
+                "id": int(parts[0]),
+                "line": line,
+                "coord": coord,
+                "error": float(parts[7]),
+                "track_length": track_length_from_parts(parts),
+            }
+        )
+        coords.append(coord)
+    if len(point_records) < 16:
+        return point_lines, set(), {
+            "status": "pass_not_enough_points",
+            "removed_point_count": 0,
+            "flagged_cell_count": 0,
+            "removed_cells": [],
+        }
+
+    axes = list(zip(*coords))
+    model_bounds = {
+        axis_name: {"min": min(values), "max": max(values), "span": max(values) - min(values)}
+        for axis_name, values in zip(("x", "y", "z"), axes)
+    }
+    span_x = float(model_bounds.get("x", {}).get("span") or 1.0)
+    span_y = float(model_bounds.get("y", {}).get("span") or 1.0)
+    cell_size = max(max(span_x, span_y) / 48.0, 1.0)
+    min_x = float(model_bounds["x"]["min"])
+    min_y = float(model_bounds["y"]["min"])
+    cells: dict[tuple[int, int], list[dict[str, object]]] = {}
+    for record in point_records:
+        x, y, _ = record["coord"]  # type: ignore[misc]
+        key = (int((float(x) - min_x) / cell_size), int((float(y) - min_y) / cell_size))
+        cells.setdefault(key, []).append(record)
+
+    removed_point_ids: set[int] = set()
+    removed_cells: list[dict[str, object]] = []
+    flagged_but_retained_cells: list[dict[str, object]] = []
+    for key, records in sorted(cells.items()):
+        if len(records) < 8:
+            continue
+        ordered = sorted(float(record["coord"][2]) for record in records)  # type: ignore[index]
+        gaps = [(ordered[index + 1] - ordered[index], index) for index in range(len(ordered) - 1)]
+        if not gaps:
+            continue
+        largest_gap, split_index = max(gaps, key=lambda item: item[0])
+        lower_count = split_index + 1
+        upper_count = len(ordered) - lower_count
+        min_mode_count = max(3, int(len(ordered) * 0.2))
+        local_span = ordered[-1] - ordered[0]
+        tolerance = max(1.5, local_span * 0.35)
+        if largest_gap <= tolerance or lower_count < min_mode_count or upper_count < min_mode_count:
+            continue
+        cell_report = {
+            "cell": [key[0], key[1]],
+            "point_count": len(records),
+            "mode_separation": round(largest_gap, 4),
+            "z_min": round(ordered[0], 4),
+            "z_max": round(ordered[-1], 4),
+        }
+        if len(records) > max_points_per_cell:
+            flagged_but_retained_cells.append(cell_report)
+            continue
+        for record in records:
+            removed_point_ids.add(int(record["id"]))
+        removed_cells.append(cell_report)
+
+    filtered_lines = [
+        line
+        for line in point_lines
+        if line.split() and int(line.split()[0]) not in removed_point_ids
+    ]
+    status = "pass_culled_low_support_cells" if removed_point_ids else "pass_no_low_support_cells"
+    return filtered_lines, removed_point_ids, {
+        "status": status,
+        "removed_point_count": len(removed_point_ids),
+        "removed_cell_count": len(removed_cells),
+        "flagged_but_retained_cell_count": len(flagged_but_retained_cells),
+        "cell_size_m": round(cell_size, 4),
+        "max_points_per_cell": max_points_per_cell,
+        "removed_cells": sorted(removed_cells, key=lambda item: (-float(item["mode_separation"]), item["cell"]))[:20],
+        "flagged_but_retained_cells": sorted(
+            flagged_but_retained_cells,
+            key=lambda item: (-float(item["mode_separation"]), item["cell"]),
+        )[:20],
+    }
+
+
 def transformed_point_coords(points_path: Path, transform: SimilarityTransform) -> list[tuple[float, float, float]]:
     coords: list[tuple[float, float, float]] = []
     for line in non_comment_lines(points_path):
@@ -1301,6 +1419,10 @@ def write_pose_aligned_merge(
     transforms: list[dict[str, object]] = []
     additional_image_lines: list[tuple[list[str], str, dict[int, int]]] = []
     additional_points_lines: list[str] = []
+    global_double_surface_culling: dict[str, object] = {
+        "status": "not_run",
+        "removed_point_count": 0,
+    }
     next_point_id = point_id_range(anchor / "points3D.txt")[1] + 1
     root_transforms: dict[int, SimilarityTransform] = {root_index: identity_similarity()}
     culling_records: list[dict[str, object]] = []
@@ -1448,6 +1570,39 @@ def write_pose_aligned_merge(
         )
         merged_surface_points.extend(kept_leaf_surface_points)
 
+    if strict_production_gates:
+        all_point_lines = anchor_point_lines + additional_points_lines
+        filtered_point_lines, removed_global_point_ids, global_double_surface_culling = (
+            cull_low_support_global_double_surface_points(all_point_lines)
+        )
+        if removed_global_point_ids:
+            kept_global_point_ids = {int(line.split()[0]) for line in filtered_point_lines if line.split()}
+            anchor_point_lines = [
+                line
+                for line in anchor_point_lines
+                if line.split() and int(line.split()[0]) in kept_global_point_ids
+            ]
+            additional_points_lines = [
+                line
+                for line in additional_points_lines
+                if line.split() and int(line.split()[0]) in kept_global_point_ids
+            ]
+            anchor_output_pairs = [
+                (parts, rewrite_points_line_without_ids(points_line, removed_global_point_ids))
+                for parts, points_line in anchor_output_pairs
+            ]
+            additional_image_lines = [
+                (parts, rewrite_points_line_without_ids(points_line, removed_global_point_ids), point_map)
+                for parts, points_line, point_map in additional_image_lines
+            ]
+            for removed_id in sorted(removed_global_point_ids):
+                record_cull(
+                    "global_double_surface_low_support_cell",
+                    -1,
+                    removed_id,
+                    "post_merge_global",
+                )
+
     shutil.copy2(anchor / "cameras.txt", output_dir / "cameras.txt")
     if (anchor / "rigs.txt").exists():
         shutil.copy2(anchor / "rigs.txt", output_dir / "rigs.txt")
@@ -1545,6 +1700,7 @@ def write_pose_aligned_merge(
             "core-track ownership is enforced when a planner manifest is supplied"
         ),
     }
+    seam_report["post_merge_global_double_surface_culling"] = global_double_surface_culling
     if culling_blockers:
         seam_report.setdefault("promotion_blockers", []).append("excessive_duplicate_surface_culling")
     seam_report["seam_local_ba"] = {

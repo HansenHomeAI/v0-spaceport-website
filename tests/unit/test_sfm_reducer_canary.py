@@ -334,6 +334,42 @@ class SfmReducerCanaryTest(unittest.TestCase):
         self.assertIn("excessive_duplicate_surface_culling", report["promotion_blockers"])
         self.assertGreaterEqual(culling["removed_point_count"], 12)
 
+    def test_low_support_global_double_surface_points_are_culled_not_hidden(self):
+        low_support_lines = []
+        for index in range(20):
+            z = 0.0 if index < 10 else 8.0
+            low_support_lines.append(
+                f"{index + 1} {(index % 5) * 0.05:.3f} {(index // 5) * 0.05:.3f} {z:.3f} "
+                "255 0 0 0.5 1 0 2 0 3 0"
+            )
+
+        filtered, removed_ids, audit = reducer_canary.cull_low_support_global_double_surface_points(
+            low_support_lines,
+            max_points_per_cell=32,
+        )
+
+        self.assertEqual(filtered, [])
+        self.assertEqual(len(removed_ids), 20)
+        self.assertEqual(audit["status"], "pass_culled_low_support_cells")
+        self.assertEqual(audit["removed_cell_count"], 1)
+
+        high_support_lines = []
+        for index in range(40):
+            z = 0.0 if index < 20 else 8.0
+            high_support_lines.append(
+                f"{index + 1} {(index % 8) * 0.05:.3f} {(index // 8) * 0.05:.3f} {z:.3f} "
+                "255 0 0 0.5 1 0 2 0 3 0"
+            )
+
+        filtered, removed_ids, audit = reducer_canary.cull_low_support_global_double_surface_points(
+            high_support_lines,
+            max_points_per_cell=32,
+        )
+
+        self.assertEqual(filtered, high_support_lines)
+        self.assertEqual(removed_ids, set())
+        self.assertEqual(audit["flagged_but_retained_cell_count"], 1)
+
     def test_rewrite_model_text_normalizes_image_camera_and_track_ids(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

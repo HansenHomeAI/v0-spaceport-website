@@ -1,0 +1,214 @@
+{
+  "decision": "pass",
+  "leaf_count": 9,
+  "merged_registered_images": 1702,
+  "merged_points3d": 624046,
+  "promotion_blockers": [],
+  "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z/merged-pruned-culled/colmap",
+  "leaf_retention_ratios": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+  ],
+  "merge_strategy": "seam_graph_sim3_v1",
+  "accepted_merge_tree": [
+    {
+      "leaf_a": 0,
+      "leaf_b": 7,
+      "confidence": 253.085077,
+      "shared_registered_images": 232,
+      "strict_decision": "accept",
+      "blockers": []
+    },
+    {
+      "leaf_a": 1,
+      "leaf_b": 2,
+      "confidence": 225.973333,
+      "shared_registered_images": 207,
+      "strict_decision": "accept",
+      "blockers": []
+    },
+    {
+      "leaf_a": 2,
+      "leaf_b": 3,
+      "confidence": 212.268094,
+      "shared_registered_images": 186,
+      "strict_decision": "accept",
+      "blockers": []
+    },
+    {
+      "leaf_a": 2,
+      "leaf_b": 6,
+      "confidence": 175.803597,
+      "shared_registered_images": 178,
+      "strict_decision": "accept",
+      "blockers": []
+    },
+    {
+      "leaf_a": 0,
+      "leaf_b": 4,
+      "confidence": 158.965955,
+      "shared_registered_images": 126,
+      "strict_decision": "accept",
+      "blockers": []
+    },
+    {
+      "leaf_a": 3,
+      "leaf_b": 8,
+      "confidence": 141.009349,
+      "shared_registered_images": 105,
+      "strict_decision": "accept",
+      "blockers": []
+    },
+    {
+      "leaf_a": 0,
+      "leaf_b": 1,
+      "confidence": 129.342244,
+      "shared_registered_images": 94,
+      "strict_decision": "accept",
+      "blockers": []
+    },
+    {
+      "leaf_a": 4,
+      "leaf_b": 5,
+      "confidence": 106.578715,
+      "shared_registered_images": 64,
+      "strict_decision": "accept",
+      "blockers": []
+    }
+  ],
+  "rejected_edge_count": 24,
+  "cycle_consistency": {
+    "status": "pass",
+    "non_tree_edge_count": 4,
+    "failures": [],
+    "checks": [
+      {
+        "leaf_a": 0,
+        "leaf_b": 3,
+        "measured_scale": 0.99865246,
+        "predicted_scale_from_tree": 0.99595702,
+        "scale_cycle_error": 0.00269544,
+        "decision": "pass"
+      },
+      {
+        "leaf_a": 0,
+        "leaf_b": 5,
+        "measured_scale": 0.99951622,
+        "predicted_scale_from_tree": 0.99867783,
+        "scale_cycle_error": 0.00083839,
+        "decision": "pass"
+      },
+      {
+        "leaf_a": 3,
+        "leaf_b": 5,
+        "measured_scale": 0.99976026,
+        "predicted_scale_from_tree": 1.00273185,
+        "scale_cycle_error": 0.00297159,
+        "decision": "pass"
+      },
+      {
+        "leaf_a": 6,
+        "leaf_b": 8,
+        "measured_scale": 1.0084232,
+        "predicted_scale_from_tree": 1.01020684,
+        "scale_cycle_error": 0.00178364,
+        "decision": "pass"
+      }
+    ]
+  },
+  "post_merge_jurisdiction_culling": {
+    "status": "pass",
+    "removed_point_count": 77114,
+    "by_reason": {
+      "no_core_owned_track": 77060,
+      "global_double_surface_low_support_cell": 54
+    }
+  },
+  "post_merge_global_double_surface_culling": {
+    "status": "pass_culled_low_support_cells",
+    "removed_point_count": 54,
+    "removed_cell_count": 5,
+    "flagged_but_retained_cell_count": 0,
+    "cell_size_m": 443.2793,
+    "max_points_per_cell": 32,
+    "removed_cells": [
+      {
+        "cell": [
+          27,
+          18
+        ],
+        "point_count": 9,
+        "mode_separation": 58.2668,
+        "z_min": 184.316,
+        "z_max": 350.5684
+      },
+      {
+        "cell": [
+          25,
+          18
+        ],
+        "point_count": 8,
+        "mode_separation": 15.3404,
+        "z_min": -27.3161,
+        "z_max": 9.8192
+      },
+      {
+        "cell": [
+          21,
+          22
+        ],
+        "point_count": 12,
+        "mode_separation": 12.7027,
+        "z_min": -46.9325,
+        "z_max": -16.6509
+      },
+      {
+        "cell": [
+          11,
+          18
+        ],
+        "point_count": 17,
+        "mode_separation": 8.1361,
+        "z_min": -83.1897,
+        "z_max": -60.5256
+      },
+      {
+        "cell": [
+          21,
+          20
+        ],
+        "point_count": 8,
+        "mode_separation": 3.9834,
+        "z_min": -56.3135,
+        "z_max": -46.9551
+      }
+    ],
+    "flagged_but_retained_cells": []
+  },
+  "planner_manifest": {
+    "source": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z/repair-manifests/leaf-03-expanded-support-r3/chunk_planner_manifest.json",
+    "loaded": true,
+    "local_path": "/private/tmp/cvhr_globalprior_full_r3_reducer_20260524T0259Z/planner_manifest.json"
+  },
+  "upload": {
+    "command": [
+      "aws",
+      "s3",
+      "sync",
+      "/private/tmp/cvhr_globalprior_full_r3_reducer_20260524T0259Z/output_package",
+      "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z/merged-pruned-culled/colmap",
+      "--only-show-errors"
+    ],
+    "returncode": 0,
+    "seconds": 24.17,
+    "stdout_tail": "",
+    "stderr_tail": ""
+  }
+}

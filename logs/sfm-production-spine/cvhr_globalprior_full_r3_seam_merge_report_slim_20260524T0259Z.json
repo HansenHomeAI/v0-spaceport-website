@@ -1,0 +1,181 @@
+{
+  "decision": "pass",
+  "strategy": null,
+  "root_leaf": 2,
+  "accepted_merge_tree": [
+    {
+      "leaf_a": 0,
+      "leaf_b": 7,
+      "confidence": 253.085077,
+      "shared_registered_images": 232,
+      "strict_decision": "accept",
+      "blockers": []
+    },
+    {
+      "leaf_a": 1,
+      "leaf_b": 2,
+      "confidence": 225.973333,
+      "shared_registered_images": 207,
+      "strict_decision": "accept",
+      "blockers": []
+    },
+    {
+      "leaf_a": 2,
+      "leaf_b": 3,
+      "confidence": 212.268094,
+      "shared_registered_images": 186,
+      "strict_decision": "accept",
+      "blockers": []
+    },
+    {
+      "leaf_a": 2,
+      "leaf_b": 6,
+      "confidence": 175.803597,
+      "shared_registered_images": 178,
+      "strict_decision": "accept",
+      "blockers": []
+    },
+    {
+      "leaf_a": 0,
+      "leaf_b": 4,
+      "confidence": 158.965955,
+      "shared_registered_images": 126,
+      "strict_decision": "accept",
+      "blockers": []
+    },
+    {
+      "leaf_a": 3,
+      "leaf_b": 8,
+      "confidence": 141.009349,
+      "shared_registered_images": 105,
+      "strict_decision": "accept",
+      "blockers": []
+    },
+    {
+      "leaf_a": 0,
+      "leaf_b": 1,
+      "confidence": 129.342244,
+      "shared_registered_images": 94,
+      "strict_decision": "accept",
+      "blockers": []
+    },
+    {
+      "leaf_a": 4,
+      "leaf_b": 5,
+      "confidence": 106.578715,
+      "shared_registered_images": 64,
+      "strict_decision": "accept",
+      "blockers": []
+    }
+  ],
+  "rejected_edge_count": 24,
+  "cycle_consistency": {
+    "status": "pass",
+    "non_tree_edge_count": 4,
+    "failures": [],
+    "checks": [
+      {
+        "leaf_a": 0,
+        "leaf_b": 3,
+        "measured_scale": 0.99865246,
+        "predicted_scale_from_tree": 0.99595702,
+        "scale_cycle_error": 0.00269544,
+        "decision": "pass"
+      },
+      {
+        "leaf_a": 0,
+        "leaf_b": 5,
+        "measured_scale": 0.99951622,
+        "predicted_scale_from_tree": 0.99867783,
+        "scale_cycle_error": 0.00083839,
+        "decision": "pass"
+      },
+      {
+        "leaf_a": 3,
+        "leaf_b": 5,
+        "measured_scale": 0.99976026,
+        "predicted_scale_from_tree": 1.00273185,
+        "scale_cycle_error": 0.00297159,
+        "decision": "pass"
+      },
+      {
+        "leaf_a": 6,
+        "leaf_b": 8,
+        "measured_scale": 1.0084232,
+        "predicted_scale_from_tree": 1.01020684,
+        "scale_cycle_error": 0.00178364,
+        "decision": "pass"
+      }
+    ]
+  },
+  "post_merge_jurisdiction_culling": {
+    "status": "pass",
+    "removed_point_count": 77114,
+    "by_reason": {
+      "no_core_owned_track": 77060,
+      "global_double_surface_low_support_cell": 54
+    }
+  },
+  "post_merge_global_double_surface_culling": {
+    "status": "pass_culled_low_support_cells",
+    "removed_point_count": 54,
+    "removed_cell_count": 5,
+    "flagged_but_retained_cell_count": 0,
+    "cell_size_m": 443.2793,
+    "max_points_per_cell": 32,
+    "removed_cells": [
+      {
+        "cell": [
+          27,
+          18
+        ],
+        "point_count": 9,
+        "mode_separation": 58.2668,
+        "z_min": 184.316,
+        "z_max": 350.5684
+      },
+      {
+        "cell": [
+          25,
+          18
+        ],
+        "point_count": 8,
+        "mode_separation": 15.3404,
+        "z_min": -27.3161,
+        "z_max": 9.8192
+      },
+      {
+        "cell": [
+          21,
+          22
+        ],
+        "point_count": 12,
+        "mode_separation": 12.7027,
+        "z_min": -46.9325,
+        "z_max": -16.6509
+      },
+      {
+        "cell": [
+          11,
+          18
+        ],
+        "point_count": 17,
+        "mode_separation": 8.1361,
+        "z_min": -83.1897,
+        "z_max": -60.5256
+      },
+      {
+        "cell": [
+          21,
+          20
+        ],
+        "point_count": 8,
+        "mode_separation": 3.9834,
+        "z_min": -56.3135,
+        "z_max": -46.9551
+      }
+    ],
+    "flagged_but_retained_cells": []
+  },
+  "promotion_blockers": []
+}
