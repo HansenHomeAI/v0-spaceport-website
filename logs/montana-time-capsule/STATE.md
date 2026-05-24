@@ -5,6 +5,30 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-24T16:08:08Z HEARTBEAT monitor - Friday FRIDAY-20260522: no-spend reconfirm (InProgress=0); SfM+3DGS+compression still Completed; public meta still 404; exact-head CI empty ([skip ci])
+
+- Git: agent-40136728-montana-time-capsule @ 0728690d365872ab8f4aa152ca26743dfce1c0ef (dirty: new heartbeat evidence files only)
+- Evidence stamps: 20260524T160808Z (STS + InProgress=0) + 20260524T160510Z (SageMaker describe) + 20260524T160529Z (S3) + 20260524T160538Z (S3 head) + 20260524T160621Z (GH runs)
+- AWS identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T160808Z.json
+- Guardrail visibility (InProgress lists empty):
+  - logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T160808Z.json
+  - logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T160808Z.json
+- SageMaker (Friday canonical run_id=friday-mtc-20260524T0001Z):
+  - SfM describe (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T160510Z.json
+  - 3DGS describe (Completed): logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T160510Z.json
+  - compression describe (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T160510Z.json
+- S3 outputs (Friday):
+  - SfM output listing: logs/montana-time-capsule/s3-ls-sfm-colmap-20260524T160529Z.txt
+  - 3DGS output listing: logs/montana-time-capsule/s3-ls-3dgs-output-20260524T160529Z.txt
+  - compressed bundle listing: logs/montana-time-capsule/s3-ls-compressed-20260524T160529Z.txt
+  - staging meta.json head: logs/montana-time-capsule/s3api-head-object-staging-friday-meta-20260524T160538Z.json
+  - public meta.json still missing (404): logs/montana-time-capsule/s3api-head-object-public-friday-meta-20260524T160538Z.err
+- GitHub Actions:
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-20260524T160621Z.json
+  - exact-head runs for 0728690d… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-0728690d365872ab8f4aa152ca26743dfce1c0ef-20260524T160621Z.json
+- Proven blocker fixed: scripts/montana_time_capsule/cv_hr_time_capsule.py now resolves `aws` via PATH or `/opt/homebrew/bin/aws` (previously failed when PATH excluded Homebrew bin).
+- Next step: no-spend monitoring only; acceptance gate still blocked on publishing Friday bundle/meta.json to the intended public bucket (staging+proxy+viewer already green).
+
 ## 2026-05-24T15:48:44Z HEARTBEAT monitor - Friday FRIDAY-20260522: terminal reconfirm (SfM+3DGS+compression Completed); public meta still 404; preview viewer/proxy 200; exact-head CI empty ([skip ci])
 
 - Git: agent-40136728-montana-time-capsule @ 4fc1cdac37f3265dc2de85a702e5ced6885ed6cf (dirty: new heartbeat evidence files only)

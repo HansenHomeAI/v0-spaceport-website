@@ -14,6 +14,7 @@ import io
 import json
 import os
 import re
+import shutil
 import struct
 import subprocess
 import sys
@@ -181,11 +182,12 @@ class AwsCliClient:
     def __init__(self, service: str, region_name: str):
         self.service = service
         self.region_name = region_name
+        self.aws_cli_path = resolve_aws_cli()
 
     def run_json(self, args: list[str]) -> dict[str, Any]:
         env = {**os.environ, "AWS_PAGER": ""}
         result = subprocess.run(
-            ["aws", *args, "--region", self.region_name, "--output", "json"],
+            [self.aws_cli_path, *args, "--region", self.region_name, "--output", "json"],
             check=True,
             capture_output=True,
             text=True,
@@ -236,6 +238,16 @@ class AwsCliClient:
 
     def describe_training_job(self, *, TrainingJobName: str) -> dict[str, Any]:  # noqa: N803 - boto3 shape
         return self.run_json(["sagemaker", "describe-training-job", "--training-job-name", TrainingJobName])
+
+
+def resolve_aws_cli() -> str:
+    aws_cli = shutil.which("aws")
+    if aws_cli:
+        return aws_cli
+    fallback = "/opt/homebrew/bin/aws"
+    if Path(fallback).exists():
+        return fallback
+    raise FileNotFoundError("AWS CLI not found in PATH (need `aws`). Install it or add it to PATH.")
 
 
 def aws_client(service: str, *, region_name: str) -> Any:
