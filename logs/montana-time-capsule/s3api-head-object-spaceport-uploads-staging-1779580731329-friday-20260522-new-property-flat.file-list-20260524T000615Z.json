@@ -1,0 +1,15 @@
+{
+    "AcceptRanges": "bytes",
+    "LastModified": "2026-05-24T00:01:27+00:00",
+    "ContentLength": 39072,
+    "ETag": "\"043f6e6c37ba69cfb413c85721aa9813\"",
+    "VersionId": "AIQHRuD3RYQLj2Zem2702J2wgRxUWbBg",
+    "ContentType": "text/plain",
+    "ServerSideEncryption": "AES256",
+    "Metadata": {
+        "dataset": "friday-20260522-new-property",
+        "source": "dji-sd",
+        "shot-local-date": "2026-05-22",
+        "photo-count": "1776"
+    }
+}

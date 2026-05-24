@@ -1,0 +1,17 @@
+{
+    "AcceptRanges": "bytes",
+    "LastModified": "2026-05-23T23:59:09+00:00",
+    "ContentLength": 7514816344,
+    "ETag": "\"8484b9ad1089adb721f1b31dfc85fc23-896\"",
+    "VersionId": "S40o1XkkyZIVsucOPKiGUCJKCDNN1JDT",
+    "ContentType": "application/zip",
+    "ServerSideEncryption": "AES256",
+    "Metadata": {
+        "dataset": "friday-20260522-new-property",
+        "source": "dji-sd",
+        "local-manifest-sha256": "7f51cea7071db67de00462c2d84b768073563311f20654dc476dd300fcd4a051",
+        "shot-local-date": "2026-05-22",
+        "photo-count": "1776",
+        "file-list-sha256": "6ff99179ed1c7fc3fa1f38206187a73a965d9fc7737c14386fdf39f1a78f914c"
+    }
+}

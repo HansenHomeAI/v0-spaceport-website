@@ -61,6 +61,13 @@
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T000437Z.json
   - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T000437Z.json
 
+## 2026-05-24T00:07:02Z postpush CI snapshot (exact-head expected empty due to `[skip ci]`)
+
+- Git: agent-40136728-montana-time-capsule @ c415d5732ea1ecfc61db6771a15d325131bf8002 (`chore: hmc heartbeat refresh 2026-05-24T00:05Z [skip ci]`) (pushed)
+- CI:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260524T000702Z.json
+  - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T000702Z.json
+
 ## 2026-05-23T22:48:51Z HEARTBEAT monitor (HMC) - no-spend reconfirm: git head + AWS identity + canonical HMC SageMaker jobs still Completed + supersplat bundle still present + hosted preview viewer (skybox/no-sky) HTTP 200 + signed meta.json via `/api/sogs-proxy` HTTP 200 + CI snapshot (exact-head empty due to `[skip ci]`)
 
 - Git: agent-40136728-montana-time-capsule @ 0a0e04948326a57d54112e04c4d89eb60f939165 (`chore: heartbeat ci snapshot refresh 2026-05-23T22:27Z [skip ci]`) (dirty: new logs pending commit)
@@ -7153,6 +7160,7 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remain
   - S3 archive: `s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.zip`
   - S3 manifest: `s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.manifest.json`
   - S3 file list: `s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.file-list.txt`
+  - S3 head snapshots: `logs/montana-time-capsule/s3api-head-object-spaceport-uploads-staging-1779580731329-friday-20260522-new-property-flat.zip-20260524T000615Z.json`, `logs/montana-time-capsule/s3api-head-object-spaceport-uploads-staging-1779580731329-friday-20260522-new-property-flat.manifest-20260524T000615Z.json`, `logs/montana-time-capsule/s3api-head-object-spaceport-uploads-staging-1779580731329-friday-20260522-new-property-flat.file-list-20260524T000615Z.json`
   - Upload command used a streamed ZIP (`zip -0 -q -@ - | tee >(shasum -a 256) | aws s3 cp - ...`) to avoid writing a second 7.5GB local ZIP on a nearly full disk.
   - ZIP SHA-256 from stream: `af06ade9f235be1168a4e87460f9b7f971c90effe6de964d1a9ae08284142ab4`
   - S3 head: `ContentLength=7514816344`, ETag `"8484b9ad1089adb721f1b31dfc85fc23-896"`, VersionId `S40o1XkkyZIVsucOPKiGUCJKCDNN1JDT`, metadata `photo-count=1776`.
