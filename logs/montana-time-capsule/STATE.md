@@ -8380,3 +8380,23 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - sfm_output_prefix=s3://spaceport-ml-processing-staging/manual-validations/friday-mtc-20260524T0001Z/colmap (s3 ls head200: logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T074514Z-head200.txt)
 - cloudwatch_stream=friday-mtc-20260524T0001Z-sfm/algo-1-1779581031 (tail: logs/montana-time-capsule/cloudwatch-tail20-20260524T074655Z.txt)
 - ci_last_green_sha=16f29321 (CDK+Pages success 2026-05-24T06:15:37Z; current head is [skip ci])
+
+### 20260524T074746Z (HMC acceptance gates)
+- git head: e89144bbc9cdb740cc269f622e0818af12b38d29 (`[skip ci]`; exact-head gh runs expected empty)
+- aws sts (root): logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T074844Z.json
+- sagemaker InProgress (guardrail; note: friday SfM is unrelated to HMC canonical run):
+  - processing: logs/montana-time-capsule/sagemaker-list-processing-jobs-InProgress-20260524T074408Z.json
+  - training: logs/montana-time-capsule/sagemaker-list-training-jobs-InProgress-20260524T074408Z.json
+- HMC canonical compressed bundle exists (S3 list head):
+  - logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T074342Z-head200.txt
+- Hosted preview viewer reachability (Cloudflare Pages preview alias; HTTP 200):
+  - Pages run log grep (contains alias URL): logs/montana-time-capsule/gh-run-26353779608-log-preview-grep-20260524T074516Z.txt
+  - curl headers + public-bucket failure evidence: logs/montana-time-capsule/curl-reachability-20260524T074551Z.txt
+- Signed bundle reachability via `/api/sogs-proxy` on preview:
+  - meta.json OK (200): logs/montana-time-capsule/curl-sogs-proxy-20260524T074606Z.txt
+  - asset means_l.webp OK (200): logs/montana-time-capsule/curl-sogs-proxy-means_l-20260524T074629Z.txt
+  - public-bucket proxy returns 404 (bundle not present under `spaceport-ml-processing`): logs/montana-time-capsule/curl-sogs-proxy-20260524T074606Z.txt
+- Visual proof (Playwright screenshots, same preview alias; supersplat-viewer direct):
+  - logs/montana-time-capsule/screenshots-20260524T074746Z/viewer-urls.txt
+  - logs/montana-time-capsule/screenshots-20260524T074746Z/hmc-mtc-20260520T2015Z-no-sky.png
+  - logs/montana-time-capsule/screenshots-20260524T074746Z/hmc-mtc-20260520T2015Z-skybox.png
