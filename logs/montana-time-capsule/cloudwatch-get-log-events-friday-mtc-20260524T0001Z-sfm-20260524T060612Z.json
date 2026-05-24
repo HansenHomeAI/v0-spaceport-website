@@ -1,0 +1,11 @@
+{
+    "events": [
+        {
+            "timestamp": 1779602078741,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260524 05:54:37.943070 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779602084252
+        }
+    ],
+    "nextForwardToken": "f/39686452512778471683574451005397931388501611033882263552/s",
+    "nextBackwardToken": "b/39686452512778471683574451005397931388501611033882263552/s"
+}

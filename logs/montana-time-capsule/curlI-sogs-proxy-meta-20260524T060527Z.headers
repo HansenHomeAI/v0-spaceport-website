@@ -1,0 +1,10 @@
+HTTP/2 400 
+date: Sun, 24 May 2026 06:05:27 GMT
+content-type: text/plain;charset=UTF-8
+x-matched-path: /api/sogs-proxy/[...resource]
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=e7tiaAoihU4fubl3k%2FlWN%2BwMaGEYni%2BwwzPG%2FLpkr5Anc93cDrJAB4tadBZsKHVjJZaMTHMWmejkACSXxQzYH1hB5skblxuAyXeKJNl%2Fq4Izh0HzucM1z52XU%2BQaHPUHe2mNzlBFdA3ytwE2hu2bh%2BehE79u05pEFfKrM9ZOSMo9gQplurhouQ7klYTltuq7n9Vez295dZTcRDqfZdn6lR9G"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: a00a1bd70c8d38e9-SLC
+alt-svc: h3=":443"; ma=86400
+

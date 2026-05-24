@@ -5,6 +5,24 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-24T06:07:20Z HEARTBEAT monitor (FRIDAY) - canonical Friday SfM still InProgress; CW advanced; S3 colmap still empty
+
+- Git: agent-40136728-montana-time-capsule @ 5483aec4a3750edba6d2361464e1f7c8e819f058 (`chore: record postpush gh snapshot 20260524T054951Z [skip ci]`) (dirty: new logs only)
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T060530Z.json
+  - describe SfM: logs/montana-time-capsule/sagemaker-describe-friday-mtc-20260524T0001Z-sfm-20260524T060530Z.json (status=InProgress; created=2026-05-23T18:03:05-06:00; last_modified=2026-05-23T18:05:36-06:00)
+  - guardrail InProgress list (expected only SfM): logs/montana-time-capsule/sagemaker-list-processing-jobs-friday-mtc-20260524T0001Z-InProgress-20260524T060530Z.json
+- CloudWatch (SfM):
+  - stream discovery: logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-sfm-20260524T060612Z.json
+  - selected stream: logs/montana-time-capsule/cloudwatch-selected-stream-friday-mtc-20260524T0001Z-sfm-20260524T060612Z.txt
+  - recent events tail: logs/montana-time-capsule/cloudwatch-get-log-events-friday-mtc-20260524T0001Z-sfm-20260524T060612Z.json (last_event_utc=2026-05-24T05:54:38.741Z)
+- S3 SfM output (EndOfJob upload; expected empty while InProgress):
+  - list: logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T060530Z.txt (0 lines)
+- GitHub Actions snapshot (gh=/opt/homebrew/bin/gh):
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T060651Z.json
+  - exact-head runs for current head `5483aec...` (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T060651Z.json
+  - exact-head summary: logs/montana-time-capsule/gh-run-list-exact-head-summary-20260524T060651Z.txt
+
 ## 2026-05-24T05:46:45Z HEARTBEAT monitor (FRIDAY) - canonical Friday SfM still InProgress; no new jobs launched
 
 - Git: agent-40136728-montana-time-capsule @ e5d1b29e4953ba49559b6166f641caed1c3ac9fc (`chore: record postpush gh snapshot 20260524T052734Z [skip ci]`) (clean)
