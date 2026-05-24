@@ -10591,3 +10591,10 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T200604Z.json
   - exact-head runs (0; expected due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-f536f1e9b1782a272913fc82cbf5284e5ea643b8-20260524T200604Z.json
 - Decision: do **not** re-launch Friday compute (`friday-mtc-20260524T0001Z` already Completed end-to-end); next gate remains publish/reachability for `spaceport-ml-processing-public/compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json`.
+
+## 2026-05-24T20:07:29Z HEARTBEAT monitor - post-push reconfirm: exact-head CI empty due `[skip ci]`
+
+- Git: agent-40136728-montana-time-capsule @ 415c50ae540c46b4c6f2d0db661ec5b4c7d843cc (`chore: friday mtc heartbeat evidence 20260524T2006Z [skip ci]`)
+- GitHub Actions:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T200729Z.json
+  - exact-head runs (0; expected due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-415c50ae540c46b4c6f2d0db661ec5b4c7d843cc-20260524T200729Z.json
