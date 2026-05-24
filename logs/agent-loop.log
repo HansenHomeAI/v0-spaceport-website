@@ -446,3 +446,4 @@
 [2026-05-24T22:07:58Z] post-push -> captured gh runs for head=7c0b126b -> idle/no-spend
 [2026-05-24T22:11:08Z] hmc-no-spend-verify -> sm Completed; viewer/proxy 200; public-meta=404 -> updated logs + hmc-state.json
 [2026-05-24T22:11:51Z] post-push -> gh exact-head runs=0 for head=0afcc6fd -> idle/no-spend
+[2026-05-24T22:26:35Z] heartbeat no-spend reverify (HMC canonical hmc-mtc-20260520T2015Z) -> Completed; public meta still 404; viewer 200 -> next: wait for public bundle publish gate
