@@ -1,0 +1,8 @@
+branch=agent-40136728-montana-time-capsule
+head=82a6d71936fece5387013e17df865c365001e683
+--- status ---
+?? logs/montana-time-capsule/git-proof-20260524T150414Z.txt
+?? logs/montana-time-capsule/git-proof-20260524T150423Z.txt
+--- remotes ---
+origin	https://github.com/HansenHomeAI/v0-spaceport-website.git (fetch)
+origin	https://github.com/HansenHomeAI/v0-spaceport-website.git (push)

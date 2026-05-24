@@ -5,6 +5,32 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-24T15:06:41Z HEARTBEAT monitor - no-spend acceptance refresh: canonical HMC still terminal; staging bundle present; preview viewer/proxy HTTP 200; public bundle still 404; exact-head CI empty due `[skip ci]`
+
+- Git: agent-40136728-montana-time-capsule @ 82a6d71936fece5387013e17df865c365001e683 (dirty -> heartbeat evidence files)
+- Evidence stamp: 20260524T150641Z
+- Git proof: logs/montana-time-capsule/git-proof-20260524T150423Z.txt
+- AWS (us-west-2; no spend):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T150453Z.json
+  - guardrail visibility (InProgress lists empty): logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T150453Z.json + logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T150453Z.json
+  - describe HMC SfM (Completed): logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T150453Z.json
+  - describe HMC 3DGS (Completed): logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T150453Z.json
+  - describe HMC compression (Completed): logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T150453Z.json
+- S3 (canonical HMC bundle):
+  - staging meta head: logs/montana-time-capsule/s3api-head-object-staging-hmc-mtc-20260520T2015Z-meta-20260524T150556Z.json
+  - staging bundle listing: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T150556Z.txt
+  - public head (expected 404): logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T150556Z.err
+- Public reachability (preview proxy -> staging meta.json):
+  - headers: logs/montana-time-capsule/curlD-sogs-proxy-meta-20260524T150630Z.headers (HTTP 200)
+  - body: logs/montana-time-capsule/curl-sogs-proxy-meta-20260524T150630Z.json
+- Hosted viewer reachability (preview):
+  - skybox headers: logs/montana-time-capsule/curlD-viewer-skybox-20260524T150630Z.headers (HTTP 200)
+  - no-sky headers: logs/montana-time-capsule/curlD-viewer-nosky-20260524T150630Z.headers (HTTP 200)
+- GitHub Actions:
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-20260524T150641Z.json
+  - exact-head runs for 82a6d719… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-82a6d71936fece5387013e17df865c365001e683-20260524T150641Z.json
+- Next step: remain no-spend; acceptance gate still blocked on publishing the canonical bundle to the public bucket (non-staging) + optional refreshed visual proof on request.
+
 ## 2026-05-24T14:44:35Z HEARTBEAT monitor - no-spend acceptance refresh: canonical HMC still terminal; staging bundle present; preview viewer/proxy HTTP 200; public bundle still 404; exact-head CI empty due `[skip ci]`
 
 - Git: agent-40136728-montana-time-capsule @ f31dd3490d97d1c203de19ce7f6ee85b04a54b0f (dirty -> heartbeat evidence files)
