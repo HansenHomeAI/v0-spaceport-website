@@ -237,6 +237,13 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remain
 
 Next: continue monitoring `friday-mtc-20260524T0001Z-sfm` until `Completed`, then run exactly one guarded launch command for pinned 3DGS via `scripts/montana_time_capsule/cv_hr_time_capsule.py` (per automation instructions).
 
+## 2026-05-24T02:48:17Z postpush CI snapshot (exact-head expected empty due to `[skip ci]`)
+
+- Git: agent-40136728-montana-time-capsule @ 39bf556a0fc354532f677a7f081ca69f827a234c ([skip ci]) (pushed)
+- CI:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260524T024817Z.json
+  - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T024817Z.json
+
 ## 2026-05-23T20:12:49Z postpush CI snapshot (exact-head expected empty due to `[skip ci]`)
 
 - Git: agent-40136728-montana-time-capsule @ d93b41b10e372b0fbcc1cdc575836b5ea9c60a45 ([skip ci]) (pushed)
