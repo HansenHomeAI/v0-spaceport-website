@@ -445,3 +445,4 @@
 [2026-05-24T22:07:25Z] friday heartbeat -> terminal reconfirm (no spend); InProgress=0; S3 present; gh snapshot -> commit+push ledger
 [2026-05-24T22:07:58Z] post-push -> captured gh runs for head=7c0b126b -> idle/no-spend
 [2026-05-24T22:11:08Z] hmc-no-spend-verify -> sm Completed; viewer/proxy 200; public-meta=404 -> updated logs + hmc-state.json
+[2026-05-24T22:11:51Z] post-push -> gh exact-head runs=0 for head=0afcc6fd -> idle/no-spend
