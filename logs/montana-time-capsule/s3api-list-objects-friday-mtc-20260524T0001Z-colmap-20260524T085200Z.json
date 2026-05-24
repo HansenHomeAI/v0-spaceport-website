@@ -1,0 +1,41 @@
+{
+    "IsTruncated": true,
+    "Contents": [
+        {
+            "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/database.db",
+            "LastModified": "2026-05-24T08:33:13+00:00",
+            "ETag": "\"4a391432d9f6266c514fd16c38a29870-529\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 2770214912,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0797.JPG",
+            "LastModified": "2026-05-24T08:33:13+00:00",
+            "ETag": "\"855361c718caa224ee0da864d1b563a3\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 4330525,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0798.JPG",
+            "LastModified": "2026-05-24T08:33:13+00:00",
+            "ETag": "\"60dd542d3a9bad513cf04c55df50a892\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 4302805,
+            "StorageClass": "STANDARD"
+        }
+    ],
+    "Name": "spaceport-ml-processing-staging",
+    "Prefix": "manual-validations/friday-mtc-20260524T0001Z/colmap/",
+    "MaxKeys": 3,
+    "EncodingType": "url",
+    "KeyCount": 3,
+    "NextContinuationToken": "15RoTv7U2+YrBqaqvZOxzBh2YeYoeUA6GPjBLwJECwAHsi1WHCLR57CvjjthiJgONXbBGaYtZQD8+bRNtJKpVoKuAXMmYM9YmCqyZQXWM1RLdpPLGTVtfzKpfLyP/d8+J4TN4KutEvCoIs+9eVCr04x9AOxhfY29Qw7IS2pP1Klg="
+}

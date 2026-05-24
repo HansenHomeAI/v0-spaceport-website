@@ -1,0 +1,200 @@
+2026-05-24T03:51:50 COLMAP[chunk_10_mapper_initial] I20260524 03:51:50.007841 19327 incremental_pipeline.cc:524] Registering image #367 (num_reg_frames=166)
+2026-05-24T03:51:50 COLMAP[chunk_10_mapper_initial] I20260524 03:51:50.007896 19327 incremental_pipeline.cc:527] => Image sees 3601 / 7984 points
+2026-05-24T03:51:52 COLMAP[chunk_10_mapper_initial] I20260524 03:51:51.414177 19327 incremental_pipeline.cc:524] Registering image #365 (num_reg_frames=167)
+2026-05-24T03:51:52 COLMAP[chunk_10_mapper_initial] I20260524 03:51:51.414229 19327 incremental_pipeline.cc:527] => Image sees 4483 / 8430 points
+2026-05-24T03:51:53 COLMAP[chunk_10_mapper_initial] I20260524 03:51:52.917515 19327 incremental_pipeline.cc:524] Registering image #366 (num_reg_frames=168)
+2026-05-24T03:51:53 COLMAP[chunk_10_mapper_initial] I20260524 03:51:52.917564 19327 incremental_pipeline.cc:527] => Image sees 5253 / 8278 points
+2026-05-24T03:51:55 COLMAP[chunk_10_mapper_initial] I20260524 03:51:54.540035 19327 incremental_pipeline.cc:524] Registering image #364 (num_reg_frames=169)
+2026-05-24T03:51:55 COLMAP[chunk_10_mapper_initial] I20260524 03:51:54.540089 19327 incremental_pipeline.cc:527] => Image sees 4745 / 6694 points
+2026-05-24T03:51:57 COLMAP[chunk_10_mapper_initial] I20260524 03:51:56.138252 19327 incremental_pipeline.cc:524] Registering image #138 (num_reg_frames=170)
+2026-05-24T03:51:57 COLMAP[chunk_10_mapper_initial] I20260524 03:51:56.138309 19327 incremental_pipeline.cc:527] => Image sees 2589 / 4191 points
+2026-05-24T03:51:58 COLMAP[chunk_10_mapper_initial] I20260524 03:51:57.276353 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-24T03:52:41 COLMAP[chunk_10_mapper_initial] I20260524 03:52:40.462939 19327 incremental_pipeline.cc:78] Retriangulation and Global bundle adjustment
+2026-05-24T03:52:58 COLMAP[chunk_10_mapper_initial] I20260524 03:52:57.476325 19327 incremental_pipeline.cc:710] Keeping successful reconstruction
+2026-05-24T03:52:58 COLMAP[chunk_10_mapper_initial] I20260524 03:52:57.756170 19327 timer.cc:90] Elapsed time: 12.374 [minutes]
+2026-05-24T03:52:58 2026-05-24 03:52:57,843 - INFO - [chunk_10_mapper_initial_model_converter_0] colmap model_converter --input_path /tmp/colmap_sfm_iet7y6w5/chunk_10/sparse_initial/0 --output_path /tmp/colmap_sfm_iet7y6w5/text_models/chunk_10_mapper_initial/0 --output_type TXT
+2026-05-24T03:53:02 2026-05-24 03:53:02,238 - INFO - chunk_10_mapper_initial model 0 registered 171/171 images and 141533 points
+2026-05-24T03:53:03 2026-05-24 03:53:02,552 - INFO - [chunk_model_merger_01] colmap model_merger --input_path1 /tmp/colmap_sfm_iet7y6w5/chunk_00/sparse_initial/0 --input_path2 /tmp/colmap_sfm_iet7y6w5/chunk_01/sparse_initial/0 --output_path /tmp/colmap_sfm_iet7y6w5/merged_chunk_model_01 --max_reproj_error 64
+2026-05-24T03:53:03 COLMAP[chunk_model_merger_01] I20260524 03:53:03.064669 20903 model.cc:776] --- Reconstruction 1 ---
+2026-05-24T03:53:03 COLMAP[chunk_model_merger_01] I20260524 03:53:03.064991 20903 model.cc:777] Images: 175
+2026-05-24T03:53:03 COLMAP[chunk_model_merger_01] I20260524 03:53:03.065007 20903 model.cc:778] Points: 139179
+2026-05-24T03:53:04 COLMAP[chunk_model_merger_01] I20260524 03:53:03.463770 20903 model.cc:782] --- Reconstruction 2 ---
+2026-05-24T03:53:04 COLMAP[chunk_model_merger_01] I20260524 03:53:03.463819 20903 model.cc:783] Images: 195
+2026-05-24T03:53:04 COLMAP[chunk_model_merger_01] I20260524 03:53:03.463830 20903 model.cc:784] Points: 158983
+2026-05-24T03:53:04 COLMAP[chunk_model_merger_01] I20260524 03:53:03.463837 20903 model.cc:786] --- Merging reconstructions ---
+2026-05-24T03:53:05 COLMAP[chunk_model_merger_01] I20260524 03:53:04.305317 20903 model.cc:789] => Merge succeeded
+2026-05-24T03:53:05 COLMAP[chunk_model_merger_01] I20260524 03:53:04.305369 20903 model.cc:790] --- Merged reconstruction ---
+2026-05-24T03:53:05 COLMAP[chunk_model_merger_01] I20260524 03:53:04.305377 20903 model.cc:791] Images: 340
+2026-05-24T03:53:05 COLMAP[chunk_model_merger_01] I20260524 03:53:04.305387 20903 model.cc:792] Points: 271537
+2026-05-24T03:53:05 2026-05-24 03:53:04,864 - INFO - [chunk_model_merger_02] colmap model_merger --input_path1 /tmp/colmap_sfm_iet7y6w5/merged_chunk_model_01 --input_path2 /tmp/colmap_sfm_iet7y6w5/chunk_02/sparse_initial/1 --output_path /tmp/colmap_sfm_iet7y6w5/merged_chunk_model_02 --max_reproj_error 64
+2026-05-24T03:53:06 COLMAP[chunk_model_merger_02] I20260524 03:53:05.684940 20911 model.cc:776] --- Reconstruction 1 ---
+2026-05-24T03:53:06 COLMAP[chunk_model_merger_02] I20260524 03:53:05.685281 20911 model.cc:777] Images: 340
+2026-05-24T03:53:06 COLMAP[chunk_model_merger_02] I20260524 03:53:05.685297 20911 model.cc:778] Points: 271537
+2026-05-24T03:53:06 COLMAP[chunk_model_merger_02] I20260524 03:53:06.053313 20911 model.cc:782] --- Reconstruction 2 ---
+2026-05-24T03:53:06 COLMAP[chunk_model_merger_02] I20260524 03:53:06.053361 20911 model.cc:783] Images: 190
+2026-05-24T03:53:06 COLMAP[chunk_model_merger_02] I20260524 03:53:06.053377 20911 model.cc:784] Points: 147653
+2026-05-24T03:53:06 COLMAP[chunk_model_merger_02] I20260524 03:53:06.053386 20911 model.cc:786] --- Merging reconstructions ---
+2026-05-24T03:53:08 COLMAP[chunk_model_merger_02] I20260524 03:53:07.366390 20911 model.cc:789] => Merge succeeded
+2026-05-24T03:53:08 COLMAP[chunk_model_merger_02] I20260524 03:53:07.366448 20911 model.cc:790] --- Merged reconstruction ---
+2026-05-24T03:53:08 COLMAP[chunk_model_merger_02] I20260524 03:53:07.366461 20911 model.cc:791] Images: 500
+2026-05-24T03:53:08 COLMAP[chunk_model_merger_02] I20260524 03:53:07.366473 20911 model.cc:792] Points: 392290
+2026-05-24T03:53:08 2026-05-24 03:53:08,193 - INFO - [chunk_model_merger_03] colmap model_merger --input_path1 /tmp/colmap_sfm_iet7y6w5/merged_chunk_model_02 --input_path2 /tmp/colmap_sfm_iet7y6w5/chunk_03/sparse_initial/1 --output_path /tmp/colmap_sfm_iet7y6w5/merged_chunk_model_03 --max_reproj_error 64
+2026-05-24T03:53:10 COLMAP[chunk_model_merger_03] I20260524 03:53:09.357496 20919 model.cc:776] --- Reconstruction 1 ---
+2026-05-24T03:53:10 COLMAP[chunk_model_merger_03] I20260524 03:53:09.357842 20919 model.cc:777] Images: 500
+2026-05-24T03:53:10 COLMAP[chunk_model_merger_03] I20260524 03:53:09.357857 20919 model.cc:778] Points: 392290
+2026-05-24T03:53:10 COLMAP[chunk_model_merger_03] I20260524 03:53:09.734930 20919 model.cc:782] --- Reconstruction 2 ---
+2026-05-24T03:53:10 COLMAP[chunk_model_merger_03] I20260524 03:53:09.734979 20919 model.cc:783] Images: 195
+2026-05-24T03:53:10 COLMAP[chunk_model_merger_03] I20260524 03:53:09.734992 20919 model.cc:784] Points: 154718
+2026-05-24T03:53:10 COLMAP[chunk_model_merger_03] I20260524 03:53:09.734998 20919 model.cc:786] --- Merging reconstructions ---
+2026-05-24T03:53:12 COLMAP[chunk_model_merger_03] I20260524 03:53:11.409508 20919 model.cc:789] => Merge succeeded
+2026-05-24T03:53:12 COLMAP[chunk_model_merger_03] I20260524 03:53:11.409564 20919 model.cc:790] --- Merged reconstruction ---
+2026-05-24T03:53:12 COLMAP[chunk_model_merger_03] I20260524 03:53:11.409572 20919 model.cc:791] Images: 665
+2026-05-24T03:53:12 COLMAP[chunk_model_merger_03] I20260524 03:53:11.409582 20919 model.cc:792] Points: 522420
+2026-05-24T03:53:13 2026-05-24 03:53:12,531 - INFO - [chunk_model_merger_04] colmap model_merger --input_path1 /tmp/colmap_sfm_iet7y6w5/merged_chunk_model_03 --input_path2 /tmp/colmap_sfm_iet7y6w5/chunk_04/sparse_initial/1 --output_path /tmp/colmap_sfm_iet7y6w5/merged_chunk_model_04 --max_reproj_error 64
+2026-05-24T03:53:14 COLMAP[chunk_model_merger_04] I20260524 03:53:13.974040 20942 model.cc:776] --- Reconstruction 1 ---
+2026-05-24T03:53:14 COLMAP[chunk_model_merger_04] I20260524 03:53:13.974383 20942 model.cc:777] Images: 665
+2026-05-24T03:53:14 COLMAP[chunk_model_merger_04] I20260524 03:53:13.974399 20942 model.cc:778] Points: 522420
+2026-05-24T03:53:15 COLMAP[chunk_model_merger_04] I20260524 03:53:14.333185 20942 model.cc:782] --- Reconstruction 2 ---
+2026-05-24T03:53:15 COLMAP[chunk_model_merger_04] I20260524 03:53:14.333227 20942 model.cc:783] Images: 187
+2026-05-24T03:53:15 COLMAP[chunk_model_merger_04] I20260524 03:53:14.333240 20942 model.cc:784] Points: 150990
+2026-05-24T03:53:15 COLMAP[chunk_model_merger_04] I20260524 03:53:14.333246 20942 model.cc:786] --- Merging reconstructions ---
+2026-05-24T03:53:17 COLMAP[chunk_model_merger_04] I20260524 03:53:16.337932 20942 model.cc:789] => Merge succeeded
+2026-05-24T03:53:17 COLMAP[chunk_model_merger_04] I20260524 03:53:16.337988 20942 model.cc:790] --- Merged reconstruction ---
+2026-05-24T03:53:17 COLMAP[chunk_model_merger_04] I20260524 03:53:16.337997 20942 model.cc:791] Images: 822
+2026-05-24T03:53:17 COLMAP[chunk_model_merger_04] I20260524 03:53:16.338008 20942 model.cc:792] Points: 646022
+2026-05-24T03:53:18 2026-05-24 03:53:17,709 - INFO - [chunk_model_merger_05] colmap model_merger --input_path1 /tmp/colmap_sfm_iet7y6w5/merged_chunk_model_04 --input_path2 /tmp/colmap_sfm_iet7y6w5/chunk_05/sparse_initial/1 --output_path /tmp/colmap_sfm_iet7y6w5/merged_chunk_model_05 --max_reproj_error 64
+2026-05-24T03:53:20 COLMAP[chunk_model_merger_05] I20260524 03:53:19.478547 20950 model.cc:776] --- Reconstruction 1 ---
+2026-05-24T03:53:20 COLMAP[chunk_model_merger_05] I20260524 03:53:19.478885 20950 model.cc:777] Images: 822
+2026-05-24T03:53:20 COLMAP[chunk_model_merger_05] I20260524 03:53:19.478901 20950 model.cc:778] Points: 646022
+2026-05-24T03:53:20 COLMAP[chunk_model_merger_05] I20260524 03:53:19.830490 20950 model.cc:782] --- Reconstruction 2 ---
+2026-05-24T03:53:20 COLMAP[chunk_model_merger_05] I20260524 03:53:19.830538 20950 model.cc:783] Images: 199
+2026-05-24T03:53:20 COLMAP[chunk_model_merger_05] I20260524 03:53:19.830549 20950 model.cc:784] Points: 148852
+2026-05-24T03:53:20 COLMAP[chunk_model_merger_05] I20260524 03:53:19.830555 20950 model.cc:786] --- Merging reconstructions ---
+2026-05-24T03:53:22 COLMAP[chunk_model_merger_05] I20260524 03:53:22.143757 20950 model.cc:789] => Merge succeeded
+2026-05-24T03:53:22 COLMAP[chunk_model_merger_05] I20260524 03:53:22.143814 20950 model.cc:790] --- Merged reconstruction ---
+2026-05-24T03:53:22 COLMAP[chunk_model_merger_05] I20260524 03:53:22.143823 20950 model.cc:791] Images: 991
+2026-05-24T03:53:22 COLMAP[chunk_model_merger_05] I20260524 03:53:22.143833 20950 model.cc:792] Points: 779469
+2026-05-24T03:53:24 2026-05-24 03:53:23,772 - INFO - [chunk_model_merger_06] colmap model_merger --input_path1 /tmp/colmap_sfm_iet7y6w5/merged_chunk_model_05 --input_path2 /tmp/colmap_sfm_iet7y6w5/chunk_06/sparse_initial/0 --output_path /tmp/colmap_sfm_iet7y6w5/merged_chunk_model_06 --max_reproj_error 64
+2026-05-24T03:53:26 COLMAP[chunk_model_merger_06] I20260524 03:53:25.826400 20958 model.cc:776] --- Reconstruction 1 ---
+2026-05-24T03:53:26 COLMAP[chunk_model_merger_06] I20260524 03:53:25.826735 20958 model.cc:777] Images: 991
+2026-05-24T03:53:26 COLMAP[chunk_model_merger_06] I20260524 03:53:25.826749 20958 model.cc:778] Points: 779469
+2026-05-24T03:53:26 COLMAP[chunk_model_merger_06] I20260524 03:53:26.175128 20958 model.cc:782] --- Reconstruction 2 ---
+2026-05-24T03:53:26 COLMAP[chunk_model_merger_06] I20260524 03:53:26.175180 20958 model.cc:783] Images: 184
+2026-05-24T03:53:26 COLMAP[chunk_model_merger_06] I20260524 03:53:26.175192 20958 model.cc:784] Points: 146011
+2026-05-24T03:53:26 COLMAP[chunk_model_merger_06] I20260524 03:53:26.175199 20958 model.cc:786] --- Merging reconstructions ---
+2026-05-24T03:53:29 COLMAP[chunk_model_merger_06] I20260524 03:53:28.883025 20958 model.cc:789] => Merge succeeded
+2026-05-24T03:53:29 COLMAP[chunk_model_merger_06] I20260524 03:53:28.883085 20958 model.cc:790] --- Merged reconstruction ---
+2026-05-24T03:53:29 COLMAP[chunk_model_merger_06] I20260524 03:53:28.883095 20958 model.cc:791] Images: 1145
+2026-05-24T03:53:29 COLMAP[chunk_model_merger_06] I20260524 03:53:28.883104 20958 model.cc:792] Points: 906293
+2026-05-24T03:53:31 2026-05-24 03:53:30,809 - INFO - [chunk_model_merger_07] colmap model_merger --input_path1 /tmp/colmap_sfm_iet7y6w5/merged_chunk_model_06 --input_path2 /tmp/colmap_sfm_iet7y6w5/chunk_07/sparse_initial/0 --output_path /tmp/colmap_sfm_iet7y6w5/merged_chunk_model_07 --max_reproj_error 64
+2026-05-24T03:53:33 COLMAP[chunk_model_merger_07] I20260524 03:53:33.162295 20966 model.cc:776] --- Reconstruction 1 ---
+2026-05-24T03:53:33 COLMAP[chunk_model_merger_07] I20260524 03:53:33.162631 20966 model.cc:777] Images: 1145
+2026-05-24T03:53:33 COLMAP[chunk_model_merger_07] I20260524 03:53:33.162647 20966 model.cc:778] Points: 906293
+2026-05-24T03:53:34 COLMAP[chunk_model_merger_07] I20260524 03:53:33.542836 20966 model.cc:782] --- Reconstruction 2 ---
+2026-05-24T03:53:34 COLMAP[chunk_model_merger_07] I20260524 03:53:33.542886 20966 model.cc:783] Images: 194
+2026-05-24T03:53:34 COLMAP[chunk_model_merger_07] I20260524 03:53:33.542899 20966 model.cc:784] Points: 157899
+2026-05-24T03:53:34 COLMAP[chunk_model_merger_07] I20260524 03:53:33.542909 20966 model.cc:786] --- Merging reconstructions ---
+2026-05-24T03:53:37 COLMAP[chunk_model_merger_07] I20260524 03:53:36.740036 20966 model.cc:789] => Merge succeeded
+2026-05-24T03:53:37 COLMAP[chunk_model_merger_07] I20260524 03:53:36.740091 20966 model.cc:790] --- Merged reconstruction ---
+2026-05-24T03:53:37 COLMAP[chunk_model_merger_07] I20260524 03:53:36.740103 20966 model.cc:791] Images: 1309
+2026-05-24T03:53:37 COLMAP[chunk_model_merger_07] I20260524 03:53:36.740116 20966 model.cc:792] Points: 1035837
+2026-05-24T03:53:39 2026-05-24 03:53:38,910 - INFO - [chunk_model_merger_08] colmap model_merger --input_path1 /tmp/colmap_sfm_iet7y6w5/merged_chunk_model_07 --input_path2 /tmp/colmap_sfm_iet7y6w5/chunk_08/sparse_initial/0 --output_path /tmp/colmap_sfm_iet7y6w5/merged_chunk_model_08 --max_reproj_error 64
+2026-05-24T03:53:42 COLMAP[chunk_model_merger_08] I20260524 03:53:41.575999 20974 model.cc:776] --- Reconstruction 1 ---
+2026-05-24T03:53:42 COLMAP[chunk_model_merger_08] I20260524 03:53:41.576359 20974 model.cc:777] Images: 1309
+2026-05-24T03:53:42 COLMAP[chunk_model_merger_08] I20260524 03:53:41.576375 20974 model.cc:778] Points: 1035837
+2026-05-24T03:53:42 COLMAP[chunk_model_merger_08] I20260524 03:53:41.933924 20974 model.cc:782] --- Reconstruction 2 ---
+2026-05-24T03:53:42 COLMAP[chunk_model_merger_08] I20260524 03:53:41.933972 20974 model.cc:783] Images: 186
+2026-05-24T03:53:42 COLMAP[chunk_model_merger_08] I20260524 03:53:41.933985 20974 model.cc:784] Points: 150737
+2026-05-24T03:53:42 COLMAP[chunk_model_merger_08] I20260524 03:53:41.933992 20974 model.cc:786] --- Merging reconstructions ---
+2026-05-24T03:53:46 COLMAP[chunk_model_merger_08] I20260524 03:53:45.535322 20974 model.cc:789] => Merge succeeded
+2026-05-24T03:53:46 COLMAP[chunk_model_merger_08] I20260524 03:53:45.535380 20974 model.cc:790] --- Merged reconstruction ---
+2026-05-24T03:53:46 COLMAP[chunk_model_merger_08] I20260524 03:53:45.535388 20974 model.cc:791] Images: 1465
+2026-05-24T03:53:46 COLMAP[chunk_model_merger_08] I20260524 03:53:45.535399 20974 model.cc:792] Points: 1158378
+2026-05-24T03:53:48 2026-05-24 03:53:48,002 - INFO - [chunk_model_merger_09] colmap model_merger --input_path1 /tmp/colmap_sfm_iet7y6w5/merged_chunk_model_08 --input_path2 /tmp/colmap_sfm_iet7y6w5/chunk_09/sparse_initial/0 --output_path /tmp/colmap_sfm_iet7y6w5/merged_chunk_model_09 --max_reproj_error 64
+2026-05-24T03:53:51 COLMAP[chunk_model_merger_09] I20260524 03:53:50.967036 20997 model.cc:776] --- Reconstruction 1 ---
+2026-05-24T03:53:51 COLMAP[chunk_model_merger_09] I20260524 03:53:50.967365 20997 model.cc:777] Images: 1465
+2026-05-24T03:53:51 COLMAP[chunk_model_merger_09] I20260524 03:53:50.967381 20997 model.cc:778] Points: 1158378
+2026-05-24T03:53:52 COLMAP[chunk_model_merger_09] I20260524 03:53:51.376401 20997 model.cc:782] --- Reconstruction 2 ---
+2026-05-24T03:53:52 COLMAP[chunk_model_merger_09] I20260524 03:53:51.376448 20997 model.cc:783] Images: 200
+2026-05-24T03:53:52 COLMAP[chunk_model_merger_09] I20260524 03:53:51.376461 20997 model.cc:784] Points: 161608
+2026-05-24T03:53:52 COLMAP[chunk_model_merger_09] I20260524 03:53:51.376467 20997 model.cc:786] --- Merging reconstructions ---
+2026-05-24T03:53:56 COLMAP[chunk_model_merger_09] I20260524 03:53:55.399422 20997 model.cc:789] => Merge succeeded
+2026-05-24T03:53:56 COLMAP[chunk_model_merger_09] I20260524 03:53:55.399483 20997 model.cc:790] --- Merged reconstruction ---
+2026-05-24T03:53:56 COLMAP[chunk_model_merger_09] I20260524 03:53:55.399492 20997 model.cc:791] Images: 1635
+2026-05-24T03:53:56 COLMAP[chunk_model_merger_09] I20260524 03:53:55.399502 20997 model.cc:792] Points: 1294580
+2026-05-24T03:53:58 2026-05-24 03:53:58,114 - INFO - [chunk_model_merger_10] colmap model_merger --input_path1 /tmp/colmap_sfm_iet7y6w5/merged_chunk_model_09 --input_path2 /tmp/colmap_sfm_iet7y6w5/chunk_10/sparse_initial/0 --output_path /tmp/colmap_sfm_iet7y6w5/merged_chunk_model_10 --max_reproj_error 64
+2026-05-24T03:54:02 COLMAP[chunk_model_merger_10] I20260524 03:54:01.369418 21005 model.cc:776] --- Reconstruction 1 ---
+2026-05-24T03:54:02 COLMAP[chunk_model_merger_10] I20260524 03:54:01.369757 21005 model.cc:777] Images: 1635
+2026-05-24T03:54:02 COLMAP[chunk_model_merger_10] I20260524 03:54:01.369772 21005 model.cc:778] Points: 1294580
+2026-05-24T03:54:02 COLMAP[chunk_model_merger_10] I20260524 03:54:01.720669 21005 model.cc:782] --- Reconstruction 2 ---
+2026-05-24T03:54:02 COLMAP[chunk_model_merger_10] I20260524 03:54:01.720718 21005 model.cc:783] Images: 171
+2026-05-24T03:54:02 COLMAP[chunk_model_merger_10] I20260524 03:54:01.720731 21005 model.cc:784] Points: 141533
+2026-05-24T03:54:02 COLMAP[chunk_model_merger_10] I20260524 03:54:01.720737 21005 model.cc:786] --- Merging reconstructions ---
+2026-05-24T03:54:06 COLMAP[chunk_model_merger_10] I20260524 03:54:06.053314 21005 model.cc:789] => Merge succeeded
+2026-05-24T03:54:06 COLMAP[chunk_model_merger_10] I20260524 03:54:06.053373 21005 model.cc:790] --- Merged reconstruction ---
+2026-05-24T03:54:06 COLMAP[chunk_model_merger_10] I20260524 03:54:06.053382 21005 model.cc:791] Images: 1776
+2026-05-24T03:54:06 COLMAP[chunk_model_merger_10] I20260524 03:54:06.053393 21005 model.cc:792] Points: 1407814
+2026-05-24T03:54:09 2026-05-24 03:54:09,048 - INFO - [chunk_bundle_adjuster] colmap bundle_adjuster --input_path /tmp/colmap_sfm_iet7y6w5/merged_chunk_model_10 --output_path /tmp/colmap_sfm_iet7y6w5/chunk_bundle_adjuster --BundleAdjustment.refine_principal_point 0 --BundleAdjustment.use_gpu 1
+2026-05-24T03:54:09 COLMAP[chunk_bundle_adjuster] E20260524 03:54:09.209363 21013 base_option_manager.cc:264] Failed to parse options - unrecognised option '--BundleAdjustment.use_gpu'.
+2026-05-24T03:54:09 2026-05-24 03:54:09,223 - WARNING - bundle_adjuster rejected BundleAdjustment.use_gpu; retrying with older COLMAP-compatible flags
+2026-05-24T03:54:09 2026-05-24 03:54:09,223 - INFO - [chunk_bundle_adjuster] colmap bundle_adjuster --input_path /tmp/colmap_sfm_iet7y6w5/merged_chunk_model_10 --output_path /tmp/colmap_sfm_iet7y6w5/chunk_bundle_adjuster --BundleAdjustment.refine_principal_point 0
+2026-05-24T03:54:13 COLMAP[chunk_bundle_adjuster] I20260524 03:54:12.798557 21021 bundle_adjustment.cc:70] === Global bundle adjustment ===
+2026-05-24T05:54:38 COLMAP[chunk_bundle_adjuster] W20260524 05:54:37.943070 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.
+2026-05-24T06:08:44 COLMAP[chunk_bundle_adjuster] W20260524 06:08:43.348385 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.
+2026-05-24T06:34:35 COLMAP[chunk_bundle_adjuster] W20260524 06:34:35.160022 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.
+2026-05-24T06:51:40 COLMAP[chunk_bundle_adjuster] W20260524 06:51:39.804571 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.
+2026-05-24T07:05:44 COLMAP[chunk_bundle_adjuster] W20260524 07:05:44.636984 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.
+2026-05-24T07:16:57 COLMAP[chunk_bundle_adjuster] W20260524 07:16:57.409001 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.
+2026-05-24T07:48:18 COLMAP[chunk_bundle_adjuster] W20260524 07:48:17.812654 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.
+2026-05-24T08:10:57 COLMAP[chunk_bundle_adjuster] W20260524 08:10:56.077715 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.
+2026-05-24T08:30:04 COLMAP[chunk_bundle_adjuster] I20260524 08:30:04.695688 21021 bundle_adjustment_ceres.cc:1137] Bundle adjustment report
+2026-05-24T08:30:04 COLMAP[chunk_bundle_adjuster]     Residuals : 20923690
+2026-05-24T08:30:04 COLMAP[chunk_bundle_adjuster]    Parameters : 4234093
+2026-05-24T08:30:04 COLMAP[chunk_bundle_adjuster]    Iterations : 101
+2026-05-24T08:30:04 COLMAP[chunk_bundle_adjuster]          Time : 16530 [s]
+2026-05-24T08:30:04 COLMAP[chunk_bundle_adjuster]  Initial cost : 1.13216 [px]
+2026-05-24T08:30:04 COLMAP[chunk_bundle_adjuster]    Final cost : 0.742892 [px]
+2026-05-24T08:30:04 COLMAP[chunk_bundle_adjuster]   Termination : NO_CONVERGENCE
+2026-05-24T08:30:04 COLMAP[chunk_bundle_adjuster]
+2026-05-24T08:30:06 COLMAP[chunk_bundle_adjuster] I20260524 08:30:06.155285 21021 timer.cc:90] Elapsed time: 275.889 [minutes]
+2026-05-24T08:30:15 2026-05-24 08:30:15,485 - INFO - [chunk_bundle_adjuster_model_converter_chunk_bundle_adjuster] colmap model_converter --input_path /tmp/colmap_sfm_iet7y6w5/chunk_bundle_adjuster --output_path /tmp/colmap_sfm_iet7y6w5/text_models/chunk_bundle_adjuster/chunk_bundle_adjuster --output_type TXT
+2026-05-24T08:31:54 MEMORY_PROBE [after_python]:
+2026-05-24T08:31:54 MemTotal:       16081288 kB
+2026-05-24T08:31:54 MemFree:         7695744 kB
+2026-05-24T08:31:54 MemAvailable:   14964812 kB
+               total        used        free      shared  buff/cache   available
+2026-05-24T08:31:54 Mem:            15Gi       1.1Gi       7.3Gi       1.1Mi       7.3Gi        14Gi
+2026-05-24T08:31:54 Swap:             0B          0B          0B
+2026-05-24T08:31:54 ============================================================
+2026-05-24T08:31:54 🔍 VALIDATING OUTPUT
+2026-05-24T08:31:54 ============================================================
+2026-05-24T08:31:54 ✅ /opt/ml/processing/output/sparse/0/cameras.txt (196 bytes)
+2026-05-24T08:31:54 ✅ /opt/ml/processing/output/sparse/0/images.txt (738376757 bytes)
+2026-05-24T08:31:54 ✅ /opt/ml/processing/output/sparse/0/points3D.txt (233476154 bytes)
+2026-05-24T08:31:54 ✅ /opt/ml/processing/output/images (1776 files)
+2026-05-24T08:31:54 ✅ /opt/ml/processing/output/database.db (2770214912 bytes)
+2026-05-24T08:31:54 ✅ /opt/ml/processing/output/sfm_metadata.json (5985 bytes)
+2026-05-24T08:31:55 ✅ COLMAP format validation passed
+2026-05-24T08:31:55 ============================================================
+2026-05-24T08:31:55 📊 PROCESSING STATISTICS
+2026-05-24T08:31:55 ============================================================
+2026-05-24T08:31:55 📷 Cameras registered: 1
+2026-05-24T08:31:55 🖼️ Images registered: 1776
+2026-05-24T08:31:55 🖼️ Images copied for 3DGS: 1776
+2026-05-24T08:31:55 🎯 3D points: 1407814
+2026-05-24T08:31:55 ⏱️ Processing time: 30253.14 seconds
+2026-05-24T08:31:55 🛰️ GPS priors detected: 1776
+2026-05-24T08:31:55 🔗 Matchers: chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher, chunk_spatial_matcher, chunk_sequential_matcher
+2026-05-24T08:31:55 🧭 Match profile: P1
+2026-05-24T08:31:55 ➡️ Sequential matcher enabled: True
+2026-05-24T08:31:55 ↩️ Fallback reason: not_needed
+2026-05-24T08:31:55 🎯 Vocab tree candidates: 40
+2026-05-24T08:31:55 📌 SIFT max features: 8192
+2026-05-24T08:31:55 ============================================================
+2026-05-24T08:31:55 🎉 SPACEPORT COLMAP GPU SfM COMPLETED SUCCESSFULLY!
+2026-05-24T08:31:55 ============================================================
+2026-05-24T08:31:55 ✅ GPU-accelerated COLMAP SfM completed
+2026-05-24T08:31:55 📁 Output files ready for 3D Gaussian Splatting training
+2026-05-24T08:31:55 🔗 COLMAP TXT handoff maintained
+2026-05-24T08:31:55 📅 Completed at: Sun May 24 08:31:55 UTC 2026
+2026-05-24T08:31:55 ============================================================
