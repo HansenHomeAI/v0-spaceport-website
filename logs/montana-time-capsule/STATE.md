@@ -23,10 +23,10 @@
 
 ## 2026-05-24T15:11:32Z HEARTBEAT monitor - post-push GitHub confirmation: exact-head workflows empty due `[skip ci]`
 
-- Git: agent-40136728-montana-time-capsule @ 1515e545ae20709f3b347a79c3b4b611e3254600 (`chore: friday mtc guarded refresh proof 20260524T1510Z [skip ci]`)
-- Evidence stamp: 20260524T151132Z
+- Git: agent-40136728-montana-time-capsule @ 8b3b2cecb27e772417aa38844893a26aa1483bb6 (`chore: friday mtc postpush gh proof 20260524T1511Z [skip ci]`)
+- Evidence stamp: 20260524T151251Z
 - GitHub Actions:
-  - exact-head runs for 1515e545… (expected empty): logs/montana-time-capsule/gh-run-list-exact-head-1515e545ae20709f3b347a79c3b4b611e3254600-20260524T151131Z.json
+  - exact-head runs for 8b3b2cec… (expected empty): logs/montana-time-capsule/gh-run-list-exact-head-8b3b2cecb27e772417aa38844893a26aa1483bb6-20260524T151251Z.json
 
 ## 2026-05-24T15:06:41Z HEARTBEAT monitor - no-spend acceptance refresh: canonical HMC still terminal; staging bundle present; preview viewer/proxy HTTP 200; public bundle still 404; exact-head CI empty due `[skip ci]`
 
