@@ -265,3 +265,4 @@
 [2026-05-24T00:46:44Z] heartbeat -> verified terminal pipeline + viewer HTTP 200 -> commit+push ledger
 [2026-05-24T01:05:23Z] heartbeat -> captured no-spend verification -> next: commit+push ledger if dirty
 [2026-05-24T01:07:19Z] friday-mtc SfM heartbeat -> InProgress (CloudWatch [1491/1776]) -> continue monitoring
+[2026-05-24T01:25:59Z] heartbeat poll -> sfm InProgress -> next poll

@@ -7341,3 +7341,46 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remain
 - GitHub Actions snapshot:
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T004613Z.json
   - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260524T004613Z.json
+
+
+## Heartbeat 2026-05-24T01:25:59Z (automation friday-20260522)
+
+- git head: 8e9b025e594700e669535b1c96b0d100b0ea10fb
+- aws identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T012555Z.json
+- sagemaker sfm: friday-mtc-20260524T0001Z-sfm -> InProgress
+  - describe: logs/montana-time-capsule/sagemaker-describe-friday-mtc-20260524T0001Z-sfm-20260524T012555Z.json
+- s3 colmap prefix (expected empty until EndOfJob): logs/montana-time-capsule/s3ls-friday-mtc-20260524T0001Z-colmap-20260524T012555Z.txt
+- gh runs branch: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T012555Z.json
+- gh runs exact head: logs/montana-time-capsule/gh-run-list-exact-head-20260524T012555Z.json
+
+Next: wait for SfM to reach Completed, then run the single guarded  command.
+
+## 2026-05-24T01:26:51Z HEARTBEAT monitor (HMC) - no-spend reconfirm: git clean + AWS identity + canonical SageMaker terminal (SfM/3DGS/compression Completed; no InProgress) + S3 supersplat bundle present + hosted preview viewer reachable (skybox/no-sky) + sogs-proxy meta fetch HTTP 200 (+CORS) + CI snapshot
+
+- Git: agent-40136728-montana-time-capsule @ 8e9b025e594700e669535b1c96b0d100b0ea10fb (clean)
+  - proof: logs/montana-time-capsule/git-head-and-status-20260524T012610Z.txt
+- AWS (us-west-2):
+  - sts: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T012610Z.json
+- SageMaker canonical run `hmc-mtc-20260520T2015Z` terminal:
+  - SfM Completed: logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T012435Z.json
+  - 3DGS Completed: logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T012435Z.json
+  - compression Completed: logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T012435Z.json
+  - InProgress lists (expected 0): logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T012435Z.json ; logs/montana-time-capsule/sagemaker-list-training-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T012435Z.json
+- S3 supersplat bundle evidence:
+  - ls: logs/montana-time-capsule/s3-ls-supersplat_bundle-20260524T012513Z.txt
+  - head meta.json: logs/montana-time-capsule/s3api-head-object-supersplat-meta-20260524T012513Z.json
+  - head background_skybox.webp: logs/montana-time-capsule/s3api-head-object-supersplat-background_skybox-webp-20260524T012513Z.json
+- Hosted preview viewer reachability (HTTP 200):
+  - base: logs/montana-time-capsule/curl-base-20260524T012551Z.headers
+  - skybox: logs/montana-time-capsule/curl-viewer-sky-20260524T012551Z.headers
+  - no-sky: logs/montana-time-capsule/curl-viewer-nosky-20260524T012551Z.headers
+  - sogs-proxy meta headers/body: logs/montana-time-capsule/curl-sogs-proxy-meta-20260524T012551Z.headers ; logs/montana-time-capsule/curl-sogs-proxy-meta-20260524T012551Z.body.json
+- GitHub Actions snapshot:
+  - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T012531Z.json
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260524T012531Z.json
+  - last successful Pages deploy on branch (run 26200368328): logs/montana-time-capsule/gh-run-list-pages-20260524T012531Z.json
+  - last successful CDK Deploy on branch (run 26223584298): logs/montana-time-capsule/gh-run-list-cdk-20260524T012531Z.json
+
+Next: remain idle; next acceptance gate remains updated browser visual proof (screenshots) for skybox + no-sky in the hosted preview viewer.
+
+- note (2026-05-24T01:26:06Z): previous heartbeat line contained backticks; ignore shell warning; next command is scripts/montana_time_capsule/cv_hr_time_capsule.py --launch once SfM completes.

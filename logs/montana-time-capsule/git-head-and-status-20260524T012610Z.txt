@@ -1,0 +1,34 @@
+## agent-40136728-montana-time-capsule...origin/agent-40136728-montana-time-capsule
+ M logs/agent-loop.log
+ M logs/montana-time-capsule/STATE.md
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T012555Z.json
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T012610Z.json
+?? logs/montana-time-capsule/curl-base-20260524T012551Z.headers
+?? logs/montana-time-capsule/curl-sogs-proxy-meta-20260524T012551Z.body.json
+?? logs/montana-time-capsule/curl-sogs-proxy-meta-20260524T012551Z.headers
+?? logs/montana-time-capsule/curl-viewer-nosky-20260524T012551Z.headers
+?? logs/montana-time-capsule/curl-viewer-sky-20260524T012551Z.headers
+?? logs/montana-time-capsule/gh-repo-20260524T012531Z.json
+?? logs/montana-time-capsule/gh-run-list-branch-20260524T012531Z.json
+?? logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T012555Z.json
+?? logs/montana-time-capsule/gh-run-list-cdk-20260524T012531Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-20260524T012531Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-20260524T012555Z.json
+?? logs/montana-time-capsule/gh-run-list-pages-20260524T012531Z.json
+?? logs/montana-time-capsule/git-head-and-status-20260524T012610Z.txt
+?? logs/montana-time-capsule/s3-ls-recursive-supersplat_bundle-20260524T012513Z-head200.txt
+?? logs/montana-time-capsule/s3-ls-supersplat_bundle-20260524T012513Z.txt
+?? logs/montana-time-capsule/s3api-head-object-supersplat-background_skybox-webp-20260524T012513Z.json
+?? logs/montana-time-capsule/s3api-head-object-supersplat-meta-20260524T012513Z.json
+?? logs/montana-time-capsule/s3ls-friday-mtc-20260524T0001Z-colmap-20260524T012511Z.txt
+?? logs/montana-time-capsule/s3ls-friday-mtc-20260524T0001Z-colmap-20260524T012555Z.txt
+?? logs/montana-time-capsule/sagemaker-describe-friday-mtc-20260524T0001Z-sfm-20260524T012511Z.json
+?? logs/montana-time-capsule/sagemaker-describe-friday-mtc-20260524T0001Z-sfm-20260524T012555Z.json
+?? logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T012435Z.json
+?? logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T012435Z.json
+?? logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T012435Z.json
+?? logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T012435Z.json
+?? logs/montana-time-capsule/sagemaker-list-training-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T012435Z.json
+---
+8e9b025e594700e669535b1c96b0d100b0ea10fb
+8e9b025e (HEAD -> agent-40136728-montana-time-capsule, origin/agent-40136728-montana-time-capsule) chore: friday sfm heartbeat 2026-05-24T01:06Z [skip ci]
