@@ -7838,3 +7838,8 @@ Next: remain idle for HMC canonical; accept/reject gates are viewer visual proof
 - GitHub Actions snapshot:
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260524T042512Z.json
   - exact-head runs (may be empty if HEAD is [skip ci]): logs/montana-time-capsule/gh-run-list-exact-head-20260524T042512Z.json
+
+### Postpush 20260524T042632Z
+- git head: e62d87d35e6b855f45d15834aa6651d797de7279 (`[skip ci]`)
+- gh branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260524T042632Z.json
+- gh exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T042632Z.json
