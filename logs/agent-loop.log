@@ -415,3 +415,5 @@
 [2026-05-24T18:27:59Z] push -> verified exact-head workflows (0 due [skip ci]) -> next: idle
 [2026-05-24T18:45:09Z] heartbeat -> HMC canonical terminal reconfirmed; viewer+proxy 200; public meta 404 -> next: wait for public publish gate
 [2026-05-24T18:47:16Z] friday heartbeat verify -> sfm/3dgs/compression Completed; public meta 404; no relaunch -> commit evidence
+[2026-05-24T18:47:22Z] push -> verified exact-head workflows (0 due [skip ci]) -> next: idle
+[2026-05-24T18:48:03Z] heartbeat -> refreshed HMC evidence after push; proxy 200; public meta 404 -> next: idle
