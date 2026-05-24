@@ -362,3 +362,4 @@
 [2026-05-24T13:08:41Z] mtc heartbeat post-push -> exact-head GH snapshot (skip-ci expected empty) -> idle
 [2026-05-24T13:08:57Z] mtc heartbeat post-push -> exact-head GH snapshot (skip-ci expected empty) -> idle
 [2026-05-24T13:28:21Z] friday-mtc-20260524T0001Z -> SfM/3DGS/compression Completed; preview proxy+viewer 200 -> commit+push
+[2026-05-24T13:36:14Z] post-push CI -> CDK rerun success for 611bf180 -> monitoring idle

@@ -5,6 +5,16 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-24T13:35:50Z HEARTBEAT monitor - post-push CI: CDK Deploy green for 611bf180 (rerun succeeded); Pages unchanged (no web trigger bump)
+
+- Git: agent-40136728-montana-time-capsule @ 611bf1805b56a6e1c8c7e2a6d3c742d3da5d41f4 (`chore: friday mtc completion proof 20260524T1327Z`) (local: untracked logs only)
+- Evidence stamp: 20260524T133550Z
+- GitHub Actions:
+  - exact-head runs for 611bf180…: logs/montana-time-capsule/gh-run-list-exact-head-611bf1805b56a6e1c8c7e2a6d3c742d3da5d41f4-20260524T133550Z.json
+  - CDK run summary (success): logs/montana-time-capsule/gh-run-view-cdk-26362596297-20260524T133550Z.json
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T133550Z.json
+- Note: Pages preview alias from the prior successful deploy remains the canonical URL for viewer/proxy checks until `web/trigger-dev-build.txt` changes.
+
 ## 2026-05-24T13:27:42Z HEARTBEAT monitor - Friday FRIDAY-20260522: SfM+3DGS+compression Completed; proxy meta.json + hosted viewer both HTTP 200 (sky/no-sky)
 
 - Git: agent-40136728-montana-time-capsule @ 689eb3cf13b08cc1ca35ba6a498966dca4ec6e8a (dirty: logs + Friday state refresh + aws CLI fallback patch)
