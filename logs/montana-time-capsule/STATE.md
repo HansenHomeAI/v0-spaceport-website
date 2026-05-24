@@ -5,6 +5,12 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-24T16:15:55Z HEARTBEAT monitor - post-push: recorded exact-head=0 for 94b0ed95… ([skip ci])
+
+- Git: agent-40136728-montana-time-capsule @ 94b0ed959604010bfc985fd9666192463b400ad3
+- GitHub Actions exact-head runs (0): logs/montana-time-capsule/gh-run-list-exact-head-94b0ed959604010bfc985fd9666192463b400ad3-20260524T161551Z.json
+- State snapshot: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T161551Z)
+
 ## 2026-05-24T16:13:40Z HEARTBEAT monitor - HMC canonical hmc-mtc-20260520T2015Z: terminal reconfirm; staging bundle present; preview viewer/proxy 200; public meta still 404; exact-head CI empty ([skip ci])
 
 - Git: agent-40136728-montana-time-capsule @ 7d9486b348452bbabd11dc4e84e2b187b63f6a1a (dirty: new heartbeat evidence files only)

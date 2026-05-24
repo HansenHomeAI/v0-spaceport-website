@@ -5,9 +5,9 @@
     "region": "us-west-2",
     "userId": "975050048887"
   },
-  "evidence_stamp": "20260524T161312Z",
+  "evidence_stamp": "20260524T161551Z",
   "gh": {
-    "exact_head_sha": "7d9486b348452bbabd11dc4e84e2b187b63f6a1a",
+    "exact_head_sha": "94b0ed959604010bfc985fd9666192463b400ad3",
     "exact_head_run_count": 0,
     "pages_latest_success": {
       "conclusion": "success",
@@ -34,8 +34,8 @@
   },
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "7d9486b348452bbabd11dc4e84e2b187b63f6a1a",
-    "head_checked_at": "20260524T161312Z"
+    "head": "94b0ed959604010bfc985fd9666192463b400ad3",
+    "head_checked_at": "20260524T161551Z"
   },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
@@ -55,7 +55,7 @@
     "compression": "Completed",
     "compression_job": "hmc-mtc-20260520T2015Z-compression"
   },
-  "updated_at": "20260524T161312Z",
+  "updated_at": "20260524T161551Z",
   "viewer": {
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
     "checked_at": "20260524T161312Z",
