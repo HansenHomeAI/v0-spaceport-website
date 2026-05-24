@@ -410,3 +410,4 @@
 [2026-05-24T18:08:52Z] heartbeat -> no-spend reconfirm hmc-mtc-20260520T2015Z (InProgress=0, viewer/proxy=200, public meta 404) -> committed+pushed
 [2026-05-24T18:09:36Z] heartbeat -> post-push exact-head=0 (skip ci) -> ledger updated
 [2026-05-24 12:26:13 MDT] heartbeat -> friday-mtc terminal reconfirmed; InProgress=0; no launches -> next: passive monitor
+[2026-05-24T18:26:38Z] heartbeat -> no-spend reconfirm HMC (InProgress=0, viewer 200, public meta 404) -> next: wait for public publish gate

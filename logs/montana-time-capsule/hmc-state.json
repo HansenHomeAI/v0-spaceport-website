@@ -5,40 +5,38 @@
     "region": "us-west-2",
     "userId": "975050048887"
   },
-  "evidence_stamp": "20260524T180918Z",
+  "evidence_stamp": "20260524T182450Z",
   "gh": {
     "cdk_latest_success": {
       "conclusion": "success",
       "createdAt": "2026-05-24T13:36:39Z",
       "databaseId": 26362748385,
+      "displayTitle": "chore: record CDK green 611bf180",
       "event": "push",
-      "headBranch": "agent-40136728-montana-time-capsule",
       "headSha": "c817529d848a5c54f19862298aac8e0f84f5bddb",
       "status": "completed",
       "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26362748385",
       "workflowName": "CDK Deploy"
     },
-    "cdk_latest_success_run_id_seen_in_html": 26362748385,
     "exact_head_run_count": 0,
-    "exact_head_sha": "00553678bf23202bd9d812c43287507573f6fbfd",
+    "exact_head_sha": "57f0a80e96b353f6e0611653fa208af901a3822c",
     "gh_cli_available": true,
     "pages_latest_success": {
       "conclusion": "success",
       "createdAt": "2026-05-24T13:17:03Z",
       "databaseId": 26362313633,
+      "displayTitle": "chore: trigger Pages preview 20260524T131327Z",
       "event": "push",
-      "headBranch": "agent-40136728-montana-time-capsule",
       "headSha": "689eb3cf13b08cc1ca35ba6a498966dca4ec6e8a",
       "status": "completed",
       "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26362313633",
       "workflowName": "Deploy Next.js to Cloudflare Pages"
-    },
-    "pages_latest_success_run_id_seen_in_html": 26362313633
+    }
   },
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "00553678bf23202bd9d812c43287507573f6fbfd",
-    "head_checked_at": "20260524T180918Z"
+    "head": "57f0a80e96b353f6e0611653fa208af901a3822c",
+    "head_checked_at": "20260524T182450Z"
   },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
@@ -60,10 +58,10 @@
     "sfm": "Completed",
     "sfm_job": "hmc-mtc-20260520T2015Z-sfm"
   },
-  "updated_at": "20260524T180918Z",
+  "updated_at": "20260524T182450Z",
   "viewer": {
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
-    "checked_at": "20260524T180412Z",
+    "checked_at": "20260524T182450Z",
     "nosky_http": 200,
     "proxy_http": 200,
     "sky_http": 200

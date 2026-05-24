@@ -1,0 +1,13 @@
+HTTP/2 200 
+date: Sun, 24 May 2026 18:25:24 GMT
+content-type: text/html; charset=utf-8
+vary: RSC, Next-Router-State-Tree, Next-Router-Prefetch
+x-edge-runtime: 1
+x-matched-path: /
+x-powered-by: Next.js
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=cH8Z6zAHUJ65qoKtD01tFPFJz%2BmCRUyrI7JQS4%2FD0womBTjhH1Gz3yM%2BIbAURUGEXnxBCd9XVmVpSjecs8D%2FG0YVwcSQRoaMgcrIvwr9fjjKsUq8Mdu9GldJWYmm%2FP1A9SUL8S7SdzI7l4C8OMfw9rkeCvGTMVEI9syuPZFLWa0WMEnsG9zNYozwwmLINAWssP75jJKRW%2F4UVRS2I8d9sMhP"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: a00e57bfaf3c530c-SLC
+alt-svc: h3=":443"; ma=86400
+
