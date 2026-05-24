@@ -27,6 +27,14 @@
   - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T124544Z.json
 - Next step: continue polling the pinned 3DGS job `friday-mtc-20260524T0001Z-3dgs` until `Completed`; only then proceed to pinned compression + public bundle + hosted viewer proof.
 
+## 2026-05-24T12:50:10Z HEARTBEAT monitor - post-push exact-head workflow check (expected empty due `[skip ci]`)
+
+- Git: agent-40136728-montana-time-capsule @ 7c8670435dbea7e03fa7990fdab6fb51f64215fb (`chore: friday mtc heartbeat 20260524T1246Z [skip ci]`) (clean)
+- Evidence stamp (GitHub exact-head): 20260524T125010Z
+- GitHub Actions:
+  - exact-head runs for 7c867043… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-7c8670435dbea7e03fa7990fdab6fb51f64215fb-20260524T125010Z.json (count: logs/montana-time-capsule/gh-run-count-exact-head-7c8670435dbea7e03fa7990fdab6fb51f64215fb-20260524T125010Z.txt)
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T125010Z.json
+
 ## 2026-05-24T12:07:32Z HEARTBEAT monitor - post-push exact-head workflow check (expected empty due `[skip ci]`)
 
 - Git: agent-40136728-montana-time-capsule @ c7f0df18692e1721c157c8279830e6ccd5278164 (`chore: montana heartbeat hmc acceptance refresh 20260524T1204Z [skip ci]`) (clean)
