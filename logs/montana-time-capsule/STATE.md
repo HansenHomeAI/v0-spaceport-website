@@ -5,6 +5,24 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-24T08:27:25Z HEARTBEAT monitor (FRIDAY) - canonical Friday SfM still InProgress; CW not advancing since last check (last_event_utc=2026-05-24T08:10:57.018Z); S3 colmap still empty; no new jobs launched
+
+- Git: agent-40136728-montana-time-capsule @ 1d89c696d1e1c95e9f82f18aa8e33f2cd40ad5cd (`chore: montana heartbeat 20260524T0811Z [skip ci]`) (uncommitted heartbeat artifacts present)
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T082902Z.json
+  - describe SfM (InProgress): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T082940Z.json
+  - guardrail InProgress list: logs/montana-time-capsule/sagemaker-list-processing-jobs-InProgress-20260524T082623Z.json
+- CloudWatch (SfM):
+  - stream: `friday-mtc-20260524T0001Z-sfm/algo-1-1779581031`
+  - describe stream: logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-sfm-20260524T082730Z.json (LastEventTime=2026-05-24T07:16:57.945Z)
+  - tail (paged forward): logs/montana-time-capsule/cloudwatch-get-log-events-friday-mtc-20260524T0001Z-sfm-20260524T082710Z-next.json (last_event_utc=2026-05-24T08:10:57.018Z; last_line contains "Linear solver failure")
+- S3 SfM output (EndOfJob upload; expected empty while InProgress):
+  - list: logs/montana-time-capsule/s3-ls-sfm-output-friday-mtc-20260524T0001Z-colmap-20260524T082940Z.txt (Total Objects: 0)
+- GitHub Actions:
+  - exact-head runs for 1d89c696… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-1d89c696-20260524T082622Z.json
+  - branch snapshot (last known green Pages+CDK still 16f29321…): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T082834Z.json
+- Next step: continue no-spend monitoring; only proceed to the guarded 3DGS `--launch` after SfM reaches `Completed`.
+
 ## 2026-05-24T08:11:33Z HEARTBEAT monitor - no-spend acceptance checks: HMC canonical remains terminal (SfM/3DGS/compression Completed); staging bundle reachable via preview proxy; viewer skybox/no-sky both 200; Friday SfM still InProgress; no new jobs launched
 
 - Git: agent-40136728-montana-time-capsule @ b32af30ae6ae0ba67e7ef95303e2945acb28a961 (`chore: record postpush gh snapshot 20260524T080812Z [skip ci]`)

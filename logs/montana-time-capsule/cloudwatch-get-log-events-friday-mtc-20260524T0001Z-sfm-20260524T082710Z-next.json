@@ -1,0 +1,26 @@
+{
+    "events": [
+        {
+            "timestamp": 1779606344701,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260524 07:05:44.636984 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779606349907
+        },
+        {
+            "timestamp": 1779607017945,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260524 07:16:57.409001 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779607023235
+        },
+        {
+            "timestamp": 1779608898113,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260524 07:48:17.812654 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779608903435
+        },
+        {
+            "timestamp": 1779610257018,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260524 08:10:56.077715 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779610262946
+        }
+    ],
+    "nextForwardToken": "f/39686634894450011687003494982141610019482155817322283008/s",
+    "nextBackwardToken": "b/39686547646865458807271553027971109906567479801374244864/s"
+}
