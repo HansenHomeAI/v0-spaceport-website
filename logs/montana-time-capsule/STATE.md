@@ -7245,3 +7245,4 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remain
 - GitHub Actions snapshot (gh=/opt/homebrew/bin/gh):
   - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260524T002703Z.json (expected empty due to `[skip ci]`)
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T002703Z.json (latest `CDK Deploy` success; latest `Deploy Next.js to Cloudflare Pages` success in list)
+  - postpush snapshot: logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T002901Z.json (exact-head still empty) + logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260524T002901Z.json
