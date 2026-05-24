@@ -318,3 +318,4 @@
 [2026-05-24T08:31:15Z] heartbeat -> HMC canonical terminal; proxy+viewer 200; public bucket 404; Friday SfM InProgress (linear solver failures; S3 empty) -> next: no-spend monitor
 [2026-05-24T08:47:37Z] heartbeat -> OK (no-spend checks) -> next: wait
 [2026-05-24T08:51:36Z] heartbeat -> Friday SfM output present but SM still InProgress -> continue monitoring
+[2026-05-24T08:53:15Z] heartbeat -> OK (no-spend checks) -> next: wait
