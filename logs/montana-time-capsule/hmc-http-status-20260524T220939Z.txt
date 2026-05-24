@@ -1,0 +1,5 @@
+base 200
+sky 200
+nosky 200
+proxy 200
+staging_meta 400

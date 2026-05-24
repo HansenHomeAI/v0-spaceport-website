@@ -5,38 +5,21 @@
     "region": "us-west-2",
     "userId": "975050048887"
   },
-  "evidence_stamp": "20260524T214434Z",
-  "gh": {
-    "branch_runs_count": 23,
-    "branch_runs_snapshot": "logs/montana-time-capsule/gh-run-list-branch-20260524T214434Z.json",
-    "exact_head_runs_count": 0,
-    "exact_head_snapshot": "logs/montana-time-capsule/gh-run-list-exact-head-4396c94ef18b2ff03af70e3ae1e341ccc321b1f8-20260524T214434Z.json"
-  },
+  "evidence_stamp": "20260524T220939Z",
+  "updated_at": "20260524T220939Z",
+  "run_id": "hmc-mtc-20260520T2015Z",
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "4396c94ef18b2ff03af70e3ae1e341ccc321b1f8",
-    "head_checked_at": "20260524T214434Z"
+    "head": "ee979aae376b9166a1afe75363462e780e81d70f",
+    "head_checked_at": "20260524T220939Z"
   },
-  "run_id": "hmc-mtc-20260520T2015Z",
-  "s3": {
-    "compressed_prefix": "s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/",
-    "public_meta_bucket": "spaceport-ml-processing-public",
-    "public_meta_err_tail": "An error occurred (404) when calling the HeadObject operation: Not Found",
-    "public_meta_http": 404,
-    "public_meta_key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json",
-    "staging_meta_content_length": 1359,
-    "staging_meta_etag": "\"994e5d57f052e552b8cce2e05d4debf4\"",
-    "staging_meta_last_modified": "2026-05-21T20:25:10+00:00"
+  "gh": {
+    "branch_runs_count": 20,
+    "branch_runs_snapshot": "logs/montana-time-capsule/gh-run-list-branch-20260524T220939Z.json",
+    "exact_head_runs_count": 0,
+    "exact_head_snapshot": "logs/montana-time-capsule/gh-run-list-exact-head-ee979aae376b9166a1afe75363462e780e81d70f-20260524T220939Z.json"
   },
   "sagemaker": {
-    "3dgs": {
-      "name": "hmc-mtc-20260520T2015Z-3dgs",
-      "status": "Completed"
-    },
-    "compression": {
-      "name": "hmc-mtc-20260520T2015Z-compression",
-      "status": "Completed"
-    },
     "inprogress": {
       "processing_count": 0,
       "training_count": 0
@@ -44,15 +27,32 @@
     "sfm": {
       "name": "hmc-mtc-20260520T2015Z-sfm",
       "status": "Completed"
+    },
+    "3dgs": {
+      "name": "hmc-mtc-20260520T2015Z-3dgs",
+      "status": "Completed"
+    },
+    "compression": {
+      "name": "hmc-mtc-20260520T2015Z-compression",
+      "status": "Completed"
     }
   },
-  "updated_at": "20260524T214434Z",
+  "s3": {
+    "compressed_prefix": "s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/",
+    "public_meta_bucket": "spaceport-ml-processing-public",
+    "public_meta_key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json",
+    "public_meta_http": 404,
+    "public_meta_err_tail": "An error occurred (404) when calling the HeadObject operation: Not Found",
+    "staging_meta_content_length": 1359,
+    "staging_meta_etag": "\"994e5d57f052e552b8cce2e05d4debf4\"",
+    "staging_meta_last_modified": "2026-05-21T20:25:10+00:00"
+  },
   "viewer": {
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
+    "checked_at": "20260524T220939Z",
     "base_http": 200,
-    "checked_at": "20260524T214434Z",
+    "sky_http": 200,
     "nosky_http": 200,
-    "proxy_http": 200,
-    "sky_http": 200
+    "proxy_http": 200
   }
 }
