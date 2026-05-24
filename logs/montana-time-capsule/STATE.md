@@ -8576,3 +8576,23 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - git head: 1e83eb419caa5ee06dbe0afe9033dd529214d54f (`[skip ci]`)
 - gh branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260524T090745Z.json
 - gh exact-head runs (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-1e83eb419caa5ee06dbe0afe9033dd529214d54f-20260524T090745Z.json
+
+### 20260524T0926Z HEARTBEAT monitor (FRIDAY) - SfM Completed; ready to launch pinned 3DGS (guarded)
+- git: agent-40136728-montana-time-capsule @ b29cada0cab6d57fb096dab909ccb30586b359be (`[skip ci]`)
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T092504Z.json
+  - describe SfM: logs/montana-time-capsule/sagemaker-describe-friday-mtc-20260524T0001Z-sfm-20260524T092504Z.json (status=`Completed`)
+  - InProgress processing list: logs/montana-time-capsule/sagemaker-list-processing-jobs-InProgress-20260524T092504Z.json (count=0)
+- S3 SfM output (colmap prefix now non-empty):
+  - list: logs/montana-time-capsule/s3api-list-objects-friday-mtc-20260524T0001Z-colmap-20260524T092504Z.json (KeyCount=50; truncated)
+- GitHub Actions (exact-head; expected empty due `[skip ci]`):
+  - logs/montana-time-capsule/gh-run-list-exact-head-b29cada0cab6d57fb096dab909ccb30586b359be-20260524T092552Z.json (count=0)
+- Next step: run the single guarded `cv_hr_time_capsule.py --launch` command for pinned Montana 3DGS.
+
+### 20260524T092737Z HEARTBEAT monitor (FRIDAY) - SfM Completed; 3DGS already exists + InProgress (no duplicate launch)
+- guarded launch attempt log (expected ResourceInUse; confirms job already exists): logs/montana-time-capsule/cv_hr_time_capsule-launch-20260524T092617Z.log
+- refreshed state (no --launch; adopted existing 3DGS job): logs/montana-time-capsule/cv_hr_time_capsule-refresh-20260524T092737Z.log
+- sagemaker describe (3DGS): logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T092737Z.json (status=`InProgress`)
+- guardrail InProgress training list: logs/montana-time-capsule/sagemaker-list-training-jobs-InProgress-20260524T092737Z.json
+- S3 3DGS output prefix (expected empty while InProgress): logs/montana-time-capsule/s3api-list-objects-friday-mtc-20260524T0001Z-3dgs-20260524T092737Z.json (KeyCount=0)
+- Next step: wait for `friday-mtc-20260524T0001Z-3dgs` to reach `Completed`, then advance to pinned compression.
