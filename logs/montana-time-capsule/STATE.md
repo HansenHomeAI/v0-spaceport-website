@@ -8403,3 +8403,20 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - GitHub Actions (postpush exact-head; expected empty because `[skip ci]`):
   - logs/montana-time-capsule/gh-run-list-exact-head-289405cc3104270546810ef80c2cdb735aa14642-20260524T074912Z.json
   - logs/montana-time-capsule/gh-run-list-exact-head-db3371a3ce523eadca9e8fc2822800116390acf0-20260524T075027Z.json
+
+## 2026-05-24T08:06:10Z HEARTBEAT monitor (FRIDAY) - canonical Friday SfM still InProgress; CW advanced; S3 colmap still empty
+
+- Git: agent-40136728-montana-time-capsule @ e3849327a1fc7849694776bb6b8e043bc204caa1 (`chore: update exact-head ledger link 20260524T0750Z [skip ci]`) (dirty: new logs only)
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T080454Z.json
+  - describe SfM: logs/montana-time-capsule/sagemaker-describe-friday-mtc-20260524T0001Z-sfm-20260524T080454Z.json (status=InProgress; created=2026-05-23T18:03:05-06:00; last_modified=2026-05-23T18:05:36-06:00)
+  - guardrail InProgress list (expected only SfM): logs/montana-time-capsule/sagemaker-list-processing-jobs-InProgress-20260524T080454Z.json
+- CloudWatch (SfM):
+  - stream discovery: logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-sfm-20260524T080454Z.json
+  - selected stream: logs/montana-time-capsule/cloudwatch-selected-stream-friday-mtc-20260524T0001Z-sfm-20260524T080454Z.txt
+  - recent events tail: logs/montana-time-capsule/cloudwatch-get-log-events-friday-mtc-20260524T0001Z-sfm-20260524T080454Z-tail.json (tail_txt=logs/montana-time-capsule/cloudwatch-tail-friday-mtc-20260524T0001Z-sfm-20260524T080454Z.txt; last_event_utc=2026-05-24T07:48:18Z)
+- S3 SfM output (EndOfJob upload; expected empty while InProgress):
+  - list: logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T080454Z.txt (Total Objects: 0)
+- GitHub Actions snapshot (gh=/opt/homebrew/bin/gh):
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T080454Z.json
+  - exact-head runs for current head `e384932...` (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T080454Z.json

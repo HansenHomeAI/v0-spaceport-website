@@ -1,0 +1,3 @@
+[2026-05-24T07:05:44Z] COLMAP[chunk_bundle_adjuster] W20260524 07:05:44.636984 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.
+[2026-05-24T07:16:57Z] COLMAP[chunk_bundle_adjuster] W20260524 07:16:57.409001 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.
+[2026-05-24T07:48:18Z] COLMAP[chunk_bundle_adjuster] W20260524 07:48:17.812654 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.
