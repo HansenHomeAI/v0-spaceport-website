@@ -9420,3 +9420,29 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
   - branch run list: logs/montana-time-capsule/gh-run-list-branch-20260524T130819Z.json
   - exact-head runs for 89622c3a… (expected empty due [skip ci]): logs/montana-time-capsule/gh-run-list-exact-head-89622c3ac6bc1db79269947c6b046e6c123ee09d-20260524T130819Z.json
 - Summary JSON (refreshed): logs/montana-time-capsule/hmc-state.json
+
+## 2026-05-24T14:05:57Z HEARTBEAT monitor - no-spend acceptance refresh: canonical HMC still terminal; staging bundle + viewer + SOGS proxy reachable; public bundle still missing; exact-head CI empty due [skip ci]
+
+- Git: agent-40136728-montana-time-capsule @ 159fd3351e93a379226bab0745877c25c6b488cf (`chore: montana heartbeat gh postpush confirm 20260524T135210Z [skip ci]`) (clean)
+- Evidence stamp: 20260524T140557Z
+- AWS (us-west-2):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T140421Z.json
+  - describe HMC SfM (Completed): logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T140421Z.json
+  - describe HMC 3DGS (Completed): logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T140421Z.json
+  - describe HMC compression (Completed): logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T140421Z.json
+  - guardrail visibility (InProgress lists): logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T140421Z.json + logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T140421Z.json
+- S3 (HMC canonical bundle):
+  - staging bundle listing: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T140448Z.txt
+  - staging meta head: logs/montana-time-capsule/s3api-head-object-staging-hmc-mtc-20260520T2015Z-meta-20260524T140448Z.json
+  - public meta head (expected 404): logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T140448Z.err
+- Public reachability (preview SOGS proxy -> staging meta.json):
+  - url: logs/montana-time-capsule/sogs-proxy-meta-url-20260524T140542Z.txt
+  - headers: logs/montana-time-capsule/curlD-sogs-proxy-meta-20260524T140542Z.headers (HTTP 200)
+- Hosted viewer reachability (preview):
+  - skybox: logs/montana-time-capsule/curlI-viewer-skybox-20260524T140506Z.headers (HTTP 200)
+  - no-sky: logs/montana-time-capsule/curlI-viewer-nosky-20260524T140506Z.headers (HTTP 200)
+- GitHub Actions:
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-20260524T140557Z.json
+  - exact-head runs (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-159fd3351e93a379226bab0745877c25c6b488cf-20260524T140557Z.json
+- Summary JSON refreshed: logs/montana-time-capsule/hmc-state.json
+- Next step: continue no-spend monitoring; acceptance gate remains publishing the HMC bundle to the public bucket + visual proof screenshots (sky/no-sky) on request.
