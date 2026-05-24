@@ -123,7 +123,7 @@
   },
   "current_branch_head": "96f7f2dc9468bccdb569691ab3f5b653beacbadd",
   "current_goal": "Production-ready huge-scene tiled SfM: same-MD1 quality, meaningfully faster, restartable, distributed, promotion-safe, and backed by sparse, viewer, render, and AI visual proof.",
-  "current_rung": "SFM_SEAM_GRAPH_SIM3_V1_LOCAL_PROOF_PASSED_PENDING_EXACT_HEAD_CI",
+  "current_rung": "SFM_SEAM_GRAPH_SIM3_V1_PRODUCTION_READY_SFM_ONLY",
   "cvhr_globalprior_full_leaf03_failure": {
     "boundary_recovery_triggered": false,
     "cloudwatch_tail": "logs/sfm-production-spine/cvhr-globalprior-full-l03-1779555542_cloudwatch_tail_20260523T1846Z.json",
@@ -356,7 +356,7 @@
     "strict_020608_replay": "fail_accepted_seam_graph_disconnected",
     "updated": "2026-05-23T18:16:50Z"
   },
-  "decision": "production_ready_sfm_only_pending_exact_head_ci_commit",
+  "decision": "production_ready_sfm_only",
   "deterministic_quality_gates": {
     "canonical_md1_decision": "needs_more_proof",
     "canonical_md1_report": "logs/sfm-production-spine/r4exact739s1-1777612249-sfm_quality_report.json",
@@ -414,26 +414,14 @@
   },
   "exact_head_workflows": {
     "cdk_deploy": {
-      "evidence": "logs/sfm-production-spine/cvhr_leaf03_recovery_cdk_run_view_20260523T1914Z.json",
-      "head": "96f7f2dc9468bccdb569691ab3f5b653beacbadd",
-      "run_id": 26340921254,
-      "status": "success"
-    },
-    "codebuild": {
-      "evidence": "logs/sfm-production-spine/cvhr_leaf03_recovery_codebuild_describe_20260523T1914Z.json",
-      "id": "spaceport-ml-containers:a8e248ec-828d-414e-a453-dfadcbac87bd",
-      "source_head": "96f7f2dc9468bccdb569691ab3f5b653beacbadd",
-      "status": "success"
-    },
-    "ecr": {
-      "digest": "sha256:d11a9786cdb3224efff4803ee6e0f58c898567dd4b769cb7c7b5712f56043735",
-      "evidence": "logs/sfm-production-spine/cvhr_leaf03_recovery_ecr_describe_20260523T1914Z.json"
-    },
-    "ml_container_build": {
-      "evidence": "logs/sfm-production-spine/cvhr_leaf03_recovery_ml_container_run_view_20260523T1914Z.json",
-      "head": "96f7f2dc9468bccdb569691ab3f5b653beacbadd",
-      "run_id": 26340921252,
-      "status": "success"
+      "conclusion": "success",
+      "createdAt": "2026-05-24T03:13:21Z",
+      "databaseId": 26350519862,
+      "headSha": "e7aee0f28601208b87d6b4fb7ed08858c340d268",
+      "status": "completed",
+      "updatedAt": "2026-05-24T03:25:15Z",
+      "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26350519862",
+      "workflowName": "CDK Deploy"
     }
   },
   "failed_jobs": [
@@ -448,11 +436,11 @@
   "final_project_proof": {
     "schema_version": 1,
     "artifact_kind": "sfm_only_seam_graph_sim3_v1_production_proof_summary",
-    "updated_at": "2026-05-24T03:10:00Z",
+    "updated_at": "2026-05-24T03:25:15Z",
     "decision": "production_ready_sfm_only",
     "scope": "SfM only; downstream 3DGS/SOGS render quality remains a separate stage",
     "branch": "agent-73948216-sfm-production-spine",
-    "head": "96f7f2dc9468bccdb569691ab3f5b653beacbadd plus local seam cull / sfm-only quality patch pending commit",
+    "head": "e7aee0f28601208b87d6b4fb7ed08858c340d268",
     "md1": {
       "decision": "pass",
       "strict_replay_report": "logs/sfm-production-spine/md1_seam_graph_sim3_v1_report_replay_20260521T215008Z.json",
@@ -709,9 +697,20 @@
       "s3_listing": "logs/sfm-production-spine/cvhr_globalprior_full_r3_s3_reducer_output_20260524T0259Z.txt"
     },
     "remaining_caveats": [
-      "This is SfM-only production proof. It does not claim downstream 3DGS/SOGS render quality.",
-      "The concise proof is ready locally; exact-head CI/container proof still needs the follow-up commit/push to complete."
-    ]
+      "This is SfM-only production proof. It does not claim downstream 3DGS/SOGS render quality."
+    ],
+    "exact_head_workflows": {
+      "cdk_deploy": {
+        "conclusion": "success",
+        "createdAt": "2026-05-24T03:13:21Z",
+        "databaseId": 26350519862,
+        "headSha": "e7aee0f28601208b87d6b4fb7ed08858c340d268",
+        "status": "completed",
+        "updatedAt": "2026-05-24T03:25:15Z",
+        "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26350519862",
+        "workflowName": "CDK Deploy"
+      }
+    }
   },
   "full447_ds1000_r17_20260514T000230Z": {
     "ai_visual_decision": "pass_with_warnings",
@@ -1146,7 +1145,7 @@
     "sfm_image_digest": "sha256:05e85850abcfd623e8ec7f3debc70ce2dcd9861548311290db901e0c661d4940",
     "status": "complete"
   },
-  "head": "96f7f2dc9468bccdb569691ab3f5b653beacbadd",
+  "head": "e7aee0f28601208b87d6b4fb7ed08858c340d268",
   "historical_nonblocking_notes": [
     "r24/r25 full-MD1 monolithic 3DGS failed and were not used as the production proof path.",
     "r29 worst447 ds1000 49152 passed only as bounded proof.",
@@ -1246,7 +1245,7 @@
     "ssim": 0.7207,
     "successful_render_count": 431
   },
-  "last_step": "2026-05-24T03:10:00Z: CV-HR strict reducer replay passed with 9 leaves, 1702/1710 registered images (0.9953), 624046 points, 8 accepted seam tree edges, 24 rejected edges, cycle_consistency=pass, promotion_blockers=[], cross_leaf flagged overlap ratio 0.0, global double-surface flagged ratio 0.0, sparse reprojection p95=1.7977/p99=1.9498, viewer API 200 and nonblank screenshot stats max=0.745098.",
+  "last_step": "2026-05-24T03:25:15Z: exact-head CDK Deploy run 26350519862 completed success for code commit e7aee0f28601208b87d6b4fb7ed08858c340d268. Local unit tests passed, CV-HR strict reducer replay passed with 1702/1710 registered images (0.9953), 624046 points, 8 accepted seam tree edges, cycle_consistency=pass, promotion_blockers=[], cross_leaf flagged overlap ratio 0.0, global double-surface flagged ratio 0.0, sparse reprojection p95=1.7977/p99=1.9498, viewer API 200 and nonblank screenshot stats max=0.745098.",
   "latest_artifacts": {
     "ecr_3dgs_r27_poll": "logs/sfm-production-spine/ecr-3dgs-agent73948216-r27-poll-20260515T1203Z.json",
     "github_runs_exact_head_r27_poll": "logs/sfm-production-spine/github-runs-r27-poll-20260515T1203Z.json",
@@ -1419,7 +1418,7 @@
     "speedup_percent": 26.14
   },
   "md1_sfm_artifact_decision": "promotable_sparse_sfm_artifact_but_not_full_project_proof",
-  "next_unblocked_step": "Commit/push the reducer culling and SfM-only quality patches; wait exact-head workflows/container proof; then retire the automation.",
+  "next_unblocked_step": "Retire/delete the sfm-seam-graph-production-proof automation; downstream 3DGS/SOGS is separate.",
   "owner_action_needed": "none",
   "owner_wait_poll": {
     "active_md1_processing_jobs": [],
@@ -1689,16 +1688,16 @@
     "status": "complete",
     "updated": "2026-05-17T05:28Z"
   },
-  "production_ready": false,
-  "project_final_decision": "production_ready_sfm_only_pending_exact_head_ci_commit",
+  "production_ready": true,
+  "project_final_decision": "production_ready_sfm_only",
   "project_final_proof": {
     "schema_version": 1,
     "artifact_kind": "sfm_only_seam_graph_sim3_v1_production_proof_summary",
-    "updated_at": "2026-05-24T03:10:00Z",
+    "updated_at": "2026-05-24T03:25:15Z",
     "decision": "production_ready_sfm_only",
     "scope": "SfM only; downstream 3DGS/SOGS render quality remains a separate stage",
     "branch": "agent-73948216-sfm-production-spine",
-    "head": "96f7f2dc9468bccdb569691ab3f5b653beacbadd plus local seam cull / sfm-only quality patch pending commit",
+    "head": "e7aee0f28601208b87d6b4fb7ed08858c340d268",
     "md1": {
       "decision": "pass",
       "strict_replay_report": "logs/sfm-production-spine/md1_seam_graph_sim3_v1_report_replay_20260521T215008Z.json",
@@ -1955,14 +1954,24 @@
       "s3_listing": "logs/sfm-production-spine/cvhr_globalprior_full_r3_s3_reducer_output_20260524T0259Z.txt"
     },
     "remaining_caveats": [
-      "This is SfM-only production proof. It does not claim downstream 3DGS/SOGS render quality.",
-      "The concise proof is ready locally; exact-head CI/container proof still needs the follow-up commit/push to complete."
-    ]
+      "This is SfM-only production proof. It does not claim downstream 3DGS/SOGS render quality."
+    ],
+    "exact_head_workflows": {
+      "cdk_deploy": {
+        "conclusion": "success",
+        "createdAt": "2026-05-24T03:13:21Z",
+        "databaseId": 26350519862,
+        "headSha": "e7aee0f28601208b87d6b4fb7ed08858c340d268",
+        "status": "completed",
+        "updatedAt": "2026-05-24T03:25:15Z",
+        "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26350519862",
+        "workflowName": "CDK Deploy"
+      }
+    }
   },
   "project_level_caveats": [],
   "project_level_unresolved_caveats": [
-    "This is SfM-only production proof. It does not claim downstream 3DGS/SOGS render quality.",
-    "The concise proof is ready locally; exact-head CI/container proof still needs the follow-up commit/push to complete."
+    "This is SfM-only production proof. It does not claim downstream 3DGS/SOGS render quality."
   ],
   "proof_artifacts": [
     {
@@ -4813,11 +4822,11 @@
   "seam_graph_sim3_v1_latest_proof": {
     "schema_version": 1,
     "artifact_kind": "sfm_only_seam_graph_sim3_v1_production_proof_summary",
-    "updated_at": "2026-05-24T03:10:00Z",
+    "updated_at": "2026-05-24T03:25:15Z",
     "decision": "production_ready_sfm_only",
     "scope": "SfM only; downstream 3DGS/SOGS render quality remains a separate stage",
     "branch": "agent-73948216-sfm-production-spine",
-    "head": "96f7f2dc9468bccdb569691ab3f5b653beacbadd plus local seam cull / sfm-only quality patch pending commit",
+    "head": "e7aee0f28601208b87d6b4fb7ed08858c340d268",
     "md1": {
       "decision": "pass",
       "strict_replay_report": "logs/sfm-production-spine/md1_seam_graph_sim3_v1_report_replay_20260521T215008Z.json",
@@ -5074,9 +5083,20 @@
       "s3_listing": "logs/sfm-production-spine/cvhr_globalprior_full_r3_s3_reducer_output_20260524T0259Z.txt"
     },
     "remaining_caveats": [
-      "This is SfM-only production proof. It does not claim downstream 3DGS/SOGS render quality.",
-      "The concise proof is ready locally; exact-head CI/container proof still needs the follow-up commit/push to complete."
-    ]
+      "This is SfM-only production proof. It does not claim downstream 3DGS/SOGS render quality."
+    ],
+    "exact_head_workflows": {
+      "cdk_deploy": {
+        "conclusion": "success",
+        "createdAt": "2026-05-24T03:13:21Z",
+        "databaseId": 26350519862,
+        "headSha": "e7aee0f28601208b87d6b4fb7ed08858c340d268",
+        "status": "completed",
+        "updatedAt": "2026-05-24T03:25:15Z",
+        "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26350519862",
+        "workflowName": "CDK Deploy"
+      }
+    }
   },
   "sfm_scope_only": true,
   "sfm_seam_graph_sim3_v1_hardening": {
@@ -5167,7 +5187,7 @@
     "viewer_url": "http://127.0.0.1:3000/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fmd1-visibility-cell-v1-full-20260518T2206Z%2Fmerged-pruned-culled%2Fcolmap&maxPoints=160000",
     "weak_merge_nodes": 0
   },
-  "status": "sfm_only_local_proof_passed_pending_exact_head_ci",
+  "status": "production_ready_sfm_only",
   "stopped_jobs": [
     {
       "billable_time_seconds": 2437,
@@ -5376,6 +5396,6 @@
     "prior global sparse double-surface grid had warning cells",
     "CV-HR prior 11-leaf output passed older gates but fails new seam_graph_sim3_v1 strict replay because accepted seam graph is disconnected; weak-core leaves 00/10 and scale-blocked leaves 02/10 require patched planner replay before production promotion"
   ],
-  "updated": "2026-05-24T03:10:00Z",
-  "updated_at": "2026-05-24T03:10:00Z"
+  "updated": "2026-05-24T03:25:15Z",
+  "updated_at": "2026-05-24T03:25:15Z"
 }
