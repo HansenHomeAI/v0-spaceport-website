@@ -5,6 +5,28 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-24T03:27:00Z HEARTBEAT monitor (FRIDAY) - canonical Friday run SfM still InProgress; captured exact SageMaker + CloudWatch + S3 + CI state (no duplicate jobs launched)
+
+- Git: agent-40136728-montana-time-capsule @ 8131c097b422ccf86fcc92f4c8ee17ea5204dbd7 (dirty: new logs only)
+- AWS (us-west-2; NOTE: `$PATH` in this harness does not include `/opt/homebrew/bin`, so invoke tools via absolute paths):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T032420Z.json
+  - region: logs/montana-time-capsule/aws-configure-get-region-20260524T032420Z.txt
+  - version: logs/montana-time-capsule/aws-version-20260524T032420Z.txt
+- Canonical Friday run (do not upload dataset again; do not launch duplicate Friday jobs):
+  - run id: `friday-mtc-20260524T0001Z`
+  - archive: s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.zip (expected 1776 images; state file: logs/montana-time-capsule/friday-20260522-state.json)
+  - SfM processing job `friday-mtc-20260524T0001Z-sfm` status: **InProgress**
+    - describe: logs/montana-time-capsule/sagemaker-describe-friday-mtc-20260524T0001Z-sfm-20260524T032518Z.json
+    - CloudWatch stream discovery: logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-sfm-20260524T032547Z.json
+    - CloudWatch recent events (shows COLMAP mapper registering images; still active): logs/montana-time-capsule/cloudwatch-get-log-events-friday-mtc-20260524T0001Z-sfm-20260524T032554Z.txt
+    - S3 output prefix currently empty (expected while job InProgress): logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T032535Z.txt
+  - Guardrail: current InProgress SageMaker jobs (only Friday SfM observed; no Friday training jobs):
+    - processing: logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T032602Z.json
+    - training: logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T032609Z.json
+- GitHub Actions snapshot:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260524T032638Z.json
+  - exact-head runs (expected empty due to `[skip ci]` on current head): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T032638Z.json
+
 ## 2026-05-24T02:46:08Z HEARTBEAT monitor (HMC) - no-spend reconfirm: git clean + AWS identity + canonical HMC jobs still Completed + no InProgress HMC jobs + supersplat bundle still present + hosted preview viewer (skybox/no-sky) HTTP 200 + fresh skybox/no-sky screenshots + CI snapshot captured
 
 - Git: agent-40136728-montana-time-capsule @ f46e57d0bc893ebd927979e62e428fd78f63cc0f (clean)
@@ -252,6 +274,13 @@ Next: remain idle; do not launch duplicate HMC jobs; acceptance gates remain sta
 - CI:
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260524T032638Z.json
   - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T032638Z.json
+
+## 2026-05-24T03:27:20Z postpush CI snapshot (after CI-snapshot commit; exact-head expected empty due to `[skip ci]`)
+
+- Git: agent-40136728-montana-time-capsule @ 1e72f992d20d6211a45f91d09d38e8b08310383e (`chore: record postpush ci snapshot 2026-05-24T03:27Z [skip ci]`) (pushed)
+- CI:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260524T032720Z.json
+  - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T032720Z.json
 
 - Git: agent-40136728-montana-time-capsule @ 6c2dd0b7423a65bc82b9bb2b9da532cebaa726ff (`chore: record postpush ci snapshot 2026-05-23T22:24Z [skip ci]`) (clean)
   - head: logs/montana-time-capsule/git-head-20260523T222737Z.txt
