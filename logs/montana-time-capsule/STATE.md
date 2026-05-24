@@ -26,6 +26,12 @@
   - exact-head runs (0): logs/montana-time-capsule/gh-run-list-exact-head-700c5538b495eb2ca2c72bdf80298eefb98270d5-20260524T162513Z.json
 - Next step: no-spend monitoring only; acceptance gate remains publishing Friday bundle/meta.json to an intended public bucket (do not relaunch any Friday stages).
 
+## 2026-05-24T16:27:06Z HEARTBEAT monitor - post-push: recorded exact-head=0 for b9a6da19… ([skip ci])
+
+- Git: agent-40136728-montana-time-capsule @ b9a6da195d8b3e852f5c259e0bfb2bb230b47ed1
+- GitHub Actions exact-head runs (0): logs/montana-time-capsule/gh-run-list-exact-head-b9a6da195d8b3e852f5c259e0bfb2bb230b47ed1-20260524T162706Z.json
+- GitHub Actions branch snapshot: logs/montana-time-capsule/gh-run-list-branch-latest-20260524T162706Z.json
+
 ## 2026-05-24T16:15:55Z HEARTBEAT monitor - post-push: recorded exact-head=0 for 94b0ed95… ([skip ci])
 
 - Git: agent-40136728-montana-time-capsule @ 94b0ed959604010bfc985fd9666192463b400ad3
@@ -9821,4 +9827,28 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - GitHub Actions:
   - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-20260524T152441Z.json
   - exact-head runs (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-b41a81caf97f4dda845da92bd7aa2feff916d653-20260524T152441Z.json
+- Summary JSON (refreshed): logs/montana-time-capsule/hmc-state.json
+
+## 2026-05-24T16:26:47Z HEARTBEAT monitor - no-spend acceptance refresh: canonical HMC still terminal; staging bundle present; preview viewer/proxy HTTP 200; public bundle still 404; GitHub Actions API snapshots captured (gh CLI unavailable)
+
+- Git: agent-40136728-montana-time-capsule @ 700c5538b495eb2ca2c72bdf80298eefb98270d5 (dirty: evidence files only)
+- Evidence stamp: 20260524T162647Z
+- Canonical run: hmc-mtc-20260520T2015Z (no new jobs launched)
+- AWS (us-west-2; boto3):
+  - identity: logs/montana-time-capsule/boto-sts-get-caller-identity-20260524T162523Z.json
+  - guardrail visibility (InProgress lists): logs/montana-time-capsule/boto-sagemaker-list-processing-InProgress-20260524T162523Z.json + logs/montana-time-capsule/boto-sagemaker-list-training-InProgress-20260524T162523Z.json
+  - describe SfM (Completed): logs/montana-time-capsule/boto-sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T162523Z.json
+  - describe 3DGS (Completed): logs/montana-time-capsule/boto-sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T162523Z.json
+  - describe compression (Completed): logs/montana-time-capsule/boto-sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T162523Z.json
+- S3 (canonical HMC bundle; boto3):
+  - staging bundle list: logs/montana-time-capsule/boto-s3-list-staging-supersplat-bundle-20260524T162540Z.json
+  - staging meta head: logs/montana-time-capsule/boto-s3-head-staging-meta-20260524T162540Z.json
+  - public meta head (still 404): logs/montana-time-capsule/boto-s3-head-public-meta-20260524T162540Z.json
+- Public reachability (preview proxy -> staging meta.json): logs/montana-time-capsule/curlD-sogs-proxy-meta-hmc-mtc-20260520T2015Z-20260524T162555Z.headers (HTTP 200)
+- Hosted viewer reachability (preview):
+  - skybox headers: logs/montana-time-capsule/curlD-viewer-skybox-hmc-mtc-20260520T2015Z-20260524T162555Z.headers (HTTP 200)
+  - no-sky headers: logs/montana-time-capsule/curlD-viewer-nosky-hmc-mtc-20260520T2015Z-20260524T162555Z.headers (HTTP 200)
+- GitHub Actions (unauth API; exact-head + branch):
+  - branch runs: logs/montana-time-capsule/github-api-actions-runs-branch-agent-40136728-montana-time-capsule-20260524T162447Z.json
+  - exact-head runs: logs/montana-time-capsule/github-api-actions-runs-headsha-700c5538b495eb2ca2c72bdf80298eefb98270d5-20260524T162447Z.json
 - Summary JSON (refreshed): logs/montana-time-capsule/hmc-state.json

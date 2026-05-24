@@ -390,3 +390,5 @@
 [2026-05-24T16:14:43Z] hmc-mtc heartbeat -> verified terminal; InProgress=0; staging meta present; viewer/proxy 200; public meta 404; updated hmc-state.json@20260524T161312Z -> next: await public publish gate
 [2026-05-24T16:16:24Z] post-push -> commit 94b0ed95 (skip ci); gh exact-head runs=0 -> next: idle/no-spend
 [2026-05-24T16:26:17Z] friday heartbeat -> reconfirm terminal; InProgress=0; staging meta present; public meta 404 (spaceport-ml-processing-public + spaceport-public); exact-head runs=0 (skip ci) -> next: idle/no-spend
+[2026-05-24T16:27:24Z] post-push -> commit b9a6da19 (skip ci); gh exact-head runs=0 -> next: idle/no-spend
+[2026-05-24T16:27:48Z] heartbeat(no-spend) -> verified git/aws/s3/viewer/github-api; refreshed logs/montana-time-capsule/hmc-state.json + STATE.md -> commit
