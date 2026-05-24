@@ -1,0 +1,106 @@
+{
+    "events": [
+        {
+            "timestamp": 1779581259600,
+            "message": "============================================================",
+            "ingestionTime": 1779581266064
+        },
+        {
+            "timestamp": 1779581259600,
+            "message": "🚀 SPACEPORT COLMAP GPU SfM PROCESSING",
+            "ingestionTime": 1779581266064
+        },
+        {
+            "timestamp": 1779581259600,
+            "message": "============================================================",
+            "ingestionTime": 1779581266064
+        },
+        {
+            "timestamp": 1779581259600,
+            "message": "📅 Started at: Sun May 24 00:07:39 UTC 2026",
+            "ingestionTime": 1779581266064
+        },
+        {
+            "timestamp": 1779581259600,
+            "message": "🔧 Pipeline: COLMAP mapper with GPU SIFT + spatial/sequential/vocab matching",
+            "ingestionTime": 1779581266064
+        },
+        {
+            "timestamp": 1779581259600,
+            "message": "📍 GPS Priors: image EXIF metadata",
+            "ingestionTime": 1779581266064
+        },
+        {
+            "timestamp": 1779581259601,
+            "message": "🎯 Output: COLMAP TXT export for 3DGS",
+            "ingestionTime": 1779581266064
+        },
+        {
+            "timestamp": 1779581259601,
+            "message": "============================================================",
+            "ingestionTime": 1779581266064
+        },
+        {
+            "timestamp": 1779581259601,
+            "message": "🔍 Verifying environment...",
+            "ingestionTime": 1779581266064
+        },
+        {
+            "timestamp": 1779581259601,
+            "message": "Python 3.12.3",
+            "ingestionTime": 1779581266064
+        },
+        {
+            "timestamp": 1779581260601,
+            "message": "📦 COLMAP version: unavailable via 'colmap version'",
+            "ingestionTime": 1779581266064
+        },
+        {
+            "timestamp": 1779581260601,
+            "message": "Sun May 24 00:07:39 2026       ",
+            "ingestionTime": 1779581266064
+        },
+        {
+            "timestamp": 1779581260601,
+            "message": "+-----------------------------------------------------------------------------------------+",
+            "ingestionTime": 1779581266064
+        },
+        {
+            "timestamp": 1779581260601,
+            "message": "| NVIDIA-SMI 570.211.01             Driver Version: 570.211.01     CUDA Version: 12.9     |",
+            "ingestionTime": 1779581266064
+        },
+        {
+            "timestamp": 1779581260601,
+            "message": "|-----------------------------------------+------------------------+----------------------+",
+            "ingestionTime": 1779581266064
+        },
+        {
+            "timestamp": 1779581260601,
+            "message": "| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |",
+            "ingestionTime": 1779581266064
+        },
+        {
+            "timestamp": 1779581260601,
+            "message": "| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |",
+            "ingestionTime": 1779581266064
+        },
+        {
+            "timestamp": 1779581260601,
+            "message": "|                                         |                        |               MIG M. |",
+            "ingestionTime": 1779581266064
+        },
+        {
+            "timestamp": 1779581260601,
+            "message": "|=========================================+========================+======================|",
+            "ingestionTime": 1779581266064
+        },
+        {
+            "timestamp": 1779581260602,
+            "message": "|   0  Tesla T4                       On  |   00000000:00:1E.0 Off |                    0 |",
+            "ingestionTime": 1779581266064
+        }
+    ],
+    "nextForwardToken": "f/39685988252765125090466108730496836772490904881926701075/s",
+    "nextBackwardToken": "b/39685988230419778401538424342678047063297246652934324224/s"
+}
