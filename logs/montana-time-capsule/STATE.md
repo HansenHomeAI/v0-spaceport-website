@@ -8571,3 +8571,8 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
   - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T090544Z.json
 - Action: ran the single guarded launch command; logs/montana-time-capsule/launch-3dgs-command-20260524T090555Z.txt + logs/montana-time-capsule/cv-hr-time-capsule-launch-20260524T090555Z.log
 - Next step: monitor `friday-mtc-20260524T0001Z-3dgs` to terminal; only after Completion proceed to pinned compression sha256:a0784727…
+
+### Postpush 20260524T090745Z
+- git head: 1e83eb419caa5ee06dbe0afe9033dd529214d54f (`[skip ci]`)
+- gh branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260524T090745Z.json
+- gh exact-head runs (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-1e83eb419caa5ee06dbe0afe9033dd529214d54f-20260524T090745Z.json
