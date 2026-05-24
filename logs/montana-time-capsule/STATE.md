@@ -7629,17 +7629,17 @@ Next: remain idle for HMC; continue monitoring friday-mtc SfM to terminal (separ
 ## 2026-05-24T03:07:27Z HEARTBEAT monitor (FRIDAY-20260522) - friday-mtc SfM still InProgress (do not launch duplicates)
 
 - Git: agent-40136728-montana-time-capsule @ a0a1f2819ceb5adc1ce2dad1b54cc014d486cd3d (working tree has untracked log snapshots only)
-  - proof: logs/montana-time-capsule/git-status-porcelain-20260524T030447Z.txt
+  - proof: logs/montana-time-capsule/git-status-porcelain-20260524T031335Z.txt
 - AWS (us-west-2):
-  - sts: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T030447Z.json
+  - sts: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T031335Z.json
 - SageMaker SfM (processing) `friday-mtc-20260524T0001Z-sfm`:
-  - describe (InProgress): logs/montana-time-capsule/sagemaker-describe-processing-job-friday-mtc-20260524T0001Z-sfm-20260524T030613Z.json
-  - CloudWatch tail (actively registering images): logs/montana-time-capsule/cloudwatch-get-log-events-processingjobs-friday-mtc-20260524T0001Z-sfm-20260524T030654Z.json
+  - describe (InProgress): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T031335Z.json
+  - CloudWatch tail (actively registering images): logs/montana-time-capsule/cloudwatch-get-log-events-friday-mtc-20260524T0001Z-sfm-20260524T031335Z.json
 - S3 outputs:
-  - run prefix listing (currently empty; outputs upload EndOfJob): logs/montana-time-capsule/s3-ls-manual-validations-friday-mtc-20260524T0001Z-top-20260524T030613Z.txt
-  - colmap prefix top (not present yet): logs/montana-time-capsule/s3-ls-manual-validations-friday-mtc-20260524T0001Z-colmap-top-20260524T030557Z.txt
+  - run prefix listing (currently empty; outputs upload EndOfJob): logs/montana-time-capsule/s3api-list-objects-manual-validations-friday-mtc-20260524T0001Z-20260524T031335Z.json
+  - colmap prefix listing (expected empty until EndOfJob): logs/montana-time-capsule/s3api-list-objects-manual-validations-friday-mtc-20260524T0001Z-colmap-20260524T031335Z.json
 - GitHub Actions snapshot (exact-head expected empty due to `[skip ci]`):
-  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T030727Z.json
-  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260524T030727Z.json
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T031335Z.json
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260524T031335Z.json
 
 Next: wait for SfM to reach Completed, then run the single guarded `cv_hr_time_capsule.py --launch` command exactly once.
