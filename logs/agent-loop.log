@@ -361,3 +361,4 @@
 [2026-05-24T13:07:23Z] friday-mtc-20260524T0001Z -> 3dgs Completed; launched compression ProcessingJob=friday-mtc-20260524T0001Z-compression (InProgress) -> next poll compression
 [2026-05-24T13:08:41Z] mtc heartbeat post-push -> exact-head GH snapshot (skip-ci expected empty) -> idle
 [2026-05-24T13:08:57Z] mtc heartbeat post-push -> exact-head GH snapshot (skip-ci expected empty) -> idle
+[2026-05-24T13:28:21Z] friday-mtc-20260524T0001Z -> SfM/3DGS/compression Completed; preview proxy+viewer 200 -> commit+push

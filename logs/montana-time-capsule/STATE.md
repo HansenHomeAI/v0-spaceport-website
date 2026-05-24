@@ -5,6 +5,37 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-24T13:27:42Z HEARTBEAT monitor - Friday FRIDAY-20260522: SfM+3DGS+compression Completed; proxy meta.json + hosted viewer both HTTP 200 (sky/no-sky)
+
+- Git: agent-40136728-montana-time-capsule @ 689eb3cf13b08cc1ca35ba6a498966dca4ec6e8a (dirty: logs + Friday state refresh + aws CLI fallback patch)
+- Evidence stamp: 20260524T132742Z
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T132508Z.json
+  - describe Friday SfM (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T132508Z.json
+  - describe Friday 3DGS (Completed): logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T132508Z.json
+  - describe Friday compression (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T132508Z.json
+- S3 outputs:
+  - SfM colmap listing: logs/montana-time-capsule/s3-ls-colmap-friday-mtc-20260524T0001Z-20260524T132508Z.txt
+  - 3DGS model artifact present: logs/montana-time-capsule/s3-ls-3dgs-friday-mtc-20260524T0001Z-20260524T132508Z.txt
+  - compressed supersplat bundle present: logs/montana-time-capsule/s3-ls-compressed-friday-mtc-20260524T0001Z-20260524T132508Z.txt
+- Guarded runner refresh (no duplicate launches; advances state to terminal):
+  - output: logs/montana-time-capsule/friday-guarded-launch-refresh-20260524T132731Z.log
+  - state json refreshed: logs/montana-time-capsule/friday-20260522-state.json (status: completed; updated_at: 2026-05-24T13:27:32Z)
+- Preview (Pages) URL evidence (resolve from the exact branch deploy run log):
+  - log: logs/montana-time-capsule/gh-run-view-log-pages-26362313633-20260524T132559Z.log
+  - preview alias: https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev
+- Public reachability (preview proxy -> staging compressed meta.json):
+  - URL: logs/montana-time-capsule/sogs-proxy-meta-url-friday-mtc-20260524T0001Z-20260524T132658Z.txt
+  - headers (HTTP 200; ACAO=*): logs/montana-time-capsule/curlD-sogs-proxy-meta-friday-mtc-20260524T0001Z-20260524T132658Z.headers
+  - body (valid JSON): logs/montana-time-capsule/curl-sogs-proxy-meta-friday-mtc-20260524T0001Z-20260524T132658Z.json
+- Hosted viewer reachability (preview):
+  - skybox URL: logs/montana-time-capsule/viewer-sky-url-friday-mtc-20260524T0001Z-20260524T132658Z.txt -> logs/montana-time-capsule/curlD-viewer-skybox-friday-mtc-20260524T0001Z-20260524T132658Z.headers (HTTP 200)
+  - no-sky URL: logs/montana-time-capsule/viewer-nosky-url-friday-mtc-20260524T0001Z-20260524T132658Z.txt -> logs/montana-time-capsule/curlD-viewer-nosky-friday-mtc-20260524T0001Z-20260524T132658Z.headers (HTTP 200)
+- GitHub Actions:
+  - exact-head runs for 689eb3cf… (Pages+CDK both success): logs/montana-time-capsule/gh-run-list-exact-head-689eb3cf13b08cc1ca35ba6a498966dca4ec6e8a-20260524T132742Z.json
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T132742Z.json
+- Next step: add visual proof (screenshots) for Friday viewer skybox/no-sky once requested; otherwise keep no-spend monitoring.
+
 ## 2026-05-24T12:46:44Z HEARTBEAT monitor - Friday FRIDAY-20260522: SfM Completed; 3DGS InProgress (no duplicate launch)
 
 - Git: agent-40136728-montana-time-capsule @ f8fccb23a578b3dea34d187d3a7acbbb3ce8222f (dirty: new logs + refreshed Friday state)
