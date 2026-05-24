@@ -5,6 +5,27 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-24T16:25:13Z HEARTBEAT monitor - Friday FRIDAY-20260522: reconfirm terminal (SfM Completed); InProgress=0; S3 outputs present; public meta still 404; exact-head CI empty ([skip ci])
+
+- Git: agent-40136728-montana-time-capsule @ 700c5538b495eb2ca2c72bdf80298eefb98270d5 (dirty: new heartbeat evidence files only)
+- Evidence stamp: 20260524T162513Z
+- AWS identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T162513Z.json (region: logs/montana-time-capsule/aws-config-region-20260524T162513Z.txt)
+- Guardrail visibility (InProgress lists empty):
+  - logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T162513Z.json
+  - logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T162513Z.json
+- SageMaker (Friday canonical SfM job):
+  - SfM describe (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T162513Z.json
+- S3 outputs (Friday):
+  - SfM output listing: logs/montana-time-capsule/s3-ls-sfm-colmap-20260524T162513Z.txt
+  - compressed bundle listing: logs/montana-time-capsule/s3-ls-compressed-20260524T162513Z.txt
+  - staging meta.json head: logs/montana-time-capsule/s3api-head-object-staging-friday-mtc-20260524T0001Z-meta-20260524T162534Z.json
+  - spaceport-ml-processing-public head meta.json (404): logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-public-friday-mtc-20260524T0001Z-meta-20260524T162534Z.err
+  - spaceport-public head meta.json (404): logs/montana-time-capsule/s3api-head-object-spaceport-public-friday-mtc-20260524T0001Z-meta-20260524T162534Z.err
+- GitHub Actions:
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T162513Z.json
+  - exact-head runs (0): logs/montana-time-capsule/gh-run-list-exact-head-700c5538b495eb2ca2c72bdf80298eefb98270d5-20260524T162513Z.json
+- Next step: no-spend monitoring only; acceptance gate remains publishing Friday bundle/meta.json to an intended public bucket (do not relaunch any Friday stages).
+
 ## 2026-05-24T16:15:55Z HEARTBEAT monitor - post-push: recorded exact-head=0 for 94b0ed95… ([skip ci])
 
 - Git: agent-40136728-montana-time-capsule @ 94b0ed959604010bfc985fd9666192463b400ad3
