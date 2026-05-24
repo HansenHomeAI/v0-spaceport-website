@@ -10562,3 +10562,32 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 
 - Git: agent-40136728-montana-time-capsule @ a10938bb28aa91a5fde5ed6182e60ad1e770f03c (`chore: fix friday heartbeat ledger refs [skip ci]`)
 - GitHub Actions exact-head runs (0): logs/montana-time-capsule/gh-run-list-exact-head-a10938bb28aa91a5fde5ed6182e60ad1e770f03c-20260524T193000Z.json
+
+## 2026-05-24T20:06:04Z HEARTBEAT monitor (Friday): no-spend verification; canonical SfM/3DGS/compression all Completed; public supersplat meta.json still 404
+
+- Git: agent-40136728-montana-time-capsule @ f536f1e9b1782a272913fc82cbf5284e5ea643b8 (`chore: friday mtc post-push ci snapshot 20260524T1950Z [skip ci]`)
+- Evidence stamp: 20260524T200604Z
+- Git proof:
+  - logs/montana-time-capsule/git-head-20260524T200604Z.txt
+  - logs/montana-time-capsule/git-branch-20260524T200604Z.txt
+  - logs/montana-time-capsule/git-status-20260524T200604Z.txt
+  - logs/montana-time-capsule/git-log1-20260524T200604Z.txt
+- AWS (us-west-2):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T200604Z.json (region: logs/montana-time-capsule/aws-config-region-20260524T200604Z.txt)
+  - guardrail visibility (InProgress lists):
+    - logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T200604Z.json
+    - logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T200604Z.json
+  - Friday canonical run describes:
+    - logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T200604Z.json (Completed)
+    - logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T200604Z.json (Completed)
+    - logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T200604Z.json (Completed)
+- S3 outputs (Friday):
+  - SfM output listing: logs/montana-time-capsule/s3-ls-friday-colmap-20260524T200604Z.txt
+  - 3DGS output listing: logs/montana-time-capsule/s3-ls-friday-3dgs-20260524T200604Z.txt
+  - compressed output listing (recursive): logs/montana-time-capsule/s3-ls-friday-compressed-recursive-20260524T200604Z.txt
+  - staging supersplat meta head (OK): logs/montana-time-capsule/s3api-head-object-staging-friday-supersplat-meta-20260524T200604Z.json
+  - public supersplat meta head (404): logs/montana-time-capsule/s3api-head-object-public-friday-supersplat-meta-20260524T200604Z.err
+- GitHub Actions:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T200604Z.json
+  - exact-head runs (0; expected due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-f536f1e9b1782a272913fc82cbf5284e5ea643b8-20260524T200604Z.json
+- Decision: do **not** re-launch Friday compute (`friday-mtc-20260524T0001Z` already Completed end-to-end); next gate remains publish/reachability for `spaceport-ml-processing-public/compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json`.
