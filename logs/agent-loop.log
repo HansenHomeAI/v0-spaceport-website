@@ -408,3 +408,4 @@
 [2026-05-24T17:49:20Z] friday heartbeat -> verified no InProgress; public supersplat meta OK; exact-head=0 ([skip ci]) -> commit+push
 [2026-05-24T18:08:23Z] heartbeat friday FRIDAY-20260522 -> verify Completed (sfm/3dgs/compress) InProgress=0 public-meta-404 -> next no-spend
 [2026-05-24T18:08:52Z] heartbeat -> no-spend reconfirm hmc-mtc-20260520T2015Z (InProgress=0, viewer/proxy=200, public meta 404) -> committed+pushed
+[2026-05-24T18:09:36Z] heartbeat -> post-push exact-head=0 (skip ci) -> ledger updated
