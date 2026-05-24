@@ -7,7 +7,7 @@
 
 ## 2026-05-24T20:20:00Z HEARTBEAT monitor - no-spend acceptance refresh: canonical HMC still terminal; staging bundle + viewer/proxy still reachable; public bundle still missing; exact-head CI empty due [skip ci]
 
-- Git: agent-40136728-montana-time-capsule @ 444c4662c2688bad6871023cdf0d3df2c5f963b2 (`chore: montana heartbeat hmc acceptance refresh 20260524T2020Z [skip ci]`) (local: dirty logs only)
+- Git: agent-40136728-montana-time-capsule @ 20376a242bba078f9019a10bd9a861e44c8944fe (`chore: montana heartbeat hmc acceptance refresh 20260524T2020Z [skip ci]`) (local: untracked logs only)
 - Evidence stamp: 20260524T194700Z
 - AWS (us-west-2; aws=/opt/homebrew/bin/aws):
   - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T194700Z.json
@@ -27,7 +27,7 @@
   - skybox URL: logs/montana-time-capsule/viewer-sky-url-20260524T194700Z.txt -> logs/montana-time-capsule/curlI-viewer-skybox-20260524T194700Z.headers (HTTP 200)
   - no-sky URL: logs/montana-time-capsule/viewer-nosky-url-20260524T194700Z.txt -> logs/montana-time-capsule/curlI-viewer-nosky-20260524T194700Z.headers (HTTP 200)
 - GitHub Actions:
-  - exact-head runs for 444c4662… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-444c4662c2688bad6871023cdf0d3df2c5f963b2-20260524T202300Z.json
+  - exact-head runs (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-latest-20260524T203000Z.json
   - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-20260524T201200Z.json (latest Pages success: 26362313633; latest CDK success: 26362596297)
 - Summary JSON (refreshed): logs/montana-time-capsule/hmc-state.json
 - Next step: keep no-spend monitoring; acceptance gate remaining is publishing meta.json/bundle to the public bucket + visual proof on request.
