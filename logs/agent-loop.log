@@ -337,3 +337,4 @@
 [2026-05-24T10:30:47Z] friday-mtc -> pushed heartbeat commit 7153c3ec ([skip ci]); exact-head CI 0; branch CI still green -> idle monitoring
 [2026-05-24T10:46:00Z] friday heartbeat -> sfm Completed, 3dgs InProgress -> monitor 3dgs
 [2026-05-24T10:48:08Z] heartbeat hmc acceptance -> terminal+viewer/proxy 200; public meta 404; exact-head ci 0 -> continue monitoring
+[2026-05-24T10:49:23Z] push heartbeat evidence -> origin updated; exact-head runs 0 ([skip ci]) -> continue monitoring

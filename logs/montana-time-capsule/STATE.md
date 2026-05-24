@@ -21,6 +21,11 @@
 - CloudWatch (Friday 3DGS latest events): logs/montana-time-capsule/cloudwatch-get-log-events-friday-mtc-20260524T0001Z-3dgs-20260524T104806Z.json (last event: 2026-05-24T09:14:16.268Z)
 - Next step: keep monitoring until `friday-mtc-20260524T0001Z-3dgs` is Completed, then advance to pinned compression stage without launching duplicates.
 
+## 2026-05-24T10:48:49Z HEARTBEAT monitor - post-push exact-head workflow check (expected empty due `[skip ci]`)
+
+- Git: agent-40136728-montana-time-capsule @ f4dd6b2ba2610aad9468bb3b06781f5fa93405e0 (`chore: heartbeat hmc acceptance refresh 20260524T1047Z [skip ci]`) (clean)
+- GitHub Actions (exact-head runs count=0): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T104841Z.json (count: logs/montana-time-capsule/gh-run-count-exact-head-f4dd6b2ba2610aad9468bb3b06781f5fa93405e0-20260524T104841Z.txt)
+
 ## 2026-05-24T10:47:12Z HEARTBEAT monitor - no-spend acceptance checks refresh: canonical HMC still terminal; staging bundle still present; viewer/proxy still HTTP 200; public bucket meta.json still 404; exact-head CI empty due [skip ci]
 
 - Git: agent-40136728-montana-time-capsule @ e5c6c58068c4530a42024b3c2bc5b1b06dd4f873 (`chore: postpush gh snapshots 20260524T103057Z [skip ci]`) (clean)
