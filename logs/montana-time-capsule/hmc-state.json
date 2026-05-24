@@ -5,21 +5,8 @@
     "region": "us-west-2",
     "userId": "975050048887"
   },
-  "evidence_stamp": "20260524T161551Z",
+  "evidence_stamp": "20260524T162930Z",
   "gh": {
-    "exact_head_sha": "94b0ed959604010bfc985fd9666192463b400ad3",
-    "exact_head_run_count": 0,
-    "pages_latest_success": {
-      "conclusion": "success",
-      "createdAt": "2026-05-24T13:17:03Z",
-      "databaseId": 26362313633,
-      "event": "push",
-      "headBranch": "agent-40136728-montana-time-capsule",
-      "headSha": "689eb3cf13b08cc1ca35ba6a498966dca4ec6e8a",
-      "status": "completed",
-      "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26362313633",
-      "workflowName": "Deploy Next.js to Cloudflare Pages"
-    },
     "cdk_latest_success": {
       "conclusion": "success",
       "createdAt": "2026-05-24T13:36:39Z",
@@ -30,37 +17,50 @@
       "status": "completed",
       "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26362748385",
       "workflowName": "CDK Deploy"
+    },
+    "exact_head_run_count": 0,
+    "exact_head_sha": "e2b545cabb78371e30dd70cf5f100c1965951630",
+    "pages_latest_success": {
+      "conclusion": "success",
+      "createdAt": "2026-05-24T13:17:03Z",
+      "databaseId": 26362313633,
+      "event": "push",
+      "headBranch": "agent-40136728-montana-time-capsule",
+      "headSha": "689eb3cf13b08cc1ca35ba6a498966dca4ec6e8a",
+      "status": "completed",
+      "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26362313633",
+      "workflowName": "Deploy Next.js to Cloudflare Pages"
     }
   },
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "94b0ed959604010bfc985fd9666192463b400ad3",
-    "head_checked_at": "20260524T161551Z"
+    "head": "e2b545cabb78371e30dd70cf5f100c1965951630",
+    "head_checked_at": "20260524T162930Z"
   },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
     "compressed_prefix": "s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/",
     "public_meta_bucket": "spaceport-ml-processing-public",
-    "public_meta_key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json",
     "public_meta_http": 404,
-    "staging_meta_etag": "\"994e5d57f052e552b8cce2e05d4debf4\"",
+    "public_meta_key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json",
     "staging_meta_content_length": 1359,
-    "staging_meta_last_modified": "2026-05-21T20:25:10+00:00"
+    "staging_meta_etag": "\"994e5d57f052e552b8cce2e05d4debf4\"",
+    "staging_meta_last_modified": "2026-05-21 20:25:10+00:00"
   },
   "sagemaker": {
-    "sfm": "Completed",
-    "sfm_job": "hmc-mtc-20260520T2015Z-sfm",
     "3dgs": "Completed",
     "3dgs_job": "hmc-mtc-20260520T2015Z-3dgs",
     "compression": "Completed",
-    "compression_job": "hmc-mtc-20260520T2015Z-compression"
+    "compression_job": "hmc-mtc-20260520T2015Z-compression",
+    "sfm": "Completed",
+    "sfm_job": "hmc-mtc-20260520T2015Z-sfm"
   },
-  "updated_at": "20260524T161551Z",
+  "updated_at": "20260524T162930Z",
   "viewer": {
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
-    "checked_at": "20260524T161312Z",
-    "sky_http": 200,
+    "checked_at": "20260524T162930Z",
     "nosky_http": 200,
-    "proxy_http": 200
+    "proxy_http": 400,
+    "sky_http": 200
   }
 }
