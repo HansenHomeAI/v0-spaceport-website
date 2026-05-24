@@ -5,6 +5,14 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-24T12:07:32Z HEARTBEAT monitor - post-push exact-head workflow check (expected empty due `[skip ci]`)
+
+- Git: agent-40136728-montana-time-capsule @ c7f0df18692e1721c157c8279830e6ccd5278164 (`chore: montana heartbeat hmc acceptance refresh 20260524T1204Z [skip ci]`) (clean)
+- Evidence stamp (GitHub exact-head): 20260524T120732Z
+- GitHub Actions:
+  - exact-head runs for c7f0df18… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-c7f0df18692e1721c157c8279830e6ccd5278164-20260524T120732Z.json (count: logs/montana-time-capsule/gh-run-count-exact-head-c7f0df18692e1721c157c8279830e6ccd5278164-20260524T120732Z.txt)
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T120732Z.json
+
 ## 2026-05-24T12:04:48Z HEARTBEAT monitor - no-spend acceptance refresh: canonical HMC remains terminal; staging bundle still present; preview viewer/proxy still HTTP 200; public bucket meta.json still 404; exact-head CI empty due [skip ci]
 
 - Git: agent-40136728-montana-time-capsule @ 5972bb6d4ddf20e72fe0fd31afb81c1e1748d8cc (`chore: record montana postpush gh snapshot 20260524T1147Z [skip ci]`) (clean)
@@ -9077,3 +9085,22 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
   - exact-head runs list (count=0; expected empty due [skip ci]): logs/montana-time-capsule/gh-run-list-exact-head-791aea96-20260524T114638Z.json
 - Summary JSON (authoritative stage tracker): logs/montana-time-capsule/friday-20260522-state.json
 - Next step: continue monitoring `friday-mtc-20260524T0001Z-3dgs` until `Completed`; only then advance to pinned compression sha256:a0784727…
+
+## 20260524T120551Z HEARTBEAT monitor - Friday 2026-05-22 Montana time capsule (friday-mtc-20260524T0001Z) status refresh (SfM Completed; 3DGS still InProgress; CloudWatch lastEventUtc unchanged; no duplicate launches)
+
+- Git: agent-40136728-montana-time-capsule @ 5972bb6d4ddf20e72fe0fd31afb81c1e1748d8cc (dirty: new logs + friday-20260522-state.json refresh)
+- Evidence stamp: 20260524T120551Z
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T120514Z.json
+  - describe Friday SfM (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T120514Z.json
+  - describe Friday 3DGS training (InProgress): logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T120514Z.json
+  - guardrail: list training jobs name-contains run_id (InProgress count=1): logs/montana-time-capsule/sagemaker-list-training-jobs-name-contains-friday-mtc-20260524T0001Z-20260524T120514Z.json
+  - CloudWatch stream inventory: logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-3dgs-20260524T120520Z.json (stream=`friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610`; lastEventUtc=`2026-05-24T09:14:16.268Z`)
+- S3 (Friday outputs):
+  - SfM/colmap listing (1783 objects): logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T120529Z.txt
+  - 3DGS output prefix listing (still empty): logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-3dgs-20260524T120529Z.txt
+- GitHub Actions:
+  - branch snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T120544Z.json
+  - exact-head runs list (count=0; expected empty due [skip ci]): logs/montana-time-capsule/gh-run-list-exact-head-5972bb6d4ddf20e72fe0fd31afb81c1e1748d8cc-20260524T120551Z.json (count file: logs/montana-time-capsule/gh-run-count-exact-head-5972bb6d4ddf20e72fe0fd31afb81c1e1748d8cc-20260524T120551Z.txt)
+- Summary JSON (authoritative stage tracker): logs/montana-time-capsule/friday-20260522-state.json
+- Next step: keep no-spend polling; wait for `friday-mtc-20260524T0001Z-3dgs` to reach `Completed` before advancing to pinned compression sha256:a0784727…
