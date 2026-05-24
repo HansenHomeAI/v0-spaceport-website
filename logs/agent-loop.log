@@ -281,3 +281,4 @@
 [2026-05-24T03:06:56Z] heartbeat -> verified git/aws/sagemaker/s3/viewer/gh (no-spend) -> commit+push ledger
 [2026-05-24T03:07:48Z] friday-mtc SfM heartbeat -> InProgress (CloudWatch shows COLMAP registering images) -> next: wait for Completed then run guarded launch
 [2026-05-24T03:26:15Z] heartbeat -> no-spend checks ok (HMC Completed; viewer 200; proxy meta 200) -> commit+push logs/state
+[2026-05-24T03:27:30Z] friday-mtc SfM status -> InProgress (CloudWatch active; S3 colmap empty) -> next: poll until Completed; then launch guarded cv_hr_time_capsule
