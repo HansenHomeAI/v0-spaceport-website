@@ -8831,3 +8831,10 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
   - exact-head runs for 7a2bfa2e… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-7a2bfa2e9d28bcd367e493b415cb81fe7860287f-20260524T102609Z.json
   - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T102609Z.json (latest Pages+CDK green at headSha=16f29321…)
 - Next step: monitor `friday-mtc-20260524T0001Z-3dgs` to terminal; on Completion run pinned compression sha256:a0784727… (smallest next stage).
+
+### 20260524T102911Z Friday 3DGS heartbeat refresh
+- AWS identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T102911Z.json
+- describe 3DGS (still InProgress): logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T102911Z.json
+- CloudWatch stream: logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-3dgs-20260524T102911Z.json (lastEventUtc=2026-05-24T09:14:16.268000Z)
+- S3 3DGS output prefix (still empty): logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-3dgs-20260524T102911Z.txt
+- GitHub exact-head CI (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-44839fe74e0e9d3a365f110534f02340b6b20210-20260524T102911Z.json
