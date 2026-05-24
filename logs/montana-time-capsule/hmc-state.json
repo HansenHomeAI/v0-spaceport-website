@@ -1,11 +1,13 @@
 {
   "aws": {
     "account": "975050048887",
-    "arn": "arn:aws:iam::975050048887:root",
-    "region": null,
-    "user_id": "975050048887"
+    "arn": "arn:aws:iam::975050048887:root"
   },
-  "evidence_stamp": "20260524T092546Z",
+  "evidence_stamp": "20260524T093034Z",
+  "git": {
+    "branch": "agent-40136728-montana-time-capsule",
+    "head": "bbfb837bdba16337e896dc030f25caca673ccb21"
+  },
   "github": {
     "cdk_latest": {
       "conclusion": "success",
@@ -17,7 +19,6 @@
       "updatedAt": "2026-05-24T06:19:58Z"
     },
     "exact_head_run_count": 0,
-    "exact_head_sha": "b29cada0cab6d57fb096dab909ccb30586b359be",
     "pages_latest": {
       "conclusion": "success",
       "createdAt": "2026-05-24T06:15:37Z",
@@ -26,42 +27,22 @@
       "headSha": "16f29321bfe9c53c2c7822ff41ccfc8e12fdf482",
       "status": "completed",
       "updatedAt": "2026-05-24T06:24:23Z"
-    },
-    "pages_run_id_for_alias": 26353779608
+    }
   },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
-    "public_bucket": "spaceport-ml-processing",
-    "public_meta_expected_404": true,
-    "staging_bucket": "spaceport-ml-processing-staging",
     "staging_meta_content_length": 1359,
-    "staging_meta_etag": "\"994e5d57f052e552b8cce2e05d4debf4\"",
-    "staging_meta_key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json"
+    "staging_meta_etag": "\"994e5d57f052e552b8cce2e05d4debf4\""
   },
   "sagemaker": {
-    "compression_processing_job": {
-      "name": "hmc-mtc-20260520T2015Z-compression",
-      "status": "Completed"
-    },
-    "gs_training_job": {
-      "name": "hmc-mtc-20260520T2015Z-3dgs",
-      "status": "Completed"
-    },
-    "sfm_processing_job": {
-      "name": "hmc-mtc-20260520T2015Z-sfm",
-      "status": "Completed"
-    }
+    "3dgs": "Completed",
+    "compression": "Completed",
+    "sfm": "Completed"
   },
-  "updated_at": "2026-05-24T09:28:16Z",
+  "updated_at": "2026-05-24T09:30:43Z",
   "viewer": {
-    "preview_alias": null,
-    "sogs_proxy_meta_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing-staging.s3.us-west-2.amazonaws.com/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json",
-    "status": {
-      "sogs_proxy_meta_http": 200,
-      "viewer_nosky_http": 404,
-      "viewer_sky_http": 404
-    },
-    "viewer_nosky_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/viewer?scene=hmc-mtc-20260520T2015Z&sky=0",
-    "viewer_sky_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/viewer?scene=hmc-mtc-20260520T2015Z&sky=1"
+    "nosky_http": 404,
+    "proxy_http": 200,
+    "sky_http": 404
   }
 }
