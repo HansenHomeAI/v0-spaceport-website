@@ -10012,6 +10012,11 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
   - branch runs: logs/montana-time-capsule/github-api-actions-runs-branch-agent-40136728-montana-time-capsule-20260524T1727Z.json
   - exact-head runs (0): logs/montana-time-capsule/github-api-actions-runs-headsha-8337f52460c335ed129a0e91e28c0b5f4cd2c528-20260524T1727Z.json
 
+## 2026-05-24T17:31:20Z HEARTBEAT monitor - post-push confirmation: exact-head=0 for edcbdc0a9be25a45749f5738a927e2c1a7e2d520 ([skip ci])
+
+- Git: agent-40136728-montana-time-capsule @ edcbdc0a9be25a45749f5738a927e2c1a7e2d520 (`chore: friday mtc publish public bundle 20260524T1712Z [skip ci]`)
+- GitHub Actions (unauth API) exact-head runs (0): logs/montana-time-capsule/github-api-actions-runs-headsha-edcbdc0a9be25a45749f5738a927e2c1a7e2d520-20260524T1731Z.json
+
 
 ## 2026-05-24T17:11:10Z HEARTBEAT monitor - post-push(3): exact-head=0 for 657b12f5c629e7c61566c39c4972e7d24787f535 ([skip ci])
 
