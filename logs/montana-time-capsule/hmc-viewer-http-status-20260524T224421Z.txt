@@ -1,0 +1,5 @@
+viewer_base 200
+viewer_sky 200
+viewer_nosky 200
+viewer_proxy 404
+elevation_proxy_status 400
