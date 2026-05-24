@@ -1,0 +1,31 @@
+branch=agent-40136728-montana-time-capsule
+head=79887c43e663c5e9022e8e33992b1dd775291d87
+## agent-40136728-montana-time-capsule...origin/agent-40136728-montana-time-capsule
+ D logs/montana-time-capsule/aws-config-region-20260524T192548Z.txt
+ D logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T192548Z.json
+ D logs/montana-time-capsule/curl-head-http-public-hmc-mtc-20260520T2015Z-meta-20260524T192548Z.txt
+ D logs/montana-time-capsule/curl-head-public-hmc-mtc-20260520T2015Z-meta-20260524T192548Z.txt
+ D logs/montana-time-capsule/curl-head-staging-hmc-mtc-20260520T2015Z-meta-20260524T192548Z.txt
+ D logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T192548Z.txt
+ D logs/montana-time-capsule/gh-run-list-exact-head-85af60fc09dfb41085e317a5b72a3f283d78ce83-20260524T192548Z.txt
+ D logs/montana-time-capsule/git-proof-20260524T192548Z.txt
+ D logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T192548Z.txt
+ D logs/montana-time-capsule/s3api-head-object-http-public-hmc-mtc-20260520T2015Z-meta-20260524T192548Z.err
+ D logs/montana-time-capsule/s3api-head-object-http-public-hmc-mtc-20260520T2015Z-meta-20260524T192548Z.json
+ D logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T192548Z.err
+ D logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T192548Z.json
+ D logs/montana-time-capsule/s3api-head-object-staging-hmc-mtc-20260520T2015Z-meta-20260524T192548Z.json
+ D logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T192548Z.json
+ D logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T192548Z.json
+ D logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T192548Z.json
+ D logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T192548Z.json
+ D logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T192548Z.json
+ D logs/montana-time-capsule/viewer-nosky-http-20260524T192548Z.txt
+ D logs/montana-time-capsule/viewer-nosky-url-used-20260524T192548Z.txt
+ D logs/montana-time-capsule/viewer-proxy-http-20260524T192548Z.txt
+ D logs/montana-time-capsule/viewer-proxy-url-used-20260524T192548Z.txt
+ D logs/montana-time-capsule/viewer-sky-http-20260524T192548Z.txt
+ D logs/montana-time-capsule/viewer-sky-url-used-20260524T192548Z.txt
+?? logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T192731Z.txt
+?? logs/montana-time-capsule/gh-run-list-exact-head-79887c43e663c5e9022e8e33992b1dd775291d87-20260524T192731Z.txt
+?? logs/montana-time-capsule/git-proof-20260524T192731Z.txt
