@@ -5,6 +5,20 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-24T10:45:11Z HEARTBEAT monitor - Friday FRIDAY-20260522 run status refresh: SfM Completed; 3DGS still InProgress (do not relaunch)
+
+- Git: agent-40136728-montana-time-capsule @ e5c6c58068c4530a42024b3c2bc5b1b06dd4f873 (`chore: postpush gh snapshots 20260524T103057Z [skip ci]`) (dirty: new logs only)
+- Evidence stamp: 20260524T104511Z
+- AWS (us-west-2):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T104511Z.json
+  - describe Friday SfM (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T104511Z.json
+  - describe Friday 3DGS (InProgress): logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T104511Z.json
+- Friday state JSON (refreshed): logs/montana-time-capsule/friday-20260522-state.json (updated_at: 2026-05-24T10:45:18Z; status: 3dgs_running)
+- S3 (Friday SfM output):
+  - colmap listing: logs/montana-time-capsule/s3-ls-colmap-friday-mtc-20260524T0001Z-20260524T104511Z.txt
+- Concise summary: logs/montana-time-capsule/friday-heartbeat-summary-20260524T104511Z.md
+- Next step: keep monitoring until `friday-mtc-20260524T0001Z-3dgs` is Completed, then advance to pinned compression stage without launching duplicates.
+
 ## 2026-05-24T09:47:20Z HEARTBEAT monitor - no-spend acceptance checks: canonical HMC still terminal (SfM/3DGS/compression Completed); staging bundle still present; hosted viewer now verified at `/sogs-migrated-viewer` (sky/no-sky HTTP 200); public bucket meta.json still 404; exact-head CI empty due [skip ci]
 
 - Git: agent-40136728-montana-time-capsule @ f4c21d5a2d03d7198ebf8b3c9cff4ea77781e38b (`chore: montana heartbeat post-push 20260524T093141Z [skip ci]`) (clean)
