@@ -1,5 +1,26 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-24T23:07:29Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: verified terminal; ran guarded `cv_hr_time_capsule.py --launch` (no duplicate jobs launched)
+
+- Git: agent-40136728-montana-time-capsule @ 804e554876f20c6976699773623805c0ac8edb95 (`chore: friday mtc postpush gh snapshot 20260524T225014Z [skip ci]`)
+- Evidence stamp (pre-action): 20260524T230543Z
+  - Git proof: logs/montana-time-capsule/git-proof-20260524T230543Z.txt
+  - AWS identity/region: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T230543Z.json + logs/montana-time-capsule/aws-config-region-20260524T230543Z.txt
+  - InProgress guardrail (max-results=20): logs/montana-time-capsule/sm-list-processing-inprogress-20260524T230543Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260524T230543Z.json (counts: 0/0)
+  - Friday canonical describes (all Completed):
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T230543Z.json
+    - logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T230543Z.json
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T230543Z.json
+  - S3 outputs: logs/montana-time-capsule/s3ls-friday-colmap-20260524T230543Z.txt + logs/montana-time-capsule/s3ls-friday-compressed-20260524T230543Z.txt
+  - GitHub Actions snapshots:
+    - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T230543Z.json
+    - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-804e554876f20c6976699773623805c0ac8edb95-20260524T230543Z.json
+- Guarded command output: logs/montana-time-capsule/cv-hr-time-capsule-friday-20260522-20260524T230543Z.log (exit=0; `status=completed`)
+- Post-action recheck: 20260524T230729Z
+  - InProgress guardrail: logs/montana-time-capsule/sm-list-processing-inprogress-20260524T230729Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260524T230729Z.json (counts: 0/0)
+  - Latest Friday job lists: logs/montana-time-capsule/sm-list-training-friday-mtc-latest-20260524T230729Z.json + logs/montana-time-capsule/sm-list-processing-friday-mtc-latest-20260524T230729Z.json
+  - Public meta HTTP HEAD: logs/montana-time-capsule/curl-head-friday-public-meta-20260524T230729Z.txt
+
 ## 2026-05-24T22:48:33Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: no-spend reconfirm; SageMaker terminal (Completed); public meta + hosted viewer still reachable; exact-head GH runs snapshot recorded
 
 - Git: agent-40136728-montana-time-capsule @ 0e140aa220b66c9a5dd1d990b3e3eb4eaa81287d (`chore: hmc mtc heartbeat proof 20260524T224421Z [skip ci]`)

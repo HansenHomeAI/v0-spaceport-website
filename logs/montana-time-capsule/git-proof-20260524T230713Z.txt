@@ -1,0 +1,40 @@
+# git proof 20260524T230713Z
+branch: agent-40136728-montana-time-capsule
+head: 804e554876f20c6976699773623805c0ac8edb95
+ M logs/montana-time-capsule/friday-20260522-state.json
+?? logs/montana-time-capsule/PREVIEW_URL-latest-pages-success-20260524T230634Z.txt
+?? logs/montana-time-capsule/aws-config-region-20260524T230543Z.txt
+?? logs/montana-time-capsule/aws-config-region-20260524T230634Z.txt
+?? logs/montana-time-capsule/aws-sts-20260524T230634Z.json
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T230543Z.json
+?? logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T230543Z.json
+?? logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T230634Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-804e554-20260524T230634Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-804e554876f20c6976699773623805c0ac8edb95-20260524T230543Z.json
+?? logs/montana-time-capsule/git-proof-20260524T230543Z.txt
+?? logs/montana-time-capsule/git-proof-20260524T230634Z.txt
+?? logs/montana-time-capsule/git-proof-20260524T230713Z.txt
+?? logs/montana-time-capsule/s3head-public-meta-hmc-mtc-20260520T2015Z-20260524T230634Z.err
+?? logs/montana-time-capsule/s3head-public-meta-hmc-mtc-20260520T2015Z-20260524T230634Z.json
+?? logs/montana-time-capsule/s3head-staging-meta-hmc-mtc-20260520T2015Z-20260524T230634Z.json
+?? logs/montana-time-capsule/s3ls-friday-colmap-20260524T230543Z.txt
+?? logs/montana-time-capsule/s3ls-friday-compressed-20260524T230543Z.txt
+?? logs/montana-time-capsule/s3ls-staging-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T230634Z.txt
+?? logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T230543Z.json
+?? logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T230543Z.json
+?? logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T230634Z.json
+?? logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T230634Z.json
+?? logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T230543Z.json
+?? logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T230634Z.json
+?? logs/montana-time-capsule/sm-list-processing-friday-mtc-latest-20260524T230710Z.json
+?? logs/montana-time-capsule/sm-list-processing-inprogress-20260524T230543Z.json
+?? logs/montana-time-capsule/sm-list-processing-inprogress-20260524T230634Z.json
+?? logs/montana-time-capsule/sm-list-processing-inprogress-20260524T230654Z.json
+?? logs/montana-time-capsule/sm-list-processing-inprogress-20260524T230710Z.json
+?? logs/montana-time-capsule/sm-list-training-friday-mtc-latest-20260524T230654Z.json
+?? logs/montana-time-capsule/sm-list-training-friday-mtc-latest-20260524T230710Z.json
+?? logs/montana-time-capsule/sm-list-training-inprogress-20260524T230543Z.json
+?? logs/montana-time-capsule/sm-list-training-inprogress-20260524T230634Z.json
+?? logs/montana-time-capsule/sm-list-training-inprogress-20260524T230654Z.json
+?? logs/montana-time-capsule/sm-list-training-inprogress-20260524T230710Z.json
+804e5548 (HEAD -> agent-40136728-montana-time-capsule, origin/agent-40136728-montana-time-capsule) chore: friday mtc postpush gh snapshot 20260524T225014Z [skip ci]
