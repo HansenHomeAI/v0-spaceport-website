@@ -1,0 +1,8 @@
+?? logs/montana-time-capsule/git-branch-20260524T184406Z.txt
+?? logs/montana-time-capsule/git-head-20260524T184406Z.txt
+?? logs/montana-time-capsule/git-status-20260524T184406Z.txt
+---
+## agent-40136728-montana-time-capsule...origin/agent-40136728-montana-time-capsule
+?? logs/montana-time-capsule/git-branch-20260524T184406Z.txt
+?? logs/montana-time-capsule/git-head-20260524T184406Z.txt
+?? logs/montana-time-capsule/git-status-20260524T184406Z.txt

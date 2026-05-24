@@ -413,3 +413,4 @@
 [2026-05-24T18:26:38Z] heartbeat -> no-spend reconfirm HMC (InProgress=0, viewer 200, public meta 404) -> next: wait for public publish gate
 [2026-05-24T18:27:19Z] push -> verified exact-head workflows (0 due [skip ci]) -> next: idle/no-spend monitor
 [2026-05-24T18:27:59Z] push -> verified exact-head workflows (0 due [skip ci]) -> next: idle
+[2026-05-24T18:45:09Z] heartbeat -> HMC canonical terminal reconfirmed; viewer+proxy 200; public meta 404 -> next: wait for public publish gate

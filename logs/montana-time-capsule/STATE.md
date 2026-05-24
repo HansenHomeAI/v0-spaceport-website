@@ -10291,3 +10291,26 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
   - compressed listing: logs/montana-time-capsule/s3-ls-compressed-friday-mtc-20260524T0001Z-20260524T182532Z.txt
 - Guardrail: no dataset re-upload; no new SageMaker jobs launched in this heartbeat.
 - Next step: continue no-spend monitoring; only act if a new stage is needed or a reachability regression is detected.
+
+## 2026-05-24T18:45:09Z HEARTBEAT monitor - HMC canonical hmc-mtc-20260520T2015Z: no-spend reconfirm (terminal + staging bundle present + preview viewer reachable + sogs-proxy meta 200 + CI snapshot)
+
+- Git: agent-40136728-montana-time-capsule @ a0592fd5b97cfff047d9ddbb54a107d97b4a800d (`chore: mtc heartbeat post-push 20260524T182736Z [skip ci]`)
+- Evidence stamp: 20260524T184509Z
+- AWS (us-west-2; /opt/homebrew/bin/aws; no spend):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T184509Z.json (region: logs/montana-time-capsule/aws-config-region-20260524T184509Z.txt)
+  - InProgress processing=0: logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T184509Z.json
+  - InProgress training=0: logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T184509Z.json
+  - SfM describe (Completed): logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T184509Z.json
+  - 3DGS describe (Completed): logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T184509Z.json
+  - compression describe (Completed): logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T184509Z.json
+- S3 outputs (staging):
+  - compressed supersplat bundle listing: logs/montana-time-capsule/s3-ls-hmc-mtc-20260520T2015Z-staging-bundle-20260524T184509Z.txt
+  - staging meta.json head (200): logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-staging-hmc-mtc-20260520T2015Z-meta-20260524T184509Z.json
+  - public meta.json heads still 404 (blocking public publish proof): logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-hmc-mtc-20260520T2015Z-meta-20260524T184533Z.err + logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-public-hmc-mtc-20260520T2015Z-meta-20260524T184509Z.err
+- Hosted preview viewer reachability:
+  - preview alias: logs/montana-time-capsule/viewer-alias-20260524T184509Z.txt
+  - skybox/no-sky HTTP 200: logs/montana-time-capsule/viewer-http-20260524T184509Z.txt
+  - sogs-proxy meta.json (HTTP 200 + `access-control-allow-origin: *`): logs/montana-time-capsule/sogs-proxy-meta-url-20260524T184509Z.txt + logs/montana-time-capsule/curlD-sogs-proxy-meta-20260524T184509Z.headers + logs/montana-time-capsule/curl-sogs-proxy-meta-20260524T184509Z.json
+- GitHub Actions (gh):
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T184428Z.json
+  - exact-head runs (0; expected due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-a0592fd5b97cfff047d9ddbb54a107d97b4a800d-20260524T184428Z.json

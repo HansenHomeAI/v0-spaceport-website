@@ -1,0 +1,4 @@
+2026-05-24 06:54:09   78.2 MiB 3dgs/friday-mtc-20260524T0001Z/friday-mtc-20260524T0001Z-3dgs/output/model.tar.gz
+
+Total Objects: 1
+   Total Size: 78.2 MiB

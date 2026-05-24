@@ -1,0 +1,20 @@
+2026-05-24 02:33:38    4.0 MiB manual-validations/friday-mtc-20260524T0001Z/colmap/images/111MEDIA_DJI_0564.JPG
+2026-05-24 02:33:38    4.0 MiB manual-validations/friday-mtc-20260524T0001Z/colmap/images/111MEDIA_DJI_0565.JPG
+2026-05-24 02:33:38    4.0 MiB manual-validations/friday-mtc-20260524T0001Z/colmap/images/111MEDIA_DJI_0566.JPG
+2026-05-24 02:33:38    4.0 MiB manual-validations/friday-mtc-20260524T0001Z/colmap/images/111MEDIA_DJI_0567.JPG
+2026-05-24 02:33:38    4.0 MiB manual-validations/friday-mtc-20260524T0001Z/colmap/images/111MEDIA_DJI_0568.JPG
+2026-05-24 02:33:38    4.2 MiB manual-validations/friday-mtc-20260524T0001Z/colmap/images/111MEDIA_DJI_0569.JPG
+2026-05-24 02:33:38    4.2 MiB manual-validations/friday-mtc-20260524T0001Z/colmap/images/111MEDIA_DJI_0570.JPG
+2026-05-24 02:33:38    4.0 MiB manual-validations/friday-mtc-20260524T0001Z/colmap/images/111MEDIA_DJI_0571.JPG
+2026-05-24 02:33:38    4.0 MiB manual-validations/friday-mtc-20260524T0001Z/colmap/images/111MEDIA_DJI_0572.JPG
+2026-05-24 02:33:38    3.9 MiB manual-validations/friday-mtc-20260524T0001Z/colmap/images/111MEDIA_DJI_0573.JPG
+2026-05-24 02:33:38    4.0 MiB manual-validations/friday-mtc-20260524T0001Z/colmap/images/111MEDIA_DJI_0574.JPG
+2026-05-24 02:33:38    5.8 KiB manual-validations/friday-mtc-20260524T0001Z/colmap/sfm_metadata.json
+2026-05-24 02:33:38  196 Bytes manual-validations/friday-mtc-20260524T0001Z/colmap/sparse/0/cameras.txt
+2026-05-24 02:33:38  283.3 KiB manual-validations/friday-mtc-20260524T0001Z/colmap/sparse/0/frames.txt
+2026-05-24 02:33:38  704.2 MiB manual-validations/friday-mtc-20260524T0001Z/colmap/sparse/0/images.txt
+2026-05-24 02:33:38  222.7 MiB manual-validations/friday-mtc-20260524T0001Z/colmap/sparse/0/points3D.txt
+2026-05-24 02:33:38  218 Bytes manual-validations/friday-mtc-20260524T0001Z/colmap/sparse/0/rigs.txt
+
+Total Objects: 1783
+   Total Size: 10.5 GiB
