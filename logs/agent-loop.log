@@ -392,3 +392,5 @@
 [2026-05-24T16:26:17Z] friday heartbeat -> reconfirm terminal; InProgress=0; staging meta present; public meta 404 (spaceport-ml-processing-public + spaceport-public); exact-head runs=0 (skip ci) -> next: idle/no-spend
 [2026-05-24T16:27:24Z] post-push -> commit b9a6da19 (skip ci); gh exact-head runs=0 -> next: idle/no-spend
 [2026-05-24T16:27:48Z] heartbeat(no-spend) -> verified git/aws/s3/viewer/github-api; refreshed logs/montana-time-capsule/hmc-state.json + STATE.md -> commit
+[2026-05-24T16:46:14Z] heartbeat -> verified terminal HMC + preview 200s; public bundle still 404 -> next: wait for public publish gate
+[2026-05-24T16:46:49Z] heartbeat -> Friday canonical friday-mtc-20260524T0001Z verified Completed (SfM/3DGS/compression); InProgress=0; S3 outputs present; GH exact-head empty ([skip ci]) -> next: no-spend; needs public-bucket publish decision
