@@ -280,3 +280,4 @@
 [2026-05-24T02:48:48Z] heartbeat -> HMC terminal + viewer 200 + screenshots captured -> next: idle
 [2026-05-24T03:06:56Z] heartbeat -> verified git/aws/sagemaker/s3/viewer/gh (no-spend) -> commit+push ledger
 [2026-05-24T03:07:48Z] friday-mtc SfM heartbeat -> InProgress (CloudWatch shows COLMAP registering images) -> next: wait for Completed then run guarded launch
+[2026-05-24T03:26:15Z] heartbeat -> no-spend checks ok (HMC Completed; viewer 200; proxy meta 200) -> commit+push logs/state
