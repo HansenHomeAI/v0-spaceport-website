@@ -1,5 +1,5 @@
 reason: Montana time capsule monitor (SfM -> 3DGS -> compress -> viewer gates)
-last_step: 2026-05-24T20:46:31Z Friday canonical run reconfirmed terminal (SfM/3DGS/compression Completed) + public meta HTTP 200 + viewer sky/no-sky HTTP 200 + GH exact-head runs 0 ([skip ci]); evidence in logs/montana-time-capsule/STATE.md.
+last_step: 2026-05-24T21:28:39Z Friday canonical run re-verified terminal (SfM/3DGS/compression Completed) + public meta HTTP 200 + viewer sky/no-sky HTTP 200 + GH exact-head snapshot; evidence in logs/montana-time-capsule/STATE.md.
 next_unblocked_step: no compute to launch; optional deeper viewer QA (camera/sky artifacts) before PR/closeout.
 [2026-05-22T15:36:42Z] heartbeat -> terminal reconfirmed (no spend) -> idle
 [2026-05-22T15:37:51Z] heartbeat -> fresh reconfirmed (no spend) -> commit+push evidence
@@ -22,3 +22,4 @@ next_unblocked_step: no compute to launch; optional deeper viewer QA (camera/sky
 [2026-05-24T17:11:10Z] postpush -> recorded gh runs for new head (657b12f5c629e7c61566c39c4972e7d24787f535) -> idle
 [2026-05-24T20:25:02Z] heartbeat -> friday-mtc terminal + public meta HTTP200 + viewer screenshots -> next: optional deeper visual QA
 [2026-05-24T20:46:31Z] heartbeat -> friday-mtc terminal + public meta HTTP200 + viewer sky/no-sky HTTP200 + exact-head CI 0 ([skip ci]) -> next: optional deeper visual QA
+[2026-05-24T21:28:39Z] heartbeat -> friday-mtc terminal + public meta HTTP200 + viewer sky/no-sky HTTP200 -> next: optional deeper visual QA

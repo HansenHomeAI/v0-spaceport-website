@@ -1,5 +1,27 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-24T21:28:39Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: terminal re-verified (no spend); public meta + viewer sky/no-sky HTTP 200; no new compute launched
+
+- Git (pre-commit): agent-40136728-montana-time-capsule @ 3a3e2253c52658a6c2b67a179f832be184d193be (`chore: hmc mtc heartbeat verify 20260524T210442Z [skip ci]`)
+- Evidence stamp: 20260524T212839Z
+- GitHub Actions (`gh` via PATH):
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260524T212839Z.json
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260524T212839Z.json
+- AWS (us-west-2; no spend):
+  - identity: logs/montana-time-capsule/aws-sts-20260524T212839Z.json
+  - InProgress guardrail: logs/montana-time-capsule/sm-list-processing-inprogress-20260524T212839Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260524T212839Z.json
+  - Friday canonical run describes (all Completed):
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T212839Z.json
+    - logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T212839Z.json
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T212839Z.json
+- S3 outputs + HTTP reachability:
+  - SfM COLMAP listing: logs/montana-time-capsule/s3ls-friday-colmap-recursive-20260524T212839Z.txt
+  - compressed supersplat bundle listing: logs/montana-time-capsule/s3ls-friday-compressed-bundle-recursive-20260524T212839Z.txt
+  - staging meta head (OK): logs/montana-time-capsule/s3head-staging-friday-meta-20260524T212839Z.json
+  - public meta head (OK): logs/montana-time-capsule/s3head-public-friday-meta-20260524T212839Z.json
+  - public meta HTTP HEAD (200): logs/montana-time-capsule/curlI-public-friday-meta-20260524T212839Z.headers
+  - viewer sky/no-sky HTTP HEAD (200): logs/montana-time-capsule/curlI-viewer-sky-20260524T212839Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-20260524T212839Z.headers
+
 ## 2026-05-24T21:26:02Z HEARTBEAT monitor (HMC canonical): no-spend re-verify; terminal SageMaker jobs confirmed; staging bundle reachable; public meta.json still 404; hosted viewer sky/no-sky/proxy HTTP 200; exact-head GitHub workflows=0 (skip ci)
 
 - Git: agent-40136728-montana-time-capsule @ 3a3e2253c52658a6c2b67a179f832be184d193be (`chore: hmc mtc heartbeat verify 20260524T210442Z [skip ci]`)

@@ -1,0 +1,3 @@
+ M logs/montana-time-capsule/heartbeat-ts-latest.txt
+?? logs/montana-time-capsule/git-head-20260524T212839Z.txt
+?? logs/montana-time-capsule/git-status-20260524T212839Z.txt
