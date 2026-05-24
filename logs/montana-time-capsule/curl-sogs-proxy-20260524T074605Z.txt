@@ -1,0 +1,38 @@
+--- proxy staging meta ---
+HTTP/2 200 
+date: Sun, 24 May 2026 07:46:06 GMT
+content-type: application/octet-stream
+content-length: 1359
+cf-ray: a00aaf43ed923203-SLC
+cf-cache-status: DYNAMIC
+accept-ranges: bytes
+access-control-allow-origin: *
+etag: "994e5d57f052e552b8cce2e05d4debf4"
+last-modified: Thu, 21 May 2026 20:25:10 GMT
+server: cloudflare
+x-amz-id-2: SpwKdTyFboKXMxzjD0n3abQ+7kpj7jumgFOsXfcG5ioNUSLgWzeYyvCSRdGT8OqSE0igv0oeIRoakPJfrjoCXv8xFe10AC7JoQJkULg/vjU=
+x-amz-request-id: 0JHME4JKM6KYST67
+x-amz-server-side-encryption: aws:kms
+x-amz-server-side-encryption-aws-kms-key-id: arn:aws:kms:us-west-2:975050048887:key/e498a88e-6b23-44e3-90bd-f35b25d6e420
+x-amz-version-id: .DMI48S5bbpRJy04I8F2SEJ85.ppT_Ev
+x-matched-path: /api/sogs-proxy/[...resource]
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=WFobc8I5rcr2T9yGRXoAe0xjSr%2BYzcyoOwOI87RN9%2B6Bd%2FfKUc2yiMKvBjztHHct5sjNHKZziF%2F29AI3CpE17i7hAWRL%2BH%2BKpgbRoOKhEaiqbtMkyaCj%2FQf7WMJbnAtpQaOe0M73HxzmwVtE3HiOBFjwebeD%2FLBndHSF0TfRFg0xFC%2BazY%2FUo%2B8XtfLhJtcNuu25IGVNz1UebeEoyMlpHk%2FD"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+alt-svc: h3=":443"; ma=86400
+
+
+--- proxy public meta ---
+HTTP/2 404 
+date: Sun, 24 May 2026 07:46:07 GMT
+content-type: application/xml
+cf-ray: a00aaf47d8d1209b-SLC
+cf-cache-status: DYNAMIC
+access-control-allow-origin: *
+server: cloudflare
+x-amz-id-2: +UjqhfLnVx9FhPAOzByrE7EzOImhKSlCKnrTNzEmv/QDQNW2PsUJ5H+WnURNOrO2Urwwoyal4Lg=
+x-amz-request-id: NC8VNAWK5AXAPHQN
+x-matched-path: /api/sogs-proxy/[...resource]
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=ufIaIctDWpaF4z4VUXjN7ihHXkIvdMjMD5gcvrH53xSENboQKs5YqBqdFbuaYyFw6vIZ7w6W3YPZcxlUM0Y%2BUCb%2BD0%2FSAlQFO%2FEAeQnoRYWgeW%2BuVPqxbRaXj%2Bj5ytYp%2BqI0oX8%2Bh%2FXiDuxIBJ4UAnUoBK6B6MSdVQXE9tkUvrlj4GOyiyX2Zr0xp4fRSOmaSkQ9R6QKrOsL0DOKh1TNA%2FSy"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+alt-svc: h3=":443"; ma=86400
+

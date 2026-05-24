@@ -1,0 +1,40 @@
+--- curl alias root ---
+HTTP/2 200 
+date: Sun, 24 May 2026 07:45:51 GMT
+content-type: text/html; charset=utf-8
+vary: RSC, Next-Router-State-Tree, Next-Router-Prefetch
+x-edge-runtime: 1
+x-matched-path: /
+x-powered-by: Next.js
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=6x3y2MfZ7GDRYHE8m%2BDibr%2FR%2BhMsGmYz1sAsE2jKV2vwRMfFBabey3AoJFysPaGFm0hAFK5Xr%2BXxbdOjZ8Gd6g9JLadlour5HmDQmsZW2K%2B0b8CgbOz3vX8Zrh6AuSmrVu37Lps2WnORidsAR6jbK%2Fa38%2BhPb91b5g2%2FeSbGLmTps16KoYTS2sq2sFT4UV5GjWV3C2kBrYucO%2FqJvZXwGRTd"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: a00aaee70985b73f-SLC
+alt-svc: h3=":443"; ma=86400
+
+
+--- curl staging meta (unauth) ---
+HTTP/1.1 200 OK
+x-amz-id-2: Vyo8+R304XXfe0eZ+0qs49vuW7H1Zx2HOiLLCTplZiTbMBebWzcIP9iH0IoTgkRIhs1YSv+uxKTkBo8PDUEyhwvUIBpbe64J
+x-amz-request-id: KQYPGAYVAZ4VBDM0
+Date: Sun, 24 May 2026 07:45:52 GMT
+Last-Modified: Thu, 21 May 2026 20:25:10 GMT
+ETag: "994e5d57f052e552b8cce2e05d4debf4"
+x-amz-server-side-encryption: aws:kms
+x-amz-server-side-encryption-aws-kms-key-id: arn:aws:kms:us-west-2:975050048887:key/e498a88e-6b23-44e3-90bd-f35b25d6e420
+x-amz-version-id: .DMI48S5bbpRJy04I8F2SEJ85.ppT_Ev
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1359
+Server: AmazonS3
+
+
+--- curl public meta (unauth) ---
+HTTP/1.1 403 Forbidden
+x-amz-request-id: KQYQ2S75B7YW4W27
+x-amz-id-2: quyqlSaOBRD23flvu3N+RTfK0WVvAFle5PFPDh1eIchis/eA5uR1m4Afh5RPci7Qbao/B/5t6cE=
+Content-Type: application/xml
+Transfer-Encoding: chunked
+Date: Sun, 24 May 2026 07:45:50 GMT
+Server: AmazonS3
+
