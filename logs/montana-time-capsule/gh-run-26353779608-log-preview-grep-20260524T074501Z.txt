@@ -1,0 +1,80 @@
+176:deploy	Select target Pages project per branch	2026-05-24T06:15:51.2720063Z [36;1m  TARGET="v0-spaceport-website-preview2"[0m
+183:deploy	Select target Pages project per branch	2026-05-24T06:15:51.2840570Z Using CF Pages project: v0-spaceport-website-preview2 for branch agent-40136728-montana-time-capsule
+192:deploy	Configure AWS credentials (staging via access keys)	2026-05-24T06:15:51.2979794Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+197:deploy	Resolve deployment context	2026-05-24T06:15:51.9600886Z [36;1mpython3 ../scripts/resolve_preview_context.py --branch "${GITHUB_REF_NAME}" --format shell > /tmp/pages-context.env[0m
+204:deploy	Resolve deployment context	2026-05-24T06:15:51.9638889Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+210:deploy	Resolve deployment context	2026-05-24T06:15:52.0223085Z DEPLOYMENT_CLASS=branch-preview
+219:deploy	Resolve deployment context	2026-05-24T06:15:52.0226534Z ENVIRONMENT_NAME=branch-preview
+268:deploy	Wait for matching CDK Deploy run	2026-05-24T06:15:52.0317139Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+273:deploy	Wait for matching CDK Deploy run	2026-05-24T06:15:52.0318842Z   DEPLOYMENT_CLASS: branch-preview
+282:deploy	Wait for matching CDK Deploy run	2026-05-24T06:15:52.0322195Z   ENVIRONMENT_NAME: branch-preview
+413:deploy	Resolve CloudFormation outputs	2026-05-24T06:20:07.6545104Z [36;1mSPACEPORT_OUTPUT_STACK="$(resolve_output_stack "$SPACEPORT_STACK_NAME" "$([ "$DEPLOYMENT_CLASS" = "branch-preview" ] && printf 'SpaceportStagingStack')")"[0m
+414:deploy	Resolve CloudFormation outputs	2026-05-24T06:20:07.6546408Z [36;1mML_OUTPUT_STACK="$(resolve_output_stack "$ML_STACK_NAME" "$([ "$DEPLOYMENT_CLASS" = "branch-preview" ] && printf 'SpaceportMLPipelineStagingStack')" "^(UPDATE_ROLLBACK_COMPLETE|UPDATE_ROLLBACK_FAILED)$")"[0m
+460:deploy	Resolve CloudFormation outputs	2026-05-24T06:20:07.6603433Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+465:deploy	Resolve CloudFormation outputs	2026-05-24T06:20:07.6605157Z   DEPLOYMENT_CLASS: branch-preview
+474:deploy	Resolve CloudFormation outputs	2026-05-24T06:20:07.6608295Z   ENVIRONMENT_NAME: branch-preview
+487:deploy	Resolve CloudFormation outputs	2026-05-24T06:20:30.3350971Z Resolved deployment class: branch-preview
+506:deploy	Setup Node	2026-05-24T06:20:30.3468063Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+511:deploy	Setup Node	2026-05-24T06:20:30.3469678Z   DEPLOYMENT_CLASS: branch-preview
+520:deploy	Setup Node	2026-05-24T06:20:30.3472942Z   ENVIRONMENT_NAME: branch-preview
+566:deploy	Install deps (tolerant to peer conflicts in CI)	2026-05-24T06:20:38.8652385Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+571:deploy	Install deps (tolerant to peer conflicts in CI)	2026-05-24T06:20:38.8654969Z   DEPLOYMENT_CLASS: branch-preview
+580:deploy	Install deps (tolerant to peer conflicts in CI)	2026-05-24T06:20:38.8659867Z   ENVIRONMENT_NAME: branch-preview
+697:deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-05-24T06:21:57.1707641Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+702:deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-05-24T06:21:57.1709307Z   DEPLOYMENT_CLASS: branch-preview
+711:deploy	Inject build-time env (.env) for NEXT_PUBLIC_* per branch	2026-05-24T06:21:57.1712516Z   ENVIRONMENT_NAME: branch-preview
+753:deploy	Verify injected env values	2026-05-24T06:21:57.1874725Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+758:deploy	Verify injected env values	2026-05-24T06:21:57.1876384Z   DEPLOYMENT_CLASS: branch-preview
+767:deploy	Verify injected env values	2026-05-24T06:21:57.1879455Z   ENVIRONMENT_NAME: branch-preview
+793:deploy	Build Next for Cloudflare (SSR)	2026-05-24T06:21:57.2030803Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+798:deploy	Build Next for Cloudflare (SSR)	2026-05-24T06:21:57.2032657Z   DEPLOYMENT_CLASS: branch-preview
+807:deploy	Build Next for Cloudflare (SSR)	2026-05-24T06:21:57.2035736Z   ENVIRONMENT_NAME: branch-preview
+1190:deploy	Debug .vercel/output contents	2026-05-24T06:23:58.4149952Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+1195:deploy	Debug .vercel/output contents	2026-05-24T06:23:58.4151818Z   DEPLOYMENT_CLASS: branch-preview
+1204:deploy	Debug .vercel/output contents	2026-05-24T06:23:58.4155254Z   ENVIRONMENT_NAME: branch-preview
+1268:deploy	Upload .vercel/output for diagnostics	2026-05-24T06:23:58.4331125Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+1273:deploy	Upload .vercel/output for diagnostics	2026-05-24T06:23:58.4333008Z   DEPLOYMENT_CLASS: branch-preview
+1282:deploy	Upload .vercel/output for diagnostics	2026-05-24T06:23:58.4336038Z   ENVIRONMENT_NAME: branch-preview
+1308:deploy	Install Wrangler	2026-05-24T06:23:58.6645544Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+1313:deploy	Install Wrangler	2026-05-24T06:23:58.6647189Z   DEPLOYMENT_CLASS: branch-preview
+1322:deploy	Install Wrangler	2026-05-24T06:23:58.6650234Z   ENVIRONMENT_NAME: branch-preview
+1375:deploy	Ensure Pages runtime flags (compat date + node compat)	2026-05-24T06:24:03.0135919Z [36;1m      preview: {[0m
+1401:deploy	Ensure Pages runtime flags (compat date + node compat)	2026-05-24T06:24:03.0183759Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+1406:deploy	Ensure Pages runtime flags (compat date + node compat)	2026-05-24T06:24:03.0185467Z   DEPLOYMENT_CLASS: branch-preview
+1415:deploy	Ensure Pages runtime flags (compat date + node compat)	2026-05-24T06:24:03.0188691Z   ENVIRONMENT_NAME: branch-preview
+1445:deploy	Ensure Pages runtime flags (compat date + node compat)	2026-05-24T06:24:03.9202002Z     "name": "v0-spaceport-website-preview2",
+1446:deploy	Ensure Pages runtime flags (compat date + node compat)	2026-05-24T06:24:03.9202640Z     "subdomain": "v0-spaceport-website-preview2.pages.dev",
+1448:deploy	Ensure Pages runtime flags (compat date + node compat)	2026-05-24T06:24:03.9203623Z       "v0-spaceport-website-preview2.pages.dev"
+1455:deploy	Ensure Pages runtime flags (compat date + node compat)	2026-05-24T06:24:03.9207134Z       "preview": {
+1538:deploy	Ensure Pages runtime flags (compat date + node compat)	2026-05-24T06:24:03.9242283Z       "project_name": "v0-spaceport-website-preview2",
+1539:deploy	Ensure Pages runtime flags (compat date + node compat)	2026-05-24T06:24:03.9242822Z       "environment": "preview",
+1540:deploy	Ensure Pages runtime flags (compat date + node compat)	2026-05-24T06:24:03.9243327Z       "url": "https://3f41f4ae.v0-spaceport-website-preview2.pages.dev",
+1652:deploy	Ensure Pages runtime flags (compat date + node compat)	2026-05-24T06:24:03.9276626Z         "https://agent-73948216-sfm-productio.v0-spaceport-website-preview2.pages.dev"
+1662:deploy	Ensure Pages runtime flags (compat date + node compat)	2026-05-24T06:24:03.9279967Z       "project_name": "v0-spaceport-website-preview2",
+1664:deploy	Ensure Pages runtime flags (compat date + node compat)	2026-05-24T06:24:03.9280793Z       "url": "https://9c9b7dbe.v0-spaceport-website-preview2.pages.dev",
+1678:deploy	Ensure Pages runtime flags (compat date + node compat)	2026-05-24T06:24:03.9285836Z           "commit_message": "ci: deploy main to known-good preview project for production serving while investigating prod",
+1738:deploy	Ensure Pages runtime flags (compat date + node compat)	2026-05-24T06:24:03.9314315Z     "preview_script_name": "pages-worker--7261703-preview",
+1755:deploy	Deploy to Cloudflare Pages	2026-05-24T06:24:03.9383856Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+1760:deploy	Deploy to Cloudflare Pages	2026-05-24T06:24:03.9385507Z   DEPLOYMENT_CLASS: branch-preview
+1769:deploy	Deploy to Cloudflare Pages	2026-05-24T06:24:03.9388557Z   ENVIRONMENT_NAME: branch-preview
+1915:deploy	Deploy to Cloudflare Pages	2026-05-24T06:24:20.0524261Z ✨ Deployment complete! Take a peek over at https://8aa4efb3.v0-spaceport-website-preview2.pages.dev
+1916:deploy	Deploy to Cloudflare Pages	2026-05-24T06:24:20.0527026Z ✨ Deployment alias URL: https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev
+1917:deploy	Resolve latest deployment URLs (preview alias + hash URL)	﻿2026-05-24T06:24:20.1233524Z ##[group]Run set -euo pipefail
+1918:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-24T06:24:20.1233917Z [36;1mset -euo pipefail[0m
+1919:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-24T06:24:20.1234272Z [36;1mBRANCH="agent-40136728-montana-time-capsule"[0m
+1920:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-24T06:24:20.1234760Z [36;1m# Get most recent deployment for the selected project (includes preview)[0m
+1921:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-24T06:24:20.1235427Z [36;1mJSON=$(curl -fsSL -H "Authorization: ***" \[0m
+1922:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-24T06:24:20.1236168Z [36;1m  "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${CF_PAGES_PROJECT}/deployments?per_page=1")[0m
+1923:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-24T06:24:20.1236888Z [36;1mHASH_URL=$(echo "$JSON" | jq -r '.result[0].url')[0m
+1924:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-24T06:24:20.1237296Z [36;1mDEPLOY_ID=$(echo "$JSON" | jq -r '.result[0].id')[0m
+1925:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-24T06:24:20.1237727Z [36;1m# Fetch aliases for that deployment (branch alias if any)[0m
+1926:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-24T06:24:20.1238269Z [36;1mDETAIL=$(curl -fsSL -H "Authorization: ***" \[0m
+1927:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-24T06:24:20.1238947Z [36;1m  "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${CF_PAGES_PROJECT}/deployments/${DEPLOY_ID}")[0m
+1928:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-24T06:24:20.1239693Z [36;1mALIAS=$(echo "$DETAIL" | jq -r '.result.aliases[0] // empty')[0m
+1929:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-24T06:24:20.1240131Z [36;1mecho "hash_url=$HASH_URL" >> $GITHUB_OUTPUT[0m
+1930:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-24T06:24:20.1240513Z [36;1mecho "alias_url=$ALIAS" >> $GITHUB_OUTPUT[0m
+1931:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-24T06:24:20.1240921Z [36;1mecho "Resolved: HASH=$HASH_URL ALIAS=${ALIAS:-<none>}"[0m
+1932:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-24T06:24:20.1276789Z shell: /usr/bin/bash -e {0}
+1933:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-24T06:24:20.1277096Z env:
+1934:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-24T06:24:20.1277391Z   CF_PAGES_PROJECT: v0-spaceport-website-preview2
+1935:deploy	Resolve latest deployment URLs (preview alias + hash URL)	2026-05-24T06:24:20.1277794Z   AWS_DEFAULT_REGION: ***

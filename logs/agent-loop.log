@@ -311,3 +311,4 @@
 [2026-05-24T07:15:00Z] FRIDAY heartbeat -> post-push reconfirm: SfM InProgress; CW last_event=2026-05-24T07:05:44.701Z; S3 KeyCount=0; exact-head CI 0 -> next wait
 [2026-05-24T07:07:37Z] hmc-acceptance-check -> canonical jobs Completed; bundle present; preview base+viewer+sogs-proxy 200 -> next: await new gate
 [2026-05-24T07:28:00Z] friday sfm InProgress -> CW last_event_utc=2026-05-24T07:16:57.945Z; S3 KeyCount=0 -> next: wait for SfM completion
+[20260524T074655Z] heartbeat sfm_status=InProgress

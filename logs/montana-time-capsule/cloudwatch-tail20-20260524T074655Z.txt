@@ -1,0 +1,6 @@
+1779602078741	COLMAP[chunk_bundle_adjuster] W20260524 05:54:37.943070 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.
+1779602924291	COLMAP[chunk_bundle_adjuster] W20260524 06:08:43.348385 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.
+1779604475649	COLMAP[chunk_bundle_adjuster] W20260524 06:34:35.160022 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.
+1779605500261	COLMAP[chunk_bundle_adjuster] W20260524 06:51:39.804571 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.
+1779606344701	COLMAP[chunk_bundle_adjuster] W20260524 07:05:44.636984 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.
+1779607017945	COLMAP[chunk_bundle_adjuster] W20260524 07:16:57.409001 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.

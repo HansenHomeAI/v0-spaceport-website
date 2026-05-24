@@ -8372,3 +8372,11 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - git head: 85e63f6eff31afa0decf684ada7ba6af78d30920 (`[skip ci]`)
 - gh branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260524T072737Z.json
 - gh exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-85e63f6eff31afa0decf684ada7ba6af78d30920-postpush-20260524T072737Z.json
+
+### 20260524T074655Z
+- branch=agent-40136728-montana-time-capsule head=e89144bbc9cdb740cc269f622e0818af12b38d29
+- aws_account=975050048887 region=us-west-2
+- sfm_job=friday-mtc-20260524T0001Z-sfm status=InProgress start=2026-05-23T18:03:51.397000-06:00
+- sfm_output_prefix=s3://spaceport-ml-processing-staging/manual-validations/friday-mtc-20260524T0001Z/colmap (s3 ls head200: logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T074514Z-head200.txt)
+- cloudwatch_stream=friday-mtc-20260524T0001Z-sfm/algo-1-1779581031 (tail: logs/montana-time-capsule/cloudwatch-tail20-20260524T074655Z.txt)
+- ci_last_green_sha=16f29321 (CDK+Pages success 2026-05-24T06:15:37Z; current head is [skip ci])

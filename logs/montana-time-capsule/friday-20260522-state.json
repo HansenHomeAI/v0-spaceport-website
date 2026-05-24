@@ -39,7 +39,7 @@
   },
   "sfm_image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811",
   "sfm_job_name": "friday-mtc-20260524T0001Z-sfm",
-  "sfm_last_check_utc": "2026-05-24T07:27:38Z",
+  "sfm_last_check_utc": "2026-05-24T07:47:08Z",
   "sfm_last_cloudwatch_event_utc": "2026-05-24T07:16:57.945000Z",
   "sfm_last_known_status": "InProgress",
   "sfm_output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/friday-mtc-20260524T0001Z/colmap",
@@ -120,6 +120,6 @@
     ]
   },
   "status": "sfm_started",
-  "updated_at": "2026-05-24T07:27:38Z",
+  "updated_at": "2026-05-24T07:47:08Z",
   "zip_entries": 1776
 }
