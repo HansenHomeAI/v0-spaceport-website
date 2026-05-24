@@ -9588,24 +9588,24 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - Git: agent-40136728-montana-time-capsule @ 5f6b52fbffcce729e427c851b7f3eec82a78e3de (`chore: friday mtc heartbeat 20260524T1429Z [skip ci]`)
 - GitHub Actions (exact-head runs count=0): logs/montana-time-capsule/gh-run-list-exact-head-5f6b52fbffcce729e427c851b7f3eec82a78e3de-20260524T143113Z.txt
 
-### 2026-05-24T14:45:30Z HEARTBEAT monitor - Friday FRIDAY-20260522 terminal reconfirm (no duplicate launches); no InProgress; public meta still 404
+### 2026-05-24T14:50:18Z HEARTBEAT monitor - Friday FRIDAY-20260522 terminal reconfirm (no duplicate launches); no InProgress; public meta still 404
 
-- Git: agent-40136728-montana-time-capsule @ f31dd3490d97d1c203de19ce7f6ee85b04a54b0f (`chore: record post-push gh empty exact-head 20260524T1431Z [skip ci]`)
-- Evidence stamp: 20260524T144530Z
+- Git: agent-40136728-montana-time-capsule @ d1b11709525cf25b26077bba5f244e151e173365 (`chore: montana heartbeat ts 20260524T1446Z [skip ci]`)
+- Evidence stamp: 20260524T145018Z
 - AWS (us-west-2; aws=/opt/homebrew/bin/aws):
-  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T144530Z.json
-  - describe Friday SfM (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T144454Z.json
-  - describe Friday 3DGS (Completed): logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T144454Z.json
-  - describe Friday compression (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T144454Z.json
-  - InProgress negative controls (count=0): logs/montana-time-capsule/sagemaker-list-processing-inprogress-friday-mtc-20260524T144530Z.json ; logs/montana-time-capsule/sagemaker-list-training-inprogress-friday-mtc-20260524T144530Z.json
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T145018Z.json
+  - describe Friday SfM (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T145018Z.json
+  - describe Friday 3DGS (Completed): logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T145018Z.json
+  - describe Friday compression (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T145018Z.json
+  - InProgress negative controls: logs/montana-time-capsule/sagemaker-list-processing-inprogress-friday-mtc-20260524T145018Z.json ; logs/montana-time-capsule/sagemaker-list-training-inprogress-friday-mtc-20260524T145018Z.json
 - S3 outputs (Friday):
-  - SfM colmap listing: logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T144530Z.txt
-  - compressed output listing: logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-compressed-20260524T144530Z.txt
+  - SfM colmap listing: logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T145018Z.txt
+  - compressed output listing: logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-compressed-20260524T145018Z.txt
 - Public bucket publish gate (still missing; expected 404 until published):
-  - spaceport-ml-processing-public head meta.json (404): logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-public-friday-mtc-20260524T0001Z-meta-20260524T144530Z.err
-  - spaceport-public head meta.json (404): logs/montana-time-capsule/s3api-head-object-spaceport-public-friday-mtc-20260524T0001Z-meta-20260524T144530Z.err
+  - spaceport-ml-processing-public head meta.json (404): logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-public-friday-mtc-20260524T0001Z-meta-20260524T145018Z.err
+  - spaceport-public head meta.json (404): logs/montana-time-capsule/s3api-head-object-spaceport-public-friday-mtc-20260524T0001Z-meta-20260524T145018Z.err
 - GitHub Actions (gh=/opt/homebrew/bin/gh):
-  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-20260524T144530Z.txt
-  - exact-head runs for f31dd349… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-f31dd3490d97d1c203de19ce7f6ee85b04a54b0f-20260524T144530Z.txt
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-20260524T145018Z.txt
+  - exact-head runs for d1b11709… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-d1b11709525cf25b26077bba5f244e151e173365-20260524T145018Z.txt
 - Decision: the guarded `cv_hr_time_capsule.py ... --launch` command was NOT run because Friday SfM/3DGS/compression are already terminal (avoid duplicate Friday launches).
 - Next step: no spend; acceptance gate remains publishing `compressed/friday-mtc-20260524T0001Z/meta.json` to a public bucket (and re-checking reachability) before calling public delivery complete.
