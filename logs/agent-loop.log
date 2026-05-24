@@ -441,3 +441,4 @@
 [2026-05-24T21:07:09Z] hmc-mtc heartbeat -> terminal confirmed + viewer 200 + public meta 404 -> remain no-spend
 [2026-05-24T21:29:26Z] friday heartbeat -> terminal (sfm/3dgs/compression Completed); public meta 200; viewer sky/no-sky 200; gh exact-head snapshot -> commit+push ledger
 [2026-05-24T21:30:20Z] post-push -> captured gh runs for head=5f8f1bf9 -> idle/no-spend
+[2026-05-24T21:47:50Z] hmc-no-spend-verify -> ok(viewer+sm+staging) public-meta=404 -> commit+push ledger
