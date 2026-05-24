@@ -1,0 +1,136 @@
+{
+    "Contents": [
+        {
+            "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/background_manifest.json",
+            "LastModified": "2026-05-24T13:14:52+00:00",
+            "ETag": "\"a33a0db4637fa74aaa1c51d1b7460c27\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 978,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/background_skybox.webp",
+            "LastModified": "2026-05-24T13:14:52+00:00",
+            "ETag": "\"76c01e550a2ee1340185b7a8073f2340\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 37848,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/export_manifest.json",
+            "LastModified": "2026-05-24T13:14:52+00:00",
+            "ETag": "\"003785186592e8ff73297b9247f94580\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 951,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/means_l.webp",
+            "LastModified": "2026-05-24T13:14:52+00:00",
+            "ETag": "\"7c11a7a548e17470b68b5fb030b11d29\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 1090906,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/means_u.webp",
+            "LastModified": "2026-05-24T13:14:52+00:00",
+            "ETag": "\"4ab995b455f80045f1de65ef887a483e\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 720560,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json",
+            "LastModified": "2026-05-24T13:14:52+00:00",
+            "ETag": "\"8b0dd907e62697907206e6eb5522e796\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 1372,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/quats.webp",
+            "LastModified": "2026-05-24T13:14:52+00:00",
+            "ETag": "\"0cae948cc8c66c89aba21948cae768de\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 1170110,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/scales.webp",
+            "LastModified": "2026-05-24T13:14:52+00:00",
+            "ETag": "\"77ce80392574d733cd560a4f2f479d0e\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 631730,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/settings.json",
+            "LastModified": "2026-05-24T13:14:52+00:00",
+            "ETag": "\"62604158a604ff3b8f1022882884e4e6\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 242,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/sh0.webp",
+            "LastModified": "2026-05-24T13:14:52+00:00",
+            "ETag": "\"1e313b1e283d76634bdc238bc3a8737c\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 866442,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/shN_centroids.webp",
+            "LastModified": "2026-05-24T13:14:52+00:00",
+            "ETag": "\"9efb1a8665ae51a258a1027f927c779c\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 973572,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/shN_labels.webp",
+            "LastModified": "2026-05-24T13:14:52+00:00",
+            "ETag": "\"ad8b38cc89c154ff1c7a192902b2ed54\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 697512,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/training_metadata.json",
+            "LastModified": "2026-05-24T13:14:52+00:00",
+            "ETag": "\"f59dccf82f61612743d2e34e58ff6a98\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 1487,
+            "StorageClass": "STANDARD"
+        }
+    ],
+    "RequestCharged": null,
+    "Prefix": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/"
+}

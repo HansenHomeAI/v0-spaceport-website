@@ -1,0 +1,2 @@
+sky_url_file=logs/montana-time-capsule/viewer-sky-url-20260524T142448Z.txt
+nosky_url_file=logs/montana-time-capsule/viewer-nosky-url-20260524T142448Z.txt

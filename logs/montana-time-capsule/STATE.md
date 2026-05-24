@@ -1,5 +1,35 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-24T17:06:42Z HEARTBEAT monitor - HMC canonical hmc-mtc-20260520T2015Z: terminal reconfirm; InProgress=0; staging bundle present; viewer sky/no-sky HTTP 200; exact-head workflows empty ([skip ci])
+
+- Git: agent-40136728-montana-time-capsule @ 8337f52460c335ed129a0e91e28c0b5f4cd2c528
+- Evidence stamp: 20260524T170642Z
+- Git proof:
+  - logs/montana-time-capsule/git-status-20260524T170642Z.txt
+  - logs/montana-time-capsule/git-log1-20260524T170642Z.txt
+- AWS (us-west-2; no spend):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T170642Z.json (region: logs/montana-time-capsule/aws-config-region-20260524T170642Z.txt)
+  - guardrail visibility (InProgress lists):
+    - logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T170642Z.json
+    - logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T170642Z.json
+  - describe (all Completed):
+    - logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T170642Z.json
+    - logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T170642Z.json
+    - logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T170642Z.json
+- S3 outputs (canonical HMC compressed supersplat bundle):
+  - listing: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T170642Z.txt
+  - staging meta head: logs/montana-time-capsule/s3api-head-object-staging-hmc-mtc-20260520T2015Z-meta-20260524T170642Z.json
+  - public meta head (expected 404): logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T170642Z.err
+- Hosted viewer reachability (curl):
+  - sky http: logs/montana-time-capsule/viewer-sky-http-20260524T170642Z.txt (url: logs/montana-time-capsule/viewer-sky-url-used-20260524T170642Z.txt)
+  - no-sky http: logs/montana-time-capsule/viewer-nosky-http-20260524T170642Z.txt (url: logs/montana-time-capsule/viewer-nosky-url-used-20260524T170642Z.txt)
+- GitHub Actions (gh CLI):
+  - auth status: logs/montana-time-capsule/gh-auth-status-20260524T170642Z.txt
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T170642Z.json
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-8337f52460c335ed129a0e91e28c0b5f4cd2c528-20260524T170642Z.json
+- State snapshot: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T170642Z)
+- Next step: remain no-spend; acceptance gate still blocked on publishing canonical HMC bundle/meta.json to a public bucket (do not relaunch any HMC stages).
+
 ## Branch
 
 - Branch: `agent-40136728-montana-time-capsule`

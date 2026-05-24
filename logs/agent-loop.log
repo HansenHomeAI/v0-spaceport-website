@@ -397,3 +397,4 @@
 [2026-05-24T16:47:29Z] post-push -> commit a089526b (skip ci); gh exact-head runs=0 -> next: idle/no-spend
 [2026-05-24T16:48:48Z] post-push -> commit 4c7ad073 (skip ci); gh exact-head runs=0 -> next: idle/no-spend
 [2026-05-24T16:51:08Z] post-push -> commit 3832d7c5 (skip ci); gh exact-head runs=0 -> next: idle/no-spend
+[2026-05-24T17:07:48Z] heartbeat -> HMC terminal reconfirm -> idle

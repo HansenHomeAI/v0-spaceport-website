@@ -1,0 +1,13 @@
+## agent-40136728-montana-time-capsule...origin/agent-40136728-montana-time-capsule
+?? logs/montana-time-capsule/aws-config-region-20260524T1700Z.txt
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T1658Z.json
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T1700Z.json
+?? logs/montana-time-capsule/git-status-20260524T170557Z.txt
+?? logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T1658Z.json
+?? logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T1700Z.json
+?? logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T1658Z.json
+?? logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T1700Z.json
+?? logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T1658Z.json
+?? logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T1700Z.json
+?? logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T1700Z.json
+?? logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T1700Z.json
