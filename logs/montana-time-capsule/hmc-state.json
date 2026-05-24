@@ -255,6 +255,10 @@
   ],
   "gaussian_model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/3dgs/hmc-mtc-20260520T2015Z/hmc-mtc-20260520T2015Z-3dgs/output/model.tar.gz",
   "gaussian_output_s3_uri": "s3://spaceport-ml-processing-staging/3dgs/hmc-mtc-20260520T2015Z/",
+  "heartbeat_last_checked_artifacts": [
+    "20260524T054504Z"
+  ],
+  "heartbeat_last_checked_at": "2026-05-24T05:45:45Z",
   "input_etag": "ed86661a82b28856997a09f129ce6bec-1031",
   "input_image_count": 2063,
   "input_s3_uri": "s3://spaceport-uploads/1778952912508-hmc-high-mountain-camp-images-flat.zip",
