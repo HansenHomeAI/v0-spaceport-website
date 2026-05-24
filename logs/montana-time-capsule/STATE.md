@@ -9256,3 +9256,19 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
   - branch run list: logs/montana-time-capsule/gh-run-list-branch-20260524T130546Z.json
   - exact-head run list (expected empty due [skip ci]): logs/montana-time-capsule/gh-run-list-exact-head-70f04adb4bd630711c1dc1e22822ea8159ead99b-20260524T130546Z.json
 - Summary JSON (refreshed): logs/montana-time-capsule/hmc-state.json
+
+## 2026-05-24T13:08:19Z HEARTBEAT monitor - post-push GH exact-head snapshot
+
+- Git: agent-40136728-montana-time-capsule @ 89622c3ac6bc1db79269947c6b046e6c123ee09d ()
+- GitHub Actions:
+  - branch run list: logs/montana-time-capsule/gh-run-list-branch-20260524T130819Z.json
+  - exact-head runs for 89622c3a… (expected empty due ): logs/montana-time-capsule/gh-run-list-exact-head-89622c3ac6bc1db79269947c6b046e6c123ee09d-20260524T130819Z.json
+- Summary JSON (refreshed): logs/montana-time-capsule/hmc-state.json
+
+## 2026-05-24T13:08:19Z HEARTBEAT monitor - post-push GH exact-head snapshot
+
+- Git: agent-40136728-montana-time-capsule @ 89622c3ac6bc1db79269947c6b046e6c123ee09d (chore: montana heartbeat 20260524T130546Z [skip ci])
+- GitHub Actions:
+  - branch run list: logs/montana-time-capsule/gh-run-list-branch-20260524T130819Z.json
+  - exact-head runs for 89622c3a… (expected empty due [skip ci]): logs/montana-time-capsule/gh-run-list-exact-head-89622c3ac6bc1db79269947c6b046e6c123ee09d-20260524T130819Z.json
+- Summary JSON (refreshed): logs/montana-time-capsule/hmc-state.json
