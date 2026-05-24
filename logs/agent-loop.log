@@ -259,3 +259,4 @@
 [2026-05-24T00:10:00Z] friday-20260522 postpush -> exact-head gh runs empty as expected for [skip ci] -> next: heartbeat monitor SfM
 [2026-05-24T00:06:18Z] heartbeat-no-spend -> HMC jobs Completed + viewer 200 + CI snapshot ok -> commit+push ledger
 [2026-05-24T00:07:28Z] postpush-ci-snapshot -> exact-head empty ([skip ci]); branch runs still green -> idle
+[2026-05-24T00:26:45Z] friday-20260522 sfm -> InProgress; CloudWatch shows feature_extractor processed 460/1776; S3 output still empty (EndOfJob) -> next: monitor SfM to Completed
