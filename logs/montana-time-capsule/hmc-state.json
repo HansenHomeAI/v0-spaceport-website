@@ -3,10 +3,10 @@
     "account": "975050048887",
     "arn": "arn:aws:iam::975050048887:root"
   },
-  "evidence_stamp": "20260524T120821Z",
+  "evidence_stamp": "20260524T122705Z",
   "gh": {
     "exact_head_run_count": 0,
-    "exact_head_sha": "7c3cf51157b634ca2b120ef63eb52b11a316ed68",
+    "exact_head_sha": "7b61d3ee1983b19ed41bf6219c21fc76df6fbe8b",
     "latest_cdk_success": {
       "createdAt": "2026-05-24T06:15:37Z",
       "databaseId": 26353779598,
@@ -22,8 +22,8 @@
   },
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "7c3cf51157b634ca2b120ef63eb52b11a316ed68",
-    "head_checked_at": "20260524T120821Z"
+    "head": "7b61d3ee1983b19ed41bf6219c21fc76df6fbe8b",
+    "head_checked_at": "20260524T122628Z"
   },
   "github": {
     "cdk_latest": {
@@ -64,7 +64,7 @@
     "compression": "Completed",
     "sfm": "Completed"
   },
-  "updated_at": "20260524T120821Z",
+  "updated_at": "20260524T122705Z",
   "viewer": {
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
     "hash_url": "https://8aa4efb3.v0-spaceport-website-preview2.pages.dev",

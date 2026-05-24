@@ -9104,3 +9104,33 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
   - exact-head runs list (count=0; expected empty due [skip ci]): logs/montana-time-capsule/gh-run-list-exact-head-5972bb6d4ddf20e72fe0fd31afb81c1e1748d8cc-20260524T120551Z.json (count file: logs/montana-time-capsule/gh-run-count-exact-head-5972bb6d4ddf20e72fe0fd31afb81c1e1748d8cc-20260524T120551Z.txt)
 - Summary JSON (authoritative stage tracker): logs/montana-time-capsule/friday-20260522-state.json
 - Next step: keep no-spend polling; wait for `friday-mtc-20260524T0001Z-3dgs` to reach `Completed` before advancing to pinned compression sha256:a0784727…
+
+## 2026-05-24T12:26:36Z HEARTBEAT monitor - no-spend acceptance check
+
+- Git: agent-40136728-montana-time-capsule @ 7b61d3ee1983b19ed41bf6219c21fc76df6fbe8b (chore: montana heartbeat exact-head check 20260524T1208Z [skip ci]) (clean)
+- Evidence stamp: 20260524T122628Z
+- AWS identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T122628Z.json
+- SageMaker terminal state:
+  - SfM: logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T122628Z.json
+  - 3DGS: logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T122628Z.json
+  - compression: logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T122628Z.json
+- S3 outputs:
+  - staging meta head: logs/montana-time-capsule/s3api-head-object-staging-hmc-mtc-20260520T2015Z-meta-20260524T122628Z.json
+  - staging listing: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T122628Z.txt
+  - public meta head (expected 404): logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T122628Z.err
+- Viewer reachability (preview):
+  - alias: logs/montana-time-capsule/preview-alias-url-20260524T122628Z.txt
+  - proxy headers: logs/montana-time-capsule/curlD-sogs-proxy-meta-20260524T122628Z.headers
+  - sky headers: logs/montana-time-capsule/curlD-viewer-skybox-20260524T122628Z.headers
+  - nosky headers: logs/montana-time-capsule/curlD-viewer-nosky-20260524T122628Z.headers
+- GitHub Actions:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T122628Z.json
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-7b61d3ee1983b19ed41bf6219c21fc76df6fbe8b-20260524T122628Z.json (count: logs/montana-time-capsule/gh-run-count-exact-head-7b61d3ee1983b19ed41bf6219c21fc76df6fbe8b-20260524T122628Z.txt)
+- Next step: no spend; acceptance gate still blocked on publishing bundle to public bucket (spaceport-ml-processing-public) and collecting visual screenshots if requested.
+
+## 2026-05-24T12:27:16Z HEARTBEAT monitor - corrected preview proxy endpoint
+
+- Evidence stamp: 20260524T122705Z
+- Correct proxy URL: logs/montana-time-capsule/sogs-proxy-meta-url-20260524T122705Z.txt
+- Proxy headers (HTTP 200): logs/montana-time-capsule/curlD-sogs-proxy-meta-20260524T122705Z.headers
+- Viewer sky/no-sky headers (HTTP 200): logs/montana-time-capsule/curlD-viewer-skybox-20260524T122705Z.headers, logs/montana-time-capsule/curlD-viewer-nosky-20260524T122705Z.headers

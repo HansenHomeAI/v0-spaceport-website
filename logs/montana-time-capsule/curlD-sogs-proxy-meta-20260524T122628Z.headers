@@ -1,0 +1,13 @@
+HTTP/2 404 
+date: Sun, 24 May 2026 12:26:35 GMT
+content-type: text/html; charset=utf-8
+vary: RSC, Next-Router-State-Tree, Next-Router-Prefetch
+x-edge-runtime: 1
+x-matched-path: /_not-found
+x-powered-by: Next.js
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=ygON9UxRvXn8AzgM4PJGS1kN1yIpG9K2qVNE1oZiZqtM1MPkGtZIhQSFSZ0W7m%2FyvZL7Dhj13AHnR1Jn%2Flg%2FP2eGnfBUoAN93iVN3zulGDICFBIgZXFMVx7ekGPP5RcUbvOGP8DeqqqWIqNcziBPFPEn4KAR28UYHt80kCYNd%2FtHO4ckVT1EGUwIZOGio%2BZGMxqkdNpF2RjThqRetw3QjIQ%2B"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: a00c4a264c2a52c1-SLC
+alt-svc: h3=":443"; ma=86400
+

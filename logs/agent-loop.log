@@ -351,3 +351,5 @@
 [2026-05-24T12:07:15Z] friday heartbeat -> friday-mtc-20260524T0001Z 3DGS still InProgress; CloudWatch lastEvent 2026-05-24T09:14:16Z; s3 3dgs prefix empty -> keep monitoring; do not relaunch
 [2026-05-24T12:07:57Z] post-push gh exact-head -> 0 runs (skip ci) -> next: idle
 [2026-05-24T12:08:22Z] post-push gh exact-head -> 0 runs (skip ci) -> next: idle
+[2026-05-24T12:26:36Z] heartbeat -> no-spend acceptance check -> recorded evidence 20260524T122628Z -> next: await public publish
+[2026-05-24T12:27:06Z] heartbeat -> corrected proxy endpoint -> recorded evidence 20260524T122705Z
