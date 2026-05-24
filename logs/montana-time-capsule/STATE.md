@@ -1,5 +1,34 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-24T18:04:12Z HEARTBEAT monitor - no-spend reconfirm (HMC): InProgress=0; viewer/proxy 200; public meta.json still 404; gh+aws via /opt/homebrew/bin
+
+- Git: agent-40136728-montana-time-capsule @ c6000d17dcc16a44291013a24b6e111b5b4b681c (`chore: post-push gh exact-head proof 20260524T1749Z [skip ci]`)
+- Evidence stamp: 20260524T180412Z
+- Git proof:
+  - logs/montana-time-capsule/git-status-20260524T180412Z.txt
+- AWS (us-west-2; no spend):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T180412Z.json (region: logs/montana-time-capsule/aws-config-region-20260524T180412Z.txt)
+  - guardrail visibility (InProgress lists empty):
+    - logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T180412Z.json
+    - logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T180412Z.json
+  - describe (all Completed):
+    - logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T180412Z.json
+    - logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T180412Z.json
+    - logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T180412Z.json
+- S3 outputs (canonical HMC compressed supersplat bundle):
+  - listing: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T180412Z.txt
+  - staging meta head: logs/montana-time-capsule/s3api-head-object-staging-hmc-mtc-20260520T2015Z-meta-20260524T180412Z.json
+  - public meta head (still 404): logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T180412Z.err
+- Hosted viewer reachability (curl; correct route is `sogs-migrated-viewer`):
+  - sky http: logs/montana-time-capsule/viewer-sky-http-20260524T180412Z.txt (url: logs/montana-time-capsule/viewer-sky-url-used-20260524T180412Z.txt)
+  - no-sky http: logs/montana-time-capsule/viewer-nosky-http-20260524T180412Z.txt (url: logs/montana-time-capsule/viewer-nosky-url-used-20260524T180412Z.txt)
+  - proxy meta http: logs/montana-time-capsule/viewer-proxy-http-20260524T180412Z.txt (url: logs/montana-time-capsule/viewer-proxy-url-used-20260524T180412Z.txt)
+- GitHub Actions (gh CLI):
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T180412Z.json
+  - exact-head runs (0; `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-c6000d17dcc16a44291013a24b6e111b5b4b681c-20260524T180412Z.json
+- State snapshot: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T180412Z)
+- Next step: remain no-spend; acceptance gate still blocked on publishing canonical HMC bundle/meta.json to the intended public bucket (do not relaunch any HMC stages).
+
 ## 2026-05-24T17:30:35Z HEARTBEAT monitor - post-push reconfirm (HMC): exact-head CI empty due `[skip ci]`; InProgress=0; hmc-state refreshed
 
 - Git: agent-40136728-montana-time-capsule @ 7606f2a4cf953511696f2e8cb382ba6ca1e1256d (`chore: hmc mtc heartbeat proof 20260524T1728Z [skip ci]`)
