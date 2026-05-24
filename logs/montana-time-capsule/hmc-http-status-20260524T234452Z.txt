@@ -1,0 +1,4 @@
+base 200
+sky 200
+nosky 200
+proxy 404
