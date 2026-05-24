@@ -7,7 +7,7 @@
 
 ## 2026-05-24T06:29:40Z HEARTBEAT monitor (FRIDAY) - canonical Friday SfM still InProgress; CW advanced; S3 colmap still empty; no new jobs launched
 
-- Git: agent-40136728-montana-time-capsule @ 16f29321bfe9c53c2c7822ff41ccfc8e12fdf482 (`chore: trigger Pages preview 20260524T061531Z`) (dirty: new logs only)
+- Git: agent-40136728-montana-time-capsule @ 37b66321d4da88d288f4c3d704202a81e982281c (`chore: friday heartbeat sfm still inprogress 2026-05-24T06:29Z [skip ci]`) (clean; exact-head workflows expected 0)
 - AWS (us-west-2; aws=/opt/homebrew/bin/aws):
   - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T062932Z.json
   - describe SfM: logs/montana-time-capsule/sagemaker-describe-friday-mtc-20260524T0001Z-sfm-20260524T062851Z.json (status=InProgress)
