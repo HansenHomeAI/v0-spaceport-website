@@ -3,26 +3,15 @@
     "account": "975050048887",
     "arn": "arn:aws:iam::975050048887:root"
   },
-  "evidence_stamp": "20260524T104712Z",
+  "evidence_stamp": "20260524T110557Z",
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "81959550b125b6187ef156022095aade2349bdfd",
-    "head_checked_at": "20260524T104712Z"
+    "head": "a8d5b272ca6f0e9caf6cbfdb14d8f7d72dda6b6f",
+    "head_checked_at": "20260524T110557Z"
   },
   "github": {
-    "cdk_latest": {
-      "conclusion": "success",
-      "createdAt": "2026-05-24T06:15:37Z",
-      "databaseId": 26353779598,
-      "displayTitle": "chore: trigger Pages preview 20260524T061531Z",
-      "headSha": "16f29321bfe9c53c2c7822ff41ccfc8e12fdf482",
-      "status": "completed",
-      "updatedAt": "2026-05-24T06:19:58Z",
-      "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26353779598",
-      "workflowName": "CDK Deploy"
-    },
+    "exact_head_sha": "a8d5b272ca6f0e9caf6cbfdb14d8f7d72dda6b6f",
     "exact_head_run_count": 0,
-    "exact_head_sha": "81959550b125b6187ef156022095aade2349bdfd",
     "pages_latest": {
       "conclusion": "success",
       "createdAt": "2026-05-24T06:15:37Z",
@@ -33,22 +22,33 @@
       "updatedAt": "2026-05-24T06:24:23Z",
       "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26353779608",
       "workflowName": "Deploy Next.js to Cloudflare Pages"
+    },
+    "cdk_latest": {
+      "conclusion": "success",
+      "createdAt": "2026-05-24T06:15:37Z",
+      "databaseId": 26353779598,
+      "displayTitle": "chore: trigger Pages preview 20260524T061531Z",
+      "headSha": "16f29321bfe9c53c2c7822ff41ccfc8e12fdf482",
+      "status": "completed",
+      "updatedAt": "2026-05-24T06:19:58Z",
+      "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26353779598",
+      "workflowName": "CDK Deploy"
     }
   },
   "run_id": "hmc-mtc-20260520T2015Z",
-  "s3": {
-    "staging_meta_content_length": 1359,
-    "staging_meta_etag": "\"994e5d57f052e552b8cce2e05d4debf4\""
-  },
   "sagemaker": {
+    "sfm": "Completed",
     "3dgs": "Completed",
-    "compression": "Completed",
-    "sfm": "Completed"
+    "compression": "Completed"
   },
-  "updated_at": "2026-05-24T10:47:12Z",
+  "s3": {
+    "staging_meta_etag": "\"994e5d57f052e552b8cce2e05d4debf4\"",
+    "staging_meta_content_length": 1359
+  },
   "viewer": {
+    "sky_http": 200,
     "nosky_http": 200,
-    "proxy_http": 200,
-    "sky_http": 200
-  }
+    "proxy_http": 200
+  },
+  "updated_at": "2026-05-24T11:05:57Z"
 }

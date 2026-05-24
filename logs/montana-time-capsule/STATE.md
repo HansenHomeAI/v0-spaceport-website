@@ -8891,3 +8891,21 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - git head: 7153c3ece4c345c7d25f96fd117c98f3cd6aa3eb (`[skip ci]`)
 - gh exact-head runs (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-7153c3ece4c345c7d25f96fd117c98f3cd6aa3eb-20260524T103057Z.json
 - gh branch runs snapshot (Pages+CDK still green at headSha=16f29321…): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T103057Z.json
+
+## 2026-05-24T11:06:16Z HEARTBEAT monitor - no-spend acceptance checks: canonical HMC still terminal; staging bundle present; viewer sky/no-sky/proxy HTTP reachable; exact-head CI empty due [skip ci]
+
+- Git: agent-40136728-montana-time-capsule @ a8d5b272ca6f0e9caf6cbfdb14d8f7d72dda6b6f ([skip ci]; clean)
+- Evidence stamp: 20260524T110616Z
+- AWS identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T110521Z.json
+- SageMaker describe (SfM): logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T110427Z.json
+- SageMaker describe (3DGS): logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T110427Z.json
+- SageMaker describe (compression): logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T110427Z.json
+- S3 staging meta head: logs/montana-time-capsule/s3api-head-object-staging-hmc-mtc-20260520T2015Z-meta-20260524T110440Z.json
+- S3 staging bundle listing: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T110440Z.txt
+- S3 public meta head (expected 404): logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T110440Z.err
+- Viewer curl headers (sky): logs/montana-time-capsule/curl-headers-sky-20260524T110508Z.txt
+- Viewer curl headers (no-sky): logs/montana-time-capsule/curl-headers-nosky-20260524T110508Z.txt
+- Viewer curl headers (proxy meta.json): logs/montana-time-capsule/curl-headers-proxy-20260524T110508Z.txt
+- GitHub Actions branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T110523Z.json
+- GitHub Actions exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-a8d5b272ca6f0e9caf6cbfdb14d8f7d72dda6b6f-20260524T110523Z.json
+- Refreshed hmc-state.json: logs/montana-time-capsule/hmc-state.json
