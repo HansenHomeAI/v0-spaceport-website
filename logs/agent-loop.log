@@ -347,3 +347,4 @@
 [2026-05-24T11:28:06Z] postpush -> exact-head gh runs verified (skip ci)
 [2026-05-24T11:46:10Z] montana-heartbeat -> refreshed AWS/S3/viewer/github proofs (HMC terminal; viewer+proxy 200; public meta 404; exact-head ci 0 due skip ci) -> next: wait for public publish gate
 [2026-05-24T11:47:41Z] postpush -> montana heartbeat commit pushed; exact-head gh runs 0 ([skip ci]) -> idle monitoring
+[2026-05-24T12:06:44Z] hmc acceptance no-spend refresh -> HMC terminal; viewer/proxy 200; public meta 404; exact-head CI empty ([skip ci]) -> next: wait for explicit public publish gate

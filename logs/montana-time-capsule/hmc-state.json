@@ -3,10 +3,10 @@
     "account": "975050048887",
     "arn": "arn:aws:iam::975050048887:root"
   },
-  "evidence_stamp": "20260524T114610Z",
+  "evidence_stamp": "20260524T120448Z",
   "gh": {
     "exact_head_run_count": 0,
-    "exact_head_sha": "791aea96f397455e8bd215dece99402f82943e76",
+    "exact_head_sha": "5972bb6d4ddf20e72fe0fd31afb81c1e1748d8cc",
     "latest_cdk_success": {
       "createdAt": "2026-05-24T06:15:37Z",
       "databaseId": 26353779598,
@@ -22,8 +22,8 @@
   },
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "791aea96f397455e8bd215dece99402f82943e76",
-    "head_checked_at": "20260524T114610Z"
+    "head": "5972bb6d4ddf20e72fe0fd31afb81c1e1748d8cc",
+    "head_checked_at": "20260524T120448Z"
   },
   "github": {
     "cdk_latest": {
@@ -39,7 +39,7 @@
       "workflowName": "CDK Deploy"
     },
     "exact_head_run_count": 0,
-    "exact_head_sha": "791aea96f397455e8bd215dece99402f82943e76",
+    "exact_head_sha": "5972bb6d4ddf20e72fe0fd31afb81c1e1748d8cc",
     "pages_latest": {
       "conclusion": "success",
       "createdAt": "2026-05-24T06:15:37Z",
@@ -64,7 +64,7 @@
     "compression": "Completed",
     "sfm": "Completed"
   },
-  "updated_at": "20260524T114610Z",
+  "updated_at": "20260524T120448Z",
   "viewer": {
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
     "hash_url": "https://8aa4efb3.v0-spaceport-website-preview2.pages.dev",
