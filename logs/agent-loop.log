@@ -404,3 +404,4 @@
 [2026-05-24T17:31:20Z] postpush -> exact-head runs=0 (skip ci) -> idle/no-spend
 [2026-05-24T17:11:10Z] postpush -> gh exact-head snapshot -> idle
 [2026-05-24T17:27:44Z] heartbeat -> friday mtc reconfirm complete (aws/s3/ci) -> next: no-spend monitor
+[2026-05-24T17:46:12Z] heartbeat 20260524T174440Z -> ok (terminal; InProgress=0; viewer 200; public meta 404) -> next: no-spend monitor

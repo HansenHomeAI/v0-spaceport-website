@@ -10090,3 +10090,31 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 
 - GitHub Actions exact-head runs (0): logs/montana-time-capsule/gh-run-list-exact-head-657b12f5c629e7c61566c39c4972e7d24787f535-postpush3-20260524T171110Z.json
 - State snapshot: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T171110Z)
+
+## 20260524T174440Z HEARTBEAT monitor - HMC canonical hmc-mtc-20260520T2015Z: terminal reconfirm; InProgress=0; staging meta.json present; public meta.json still 404; hosted viewer sky/no-sky HTTP 200; exact-head CI likely empty ([skip ci])
+
+- Git: agent-40136728-montana-time-capsule @ dde02862452b611c537bf038308c221c89b9b162
+- Evidence stamp: 20260524T174440Z
+- Git proof: logs/montana-time-capsule/git-proof-20260524T174440Z.txt
+- AWS (us-west-2; no spend):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T174440Z.json (region: logs/montana-time-capsule/aws-config-region-20260524T174440Z.txt)
+  - guardrail visibility (InProgress lists):
+    - logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T174440Z.json
+    - logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T174440Z.json
+  - describe (all Completed):
+    - logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T174440Z.json
+    - logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T174440Z.json
+    - logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T174440Z.json
+- S3 outputs (canonical HMC compressed supersplat bundle):
+  - listing: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T174440Z.txt
+  - staging meta head: logs/montana-time-capsule/s3api-head-object-staging-hmc-mtc-20260520T2015Z-meta-20260524T174440Z.json
+  - public meta head (expected 404): logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T174440Z.err
+- Hosted viewer reachability (curl):
+  - sky http: logs/montana-time-capsule/viewer-sky-http-20260524T174440Z.txt (url: logs/montana-time-capsule/viewer-sky-url-used-20260524T174440Z.txt)
+  - no-sky http: logs/montana-time-capsule/viewer-nosky-http-20260524T174440Z.txt (url: logs/montana-time-capsule/viewer-nosky-url-used-20260524T174440Z.txt)
+- GitHub Actions (unauth HTML fallback):
+  - branch actions HTML: logs/montana-time-capsule/curl-github-actions-branch-20260524T174440Z.html (headers: logs/montana-time-capsule/curlD-github-actions-branch-20260524T174440Z.headers)
+  - commit actions HTML: logs/montana-time-capsule/curl-github-actions-commit-20260524T174440Z.html (headers: logs/montana-time-capsule/curlD-github-actions-commit-20260524T174440Z.headers)
+  - exact-head check: logs/montana-time-capsule/github-actions-exact-head-check-20260524T174440Z.txt
+- State snapshot: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T174440Z)
+- Next step: remain no-spend; acceptance gate still blocked on publishing canonical HMC bundle/meta.json to intended public bucket (do not relaunch any HMC stages).

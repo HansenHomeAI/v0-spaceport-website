@@ -1,0 +1,3 @@
+exact_head_sha=dde02862452b611c537bf038308c221c89b9b162
+exact_head_run_count=0
+note=commit checks HTML is unauthenticated scrape; [skip ci] often yields 0

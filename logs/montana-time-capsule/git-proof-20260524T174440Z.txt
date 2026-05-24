@@ -1,0 +1,28 @@
+# git proof (20260524T174440Z)
+/Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule
+agent-40136728-montana-time-capsule
+dde02862452b611c537bf038308c221c89b9b162
+commit dde02862452b611c537bf038308c221c89b9b162
+Author:     Gabriel Hansen <gbhbyu@gmail.com>
+AuthorDate: Sun May 24 11:31:56 2026 -0600
+Commit:     Gabriel Hansen <gbhbyu@gmail.com>
+CommitDate: Sun May 24 11:31:56 2026 -0600
+
+    chore: hmc mtc postpush proof 20260524T1730Z [skip ci]
+
+ logs/montana-time-capsule/STATE.md                 |   15 +
+ .../aws-config-region-20260524T173035Z.txt         |    1 +
+ ...s-sts-get-caller-identity-20260524T173035Z.json |    5 +
+ ...url-github-actions-branch-20260524T173035Z.html | 5317 +++++++++++++++++++
+ ...url-github-actions-commit-20260524T173035Z.html | 5551 ++++++++++++++++++++
+ ...-github-actions-branch-20260524T173035Z.headers |   19 +
+ ...-github-actions-commit-20260524T173035Z.headers |   19 +
+ .../git-proof-20260524T173035Z.txt                 |    6 +
+ .../github-actions-branch-url-20260524T173035Z.txt |    1 +
+ .../github-actions-commit-url-20260524T173035Z.txt |    1 +
+ ...b-actions-exact-head-check-20260524T173035Z.txt |   35 +
+ logs/montana-time-capsule/hmc-state.json           |   17 +-
+ ...ist-processing-InProgress-20260524T173035Z.json |    4 +
+ ...-list-training-InProgress-20260524T173035Z.json |    4 +
+ 14 files changed, 10989 insertions(+), 6 deletions(-)
+?? logs/montana-time-capsule/git-proof-20260524T174440Z.txt
