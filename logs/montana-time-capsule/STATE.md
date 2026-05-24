@@ -7941,3 +7941,23 @@ Next: remain idle for HMC canonical; accept/reject gates are viewer visual proof
   - exact-head runs (expected empty; HEAD is `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T050438Z.json
 
 Next: remain idle for HMC canonical acceptance (viewer + bundle reachability stable). Separately, Friday SfM job is still InProgress; do not launch follow-on stages until it is Completed.
+
+## 20260524T050733Z HEARTBEAT monitor (Friday) - SageMaker SfM still InProgress; captured CloudWatch tail + S3 still empty + CI snapshot (exact-head empty due `[skip ci]`)
+
+- Git: agent-40136728-montana-time-capsule @ bfd30f1a22e92f52748c6e9fe84235a215d4c929
+- AWS:
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T050533Z.json
+- SageMaker (canonical Friday run `friday-mtc-20260524T0001Z`; do not launch duplicate Friday jobs):
+  - SfM describe: logs/montana-time-capsule/sagemaker-describe-processing-job-friday-mtc-20260524T0001Z-sfm-20260524T050533Z.json
+  - InProgress processing list: logs/montana-time-capsule/sagemaker-list-processing-jobs-InProgress-20260524T050716Z.json
+  - CloudWatch stream: `/aws/sagemaker/ProcessingJobs` `friday-mtc-20260524T0001Z-sfm/algo-1-1779581031`
+    - near-last tail (shows COLMAP merge + bundle_adjuster retry on unsupported flag): logs/montana-time-capsule/cloudwatch-get-log-events-sfm-near-last-20260524T050632Z.json
+    - last event timestamp: 2026-05-24T03:54:13Z (no newer events yet): logs/montana-time-capsule/cloudwatch-describe-log-streams-sfm-20260524T050705Z.json
+- S3 (EndOfJob upload; expected empty while running):
+  - colmap prefix ls: logs/montana-time-capsule/s3-ls-colmap-20260524T050712Z.txt (Total Objects 0)
+  - run root ls: logs/montana-time-capsule/s3-ls-run-root-20260524T050714Z.txt (Total Objects 0)
+- GitHub Actions snapshot:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260524T050508Z.json
+  - exact-head runs (expected empty; HEAD is `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T050508Z.json
+
+Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until SfM is `Completed`.
