@@ -290,3 +290,4 @@
 [2026-05-24T04:28:57Z] FRIDAY heartbeat -> SfM InProgress (no CW since 00:09Z; S3 empty) -> next: wait/poll, do not launch 3DGS
 [2026-05-24T04:46:37Z] friday-mtc SfM heartbeat -> InProgress (CW active; last_event_utc=2026-05-24T03:54:13Z; S3 colmap empty; exact-head gh 0 [skip ci]) -> next: poll until Completed; then run guarded cv_hr_time_capsule --launch
 [2026-05-24T04:47:13Z] hmc heartbeat -> verified terminal + preview 200 + s3 present -> next: stay idle unless new acceptance gate
+[2026-05-24T05:04:38Z] hmc heartbeat -> canonical Completed + viewer 200 + s3 bundle present; note friday-mtc SfM still InProgress -> next: idle for HMC; avoid follow-on for friday until Completed

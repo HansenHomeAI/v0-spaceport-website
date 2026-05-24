@@ -1,0 +1,14 @@
+{
+    "logStreams": [
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "creationTime": 1779581266053,
+            "firstEventTimestamp": 1779581259600,
+            "lastEventTimestamp": 1779594853267,
+            "lastIngestionTime": 1779594854993,
+            "uploadSequenceToken": "49039859673195745878960485231217385649199858427504822052",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "storedBytes": 0
+        }
+    ]
+}

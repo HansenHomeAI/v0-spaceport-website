@@ -1,0 +1,356 @@
+{
+    "events": [
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593986730,
+            "message": "2026-05-24 03:39:46,129 - INFO - Prepared chunk 10 database by pruning global features down to 171 images",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272054903016976588143060847452485244094206500667392"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593986730,
+            "message": "2026-05-24 03:39:46,130 - INFO - [chunk_10_spatial_matcher] colmap spatial_matcher --database_path /tmp/colmap_sfm_iet7y6w5/chunk_10/database.db --FeatureMatching.use_gpu 1 --FeatureMatching.guided_matching 1 --SpatialMatching.ignore_z 0 --SpatialMatching.max_num_neighbors 12 --SpatialMatching.max_distance 120.0",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272054903016976588143060847452485244094206500667393"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593986730,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:46.334543 19268 feature_matching.cc:195] === Feature matching & geometric verification ===",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272054903016976588143060847452485244094206500667394"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593986730,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:46.431643 19269 feature_matching_utils.cc:80] Bind FeatureMatcherWorker to GPU device 0",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272054903016976588143060847452485244094206500667395"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593986730,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:46.431645 19275 feature_matching_utils.cc:80] Bind FeatureMatcherWorker to GPU device 0",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272054903016976588143060847452485244094206500667396"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593986730,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:46.436633 19269 sift.cc:1547] Creating SIFT GPU feature matcher",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272054903016976588143060847452485244094206500667397"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593986731,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:46.436636 19275 sift.cc:1547] Creating SIFT GPU feature matcher",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272054925317721786673683988988203516742568006647814"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593986731,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:46.440768 19268 pairing.cc:560] Generating spatial image pairs...",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272054925317721786673683988988203516742568006647815"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593986731,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:46.440795 19268 pairing.cc:565] Indexing images...",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272054925317721786673683988988203516742568006647816"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593986731,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:46.444028 19268 pairing.cc:570]  in 0.003s",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272054925317721786673683988988203516742568006647817"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593986731,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:46.444058 19268 pairing.cc:584] Building search index...",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272054925317721786673683988988203516742568006647818"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593986731,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:46.444072 19268 pairing.cc:589]  in 0.000s",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272054925317721786673683988988203516742568006647819"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593986731,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:46.444082 19268 pairing.cc:592] Searching for nearest neighbors...",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272054925317721786673683988988203516742568006647820"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593986731,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:46.455844 19268 pairing.cc:608]  in 0.012s",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272054925317721786673683988988203516742568006647821"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593986731,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:46.455888 19268 pairing.cc:631] Processing image [1/171]",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272054925317721786673683988988203516742568006647822"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593987732,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:46.880332 19268 feature_matching.cc:217] in 0.424s",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272077248363665515827448666242194437752435493044239"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593987732,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:46.880383 19268 pairing.cc:631] Processing image [2/171]",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272077248363665515827448666242194437752435493044240"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593987732,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:47.167830 19268 feature_matching.cc:217] in 0.287s",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272077248363665515827448666242194437752435493044241"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593987732,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:47.167883 19268 pairing.cc:631] Processing image [3/171]",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272077248363665515827448666242194437752435493044242"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593987732,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:47.467515 19268 feature_matching.cc:217] in 0.300s",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272077248363665515827448666242194437752435493044243"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593987732,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:47.467567 19268 pairing.cc:631] Processing image [4/171]",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272077248363665515827448666242194437752435493044244"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593987732,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:47.697156 19268 feature_matching.cc:217] in 0.230s",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272077248363665515827448666242194437752435493044245"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593987733,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:47.697208 19268 pairing.cc:631] Processing image [5/171]",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272077270664410714358071807777912710400796999024662"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593988733,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:47.955209 19268 feature_matching.cc:217] in 0.258s",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272099571409609244981213343496185358762302979440663"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593988733,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:47.955262 19268 pairing.cc:631] Processing image [6/171]",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272099571409609244981213343496185358762302979440664"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593988733,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:48.225400 19268 feature_matching.cc:217] in 0.270s",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272099571409609244981213343496185358762302979440665"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593988733,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:48.225464 19268 pairing.cc:631] Processing image [7/171]",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272099571409609244981213343496185358762302979440666"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593988733,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:48.440073 19268 feature_matching.cc:217] in 0.215s",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272099571409609244981213343496185358762302979440667"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593988733,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:48.440121 19268 pairing.cc:631] Processing image [8/171]",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272099571409609244981213343496185358762302979440668"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593988733,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:48.666255 19268 feature_matching.cc:217] in 0.226s",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272099571409609244981213343496185358762302979440669"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593988733,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:48.666307 19268 pairing.cc:631] Processing image [9/171]",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272099571409609244981213343496185358762302979440670"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593989734,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:48.804934 19268 feature_matching.cc:217] in 0.139s",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272121894455552974134978020750176279772170465837087"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593989734,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:48.804989 19268 pairing.cc:631] Processing image [10/171]",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272121894455552974134978020750176279772170465837088"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593989734,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:48.909546 19268 feature_matching.cc:217] in 0.105s",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272121894455552974134978020750176279772170465837089"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593989734,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:48.909602 19268 pairing.cc:631] Processing image [11/171]",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272121894455552974134978020750176279772170465837090"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593989734,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:49.062999 19268 feature_matching.cc:217] in 0.153s",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272121894455552974134978020750176279772170465837091"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593989734,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:49.063052 19268 pairing.cc:631] Processing image [12/171]",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272121894455552974134978020750176279772170465837092"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593989734,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:49.200088 19268 feature_matching.cc:217] in 0.137s",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272121894455552974134978020750176279772170465837093"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593989734,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:49.200142 19268 pairing.cc:631] Processing image [13/171]",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272121894455552974134978020750176279772170465837094"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593989734,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:49.409384 19268 feature_matching.cc:217] in 0.209s",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272121894455552974134978020750176279772170465837095"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593989734,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:49.409444 19268 pairing.cc:631] Processing image [14/171]",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272121894455552974134978020750176279772170465837096"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593989734,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:49.637411 19268 feature_matching.cc:217] in 0.228s",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272121894455552974134978020750176279772170465837097"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593989734,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:49.637477 19268 pairing.cc:631] Processing image [15/171]",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272121894455552974134978020750176279772170465837098"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593990735,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:49.855176 19268 feature_matching.cc:217] in 0.218s",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272144217501496703288742698004167200782037952233515"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593990735,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:49.855229 19268 pairing.cc:631] Processing image [16/171]",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272144217501496703288742698004167200782037952233516"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593990735,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:50.073547 19268 feature_matching.cc:217] in 0.218s",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272144217501496703288742698004167200782037952233517"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593990735,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:50.073601 19268 pairing.cc:631] Processing image [17/171]",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272144217501496703288742698004167200782037952233518"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593990735,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:50.294927 19268 feature_matching.cc:217] in 0.221s",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272144217501496703288742698004167200782037952233519"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593990735,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:50.294974 19268 pairing.cc:631] Processing image [18/171]",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272144217501496703288742698004167200782037952233520"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779593990735,
+            "message": "COLMAP[chunk_10_spatial_matcher] I20260524 03:39:50.508787 19268 feature_matching.cc:217] in 0.214s",
+            "ingestionTime": 1779593991976,
+            "eventId": "39686272144217501496703288742698004167200782037952233521"
+        }
+    ],
+    "searchedLogStreams": [],
+    "nextToken": "Bxkq6kVGFtq2y_MoigeqscPOdhXVbhiVtLoAmXb5jCqnEpn7nFUccLNNiKVrfQc25toYQ6lJuKTNH6xJvO1etiSMIA1GguOkl1_uo9b4Leg7GJaicmE7Rp4gQWgzYvgYtyTU1iiqFqusiUZ25LJQhAbpbOYNI7CTrG0R9Eo8EmUYbLJ9SD4Wq4gCojxV0Msj9B49YZ7ibBPU6vzMBYw2Ls89moJlVp5WfwrBUQIJKqQo3QZnlMShzmj5igFizFxcMho7StBtG-O7a3F5OH2zDbSf0kbO8J4cAyFR7k-0BLqF6TtiEkMgjMpywUnaWJoIhlRQR2HQ28VlPqhouot2e-YK0nyzJmIk1qiQzL_LMtM"
+}

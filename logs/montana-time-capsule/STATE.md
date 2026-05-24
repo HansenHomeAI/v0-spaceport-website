@@ -7914,3 +7914,30 @@ Next: remain idle for HMC canonical; accept/reject gates are viewer visual proof
 - git head: e62d87d35e6b855f45d15834aa6651d797de7279 (`[skip ci]`)
 - gh branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260524T042632Z.json
 - gh exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T042632Z.json
+
+## 20260524T050438Z HEARTBEAT monitor (HMC) - no-spend reconfirm: AWS identity + canonical HMC jobs still Completed + S3 supersplat bundle still present + hosted preview viewer (base/skybox/no-sky + proxy meta.json) HTTP 200 + CI snapshot + note unrelated Friday SfM job currently InProgress
+
+- Git: agent-40136728-montana-time-capsule @ bfd30f1a22e92f52748c6e9fe84235a215d4c929 (bfd30f1a chore: friday heartbeat sfm still inprogress 2026-05-24T04:46Z [skip ci])
+- AWS:
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T050438Z.json
+- SageMaker (canonical run `hmc-mtc-20260520T2015Z`; do not launch duplicate HMC jobs):
+  - SfM describe: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260524T050438Z.json
+  - 3DGS describe: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260524T050438Z.json
+  - compression describe: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260524T050438Z.json
+  - InProgress processing list: logs/montana-time-capsule/sagemaker-list-processing-jobs-InProgress-20260524T050438Z.json
+  - NOTE (non-canonical; do not stop): friday SfM describe: logs/montana-time-capsule/sagemaker-describe-friday-mtc-20260524T0001Z-sfm-20260524T050438Z.json
+- S3 supersplat bundle present:
+  - ls: logs/montana-time-capsule/s3-ls-supersplat-bundle-20260524T050438Z.txt
+- Hosted preview viewer reachability:
+  - preview url: logs/montana-time-capsule/preview-url-20260524T050438Z.txt
+  - base headers: logs/montana-time-capsule/curlI-hmc-preview-base-20260524T050438Z.headers
+  - viewer skybox headers: logs/montana-time-capsule/curlI-hmc-viewer-sky-20260524T050438Z.headers
+  - viewer no-sky headers: logs/montana-time-capsule/curlI-hmc-viewer-nosky-20260524T050438Z.headers
+  - proxy meta.json headers: logs/montana-time-capsule/curlI-hmc-proxy-meta-20260524T050438Z.headers
+- GitHub Actions snapshot:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260524T050438Z.json
+  - Pages workflow list: logs/montana-time-capsule/gh-run-list-pages-20260524T050438Z.json
+  - CDK workflow list: logs/montana-time-capsule/gh-run-list-cdk-20260524T050438Z.json
+  - exact-head runs (expected empty; HEAD is `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T050438Z.json
+
+Next: remain idle for HMC canonical acceptance (viewer + bundle reachability stable). Separately, Friday SfM job is still InProgress; do not launch follow-on stages until it is Completed.
