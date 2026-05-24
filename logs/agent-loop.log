@@ -422,3 +422,5 @@
 [2026-05-24T19:09:06Z] exact-head-recheck -> 0 runs expected ([skip ci]) for a30231e0
 [20260524T191005Z] heartbeat -> verified public bundle + viewer smoke (desktop/mobile/nosky) -> next: optional camera checks
 [2026-05-24T19:10:39Z] final-snapshot -> hmc-state + gh exact-head captured for ad99ac81
+[2026-05-24T19:26:47Z] friday heartbeat -> reconfirm terminal (sfm/3dgs/compression Completed); public meta 200; exact-head=0 (skip ci) -> next: passive/no-spend
+[2026-05-24T19:26:59Z] heartbeat-hmc-canonical -> sagemaker terminal, viewer 200, public meta missing -> wait

@@ -1,0 +1,37 @@
+branch=agent-40136728-montana-time-capsule
+head=85af60fc09dfb41085e317a5b72a3f283d78ce83
+## agent-40136728-montana-time-capsule...origin/agent-40136728-montana-time-capsule
+?? logs/montana-time-capsule/aws-config-region-20260524T192548Z.txt
+?? logs/montana-time-capsule/aws-config-region-20260524T192553Z.txt
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T192548Z.json
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T192553Z.json
+?? logs/montana-time-capsule/curl-head-http-public-hmc-mtc-20260520T2015Z-meta-20260524T192548Z.txt
+?? logs/montana-time-capsule/curl-head-public-hmc-mtc-20260520T2015Z-meta-20260524T192548Z.txt
+?? logs/montana-time-capsule/curl-head-staging-hmc-mtc-20260520T2015Z-meta-20260524T192548Z.txt
+?? logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T192548Z.txt
+?? logs/montana-time-capsule/gh-run-list-exact-head-85af60fc09dfb41085e317a5b72a3f283d78ce83-20260524T192548Z.txt
+?? logs/montana-time-capsule/git-proof-20260524T192548Z.txt
+?? logs/montana-time-capsule/git-proof-20260524T192553Z.txt
+?? logs/montana-time-capsule/s3-ls-3dgs-friday-mtc-20260524T0001Z-20260524T192553Z.txt
+?? logs/montana-time-capsule/s3-ls-compressed-friday-mtc-20260524T0001Z-20260524T192553Z.txt
+?? logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T192548Z.txt
+?? logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T192553Z.txt
+?? logs/montana-time-capsule/s3api-head-object-http-public-hmc-mtc-20260520T2015Z-meta-20260524T192548Z.err
+?? logs/montana-time-capsule/s3api-head-object-http-public-hmc-mtc-20260520T2015Z-meta-20260524T192548Z.json
+?? logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T192548Z.err
+?? logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T192548Z.json
+?? logs/montana-time-capsule/s3api-head-object-staging-hmc-mtc-20260520T2015Z-meta-20260524T192548Z.json
+?? logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T192553Z.json
+?? logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T192553Z.json
+?? logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T192548Z.json
+?? logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T192548Z.json
+?? logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T192553Z.json
+?? logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T192548Z.json
+?? logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T192548Z.json
+?? logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T192548Z.json
+?? logs/montana-time-capsule/viewer-nosky-http-20260524T192548Z.txt
+?? logs/montana-time-capsule/viewer-nosky-url-used-20260524T192548Z.txt
+?? logs/montana-time-capsule/viewer-proxy-http-20260524T192548Z.txt
+?? logs/montana-time-capsule/viewer-proxy-url-used-20260524T192548Z.txt
+?? logs/montana-time-capsule/viewer-sky-http-20260524T192548Z.txt
+?? logs/montana-time-capsule/viewer-sky-url-used-20260524T192548Z.txt
