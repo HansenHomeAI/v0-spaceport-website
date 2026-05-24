@@ -31,6 +31,14 @@
   - exact-head runs for f31dd349… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-f31dd3490d97d1c203de19ce7f6ee85b04a54b0f-20260524T144435Z.json
 - Next step: remain no-spend; acceptance gate still blocked on publishing the canonical bundle to the public bucket (non-staging) + optional refreshed visual proof on request.
 
+## 2026-05-24T14:46:55Z HEARTBEAT monitor - post-push GitHub confirmation: exact-head workflows empty due `[skip ci]`
+
+- Git: agent-40136728-montana-time-capsule @ dc140982a15666f41a9c7f9d08901b09922f1b60 (`chore: montana heartbeat tick 20260524T1444Z [skip ci]`)
+- Evidence stamp: 20260524T144655Z
+- GitHub Actions:
+  - exact-head runs for dc140982… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-dc140982a15666f41a9c7f9d08901b09922f1b60-20260524T144655Z.json
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-latest-20260524T144655Z.json
+
 ## 2026-05-24T14:27:55Z HEARTBEAT monitor - post-push GitHub confirmation: exact-head workflows empty due `[skip ci]`
 
 - Git: agent-40136728-montana-time-capsule @ 9234dd1abdd622fe1e8da1b2e9100e2e913f060e (`chore: montana heartbeat tick 20260524T1424Z [skip ci]`)
