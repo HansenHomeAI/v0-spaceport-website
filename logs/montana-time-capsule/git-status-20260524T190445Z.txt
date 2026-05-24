@@ -1,0 +1,17 @@
+?? logs/montana-time-capsule/aws-config-region-20260524T190411Z.txt
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T190411Z.json
+?? logs/montana-time-capsule/aws-version-20260524T190411Z.txt
+?? logs/montana-time-capsule/git-branch-20260524T190445Z.txt
+?? logs/montana-time-capsule/git-head-20260524T190445Z.txt
+?? logs/montana-time-capsule/git-proof-20260524T190407Z.txt
+?? logs/montana-time-capsule/git-status-20260524T190445Z.txt
+?? logs/montana-time-capsule/heartbeat-git-summary-20260524T190445Z.txt
+?? logs/montana-time-capsule/s3-ls-staging-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T190436Z.txt
+?? logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T190436Z.err
+?? logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T190436Z.json
+?? logs/montana-time-capsule/s3api-head-object-staging-hmc-mtc-20260520T2015Z-meta-20260524T190436Z.json
+?? logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T190424Z.json
+?? logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T190424Z.json
+?? logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T190424Z.json
+?? logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T190424Z.json
+?? logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T190424Z.json

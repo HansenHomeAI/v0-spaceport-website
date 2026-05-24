@@ -1,0 +1,7 @@
+# git proof
+agent-40136728-montana-time-capsule
+7a46885057d1a9c69633a90dd149b2b6624dd587
+## agent-40136728-montana-time-capsule...origin/agent-40136728-montana-time-capsule
+?? logs/montana-time-capsule/git-proof-20260524T190407Z.txt
+
+7a468850 chore: record post-push hmc state 20260524T1848Z [skip ci]

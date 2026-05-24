@@ -1,0 +1,5 @@
+timestamp=20260524T190445Z
+cwd=/Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule
+branch=agent-40136728-montana-time-capsule
+head=7a46885057d1a9c69633a90dd149b2b6624dd587
+describe=chore: record post-push hmc state 20260524T1848Z [skip ci]

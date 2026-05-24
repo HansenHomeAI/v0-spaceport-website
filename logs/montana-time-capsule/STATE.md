@@ -10372,3 +10372,31 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
   - public meta.json head remains 404 (spaceport-ml-processing): logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-hmc-mtc-20260520T2015Z-meta-20260524T184803Z.err
 - Preview proxy reachability:
   - meta.json via /api/sogs-proxy (HTTP 200): logs/montana-time-capsule/curlD-sogs-proxy-meta-20260524T184803Z.headers (url: logs/montana-time-capsule/sogs-proxy-meta-url-20260524T184803Z.txt)
+
+## 20260524T190606Z HEARTBEAT monitor - no-spend reconfirm (HMC canonical): Completed; InProgress=0; staging meta.json OK; public meta.json still 404; viewer HTTP 200; exact-head CI empty due [skip ci]
+
+- Git: agent-40136728-montana-time-capsule @ 7a46885057d1a9c69633a90dd149b2b6624dd587 (chore: record post-push hmc state 20260524T1848Z [skip ci])
+- Evidence stamp: 20260524T190606Z
+- Git proof: logs/montana-time-capsule/git-proof-20260524T190407Z.txt
+- AWS (us-west-2; no spend; aws cli at /Users/gabrielhansen/Library/Python/3.9/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T190615Z.json (region: logs/montana-time-capsule/aws-config-region-20260524T190615Z.txt)
+  - InProgress lists:
+    - logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T190615Z.json
+    - logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T190615Z.json
+  - canonical run describes (Completed):
+    - logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T190424Z.json
+    - logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T190424Z.json
+    - logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T190424Z.json
+- S3 outputs (canonical compressed supersplat bundle):
+  - listing: logs/montana-time-capsule/s3-ls-staging-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T190436Z.txt
+  - staging meta head (OK): logs/montana-time-capsule/s3api-head-object-staging-hmc-mtc-20260520T2015Z-meta-20260524T190436Z.json
+  - public meta head (still 404): logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T190436Z.err
+- Hosted viewer reachability (curl):
+  - sky http: logs/montana-time-capsule/viewer-sky-http-20260524T190457Z.txt (url: logs/montana-time-capsule/viewer-sky-url-used-20260524T190457Z.txt)
+  - no-sky http: logs/montana-time-capsule/viewer-nosky-http-20260524T190457Z.txt (url: logs/montana-time-capsule/viewer-nosky-url-used-20260524T190457Z.txt)
+  - proxy meta http: logs/montana-time-capsule/viewer-proxy-http-20260524T190457Z.txt (url: logs/montana-time-capsule/viewer-proxy-url-used-20260524T190457Z.txt)
+- GitHub Actions (gh CLI at /opt/homebrew/bin/gh):
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T190514Z.json
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-7a46885057d1a9c69633a90dd149b2b6624dd587-20260524T190514Z.json
+- State snapshot: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T190606Z)
+- Decision: remain no-spend; acceptance gate still blocked on publishing canonical HMC bundle/meta.json to public bucket (do not relaunch any HMC stages).
