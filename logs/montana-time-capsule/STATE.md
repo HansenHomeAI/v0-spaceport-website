@@ -11047,3 +11047,4 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T230804Z.json
   - exact-head runs (0 expected due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-804e554-20260524T230804Z.json
 - State snapshot updated: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T230804Z)
+- Post-push ledger note (20260524T231034Z): HEAD advanced to d0401915a435097961a630861456217e1595724e with `[skip ci]`; exact-head GH runs still 0; snapshots: logs/montana-time-capsule/gh-run-list-branch-postpush-20260524T231034Z.json + logs/montana-time-capsule/gh-run-list-exact-head-postpush-d040191-20260524T231034Z.json
