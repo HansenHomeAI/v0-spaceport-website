@@ -1,5 +1,30 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-24T17:26:50Z HEARTBEAT monitor - Friday FRIDAY-20260522: terminal reconfirm (SfM+3DGS+compression Completed); InProgress=0; public meta.json reachable; exact-head CI empty ([skip ci])
+
+- Git: agent-40136728-montana-time-capsule @ 722cdc3d73aae697a257b074f560d467560bb6ea
+- Evidence stamp: 20260524T172650Z
+- Git proof: logs/montana-time-capsule/git-proof-20260524T172439Z.txt
+- AWS (us-west-2; no spend; note: CLI invoked as `/opt/homebrew/bin/aws` due Codex PATH):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T172515Z.json (region: logs/montana-time-capsule/aws-config-region-20260524T172515Z.txt)
+  - guardrail visibility (InProgress lists):
+    - logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T172515Z.json
+    - logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T172515Z.json
+  - Friday canonical run (friday-mtc-20260524T0001Z) describes:
+    - logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T172515Z.json
+    - logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T172515Z.json
+    - logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T172515Z.json
+- S3 outputs (Friday):
+  - listing: logs/montana-time-capsule/s3-ls-friday-outputs-20260524T172543Z.txt
+  - staging meta head: logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-staging-friday-mtc-20260524T0001Z-meta-20260524T172606Z.json
+  - public meta head (public bucket is `spaceport-ml-processing`): logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-friday-mtc-20260524T0001Z-meta-20260524T172639Z.json
+  - `spaceport-ml-processing-public` meta head remains 404 (informational): logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-public-friday-mtc-20260524T0001Z-meta-20260524T172606Z.err
+- GitHub Actions (gh CLI invoked as `/opt/homebrew/bin/gh` due Codex PATH):
+  - auth status: logs/montana-time-capsule/gh-auth-status-20260524T172701Z.txt
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T172701Z.json (latest successes include CDK Deploy 26362748385)
+  - exact-head runs (0; expected due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-722cdc3d73aae697a257b074f560d467560bb6ea-20260524T172701Z.json
+- Next step: no-spend monitoring only; do not relaunch Friday jobs (canonical friday-mtc-20260524T0001Z already complete and publicly reachable via `spaceport-ml-processing`).
+
 ## 2026-05-24T17:06:42Z HEARTBEAT monitor - HMC canonical hmc-mtc-20260520T2015Z: terminal reconfirm; InProgress=0; staging bundle present; viewer sky/no-sky HTTP 200; exact-head workflows empty ([skip ci])
 
 - Git: agent-40136728-montana-time-capsule @ 8337f52460c335ed129a0e91e28c0b5f4cd2c528

@@ -403,3 +403,4 @@
 [2026-05-24T17:12:30Z] heartbeat -> friday-mtc publish to spaceport-ml-processing + viewer smoke -> next: commit/push
 [2026-05-24T17:31:20Z] postpush -> exact-head runs=0 (skip ci) -> idle/no-spend
 [2026-05-24T17:11:10Z] postpush -> gh exact-head snapshot -> idle
+[2026-05-24T17:27:44Z] heartbeat -> friday mtc reconfirm complete (aws/s3/ci) -> next: no-spend monitor

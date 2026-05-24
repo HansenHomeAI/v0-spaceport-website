@@ -1,0 +1,24 @@
+# colmap top
+                           PRE images/
+                           PRE sparse/
+2026-05-24 02:33:13 2770214912 database.db
+2026-05-24 02:33:38       5985 sfm_metadata.json
+# compressed top
+                           PRE compressed_splat/
+                           PRE supersplat_bundle/
+2026-05-24 07:14:52       2309 sogs_compression_summary.json
+# compressed recursive meta.json hits
+3:2026-05-24 07:14:52       1372 compressed/friday-mtc-20260524T0001Z/compressed_splat/meta.json
+10:2026-05-24 07:14:52        978 compressed/friday-mtc-20260524T0001Z/supersplat_bundle/background_manifest.json
+11:2026-05-24 07:14:52      37848 compressed/friday-mtc-20260524T0001Z/supersplat_bundle/background_skybox.webp
+12:2026-05-24 07:14:52        951 compressed/friday-mtc-20260524T0001Z/supersplat_bundle/export_manifest.json
+13:2026-05-24 07:14:52    1090906 compressed/friday-mtc-20260524T0001Z/supersplat_bundle/means_l.webp
+14:2026-05-24 07:14:52     720560 compressed/friday-mtc-20260524T0001Z/supersplat_bundle/means_u.webp
+15:2026-05-24 07:14:52       1372 compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json
+16:2026-05-24 07:14:52    1170110 compressed/friday-mtc-20260524T0001Z/supersplat_bundle/quats.webp
+17:2026-05-24 07:14:52     631730 compressed/friday-mtc-20260524T0001Z/supersplat_bundle/scales.webp
+18:2026-05-24 07:14:52        242 compressed/friday-mtc-20260524T0001Z/supersplat_bundle/settings.json
+19:2026-05-24 07:14:52     866442 compressed/friday-mtc-20260524T0001Z/supersplat_bundle/sh0.webp
+20:2026-05-24 07:14:52     973572 compressed/friday-mtc-20260524T0001Z/supersplat_bundle/shN_centroids.webp
+21:2026-05-24 07:14:52     697512 compressed/friday-mtc-20260524T0001Z/supersplat_bundle/shN_labels.webp
+22:2026-05-24 07:14:52       1487 compressed/friday-mtc-20260524T0001Z/supersplat_bundle/training_metadata.json
