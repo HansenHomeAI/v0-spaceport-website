@@ -1,0 +1,6 @@
+== git proof ==
+agent-40136728-montana-time-capsule
+ddc655b3955b6c095cb42643b8e2730928da32de
+## agent-40136728-montana-time-capsule...origin/agent-40136728-montana-time-capsule
+?? logs/montana-time-capsule/git-proof-20260524T232431Z.txt
+ddc655b3955b6c095cb42643b8e2730928da32de 2026-05-24 17:10:22 -0600 chore: store postpush gh snapshots 20260524T231000Z [skip ci]

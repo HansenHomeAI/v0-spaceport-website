@@ -1,0 +1,46 @@
+meta=https://spaceport-ml-processing.s3.us-west-2.amazonaws.com/compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json
+sky=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing.s3.us-west-2.amazonaws.com%2Fcompressed%2Ffriday-mtc-20260524T0001Z%2Fsupersplat_bundle%2Fmeta.json&skybox=background_skybox.webp
+nosky=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing.s3.us-west-2.amazonaws.com%2Fcompressed%2Ffriday-mtc-20260524T0001Z%2Fsupersplat_bundle%2Fmeta.json&skybox=off
+== meta
+HTTP/1.1 200 OK
+x-amz-id-2: xjlhULjRj1Ldwjl9HJQsfddd7Xk9ZQcRTRgl/1eNIhi8QgMnh1qka59efsk/XisZXVNpuBM7SdV38ww/KqdyIw==
+x-amz-request-id: XGES27XYD22C2EJR
+Date: Sun, 24 May 2026 23:26:24 GMT
+Last-Modified: Sun, 24 May 2026 17:08:06 GMT
+ETag: "6db972a5b06efb831cee42e4aad4443c"
+x-amz-server-side-encryption: AES256
+Cache-Control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: a5q2Msf.yBUYKQ_i.R696mQq1XSlvosb
+Accept-Ranges: bytes
+Content-Type: application/json
+Content-Length: 1372
+Server: AmazonS3
+
+== viewer_sky
+HTTP/2 200 
+date: Sun, 24 May 2026 23:26:24 GMT
+content-type: text/html; charset=utf-8
+vary: RSC, Next-Router-State-Tree, Next-Router-Prefetch
+x-edge-runtime: 1
+x-matched-path: /sogs-migrated-viewer
+x-powered-by: Next.js
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=FgZw%2BZqiz3bxYYEWRgPmREvpDE0NMUQm%2FZsig%2BoResFQzZ6R5rcFhfN7ejZrPhyC8y%2FLAksK%2FjMtpbW3%2BHsbz3SUZjdr8IDob7Z235%2FcDEFto%2FKwIl%2F9qKZlqAIR2OwSKcO%2BlCK1guu7rTbZfRn1FnBphMcYgV1dq7QktCs7F3GCrobL7snnCqRtN6%2Bbvx9qK5eGSz3Wq5gLpPcjFrYsxK5X"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: a01010a84a29e888-SLC
+alt-svc: h3=":443"; ma=86400
+
+== viewer_nosky
+HTTP/2 200 
+date: Sun, 24 May 2026 23:26:24 GMT
+content-type: text/html; charset=utf-8
+vary: RSC, Next-Router-State-Tree, Next-Router-Prefetch
+x-edge-runtime: 1
+x-matched-path: /sogs-migrated-viewer
+x-powered-by: Next.js
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=X%2B%2BHXiFGbts%2FXuWjAYHvagNqGFyMDaZGTo9q3lokYisru7EnCNT4QT1%2B5DslHFbr%2BqTMBIvbDS9ettHvnWbanobEvqA708k3s0P0QDYKgaSBCSUOiknQ%2FbVqh7e1c26Cs72RdCNrIouFY3gIEEifthnN6HIwQbtVhBRdkH8VadJkP21788jyaoE8v3h%2F21vj4jiX1RNDMPncVghZtvGqtH%2BF"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: a01010a8b8fcc64b-SLC
+alt-svc: h3=":443"; ma=86400
+

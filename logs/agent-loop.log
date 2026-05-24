@@ -453,3 +453,4 @@
 [2026-05-24T22:47:28Z] heartbeat -> friday-mtc terminal reconfirm (no spend); InProgress=0; meta+viewer reachable; gh snapshot -> commit+push ledger
 [2026-05-24T23:07:29Z] heartbeat -> friday-mtc terminal reconfirm; ran guarded cv_hr_time_capsule --launch (status=completed, no dupes) -> next: keep idle unless new acceptance gate
 [2026-05-24T23:08:53Z] postpush -> gh snapshots recorded for 3f2bf2a6 (exact-head runs 0) -> done
+[2026-05-24T23:27:06Z] friday-mtc heartbeat -> SageMaker Completed; public meta+viewer 200 -> next: idle monitor
