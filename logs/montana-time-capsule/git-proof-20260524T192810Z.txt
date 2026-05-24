@@ -1,0 +1,5 @@
+branch=agent-40136728-montana-time-capsule
+head=d47c10b584764dcd0adf6acd4ee2695b85fdcfa2
+## agent-40136728-montana-time-capsule...origin/agent-40136728-montana-time-capsule
+?? logs/montana-time-capsule/gh-run-list-exact-head-d47c10b584764dcd0adf6acd4ee2695b85fdcfa2-20260524T192810Z.txt
+?? logs/montana-time-capsule/git-proof-20260524T192810Z.txt
