@@ -1,0 +1,35 @@
+sha=722cdc3d73aae697a257b074f560d467560bb6ea
+subject=chore: friday mtc postpush proof 20260524T1731Z [skip ci]
+sha_count 18
+subject_hits:
+actions_run_links_near_top:
+2337:      <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26362748385" class="d-flex flex-items-center width-full mb-1" aria-label="completed successfully:  Run 3107 of CDK Deploy. chore: record CDK green 611bf180">
+2440:                    <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26362748385/workflow" class="dropdown-item btn-link" >
+2460:      <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26362596297" class="d-flex flex-items-center width-full mb-1" aria-label="completed successfully:  Run 3106 of CDK Deploy. chore: friday mtc completion proof 20260524T1327Z">
+2563:                    <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26362596297/workflow" class="dropdown-item btn-link" >
+2583:      <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26362527773" class="d-flex flex-items-center width-full mb-1" aria-label="cancelled:  Run 3105 of CDK Deploy. chore: record friday mtc preview url 20260524">
+2686:                    <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26362527773/workflow" class="dropdown-item btn-link" >
+2706:      <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26362313634" class="d-flex flex-items-center width-full mb-1" aria-label="completed successfully:  Run 3104 of CDK Deploy. chore: trigger Pages preview 20260524T131327Z">
+2809:                    <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26362313634/workflow" class="dropdown-item btn-link" >
+2829:      <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26362313633" class="d-flex flex-items-center width-full mb-1" aria-label="completed successfully:  Run 1529 of Deploy Next.js to Cloudflare Pages. chore: trigger Pages preview 20260524T131327Z">
+2932:                    <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26362313633/workflow" class="dropdown-item btn-link" >
+2952:      <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26362207788" class="d-flex flex-items-center width-full mb-1" aria-label="completed successfully:  Run 3103 of CDK Deploy. chore: friday mtc launch compression 20260524">
+3055:                    <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26362207788/workflow" class="dropdown-item btn-link" >
+3075:      <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26355989700" class="d-flex flex-items-center width-full mb-1" aria-label="failed:  Run 82 of Cleanup Branch Preview Stacks.">
+3174:                    <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26355989700/workflow" class="dropdown-item btn-link" >
+3194:      <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26353779608" class="d-flex flex-items-center width-full mb-1" aria-label="completed successfully:  Run 1528 of Deploy Next.js to Cloudflare Pages. chore: trigger Pages preview 20260524T061531Z">
+3297:                    <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26353779608/workflow" class="dropdown-item btn-link" >
+3317:      <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26353779598" class="d-flex flex-items-center width-full mb-1" aria-label="completed successfully:  Run 3102 of CDK Deploy. chore: trigger Pages preview 20260524T061531Z">
+3420:                    <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26353779598/workflow" class="dropdown-item btn-link" >
+3440:      <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26353693174" class="d-flex flex-items-center width-full mb-1" aria-label="completed successfully:  Run 3101 of CDK Deploy. chore: heartbeat hmc acceptance reconfirm 20260524T0609Z">
+3543:                    <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26353693174/workflow" class="dropdown-item btn-link" >
+3563:      <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26350519862" class="d-flex flex-items-center width-full mb-1" aria-label="completed successfully:  Run 3100 of CDK Deploy. fix: harden seam graph SfM proof gates">
+3666:                    <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26350519862/workflow" class="dropdown-item btn-link" >
+3686:      <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26340921254" class="d-flex flex-items-center width-full mb-1" aria-label="completed successfully:  Run 3099 of CDK Deploy. fix: recover low-registration SfM leaves before core-only pass">
+3793:                    <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26340921254/workflow" class="dropdown-item btn-link" >
+3813:      <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26340921252" class="d-flex flex-items-center width-full mb-1" aria-label="completed successfully:  Run 644 of Trigger ML Container Build. fix: recover low-registration SfM leaves before core-only pass">
+3920:                    <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26340921252/workflow" class="dropdown-item btn-link" >
+3940:      <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26334041888" class="d-flex flex-items-center width-full mb-1" aria-label="completed successfully:  Run 3098 of CDK Deploy. fix: harden seam reducer overlap diagnostics">
+4047:                    <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26334041888/workflow" class="dropdown-item btn-link" >
+4067:      <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26331423902" class="d-flex flex-items-center width-full mb-1" aria-label="completed successfully:  Run 643 of Trigger ML Container Build. fix: use planner pose priors for sfm leaves">
+4174:                    <a href="/HansenHomeAI/v0-spaceport-website/actions/runs/26331423902/workflow" class="dropdown-item btn-link" >

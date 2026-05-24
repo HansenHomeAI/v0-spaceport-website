@@ -5,7 +5,7 @@
     "region": "us-west-2",
     "userId": "975050048887"
   },
-  "evidence_stamp": "20260524T171110Z",
+  "evidence_stamp": "20260524T172812Z",
   "gh": {
     "cdk_latest_success": {
       "conclusion": "success",
@@ -55,10 +55,10 @@
     "sfm": "Completed",
     "sfm_job": "hmc-mtc-20260520T2015Z-sfm"
   },
-  "updated_at": "20260524T171110Z",
+  "updated_at": "20260524T172812Z",
   "viewer": {
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
-    "checked_at": "20260524T170642Z",
+    "checked_at": "20260524T172812Z",
     "nosky_http": 200,
     "proxy_http": 200,
     "sky_http": 200
