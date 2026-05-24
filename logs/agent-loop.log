@@ -300,3 +300,4 @@
 [2026-05-24T05:49:18Z] heartbeat HMC no-spend reconfirm -> artifacts 20260524T054909Z -> next: wait
 [2026-05-24T05:49:53Z] postpush gh snapshot -> 20260524T054951Z
 [2026-05-24T06:07:27Z] friday heartbeat -> sfm InProgress; cw lastEvent 2026-05-24T05:54:38.741Z; s3 colmap empty -> next poll
+[2026-05-24T06:08:16Z] heartbeat HMC no-spend reconfirm -> artifacts aws:20260524T060432Z s3:20260524T060510Z viewer:20260524T060651Z gh:20260524T060540Z -> next: wait
