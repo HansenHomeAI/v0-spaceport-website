@@ -355,3 +355,5 @@
 [2026-05-24T12:27:06Z] heartbeat -> corrected proxy endpoint -> recorded evidence 20260524T122705Z
 [2026-05-24T12:28:13Z] heartbeat -> post-push gh exact-head snapshot 20260524T122811Z -> next: idle
 [2026-05-24T12:28:44Z] friday-mtc heartbeat -> 3dgs InProgress lastEventUtc=2026-05-24T09:14:16.268000Z -> ledgers updated
+[2026-05-24T12:47:32Z] hmc acceptance refresh -> terminal (sfm/3dgs/compression Completed); staging bundle present; preview viewer+proxy 200; exact-head gh runs 0 ([skip ci]) -> next: await public publish gate
+[2026-05-24T12:48:05Z] friday heartbeat -> sfm Completed; 3dgs InProgress (no duplicate) -> next poll 3dgs

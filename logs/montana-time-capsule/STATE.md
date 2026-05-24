@@ -5,6 +5,28 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-24T12:46:44Z HEARTBEAT monitor - Friday FRIDAY-20260522: SfM Completed; 3DGS InProgress (no duplicate launch)
+
+- Git: agent-40136728-montana-time-capsule @ f8fccb23a578b3dea34d187d3a7acbbb3ce8222f (dirty: new logs + refreshed Friday state)
+- Evidence stamp: 20260524T124644Z
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T124523Z.json
+  - describe Friday SfM (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T124523Z.json
+  - describe Friday 3DGS (InProgress): logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T124523Z.json
+  - compression describe (expected missing pre-3DGS completion): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T124650Z.err
+- S3:
+  - Friday SfM output listing: logs/montana-time-capsule/s3-ls-colmap-friday-mtc-20260524T0001Z-20260524T124523Z.txt
+  - Friday 3DGS prefix listing: logs/montana-time-capsule/s3-ls-3dgs-friday-mtc-20260524T0001Z-20260524T124523Z.txt
+  - Friday compressed bundle prefix listing (expected empty pre-compression): logs/montana-time-capsule/s3-ls-compressed-friday-mtc-20260524T0001Z-supersplat_bundle-20260524T124523Z.txt
+- Friday orchestration (guarded, no duplicate relaunch):
+  - command: logs/montana-time-capsule/friday-launch-command-20260524T124614Z.txt
+  - output: logs/montana-time-capsule/friday-launch-output-20260524T124614Z.log
+  - state json refreshed: logs/montana-time-capsule/friday-20260522-state.json (status: 3dgs_running; updated_at: 2026-05-24T12:46:15Z)
+- GitHub Actions (gh=/opt/homebrew/bin/gh):
+  - exact-head runs for f8fccb23… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-f8fccb23a578b3dea34d187d3a7acbbb3ce8222f-20260524T124544Z.json (count: logs/montana-time-capsule/gh-run-count-exact-head-f8fccb23a578b3dea34d187d3a7acbbb3ce8222f-20260524T124544Z.txt)
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T124544Z.json
+- Next step: continue polling the pinned 3DGS job `friday-mtc-20260524T0001Z-3dgs` until `Completed`; only then proceed to pinned compression + public bundle + hosted viewer proof.
+
 ## 2026-05-24T12:07:32Z HEARTBEAT monitor - post-push exact-head workflow check (expected empty due `[skip ci]`)
 
 - Git: agent-40136728-montana-time-capsule @ c7f0df18692e1721c157c8279830e6ccd5278164 (`chore: montana heartbeat hmc acceptance refresh 20260524T1204Z [skip ci]`) (clean)
@@ -9177,3 +9199,28 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - GitHub Actions:
   - exact-head runs for 994cb0d1d436b0c4a4231279f5109d960ce4a24f (expected empty due [skip ci]): logs/montana-time-capsule/gh-run-list-exact-head-994cb0d1d436b0c4a4231279f5109d960ce4a24f-20260524T123016Z.json (count: logs/montana-time-capsule/gh-run-count-exact-head-994cb0d1d436b0c4a4231279f5109d960ce4a24f-20260524T123016Z.txt)
   - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T123016Z.json
+
+## 2026-05-24T12:47:28Z HEARTBEAT monitor - HMC Montana time capsule no-spend acceptance refresh (canonical hmc-mtc-20260520T2015Z)
+
+- Git: agent-40136728-montana-time-capsule @ f8fccb23a578b3dea34d187d3a7acbbb3ce8222f (chore: montana heartbeat exact-head check 20260524T123016Z [skip ci])
+- Evidence stamp: 20260524T124728Z
+- AWS identity (us-west-2):
+  - logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T124523Z.json
+- SageMaker terminal state (canonical run):
+  - SfM ProcessingJobStatus=Completed:
+    - logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260524T124452Z.json
+  - 3DGS TrainingJobStatus=Completed:
+    - logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T124512Z.json
+  - Compression ProcessingJobStatus=Completed:
+    - logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260524T124452Z.json
+- S3 compressed supersplat bundle present (staging):
+  - Listing: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T124452Z.txt
+  - meta.json head: logs/montana-time-capsule/s3-head-meta-hmc-mtc-20260520T2015Z-20260524T124452Z.json
+- Hosted viewer reachability (preview): HTTP 200 for root + skybox + no-sky + proxy:
+  - logs/montana-time-capsule/curl-viewer-20260524T124522Z.txt
+- GitHub Actions:
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T124544Z.json
+  - exact-head runs snapshot (expected empty due [skip ci]): logs/montana-time-capsule/gh-run-list-exact-head-f8fccb23a578b3dea34d187d3a7acbbb3ce8222f-20260524T124544Z.json
+- Summary JSON refreshed:
+  - logs/montana-time-capsule/hmc-state.json
+- Next step: continue no-spend monitoring; remaining acceptance gate is public/non-staging publish + explicit visual proof refresh if requested.
