@@ -1,0 +1,356 @@
+{
+    "events": [
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739168,
+            "message": "✅ sitecustomize: filtered deprecated CUDA arch flags (TORCH_CUDA_ARCH_LIST=8.0 8.6)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712548989904750412871490724628835700642155318476800"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739168,
+            "message": "✅ sitecustomize: patched nerfstudio PIL conversion",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712548989904750412871490724628835700642155318476801"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739168,
+            "message": "✅ PyTorch version doesn't have dynamo module",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712548989904750412871490724628835700642155318476802"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739168,
+            "message": "✅ TORCH_COMPILE_DISABLE=1 set",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712548989904750412871490724628835700642155318476803"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "✅ TORCH_CUDA_ARCH_LIST=8.0 8.6",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457220"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "✅ CUDAARCHS=70;80;86",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457221"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "✅ LD_LIBRARY_PATH=/opt/conda/lib/python3.10/site-packages/cv2/../../lib64:/usr/local/cuda/lib64:/usr/local/cuda/lib",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457222"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "✅ LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457223"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "2026-05-24 09:08:56,625 - INFO - 🚀 NerfStudio Production Training Started",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457224"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "2026-05-24 09:08:56,625 - INFO - 📦 Framework: NerfStudio with splatfacto-w-light",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457225"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "2026-05-24 09:08:56,625 - INFO - 🎯 Goal: high-quality 3D splats with full sky background coverage",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457226"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "2026-05-24 09:08:56,636 - INFO - 📝 Override training.max_iterations = 30000 (from MAX_ITERATIONS)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457227"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "2026-05-24 09:08:56,636 - INFO - 📝 Override training.target_psnr = 35.0 (from TARGET_PSNR)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457228"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "2026-05-24 09:08:56,636 - INFO - 📝 Override model.sh_degree = 3 (from SH_DEGREE)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457229"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "2026-05-24 09:08:56,636 - INFO - 📝 Override model.bilateral_processing = False (from BILATERAL_PROCESSING)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457230"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "2026-05-24 09:08:56,636 - INFO - 📝 Override training.log_interval = 100 (from LOG_INTERVAL)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457231"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "2026-05-24 09:08:56,636 - INFO - 📝 Override model.variant = splatfacto-w-light (from MODEL_VARIANT)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457232"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "2026-05-24 09:08:56,636 - INFO - 📝 Override model.rasterize_mode = classic (from RASTERIZE_MODE)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457233"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "2026-05-24 09:08:56,636 - INFO - 📝 Override model.use_scale_regularization = True (from USE_SCALE_REGULARIZATION)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457234"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "2026-05-24 09:08:56,636 - INFO - 📝 Override model.cull_alpha_thresh = 0.12 (from CULL_ALPHA_THRESH)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457235"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "2026-05-24 09:08:56,636 - INFO - 📝 Override model.cull_scale_thresh = 0.35 (from CULL_SCALE_THRESH)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457236"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "2026-05-24 09:08:56,636 - INFO - 📝 Override model.enable_bg_model = True (from ENABLE_BG_MODEL)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457237"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "2026-05-24 09:08:56,636 - INFO - 📝 Override model.enable_alpha_loss = True (from ENABLE_ALPHA_LOSS)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457238"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "2026-05-24 09:08:56,636 - INFO - 📝 Override model.enable_robust_mask = True (from ENABLE_ROBUST_MASK)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457239"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "2026-05-24 09:08:56,636 - INFO - 📝 Override model.bg_sh_degree = 8 (from BG_SH_DEGREE)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457240"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "2026-05-24 09:08:56,636 - INFO - 📝 Override model.appearance_embed_dim = 64 (from APPEARANCE_EMBED_DIM)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457241"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "2026-05-24 09:08:56,636 - INFO - 📝 Override model.never_mask_upper = 0.4 (from NEVER_MASK_UPPER)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457242"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "2026-05-24 09:08:56,637 - INFO - 📝 Override output.background_skybox.appearance_mode = auto_camera (from BACKGROUND_APPEARANCE_MODE)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457243"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739169,
+            "message": "2026-05-24 09:08:56,637 - INFO - 📝 Override output.background_skybox.width = 2048 (from BACKGROUND_SKYBOX_WIDTH)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549012205495611402113866164553973290516824457244"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739170,
+            "message": "2026-05-24 09:08:56,637 - INFO - 📝 Override output.background_skybox.height = 1024 (from BACKGROUND_SKYBOX_HEIGHT)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549034506240809932737007700272245938878330437661"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739170,
+            "message": "2026-05-24 09:08:56,637 - INFO - 📝 Override output.background_skybox.quality = 95 (from BACKGROUND_SKYBOX_QUALITY)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549034506240809932737007700272245938878330437662"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739170,
+            "message": "2026-05-24 09:08:56,637 - INFO - 📝 Override output.background_skybox.selection_stride = 5 (from BACKGROUND_SELECTION_STRIDE)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549034506240809932737007700272245938878330437663"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739170,
+            "message": "2026-05-24 09:08:56,637 - INFO - 📝 Override output.background_skybox.selection_max_frames = 32 (from BACKGROUND_SELECTION_MAX_FRAMES)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549034506240809932737007700272245938878330437664"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739170,
+            "message": "2026-05-24 09:08:56,637 - INFO - 📝 Override output.floater_pruning.enabled = True (from FLOATER_PRUNING_ENABLED)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549034506240809932737007700272245938878330437665"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739170,
+            "message": "2026-05-24 09:08:56,637 - INFO - 📝 Override output.floater_pruning.min_views = 6 (from FLOATER_PRUNING_MIN_VIEWS)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549034506240809932737007700272245938878330437666"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739170,
+            "message": "2026-05-24 09:08:56,637 - INFO - 📝 Override output.floater_pruning.top_region_ratio = 0.35 (from FLOATER_PRUNING_TOP_REGION_RATIO)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549034506240809932737007700272245938878330437667"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739170,
+            "message": "2026-05-24 09:08:56,637 - INFO - 📝 Override output.floater_pruning.top_view_fraction = 0.9 (from FLOATER_PRUNING_TOP_VIEW_FRACTION)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549034506240809932737007700272245938878330437668"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739170,
+            "message": "2026-05-24 09:08:56,637 - INFO - 📝 Override output.floater_pruning.min_sky_views = 2 (from FLOATER_PRUNING_MIN_SKY_VIEWS)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549034506240809932737007700272245938878330437669"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739170,
+            "message": "2026-05-24 09:08:56,637 - INFO - 📝 Override output.floater_pruning.sky_min_luminance = 0.3 (from FLOATER_PRUNING_SKY_MIN_LUMINANCE)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549034506240809932737007700272245938878330437670"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739170,
+            "message": "2026-05-24 09:08:56,637 - INFO - 📝 Override output.floater_pruning.sky_min_saturation = 0.08 (from FLOATER_PRUNING_SKY_MIN_SATURATION)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549034506240809932737007700272245938878330437671"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739170,
+            "message": "2026-05-24 09:08:56,637 - INFO - 📝 Override output.floater_pruning.sky_blue_dominance_margin = 0.02 (from FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549034506240809932737007700272245938878330437672"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739170,
+            "message": "2026-05-24 09:08:56,637 - INFO - 📝 Override output.floater_pruning.max_opacity = 0.75 (from FLOATER_PRUNING_MAX_OPACITY)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549034506240809932737007700272245938878330437673"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739170,
+            "message": "2026-05-24 09:08:56,637 - INFO - 📝 Override output.floater_pruning.max_color_distance = 0.18 (from FLOATER_PRUNING_MAX_COLOR_DISTANCE)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549034506240809932737007700272245938878330437674"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739170,
+            "message": "2026-05-24 09:08:56,637 - INFO - 📝 Override output.floater_pruning.min_edge_support = 1 (from FLOATER_PRUNING_MIN_EDGE_SUPPORT)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549034506240809932737007700272245938878330437675"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739170,
+            "message": "2026-05-24 09:08:56,637 - INFO - 🚀 NerfStudio Trainer initialized (Spaceport splatfacto-w-light)",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549034506240809932737007700272245938878330437676"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739170,
+            "message": "2026-05-24 09:08:56,637 - INFO - 📁 Input directory: /opt/ml/input/data/training",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549034506240809932737007700272245938878330437677"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739170,
+            "message": "2026-05-24 09:08:56,637 - INFO - 📁 Output directory: /opt/ml/model",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549034506240809932737007700272245938878330437678"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739170,
+            "message": "2026-05-24 09:08:56,637 - INFO - 📁 Temp directory: /tmp/nerfstudio_training",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549034506240809932737007700272245938878330437679"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739170,
+            "message": "2026-05-24 09:08:56,638 - INFO - 🚀 Starting complete NerfStudio training pipeline",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549034506240809932737007700272245938878330437680"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+            "timestamp": 1779613739170,
+            "message": "2026-05-24 09:08:56,638 - INFO - 📅 Timestamp: 2026-05-24 09:08:56",
+            "ingestionTime": 1779613745361,
+            "eventId": "39686712549034506240809932737007700272245938878330437681"
+        }
+    ],
+    "searchedLogStreams": [],
+    "nextToken": "Bxkq6kVGFtq2y_MoigeqscPOdhXVbhiVtLoAmXb5jCr-GGWEXGl7_GClqfcRUWxkQWfHNFMVDNLP-PAqmD0yC_k5M2oCS81BmVy-iRzBwhprlGNLpsfR3TsZEG-5XMY49W6vNQcnHRwHmW_AHDAWhyTr-y97CLoZoFyIYtQ_pBm573NJOax7HzMG8fe9K4ErukKCCrI8OE3P2U89eFcPTOwqjn0SONMu7sReaiF0adwRirfjwPQrcs9LM_7UXfxe2-uAv6D-_95MPwAtNqe_6mKU4tQbONVzEyZQi2MtLrI"
+}

@@ -198,6 +198,34 @@
   - staging meta head: logs/montana-time-capsule/s3api-head-object-staging-hmc-mtc-20260520T2015Z-meta-20260524T093034Z.json
   - staging bundle listing: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T093034Z.txt
   - public head (expected 404): logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T093034Z.err
+
+## 2026-05-24T11:46:10Z HEARTBEAT monitor - no-spend acceptance checks refresh: canonical HMC still terminal; staging bundle still present; preview viewer sky/no-sky HTTP 200; sogs-proxy meta.json HTTP 200; public bucket meta.json still 404; exact-head CI empty due [skip ci]
+
+- Git: agent-40136728-montana-time-capsule @ 791aea96f397455e8bd215dece99402f82943e76 (`chore: friday heartbeat 20260524T1127Z (3dgs InProgress) [skip ci]`) (clean)
+- Evidence stamp: 20260524T114610Z
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T114414Z.json
+  - describe HMC SfM (Completed): logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T114414Z.json
+  - describe HMC 3DGS training (Completed): logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T114414Z.json
+  - describe HMC compression (Completed): logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T114414Z.json
+- S3 (HMC canonical bundle):
+  - staging meta head: logs/montana-time-capsule/s3api-head-object-staging-hmc-mtc-20260520T2015Z-meta-20260524T114414Z.json
+  - staging bundle listing: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T114414Z.txt
+  - public head (expected 404): logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T114414Z.err
+- Public reachability (preview proxy -> staging meta.json):
+  - URL: logs/montana-time-capsule/sogs-proxy-meta-url-20260524T114438Z.txt
+  - headers: logs/montana-time-capsule/curlD-sogs-proxy-meta-20260524T114438Z.headers (HTTP 200)
+  - body: logs/montana-time-capsule/curl-sogs-proxy-meta-20260524T114438Z.json (valid JSON)
+- Hosted viewer reachability (preview):
+  - preview alias URL: logs/montana-time-capsule/preview-alias-url-20260524T114438Z.txt
+  - skybox URL: logs/montana-time-capsule/viewer-sky-url-20260524T114438Z.txt -> logs/montana-time-capsule/curlD-viewer-skybox-20260524T114438Z.headers (HTTP 200)
+  - no-sky URL: logs/montana-time-capsule/viewer-nosky-url-20260524T114438Z.txt -> logs/montana-time-capsule/curlD-viewer-nosky-20260524T114438Z.headers (HTTP 200)
+- GitHub Actions (branch latest):
+  - runs list: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T114505Z.json
+  - Pages job log includes alias+hash URLs: logs/montana-time-capsule/gh-run-view-pages-job-77576678218-20260524T114537Z.log
+- GitHub Actions (exact-head, expected empty due `[skip ci]`):
+  - runs list: logs/montana-time-capsule/gh-run-list-exact-head-791aea96f397455e8bd215dece99402f82943e76-20260524T114505Z.json (count=logs/montana-time-capsule/gh-run-count-exact-head-791aea96f397455e8bd215dece99402f82943e76-20260524T114505Z.txt)
+- Next step: continue no-spend monitoring; acceptance gate still blocked on public bundle publish (spaceport-public meta.json remains 404).
 - Public reachability (preview proxy -> staging meta.json):
   - URL: logs/montana-time-capsule/sogs-proxy-meta-url-20260524T093034Z.txt
   - headers: logs/montana-time-capsule/curlD-sogs-proxy-meta-20260524T093034Z.headers (HTTP 200)
@@ -8998,3 +9026,23 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 
 - Git: agent-40136728-montana-time-capsule @ d56ed581ba8ae49800b47cc483dca07d5acbf90c (clean)
 - GitHub Actions exact-head runs list (count=0): logs/montana-time-capsule/gh-run-list-exact-head-d56ed581ba8ae49800b47cc483dca07d5acbf90c-20260524T112753Z.json
+
+## 20260524T114650Z HEARTBEAT monitor - Friday 2026-05-22 Montana time capsule (friday-mtc-20260524T0001Z) status refresh (SfM Completed; 3DGS InProgress; no duplicate launches)
+
+- Git: agent-40136728-montana-time-capsule @ 791aea96f397455e8bd215dece99402f82943e76 (dirty: new logs)
+- Evidence stamp: 20260524T114650Z
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T114450Z.json
+  - describe Friday SfM (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T114450Z.json (end=`2026-05-24T02:33:44-06:00`)
+  - describe Friday 3DGS training (InProgress): logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T114450Z.json
+  - guardrail: list training jobs name-contains run_id (InProgress count=1): logs/montana-time-capsule/sagemaker-list-training-jobs-name-contains-friday-mtc-20260524T0001Z-20260524T114515Z.json
+  - CloudWatch stream inventory: logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-3dgs-20260524T114550Z.json (stream=`friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610`; lastEventUtc=`2026-05-24T09:14:16.268Z`)
+  - CloudWatch recent events: logs/montana-time-capsule/cloudwatch-filter-log-events-friday-mtc-20260524T0001Z-3dgs-20260524T114602Z.json
+- S3 (Friday outputs):
+  - SfM/colmap listing (1783 objects): logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T114524Z.txt
+  - 3DGS output prefix listing (still empty): logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-3dgs-20260524T114524Z.txt
+- GitHub Actions:
+  - branch snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T114638Z.json (Pages+CDK green at `2026-05-24T06:15:37Z`)
+  - exact-head runs list (count=0; expected empty due [skip ci]): logs/montana-time-capsule/gh-run-list-exact-head-791aea96-20260524T114638Z.json
+- Summary JSON (authoritative stage tracker): logs/montana-time-capsule/friday-20260522-state.json
+- Next step: continue monitoring `friday-mtc-20260524T0001Z-3dgs` until `Completed`; only then advance to pinned compression sha256:a0784727…

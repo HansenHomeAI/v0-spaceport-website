@@ -1,0 +1,5 @@
+2026-05-24 02:33:38  233476154 manual-validations/friday-mtc-20260524T0001Z/colmap/sparse/0/points3D.txt
+2026-05-24 02:33:38        218 manual-validations/friday-mtc-20260524T0001Z/colmap/sparse/0/rigs.txt
+
+Total Objects: 1783
+   Total Size: 11256841191

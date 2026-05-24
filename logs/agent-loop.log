@@ -345,3 +345,4 @@
 [2026-05-24T11:26:47Z] heartbeat -> hmc-mtc-20260520T2015Z verified terminal + preview HTTP 200; public meta 404 -> next monitor
 [2026-05-24T11:28:02Z] friday heartbeat -> friday-mtc-20260524T0001Z SfM Completed; 3DGS InProgress; colmap present; 3dgs prefix empty -> monitor 3DGS
 [2026-05-24T11:28:06Z] postpush -> exact-head gh runs verified (skip ci)
+[2026-05-24T11:46:10Z] montana-heartbeat -> refreshed AWS/S3/viewer/github proofs (HMC terminal; viewer+proxy 200; public meta 404; exact-head ci 0 due skip ci) -> next: wait for public publish gate

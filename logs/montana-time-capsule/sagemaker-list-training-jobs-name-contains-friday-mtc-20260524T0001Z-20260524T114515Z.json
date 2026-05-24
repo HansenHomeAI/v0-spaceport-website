@@ -1,0 +1,13 @@
+{
+    "TrainingJobSummaries": [
+        {
+            "TrainingJobName": "friday-mtc-20260524T0001Z-3dgs",
+            "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/friday-mtc-20260524T0001Z-3dgs",
+            "CreationTime": "2026-05-24T03:05:56.570000-06:00",
+            "LastModifiedTime": "2026-05-24T03:08:53-06:00",
+            "TrainingJobStatus": "InProgress",
+            "SecondaryStatus": "Training"
+        }
+    ],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTRGNSeq3dWklkMc/c+uuQN/vKBiHQa6yJq352k0xBizGV5duOtan9qaVlEwGJsIgO5yMbUPYrNG3PbhUQ/7GgRDn/cYfU7gfBQ+CASc+m1fcFh2+MexSjCayEYa1YjCMp0nqS331xSSg69wyQrIyJPvHu7FR/Zd94M0DP9hEFYhJvmELno8iZhOZ2VXAz/tRn09S+yPEU3Txm8N+2jPcb9jhMkox7Z31RG4ppVpqV8G8++vIn6e4qU3/nC1O28Zubm4QYNRldoM/gQAEolcrnmo4Fjdn8xmNFaeAfGEAsJvYWQFwjYsYWFXjUhA/9J7tCM4FhEMi6wlr6UgoP62CLntAKmzZE0rIjmo1ckOQz6pZ6rzK0A3V3TycO/sxikhEsRODHB+v4IQN8uWC9DUpn3KuF+bjsWA25aKVxSEnxcQ6PzjBezGIfqfFspjD7HiB+vsVg6u4BiRjqAoEScPi8rbjDwBO9/fjie92DMH1FUh21twAB1YgZz9rfqYq1kRktqaig52wh5GPXpRPWALd6ylRMGd73PATKhPbdrqHaBV177vM5WdqOgT83NpbN6gkqJ1ZfUDBDjOOhvoK1lh4="
+}
