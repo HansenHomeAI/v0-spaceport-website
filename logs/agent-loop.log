@@ -313,3 +313,4 @@
 [2026-05-24T07:28:00Z] friday sfm InProgress -> CW last_event_utc=2026-05-24T07:16:57.945Z; S3 KeyCount=0 -> next: wait for SfM completion
 [20260524T074655Z] heartbeat sfm_status=InProgress
 [2026-05-24T08:07:14Z] friday sfm heartbeat -> InProgress (cw last 2026-05-24T07:48:18Z; s3 empty) -> wait
+[2026-05-24T08:12:04Z] heartbeat -> HMC canonical terminal; preview proxy+viewer 200; Friday SfM still InProgress -> next: no-spend monitor
