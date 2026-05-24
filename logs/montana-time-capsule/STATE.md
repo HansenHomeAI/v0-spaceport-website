@@ -57,6 +57,8 @@
 - GitHub Actions:
   - exact-head runs for 07085f6d… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-07085f6d8656e2e33df5cdf0423e039c5fb001fe-20260524T085125Z.json
   - branch snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T085125Z.json
+  - postpush exact-head runs for 40e400c1… (empty; `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-40e400c1c8e4ba0efe39609a6cb1de450e558872-20260524T085319Z.json
+  - postpush branch snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T085319Z.json
 - Next step: wait for SageMaker SfM to flip `Completed`; then run the single guarded `--launch` command for pinned 3DGS.
 
 ## 2026-05-24T08:11:33Z HEARTBEAT monitor - no-spend acceptance checks: HMC canonical remains terminal (SfM/3DGS/compression Completed); staging bundle reachable via preview proxy; viewer skybox/no-sky both 200; Friday SfM still InProgress; no new jobs launched
@@ -8533,3 +8535,17 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
   - exact-head runs for 07085f6d... (expected empty due [skip ci]): logs/montana-time-capsule/gh-run-list-exact-head-07085f6d8656e2e33df5cdf0423e039c5fb001fe-20260524T084424Z.json
   - latest Pages+CDK green on branch: headSha 16f29321... (Pages run 26353779608; CDK run 26353779598)
 - Next step: keep monitoring only; acceptance gates remain: public bundle reachability + screenshots/visual proof refresh when requested.
+
+## 2026-05-24T08:51:25Z HEARTBEAT monitor - no-spend acceptance checks: canonical HMC still terminal (SfM/3DGS/compression Completed); staging bundle still present; preview viewer+proxy still HTTP 200; public bucket meta.json still 404; exact-head CI empty due [skip ci]
+
+- Git: agent-40136728-montana-time-capsule @ 40e400c1c8e4ba0efe39609a6cb1de450e558872
+- Evidence stamp: 20260524T085125Z
+- AWS identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T085125Z.json
+- SageMaker describes: logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T085125Z.json + logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T085125Z.json + logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T085125Z.json
+- S3 supersplat listing: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T085125Z.txt
+- Public head (expected 404): logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T085125Z.err
+- Preview alias: logs/montana-time-capsule/preview-alias-url-20260524T085125Z.txt
+- Viewer sky/no-sky headers: logs/montana-time-capsule/curlI-viewer-skybox-20260524T085125Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-20260524T085125Z.headers
+- Proxy meta headers/body: logs/montana-time-capsule/curlD-sogs-proxy-meta-20260524T085125Z.headers + logs/montana-time-capsule/curl-sogs-proxy-meta-20260524T085125Z.json
+- CI exact-head list: logs/montana-time-capsule/gh-run-list-exact-head-40e400c1c8e4ba0efe39609a6cb1de450e558872-20260524T085125Z.json
+- Next step: wait; only open gate left is public bundle publish + screenshot refresh when requested.
