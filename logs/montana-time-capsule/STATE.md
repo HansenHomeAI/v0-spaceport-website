@@ -5,6 +5,22 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-24T15:10:26Z HEARTBEAT monitor - Friday FRIDAY-20260522: guarded refresh run (no duplicate launch); terminal reconfirm; new viewer screenshots
+
+- Git: agent-40136728-montana-time-capsule @ 82a6d71936fece5387013e17df865c365001e683 (dirty: new heartbeat evidence files)
+- Evidence stamp: 20260524T151026Z
+- Guarded command (per monitor instructions):
+  - command: logs/montana-time-capsule/friday-guarded-command-20260524T150604Z.txt
+  - output: logs/montana-time-capsule/friday-guarded-output-20260524T150604Z.log
+  - state refreshed: logs/montana-time-capsule/friday-20260522-state.json (updated_at: 2026-05-24T15:06:04Z; status: completed)
+- Public bundle reachability:
+  - proxy meta.json 200: logs/montana-time-capsule/curlD-sogs-proxy-meta-friday-mtc-20260524T0001Z-20260524T150809Z.headers
+  - public bucket meta.json still missing: logs/montana-time-capsule/s3api-head-object-public-friday-mtc-20260524T0001Z-meta-20260524T150818Z.err
+- Hosted viewer proof (Playwright headless):
+  - sky: logs/montana-time-capsule/viewer-proof-sky-friday-mtc-20260524T0001Z-20260524T151019Z.png
+  - no-sky: logs/montana-time-capsule/viewer-proof-nosky-friday-mtc-20260524T0001Z-20260524T151019Z.png
+- Next step: decide/pick the intended “public bundle” publish path for Friday (staging+proxy+viewer proof are green).
+
 ## 2026-05-24T15:06:41Z HEARTBEAT monitor - no-spend acceptance refresh: canonical HMC still terminal; staging bundle present; preview viewer/proxy HTTP 200; public bundle still 404; exact-head CI empty due `[skip ci]`
 
 - Git: agent-40136728-montana-time-capsule @ 82a6d71936fece5387013e17df865c365001e683 (dirty -> heartbeat evidence files)
