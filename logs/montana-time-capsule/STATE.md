@@ -1,5 +1,24 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-24T22:05:20Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: terminal re-verified (no spend); SageMaker InProgress=0; SfM/3DGS/compression still Completed; S3 outputs present; GH exact-head runs empty due `[skip ci]`
+
+- Git: agent-40136728-montana-time-capsule @ 4a514da7bd58f33427fa149de1f1f4ed96db9c54 (`chore: record postpush gh snapshot 20260524T214841Z [skip ci]`)
+- Evidence stamp: 20260524T220520Z
+- AWS (us-west-2; `/opt/homebrew/bin/aws`; no spend):
+  - identity: logs/montana-time-capsule/aws-sts-20260524T220520Z.json (region: logs/montana-time-capsule/aws-config-region-20260524T220520Z.txt; version: logs/montana-time-capsule/aws-version-20260524T220520Z.txt)
+  - InProgress guardrail: logs/montana-time-capsule/sm-list-processing-inprogress-20260524T220520Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260524T220520Z.json (counts: 0/0)
+  - Friday canonical run describes (all Completed):
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T220520Z.json
+    - logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T220520Z.json
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T220520Z.json
+- S3 outputs (presence check only):
+  - SfM COLMAP listing: logs/montana-time-capsule/s3ls-colmap-friday-mtc-20260524T0001Z-20260524T220520Z.txt
+  - run root listing: logs/montana-time-capsule/s3ls-manual-validations-friday-mtc-20260524T0001Z-20260524T220520Z.txt
+  - compressed bundle listing: logs/montana-time-capsule/s3ls-compressed-friday-mtc-20260524T0001Z-20260524T220520Z.txt
+- GitHub Actions (`/opt/homebrew/bin/gh`):
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T220520Z.txt
+  - exact-head runs snapshot (empty; expected for `[skip ci]` head): logs/montana-time-capsule/gh-run-list-exact-head-4a514da7bd58-20260524T220520Z.txt
+
 ## 2026-05-24T21:46:55Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: guarded runner executed; no duplicate jobs launched; SageMaker InProgress=0; SfM/3DGS/compression still Completed; S3 outputs re-verified
 
 - Git: agent-40136728-montana-time-capsule @ 4396c94ef18b2ff03af70e3ae1e341ccc321b1f8 (`chore: friday mtc post-push gh snapshot 20260524T213002Z [skip ci]`)
