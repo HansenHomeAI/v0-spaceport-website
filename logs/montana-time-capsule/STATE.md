@@ -8974,3 +8974,27 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
   - exact-head runs list (expected empty due [skip ci]): logs/montana-time-capsule/gh-run-list-exact-head-0977af6c85a736a9e93c19a40c3f12127d8286c4-20260524T112537Z.json
 - Summary JSON: logs/montana-time-capsule/hmc-state.json
 - Next step: continue no-spend monitoring; remaining gate is public-bucket publish (meta.json not found in spaceport-ml-processing-public).
+
+## 20260524T112736Z HEARTBEAT monitor - Friday 2026-05-22 Montana time capsule (friday-mtc-20260524T0001Z) status refresh (SfM Completed; 3DGS InProgress; no duplicate launches)
+
+- Git: agent-40136728-montana-time-capsule @ 0977af6c85a736a9e93c19a40c3f12127d8286c4 (dirty: new logs + friday-20260522-state.json refresh)
+- Evidence stamp: 20260524T112736Z
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T112459Z.json
+  - describe Friday SfM (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T112459Z.json
+  - describe Friday 3DGS training (InProgress): logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T112459Z.json
+  - cloudwatch streams (3DGS/SfM): logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-3dgs-20260524T112623Z.json, logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-sfm-20260524T112623Z.json
+  - cloudwatch 3DGS tail events: logs/montana-time-capsule/cloudwatch-filter-log-events-friday-mtc-20260524T0001Z-3dgs-20260524T112700Z.json
+- S3 (Friday outputs):
+  - SfM/colmap listing (1783 objects): logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T112543Z.txt
+  - 3DGS output prefix listing (currently empty): logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-3dgs-20260524T112543Z.txt
+- GitHub Actions (branch-level proof; exact-head empty due [skip ci]):
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-20260524T112900Z.txt
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-commit-0977af6-20260524T112900Z.txt
+- Summary JSON (authoritative stage tracker): logs/montana-time-capsule/friday-20260522-state.json
+- Next step: continue monitoring friday-mtc-20260524T0001Z-3dgs until Completed, then validate output+launch compression (pinned) if/when script indicates.
+
+## 20260524T112753Z HEARTBEAT monitor - post-push exact-head workflow check (expected empty due [skip ci])
+
+- Git: agent-40136728-montana-time-capsule @ d56ed581ba8ae49800b47cc483dca07d5acbf90c (clean)
+- GitHub Actions exact-head runs list (count=0): logs/montana-time-capsule/gh-run-list-exact-head-d56ed581ba8ae49800b47cc483dca07d5acbf90c-20260524T112753Z.json

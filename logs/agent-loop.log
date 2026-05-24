@@ -343,3 +343,5 @@
 [2026-05-24T11:08:12Z] friday heartbeat -> 3DGS still InProgress; CW last event 2026-05-24T09:14:16Z; no new jobs -> wait
 [2026-05-24T11:11:48Z] heartbeat -> refreshed hmc-state.json for new HEAD (b53af39f) -> commit+push ledger
 [2026-05-24T11:26:47Z] heartbeat -> hmc-mtc-20260520T2015Z verified terminal + preview HTTP 200; public meta 404 -> next monitor
+[2026-05-24T11:28:02Z] friday heartbeat -> friday-mtc-20260524T0001Z SfM Completed; 3DGS InProgress; colmap present; 3dgs prefix empty -> monitor 3DGS
+[2026-05-24T11:28:06Z] postpush -> exact-head gh runs verified (skip ci)
