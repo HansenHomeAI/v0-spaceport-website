@@ -5,6 +5,32 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-24T06:25:10Z HEARTBEAT monitor (HMC) - Pages preview redeployed (alias+hash resolved) + CDK Deploy green + canonical HMC still terminal Completed + viewer skybox/no-sky still HTTP 200
+
+- Git: agent-40136728-montana-time-capsule @ 16f29321bfe9c53c2c7822ff41ccfc8e12fdf482 (`chore: trigger Pages preview 20260524T061531Z`) (dirty: new logs only)
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T060432Z.json
+  - canonical HMC SageMaker status (all Completed):
+    - SfM: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260524T060432Z.json
+    - 3DGS: logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T060432Z.json
+    - compression: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260524T060432Z.json
+  - guardrail (canonical run prefix; expected empty InProgress lists):
+    - processing: logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T060432Z.json
+    - training: logs/montana-time-capsule/sagemaker-list-training-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T060432Z.json
+- S3 supersplat bundle (still present):
+  - head meta.json: logs/montana-time-capsule/s3api-head-object-compressed-hmc-mtc-20260520T2015Z-meta-20260524T060510Z.json
+- GitHub Actions (required green workflows for this push):
+  - Pages run 26353779608 success: logs/montana-time-capsule/gh-run-view-26353779608-log-20260524T062440Z.txt
+  - CDK run 26353779598 success: https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26353779598
+- Preview URL discovery (from Pages run 26353779608):
+  - alias: logs/montana-time-capsule/preview-url-20260524T062440Z.txt
+  - hash: logs/montana-time-capsule/preview-hash-url-20260524T062440Z.txt
+- Hosted preview viewer reachability (Origin header set; HTTP 200):
+  - base headers: logs/montana-time-capsule/curlI-preview-base-20260524T062510Z.headers
+  - skybox headers: logs/montana-time-capsule/curlI-viewer-skybox-20260524T062510Z.headers (url=logs/montana-time-capsule/viewer-sky-url-20260524T052532Z.txt)
+  - no-sky headers: logs/montana-time-capsule/curlI-viewer-nosky-20260524T062510Z.headers (url=logs/montana-time-capsule/viewer-nosky-url-20260524T052532Z.txt)
+  - sogs-proxy meta.json headers: logs/montana-time-capsule/curlI-sogs-proxy-meta-20260524T062510Z.headers (url=logs/montana-time-capsule/sogs-proxy-meta-url-20260524T052532Z.txt)
+
 ## 2026-05-24T06:07:20Z HEARTBEAT monitor (FRIDAY) - canonical Friday SfM still InProgress; CW advanced; S3 colmap still empty
 
 - Git: agent-40136728-montana-time-capsule @ 637677ebe57c5aad4ac655649264e601d935960e (`chore: clean up failed gh snapshot artifacts [skip ci]`) (clean)
