@@ -448,3 +448,4 @@
 [2026-05-24T22:11:51Z] post-push -> gh exact-head runs=0 for head=0afcc6fd -> idle/no-spend
 [2026-05-24T22:26:35Z] heartbeat no-spend reverify (HMC canonical hmc-mtc-20260520T2015Z) -> Completed; public meta still 404; viewer 200 -> next: wait for public bundle publish gate
 [2026-05-24T22:28:18Z] friday-heartbeat -> verify aws/sm/s3/public+viewer+playwright -> ok -> commit+push
+[2026-05-24T22:34:20Z] postpush -> gh snapshots recorded for 853d6eba (skip ci) -> done

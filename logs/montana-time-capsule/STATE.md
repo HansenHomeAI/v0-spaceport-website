@@ -1,5 +1,13 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-24T22:34:05Z HEARTBEAT monitor - postpush snapshot: Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z remains terminal; new ledger commit pushed (`[skip ci]`); GH exact-head runs still empty
+
+- Git: agent-40136728-montana-time-capsule @ 853d6eba0f8c58a343a2b2a7855d60d699b6794f (`chore: friday mtc heartbeat proof 20260524T2232Z [skip ci]`)
+- Evidence stamp: 20260524T223405Z
+- GitHub Actions (`/opt/homebrew/bin/gh`):
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260524T223405Z.json
+  - exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-853d6eba-postpush-20260524T223405Z.json
+
 ## 2026-05-24T22:27:04Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: no-spend re-verify; SageMaker terminal (Completed); public meta.json now HTTP 200; hosted migrated viewer renders (skybox + no-sky) with Playwright screenshots
 
 - Git: agent-40136728-montana-time-capsule @ 334ecb19252537fbeea7ead777b09d1a748a9b96 (`chore: fix postpush gh snapshot path 20260524T221132Z [skip ci]`)
