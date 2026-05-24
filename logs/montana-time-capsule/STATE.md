@@ -10495,3 +10495,8 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - GitHub Actions exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-ad99ac8128b7166672c171b23e82d8f23c33ea29-20260524T190933Z.json
 - S3 public meta head (err): logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T190436Z.err
 - State snapshot: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T191031Z)
+
+## 2026-05-24T19:30:00Z HEARTBEAT monitor - post-push confirmation for HEAD: exact-head workflows 0 ([skip ci])
+
+- Git: agent-40136728-montana-time-capsule @ a10938bb28aa91a5fde5ed6182e60ad1e770f03c (`chore: fix friday heartbeat ledger refs [skip ci]`)
+- GitHub Actions exact-head runs (0): logs/montana-time-capsule/gh-run-list-exact-head-a10938bb28aa91a5fde5ed6182e60ad1e770f03c-20260524T193000Z.json
