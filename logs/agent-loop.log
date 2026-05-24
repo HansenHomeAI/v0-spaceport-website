@@ -420,3 +420,5 @@
 [2026-05-24T19:06:39Z] heartbeat-no-spend -> HMC Completed; staging meta OK; public meta 404; viewer 200; exact-head CI 0 ([skip ci]) -> next: wait for public publish gate
 [2026-05-24T19:07:55Z] post-push-reconfirm -> gh exact-head snapshot captured for 51346765 -> next: await public publish gate
 [2026-05-24T19:09:06Z] exact-head-recheck -> 0 runs expected ([skip ci]) for a30231e0
+[20260524T191005Z] heartbeat -> verified public bundle + viewer smoke (desktop/mobile/nosky) -> next: optional camera checks
+[2026-05-24T19:10:39Z] final-snapshot -> hmc-state + gh exact-head captured for ad99ac81

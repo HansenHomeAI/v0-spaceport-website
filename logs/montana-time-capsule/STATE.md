@@ -1,5 +1,31 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-24T19:09:41Z HEARTBEAT monitor (Friday): public bundle reachable (correct bucket) + hosted viewer smoke (skybox + no-sky)
+
+- Git: agent-40136728-montana-time-capsule @ 51346765be94f78dcbbde5363079ec052d54cbc5 (`chore: mtc heartbeat evidence 20260524T1906Z [skip ci]`)
+- Evidence stamp: 20260524T190941Z
+- AWS (us-west-2; no spend):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T190615Z.json (region: logs/montana-time-capsule/aws-config-region-20260524T190615Z.txt)
+  - guardrail visibility (InProgress lists):
+    - logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T190615Z.json
+    - logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T190615Z.json
+  - Friday canonical run describes (all Completed):
+    - logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T190615Z.json
+    - logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T190615Z.json
+    - logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T190615Z.json
+- Public bundle reachability (correct public bucket is `spaceport-ml-processing`; not `spaceport-ml-processing-public`):
+  - S3 HEAD (public http bucket OK): logs/montana-time-capsule/s3api-head-object-http-public-friday-meta-20260524T190719Z.json
+  - HTTP HEAD (200): logs/montana-time-capsule/curl-head-http-public-friday-meta-20260524T190719Z.txt
+- GitHub Actions:
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T190731Z.json (includes green Pages + CDK Deploy for earlier non-skipped SHAs)
+  - exact-head runs (0; expected due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-51346765be94f78dcbbde5363079ec052d54cbc5-20260524T190731Z.json
+- Hosted viewer proof (PREVIEW_URL resolved from last green Pages deploy log):
+  - Pages deploy log extract: logs/montana-time-capsule/gh-run-view-log-26362313633-20260524T190817Z.txt
+  - Preview alias: https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev
+  - Playwright smoke results: logs/montana-time-capsule/md1-production-viewer-results-20260524T190941Z.json
+  - Screenshots: logs/montana-time-capsule/md1-production-viewer-desktop.png, logs/montana-time-capsule/md1-production-viewer-desktop-nosky.png, logs/montana-time-capsule/md1-production-viewer-mobile.png
+- Decision: do **not** re-launch Friday compute (SfM/3DGS/compression already Completed); next optional gate is camera-pose checks via `web/scripts/render-md1-camera-check.mjs`.
+
 ## 2026-05-24T18:46:50Z HEARTBEAT monitor (Friday): no-spend verification; SfM/3DGS/compression all Completed; public meta.json still 404
 
 - Git: agent-40136728-montana-time-capsule @ a0592fd5b97cfff047d9ddbb54a107d97b4a800d (`chore: mtc heartbeat post-push 20260524T182736Z [skip ci]`)
@@ -10415,3 +10441,10 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - Git: agent-40136728-montana-time-capsule @ a30231e053abce7099f6e36859e9685c91135cc0 (chore: mtc heartbeat post-push 20260524T1907Z [skip ci])
 - GitHub Actions exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-a30231e053abce7099f6e36859e9685c91135cc0-20260524T190821Z.json
 - State snapshot: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T190858Z)
+
+## 20260524T191031Z HEARTBEAT monitor - final proof snapshot for HEAD: exact-head CI 0 ([skip ci]); public meta.json still 404
+
+- Git: agent-40136728-montana-time-capsule @ ad99ac8128b7166672c171b23e82d8f23c33ea29 (chore: mtc heartbeat exact-head recheck 20260524T1908Z [skip ci])
+- GitHub Actions exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-ad99ac8128b7166672c171b23e82d8f23c33ea29-20260524T190933Z.json
+- S3 public meta head (err): logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T190436Z.err
+- State snapshot: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T191031Z)
