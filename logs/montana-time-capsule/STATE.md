@@ -7217,3 +7217,31 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remain
 - Git head pushed: `be03a58900e2bd2cd439ec7ba69fe664f0b63890` (`[skip ci]`)
 - Exact-head GitHub workflow runs: `[]` as expected for `[skip ci]`.
 - Snapshot: `logs/montana-time-capsule/gh-run-list-exacthead-be03a58900e2bd2cd439ec7ba69fe664f0b63890-20260524T001000Z.json`
+
+## 2026-05-24T00:27:03Z HEARTBEAT monitor (HMC) - no-spend reconfirm: git clean + AWS identity + canonical SageMaker terminal (SfM/3DGS/compression all Completed; no InProgress) + S3 supersplat bundle present + hosted preview viewer skybox/no-sky HTTP 200 + signed meta.json via `/api/sogs-proxy` HTTP 200 (+CORS) + CI snapshot (exact-head empty due to `[skip ci]`)
+
+- Git:
+  - branch: agent-40136728-montana-time-capsule
+  - head: 853c1bd4b02e5eb9f2d7fe8437413e0caf39b93e (`[skip ci]`)
+  - status: clean
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - sts: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T002507Z.json (region=logs/montana-time-capsule/aws-configure-get-region-20260524T002507Z.txt; cli=logs/montana-time-capsule/aws-version-20260524T002507Z.txt; binary=logs/montana-time-capsule/aws-binary-20260524T002507Z.txt)
+- SageMaker canonical run `hmc-mtc-20260520T2015Z` terminal:
+  - SfM (ProcessingJobStatus=Completed): logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260524T002507Z.json
+  - 3DGS (TrainingJobStatus=Completed): logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-training-20260524T002507Z.json
+  - compression (ProcessingJobStatus=Completed): logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260524T002507Z.json
+  - InProgress lists empty:
+    - processing: logs/montana-time-capsule/sagemaker-list-processing-hmc-mtc-20260520T2015Z-InProgress-20260524T002538Z.json
+    - training: logs/montana-time-capsule/sagemaker-list-training-hmc-mtc-20260520T2015Z-InProgress-20260524T002538Z.json
+- S3 supersplat bundle still present (meta.json content-length=1359; background_skybox.webp content-length=47786):
+  - ls: logs/montana-time-capsule/s3-ls-supersplat-bundle-20260524T002555Z.txt
+  - head meta: logs/montana-time-capsule/s3api-head-object-supersplat-meta-20260524T002611Z.json
+  - head skybox: logs/montana-time-capsule/s3api-head-object-supersplat-background-skybox-20260524T002611Z.json
+- Hosted preview viewer reachability:
+  - viewer no-sky (HTTP 200): logs/montana-time-capsule/curlI-viewer-nosky-20260524T002637Z.headers (url=logs/montana-time-capsule/viewer-nosky-url-20260524T002637Z.txt)
+  - viewer skybox (HTTP 200): logs/montana-time-capsule/curlI-viewer-skybox-20260524T002637Z.headers (url=logs/montana-time-capsule/viewer-sky-url-20260524T002637Z.txt)
+  - signed meta.json via `/api/sogs-proxy` (HTTP 200; `access-control-allow-origin: *`): logs/montana-time-capsule/curlI-sogs-proxy-meta-20260524T002637Z.headers (url=logs/montana-time-capsule/heartbeat-sogs-proxy-meta-url-20260524T002637Z.txt; body=logs/montana-time-capsule/curl-sogs-proxy-meta-20260524T002637Z.body.json)
+  - signed skybox via `/api/sogs-proxy` (HTTP 200): logs/montana-time-capsule/curlI-sogs-proxy-skybox-20260524T002637Z.headers (url=logs/montana-time-capsule/heartbeat-sogs-proxy-skybox-url-20260524T002637Z.txt)
+- GitHub Actions snapshot (gh=/opt/homebrew/bin/gh):
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260524T002703Z.json (expected empty due to `[skip ci]`)
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T002703Z.json (latest `CDK Deploy` success; latest `Deploy Next.js to Cloudflare Pages` success in list)
