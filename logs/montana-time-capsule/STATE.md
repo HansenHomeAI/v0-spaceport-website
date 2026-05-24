@@ -34,6 +34,32 @@
 - Summary JSON (refreshed viewer http 200s): logs/montana-time-capsule/hmc-state.json
 - Next step: continue no-spend monitoring; acceptance gate remaining is public bundle publish (non-staging) + visual proof refresh if requested.
 
+## 2026-05-24T10:07:14Z HEARTBEAT monitor - no-spend acceptance checks refresh: canonical HMC still terminal; staging bundle still present; viewer/proxy still HTTP 200; public bucket meta.json still 404; exact-head CI empty due [skip ci]
+
+- Git: agent-40136728-montana-time-capsule @ fd85c6cb08c4545ceceb72dec3e1db58c09b0a8c (`chore: friday postpush evidence 20260524T0950Z [skip ci]`) (clean)
+- Evidence stamp: 20260524T100600Z
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T100418Z.json
+  - describe HMC SfM (Completed): logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T100428Z.json
+  - describe HMC 3DGS training (Completed): logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T100428Z.json
+  - describe HMC compression (Completed): logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T100428Z.json
+- S3 (HMC canonical bundle):
+  - staging meta head: logs/montana-time-capsule/s3api-head-object-staging-hmc-mtc-20260520T2015Z-meta-20260524T100437Z.json
+  - staging bundle listing: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T100437Z.txt
+  - public head (expected 404): logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T100437Z.err
+- Public reachability (preview proxy -> staging meta.json):
+  - URL: logs/montana-time-capsule/sogs-proxy-meta-url-20260524T100502Z.txt
+  - headers: logs/montana-time-capsule/curlD-sogs-proxy-meta-20260524T100502Z.headers (HTTP 200)
+  - body: logs/montana-time-capsule/curl-sogs-proxy-meta-20260524T100502Z.json (valid JSON)
+- Hosted viewer reachability (preview):
+  - skybox URL: logs/montana-time-capsule/viewer-sky-url-20260524T100502Z.txt -> logs/montana-time-capsule/curlI-viewer-skybox-20260524T100502Z.headers (HTTP 200)
+  - no-sky URL: logs/montana-time-capsule/viewer-nosky-url-20260524T100502Z.txt -> logs/montana-time-capsule/curlI-viewer-nosky-20260524T100502Z.headers (HTTP 200)
+- GitHub Actions:
+  - exact-head runs for fd85c6cb… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-fd85c6cb08c4545ceceb72dec3e1db58c09b0a8c-20260524T100600Z.json
+  - Pages+CDK latest branch snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T100600Z.json + logs/montana-time-capsule/gh-run-latest-pages-cdk-20260524T100600Z.json
+- Summary JSON (refreshed): logs/montana-time-capsule/hmc-state.json
+- Next step: continue no-spend monitoring; acceptance gate remaining is public bundle publish (non-staging) + visual proof refresh if requested.
+
 ## 2026-05-24T09:31:41Z HEARTBEAT monitor - no-spend acceptance checks: exact-head CI still empty due [skip ci] after pushing latest heartbeat logs
 
 - Git: agent-40136728-montana-time-capsule @ c1c7a5dd69288bd556a2414123a7dad1593e3226 (`chore: montana heartbeat 20260524T093034Z [skip ci]`) (clean)
@@ -8743,3 +8769,8 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
   - exact-head runs for fd85c6cb… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-fd85c6cb08c4-20260524T100925Z.json
   - branch runs snapshot (last Pages+CDK green remains at 2026-05-24T06:15Z): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T100925Z.json
 - Next step: continue monitoring `friday-mtc-20260524T0001Z-3dgs` to terminal; on Completion run pinned compression sha256:a0784727… (smallest next stage).
+
+### Postpush 20260524T1006Z
+- git head: 7e412478e34cb3972ea7d11064f1cce3cccea734 (`[skip ci]`)
+- gh exact-head runs (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-7e412478e34cb3972ea7d11064f1cce3cccea734-postpush-20260524T100651Z.json
+- gh branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260524T100651Z.json

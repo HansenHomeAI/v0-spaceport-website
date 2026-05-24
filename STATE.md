@@ -1,5 +1,5 @@
 reason: Montana time capsule monitor (SfM -> 3DGS -> compress -> viewer gates)
-last_step: 2026-05-24T10:05:12Z Friday heartbeat: verified SfM `Completed` and 3DGS `InProgress` for canonical run `friday-mtc-20260524T0001Z` (no duplicate launch); evidence in logs/montana-time-capsule/STATE.md.
+last_step: 2026-05-24T10:06:51Z Friday heartbeat evidence committed+push (7e412478; `[skip ci]`) with postpush GH snapshots; evidence in logs/montana-time-capsule/STATE.md.
 next_unblocked_step: continue no-spend monitoring until `friday-mtc-20260524T0001Z-3dgs` reaches `Completed`, then advance to pinned compression (one stage at a time).
 [2026-05-22T15:36:42Z] heartbeat -> terminal reconfirmed (no spend) -> idle
 [2026-05-22T15:37:51Z] heartbeat -> fresh reconfirmed (no spend) -> commit+push evidence

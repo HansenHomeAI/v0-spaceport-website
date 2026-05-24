@@ -327,3 +327,4 @@
 [2026-05-24T09:48:13Z] heartbeat -> refreshed AWS/S3/viewer/github proofs (viewer /sogs-migrated-viewer 200; public meta 404; exact-head 0 due skip ci) -> commit+push
 [2026-05-24T09:48:52Z] friday-mtc -> SfM Completed; 3DGS InProgress -> monitor 3DGS
 [2026-05-24T10:05:12Z] friday-mtc -> SfM Completed; 3DGS InProgress; outputs empty -> monitor 3DGS to terminal
+[2026-05-24T10:06:51Z] friday-mtc -> committed+push heartbeat evidence (7e412478; skip ci) -> idle monitoring
