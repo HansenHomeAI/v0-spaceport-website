@@ -9980,3 +9980,9 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 
 - GitHub Actions exact-head runs (0): logs/montana-time-capsule/gh-run-list-exact-head-3f8446bba0db593d81cde261060c9d06a9d7d4e5-postpush2-20260524T171033Z.json
 
+
+## 2026-05-24T17:11:10Z HEARTBEAT monitor - post-push(3): exact-head=0 for 657b12f5c629e7c61566c39c4972e7d24787f535 ([skip ci])
+
+- GitHub Actions exact-head runs (0): logs/montana-time-capsule/gh-run-list-exact-head-657b12f5c629e7c61566c39c4972e7d24787f535-postpush3-20260524T171110Z.json
+- State snapshot: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T171110Z)
+
