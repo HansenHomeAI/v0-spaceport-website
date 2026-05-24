@@ -29,6 +29,13 @@
 - Proven blocker fixed: scripts/montana_time_capsule/cv_hr_time_capsule.py now resolves `aws` via PATH or `/opt/homebrew/bin/aws` (previously failed when PATH excluded Homebrew bin).
 - Next step: no-spend monitoring only; acceptance gate still blocked on publishing Friday bundle/meta.json to the intended public bucket (staging+proxy+viewer already green).
 
+## 2026-05-24T16:12:03Z HEARTBEAT monitor - post-push GitHub confirmation: exact-head workflows empty due `[skip ci]`
+
+- Git: agent-40136728-montana-time-capsule @ 2a8900126d793d47f21ba4f5bd69449d48b6e0a0 (`chore: friday mtc heartbeat refresh 20260524T1608Z [skip ci]`)
+- Evidence stamp: 20260524T161203Z
+- GitHub Actions:
+  - exact-head runs for 2a890012… (expected empty): logs/montana-time-capsule/gh-run-list-exact-head-2a8900126d793d47f21ba4f5bd69449d48b6e0a0-20260524T161203Z.json
+
 ## 2026-05-24T15:48:44Z HEARTBEAT monitor - Friday FRIDAY-20260522: terminal reconfirm (SfM+3DGS+compression Completed); public meta still 404; preview viewer/proxy 200; exact-head CI empty ([skip ci])
 
 - Git: agent-40136728-montana-time-capsule @ 4fc1cdac37f3265dc2de85a702e5ced6885ed6cf (dirty: new heartbeat evidence files only)
