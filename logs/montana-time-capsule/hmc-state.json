@@ -5,38 +5,38 @@
     "region": "us-west-2",
     "userId": "975050048887"
   },
-  "evidence_stamp": "20260524T190606Z",
+  "evidence_stamp": "20260524T190746Z",
   "gh": {
     "cdk_latest_success": {
       "conclusion": "success",
       "createdAt": "2026-05-24T13:36:39Z",
       "databaseId": 26362748385,
-      "displayTitle": "chore: record CDK green 611bf180",
       "event": "push",
       "headSha": "c817529d848a5c54f19862298aac8e0f84f5bddb",
       "status": "completed",
+      "updatedAt": "2026-05-24T13:41:09Z",
       "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26362748385",
       "workflowName": "CDK Deploy"
     },
     "exact_head_run_count": 0,
-    "exact_head_sha": "7a46885057d1a9c69633a90dd149b2b6624dd587",
+    "exact_head_sha": "51346765be94f78dcbbde5363079ec052d54cbc5",
     "gh_cli_available": true,
     "pages_latest_success": {
       "conclusion": "success",
       "createdAt": "2026-05-24T13:17:03Z",
       "databaseId": 26362313633,
-      "displayTitle": "chore: trigger Pages preview 20260524T131327Z",
       "event": "push",
       "headSha": "689eb3cf13b08cc1ca35ba6a498966dca4ec6e8a",
       "status": "completed",
+      "updatedAt": "2026-05-24T13:25:53Z",
       "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26362313633",
       "workflowName": "Deploy Next.js to Cloudflare Pages"
     }
   },
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "7a46885057d1a9c69633a90dd149b2b6624dd587",
-    "head_checked_at": "20260524T190606Z"
+    "head": "51346765be94f78dcbbde5363079ec052d54cbc5",
+    "head_checked_at": "20260524T190746Z"
   },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
@@ -59,10 +59,10 @@
     "sfm": "Completed",
     "sfm_job": "hmc-mtc-20260520T2015Z-sfm"
   },
-  "updated_at": "20260524T190606Z",
+  "updated_at": "20260524T190746Z",
   "viewer": {
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
-    "checked_at": "20260524T190606Z",
+    "checked_at": "20260524T190746Z",
     "nosky_http": 200,
     "proxy_http": 200,
     "sky_http": 200

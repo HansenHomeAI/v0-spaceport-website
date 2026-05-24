@@ -10400,3 +10400,12 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
   - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-7a46885057d1a9c69633a90dd149b2b6624dd587-20260524T190514Z.json
 - State snapshot: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T190606Z)
 - Decision: remain no-spend; acceptance gate still blocked on publishing canonical HMC bundle/meta.json to public bucket (do not relaunch any HMC stages).
+
+## 20260524T190746Z HEARTBEAT monitor - post-push reconfirm: exact-head CI snapshot captured; public meta.json still 404
+
+- Git: agent-40136728-montana-time-capsule @ 51346765be94f78dcbbde5363079ec052d54cbc5 (chore: mtc heartbeat evidence 20260524T1906Z [skip ci])
+- Evidence stamp: 20260524T190746Z
+- GitHub Actions:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T190731Z.json
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-51346765be94f78dcbbde5363079ec052d54cbc5-20260524T190731Z.json
+- State snapshot: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T190746Z)
