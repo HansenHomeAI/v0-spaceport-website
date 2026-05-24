@@ -1,5 +1,32 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-24T19:48:16Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: public bundle reachability proven (spaceport-ml-processing); viewer sky/no-sky HTTP 200; no new compute launched
+
+- Git: agent-40136728-montana-time-capsule @ ce2baea6e06f52b58dc5106167ceba3b96132f6e (dirty: new heartbeat evidence files only)
+- Evidence stamps: 20260524T194637Z (git/aws/gh) + 20260524T194710Z (public head-object) + 20260524T194816Z (public+viewer curl)
+- AWS (us-west-2; /opt/homebrew/bin/aws; no spend):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T194637Z.json (region: logs/montana-time-capsule/aws-config-region-20260524T194637Z.txt)
+  - guardrail visibility (InProgress lists): logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T194637Z.json + logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T194637Z.json
+  - canonical Friday run describes (all Completed):
+    - logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T194637Z.json
+    - logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T194637Z.json
+    - logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T194637Z.json
+- S3 outputs:
+  - staging compressed listing: logs/montana-time-capsule/s3ls-spaceport-ml-processing-staging-compressed-friday-mtc-20260524T0001Z-20260524T194637Z.txt
+  - public bundle reachability proof (HEAD 200) — bucket `spaceport-ml-processing` key `compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json`:
+    - logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-compressed_friday-mtc-20260524T0001Z_supersplat_bundle_meta.json-20260524T194710Z.json
+  - non-canonical bucket check (diagnostic only; 404 expected): logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-public-compressed_friday-mtc-20260524T0001Z_supersplat_bundle_meta.json-20260524T194710Z.err
+- Hosted preview viewer validation (public meta URL; HTTP 200 for meta + skybox/no-sky):
+  - meta URL: logs/montana-time-capsule/friday-public-meta-url-20260524T194816Z.txt
+  - curl meta headers/body: logs/montana-time-capsule/curlD-friday-public-meta-20260524T194816Z.headers + logs/montana-time-capsule/curl-friday-public-meta-20260524T194816Z.json
+  - viewer URLs: logs/montana-time-capsule/friday-public-viewer-sky-url-20260524T194816Z.txt + logs/montana-time-capsule/friday-public-viewer-nosky-url-20260524T194816Z.txt
+  - viewer curl headers: logs/montana-time-capsule/curlD-friday-public-viewer-sky-20260524T194816Z.headers + logs/montana-time-capsule/curlD-friday-public-viewer-nosky-20260524T194816Z.headers
+  - HTTP status summary: logs/montana-time-capsule/friday-public-http-status-20260524T194816Z.txt
+- GitHub Actions:
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T194637Z.json
+  - exact-head runs (0; expected due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-ce2baea6e06f52b58dc5106167ceba3b96132f6e-20260524T194637Z.json
+- Guardrails honored: no dataset re-upload; no new Friday SageMaker jobs launched in this heartbeat; no other automation jobs touched.
+
 ## 2026-05-24T19:44:13Z HEARTBEAT monitor (HMC canonical): no-spend reconfirm (aws/gh via /opt/homebrew/bin); terminal jobs + staging bundle OK; public meta.json still 404; hosted viewer 200
 
 - Git: agent-40136728-montana-time-capsule @ ce2baea6e06f52b58dc5106167ceba3b96132f6e (`chore: record post-push CI snapshot 20260524T1930Z [skip ci]`)

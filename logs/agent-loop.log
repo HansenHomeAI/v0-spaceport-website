@@ -426,3 +426,4 @@
 [2026-05-24T19:26:59Z] heartbeat-hmc-canonical -> sagemaker terminal, viewer 200, public meta missing -> wait
 [2026-05-24T19:30:21Z] post-push -> exact-head workflows=0 (skip ci) for a10938bb -> next: idle/no-spend
 [2026-05-24T19:47:00Z] heartbeat -> HMC terminal reconfirm (aws/gh via /opt/homebrew/bin), staging bundle OK, public meta 404, viewer 200 -> next: wait for publish-to-public gate
+[2026-05-24T19:49:22Z] friday-mtc public bundle proof -> S3 head 200 + viewer 200 -> commit+push heartbeat evidence

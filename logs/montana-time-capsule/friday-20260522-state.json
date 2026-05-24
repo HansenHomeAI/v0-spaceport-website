@@ -170,6 +170,10 @@
   ],
   "profile": "brass-chunked",
   "profile_note": "Exact Brass Lantern chunked SfM image; default reproducible Montana profile.",
+  "public_meta_bucket": "spaceport-ml-processing",
+  "public_meta_head_evidence": "logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-compressed_friday-mtc-20260524T0001Z_supersplat_bundle_meta.json-20260524T194710Z.json",
+  "public_meta_key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json",
+  "public_meta_url": "https://spaceport-ml-processing.s3.us-west-2.amazonaws.com/compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json",
   "run_id": "friday-mtc-20260524T0001Z",
   "sfm_cloudwatch_log_group": "/aws/sagemaker/ProcessingJobs",
   "sfm_cloudwatch_log_stream": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
@@ -271,6 +275,10 @@
   "sfm_status": "Completed",
   "status": "Completed",
   "updated_at": "2026-05-24T13:45:47Z",
+  "updated_at_utc": "2026-05-24T19:49:48Z",
   "viewer_bundle_s3_uri": "s3://spaceport-ml-processing-staging/compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json",
+  "viewer_public_http_status_evidence": "logs/montana-time-capsule/friday-public-http-status-20260524T194816Z.txt",
+  "viewer_public_nosky_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing.s3.us-west-2.amazonaws.com%2Fcompressed%2Ffriday-mtc-20260524T0001Z%2Fsupersplat_bundle%2Fmeta.json&skybox=off",
+  "viewer_public_sky_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing.s3.us-west-2.amazonaws.com%2Fcompressed%2Ffriday-mtc-20260524T0001Z%2Fsupersplat_bundle%2Fmeta.json&skybox=background_skybox.webp",
   "zip_entries": 1776
 }
