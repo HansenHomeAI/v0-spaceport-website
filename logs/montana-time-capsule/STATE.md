@@ -7446,6 +7446,24 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remain
 - gh runs branch: logs/montana-time-capsule/gh-run-list-branch-postpush-20260524T021031Z.json
 - gh runs exact head (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T021031Z.json
 
+## Heartbeat 2026-05-24T02:24:55Z (automation friday-20260522)
+
+- git:
+  - head: logs/montana-time-capsule/git-head-20260524T022513Z.txt
+  - status: logs/montana-time-capsule/git-status-20260524T022513Z.txt
+- aws (us-west-2):
+  - cli: logs/montana-time-capsule/aws-version-20260524T022455Z.txt
+  - region: logs/montana-time-capsule/aws-config-region-20260524T022455Z.txt
+  - sts: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T022455Z.json
+- SageMaker SfM: `friday-mtc-20260524T0001Z-sfm` -> `InProgress` (start 2026-05-24T00:03:51Z; ~2h21m elapsed by 2026-05-24T02:24:55Z)
+  - describe: logs/montana-time-capsule/sagemaker-describe-friday-mtc-20260524T0001Z-sfm-20260524T022455Z.json
+  - InProgress processing jobs (run prefix): logs/montana-time-capsule/sagemaker-list-processing-jobs-friday-mtc-20260524T0001Z-InProgress-20260524T022455Z.json
+- S3 colmap output prefix (expected mostly empty until EndOfJob):
+  - tail listing: logs/montana-time-capsule/s3-ls-colmap-tail60-20260524T022455Z.txt
+- GitHub Actions snapshot:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260524T022523Z.json
+  - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T022523Z.json
+
 Next: wait for SfM to reach Completed, then run the single guarded  command.
 
 ## 2026-05-24T01:26:51Z HEARTBEAT monitor (HMC) - no-spend reconfirm: git clean + AWS identity + canonical SageMaker terminal (SfM/3DGS/compression Completed; no InProgress) + S3 supersplat bundle present + hosted preview viewer reachable (skybox/no-sky) + sogs-proxy meta fetch HTTP 200 (+CORS) + CI snapshot
