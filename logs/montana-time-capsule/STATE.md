@@ -9134,3 +9134,11 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - Correct proxy URL: logs/montana-time-capsule/sogs-proxy-meta-url-20260524T122705Z.txt
 - Proxy headers (HTTP 200): logs/montana-time-capsule/curlD-sogs-proxy-meta-20260524T122705Z.headers
 - Viewer sky/no-sky headers (HTTP 200): logs/montana-time-capsule/curlD-viewer-skybox-20260524T122705Z.headers, logs/montana-time-capsule/curlD-viewer-nosky-20260524T122705Z.headers
+
+## 2026-05-24T12:28:13Z HEARTBEAT monitor - post-push exact-head workflow check
+
+- Git: agent-40136728-montana-time-capsule @ 42ca78a4a733b0a886412c98dfbf97dc60c6e6b4 (chore: montana heartbeat hmc acceptance refresh 20260524T122705Z [skip ci]) (clean)
+- Evidence stamp (GitHub exact-head): 20260524T122811Z
+- GitHub Actions:
+  - exact-head runs for 42ca78a4a733b0a886412c98dfbf97dc60c6e6b4 (expected empty due [skip ci]): logs/montana-time-capsule/gh-run-list-exact-head-42ca78a4a733b0a886412c98dfbf97dc60c6e6b4-20260524T122811Z.json (count: logs/montana-time-capsule/gh-run-count-exact-head-42ca78a4a733b0a886412c98dfbf97dc60c6e6b4-20260524T122811Z.txt)
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T122811Z.json

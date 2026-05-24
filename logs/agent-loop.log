@@ -353,3 +353,4 @@
 [2026-05-24T12:08:22Z] post-push gh exact-head -> 0 runs (skip ci) -> next: idle
 [2026-05-24T12:26:36Z] heartbeat -> no-spend acceptance check -> recorded evidence 20260524T122628Z -> next: await public publish
 [2026-05-24T12:27:06Z] heartbeat -> corrected proxy endpoint -> recorded evidence 20260524T122705Z
+[2026-05-24T12:28:13Z] heartbeat -> post-push gh exact-head snapshot 20260524T122811Z -> next: idle
