@@ -1,0 +1,9 @@
+== git proof (20260524T182504Z) ==
+branch=agent-40136728-montana-time-capsule
+head=57f0a80e96b353f6e0611653fa208af901a3822c
+?? logs/montana-time-capsule/aws-config-region-20260524T182450Z.txt
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T182450Z.json
+?? logs/montana-time-capsule/git-head-20260524T182450Z.txt
+?? logs/montana-time-capsule/git-proof-20260524T182504Z.txt
+?? logs/montana-time-capsule/git-status-20260524T182450Z.txt
+?? logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T182450Z.json

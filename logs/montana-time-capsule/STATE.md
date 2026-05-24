@@ -10220,3 +10220,25 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - Git: agent-40136728-montana-time-capsule @ a2c05767d58cfe7969842ad5ae7e24f101217a2c (`chore: friday mtc heartbeat proof 20260524T1749Z [skip ci]`)
 - Evidence stamp: 20260524T174958Z
 - GitHub Actions exact-head runs (0): logs/montana-time-capsule/gh-run-list-exact-head-a2c05767d58cfe7969842ad5ae7e24f101217a2c-postpush-20260524T174958Z.json
+
+## 2026-05-24T18:26:12Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: reconfirm terminal; InProgress=0; no duplicate launches
+
+- Git: agent-40136728-montana-time-capsule @ 57f0a80e96b353f6e0611653fa208af901a3822c (dirty: new heartbeat evidence files only)
+- Evidence stamp: 20260524T182612Z
+- Git proof: logs/montana-time-capsule/git-proof-20260524T182504Z.txt
+- GitHub Actions (gh):
+  - branch runs: logs/montana-time-capsule/gh-run-list-20260524T182504Z.txt
+  - exact-head runs for 57f0a80e: logs/montana-time-capsule/gh-run-list-exact-head-20260524T182612Z.txt
+- AWS (us-west-2; /opt/homebrew/bin/aws; no spend):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T182532Z.json (region: logs/montana-time-capsule/aws-config-region-20260524T182532Z.txt)
+  - InProgress processing=0: logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T182532Z.json
+  - InProgress training=0: logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T182532Z.json
+  - SfM describe (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T182532Z.json
+  - 3DGS describe (Completed): logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T182532Z.json
+  - compression describe (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T182532Z.json
+- S3 outputs (staging reconfirm):
+  - SfM colmap listing: logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T182532Z.txt
+  - 3dgs artifacts listing: logs/montana-time-capsule/s3-ls-3dgs-friday-mtc-20260524T0001Z-20260524T182532Z.txt
+  - compressed listing: logs/montana-time-capsule/s3-ls-compressed-friday-mtc-20260524T0001Z-20260524T182532Z.txt
+- Guardrail: no dataset re-upload; no new SageMaker jobs launched in this heartbeat.
+- Next step: continue no-spend monitoring; only act if a new stage is needed or a reachability regression is detected.
