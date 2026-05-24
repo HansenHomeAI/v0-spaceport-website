@@ -1,0 +1,6 @@
+branch=agent-40136728-montana-time-capsule
+head=85e63f6eff31afa0decf684ada7ba6af78d30920
+85e63f6e chore: hmc heartbeat 2026-05-24T07:25Z [skip ci]
+?? logs/montana-time-capsule/gh-run-list-branch-postpush-20260524T072737Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-85e63f6eff31afa0decf684ada7ba6af78d30920-postpush-20260524T072737Z.json
+?? logs/montana-time-capsule/git-head-20260524T072738Z.txt

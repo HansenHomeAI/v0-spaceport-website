@@ -5,9 +5,9 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
-## 2026-05-24T07:26:07Z HEARTBEAT monitor (FRIDAY) - canonical Friday SfM still InProgress; CW advanced (last_event_utc=2026-05-24T07:16:57.945Z); S3 colmap still empty; no new jobs launched
+## 2026-05-24T07:27:38Z HEARTBEAT monitor (FRIDAY) - canonical Friday SfM still InProgress; CW advanced (last_event_utc=2026-05-24T07:16:57.945Z); S3 colmap still empty; no new jobs launched
 
-- Git: agent-40136728-montana-time-capsule @ logs/montana-time-capsule/git-head-20260524T072607Z.txt (`chore: friday heartbeat 20260524T0715Z [skip ci]`) (dirty: untracked heartbeat logs; exact-head workflows expected 0)
+- Git: agent-40136728-montana-time-capsule @ logs/montana-time-capsule/git-head-20260524T072738Z.txt (`chore: friday heartbeat 20260524T0715Z [skip ci]`) (dirty: untracked heartbeat logs; exact-head workflows expected 0)
 - AWS (us-west-2; aws=/opt/homebrew/bin/aws):
   - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T072502Z.json
   - describe SfM: logs/montana-time-capsule/sagemaker-describe-friday-mtc-20260524T0001Z-sfm-20260524T072502Z.json (status=InProgress)
@@ -16,7 +16,7 @@
   - stream: `friday-mtc-20260524T0001Z-sfm/algo-1-1779581031`
   - tail: logs/montana-time-capsule/cloudwatch-get-log-events-friday-mtc-20260524T0001Z-sfm-20260524T072531Z.json (last_event_utc=2026-05-24T07:16:57.945Z; last_line contains "Linear solver failure")
 - S3 SfM output (EndOfJob upload; expected empty while InProgress):
-  - list: logs/montana-time-capsule/s3api-list-objects-friday-mtc-20260524T0001Z-colmap-20260524T072541Z.json (KeyCount: 0)
+  - list: logs/montana-time-capsule/s3api-list-objects-friday-mtc-20260524T0001Z-colmap-20260524T072738Z.json (KeyCount: 0)
 - GitHub Actions (exact-head):
   - exact-head list (count=0): logs/montana-time-capsule/gh-run-list-exact-head-20e57eaa-20260524T072607Z.json
   - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-20260524T072607Z.json
