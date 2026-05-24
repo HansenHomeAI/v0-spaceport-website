@@ -54,12 +54,24 @@
   },
   "3dgs_image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db",
   "3dgs_job_name": "friday-mtc-20260524T0001Z-3dgs",
-  "3dgs_last_check_utc": "2026-05-24T12:05:14Z",
+  "3dgs_last_check_utc": "2026-05-24T12:28:44Z",
   "3dgs_last_cloudwatch_event_utc": "2026-05-24T09:14:16.268000Z",
   "3dgs_last_known_status": "InProgress",
   "3dgs_status": "InProgress",
   "created_at": "2026-05-24T00:01:27Z",
   "dataset": "FRIDAY-20260522",
+  "evidence": {
+    "aws_identity": "logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T122844Z.json",
+    "cloudwatch_last_event_utc": "logs/montana-time-capsule/cloudwatch-last-event-utc-friday-mtc-20260524T0001Z-3dgs-20260524T122844Z.txt",
+    "cloudwatch_streams_3dgs": "logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-3dgs-20260524T122844Z.json",
+    "describe_3dgs": "logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T122844Z.json",
+    "describe_sfm": "logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T122844Z.json",
+    "gh_branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T122844Z.json",
+    "gh_exact_head": "logs/montana-time-capsule/gh-run-list-exact-head-b4140850a1c0c4fe7ff4f6afe940922d27b87d1e-20260524T122844Z.json",
+    "list_training_inprogress": "logs/montana-time-capsule/sagemaker-list-training-inprogress-name-contains-friday-mtc-20260524T0001Z-20260524T122844Z.json",
+    "s3_ls_3dgs": "logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-3dgs-20260524T122844Z.txt",
+    "s3_ls_colmap": "logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T122844Z.txt"
+  },
   "first_images": [
     "109MEDIA_DJI_0797.JPG",
     "109MEDIA_DJI_0798.JPG",
@@ -183,6 +195,6 @@
   "sfm_processing_end_time": "2026-05-24T02:33:44.726000-06:00",
   "sfm_status": "Completed",
   "status": "3dgs_running",
-  "updated_at": "2026-05-24T12:05:14Z",
+  "updated_at": "2026-05-24T12:28:44Z",
   "zip_entries": 1776
 }

@@ -9142,3 +9142,22 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - GitHub Actions:
   - exact-head runs for 42ca78a4a733b0a886412c98dfbf97dc60c6e6b4 (expected empty due [skip ci]): logs/montana-time-capsule/gh-run-list-exact-head-42ca78a4a733b0a886412c98dfbf97dc60c6e6b4-20260524T122811Z.json (count: logs/montana-time-capsule/gh-run-count-exact-head-42ca78a4a733b0a886412c98dfbf97dc60c6e6b4-20260524T122811Z.txt)
   - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T122811Z.json
+
+## 2026-05-24T12:28:44Z HEARTBEAT monitor - Friday FRIDAY-20260522 status refresh: SfM Completed; 3DGS still InProgress; CloudWatch lastEventUtc=2026-05-24T09:14:16.268000Z; S3 3DGS prefix empty (no relaunch)
+
+- Git: agent-40136728-montana-time-capsule @ b4140850a1c0c4fe7ff4f6afe940922d27b87d1e (clean)
+- Evidence stamp: 20260524T122844Z
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T122844Z.json
+  - describe Friday SfM: logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T122844Z.json
+  - describe Friday 3DGS: logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T122844Z.json
+  - CloudWatch streams (3DGS): logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-3dgs-20260524T122844Z.json
+  - CloudWatch lastEventUtc: logs/montana-time-capsule/cloudwatch-last-event-utc-friday-mtc-20260524T0001Z-3dgs-20260524T122844Z.txt
+  - guardrail list training InProgress: logs/montana-time-capsule/sagemaker-list-training-inprogress-name-contains-friday-mtc-20260524T0001Z-20260524T122844Z.json
+- S3:
+  - colmap listing: logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T122844Z.txt
+  - 3dgs listing: logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-3dgs-20260524T122844Z.txt
+  - expected 3dgs model key head (404): logs/montana-time-capsule/s3api-head-object-friday-mtc-20260524T0001Z-3dgs-model-20260524T122844Z.err
+  - exact-head runs for b4140850a1c0c4fe7ff4f6afe940922d27b87d1e (expected empty due [skip ci]): logs/montana-time-capsule/gh-run-list-exact-head-b4140850a1c0c4fe7ff4f6afe940922d27b87d1e-20260524T122844Z.json (count: logs/montana-time-capsule/gh-run-count-exact-head-b4140850a1c0c4fe7ff4f6afe940922d27b87d1e-20260524T122844Z.txt)
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T122844Z.json
+- Next step: no action until 3DGS completes or fails; do not relaunch Friday jobs.
