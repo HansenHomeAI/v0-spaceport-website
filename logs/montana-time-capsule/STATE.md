@@ -136,6 +136,8 @@
 - Guarded launch evidence:
   - cv_hr_time_capsule launch output: logs/montana-time-capsule/cv-hr-time-capsule-launch-20260524T130722Z.log
   - Runner state JSON (refreshed from launch output): logs/montana-time-capsule/friday-20260522-state.json
+- Cloudflare Pages preview (branch):
+  - URLs: logs/montana-time-capsule/pages-preview-urls-26362313633-20260524T132614Z.txt
 - Next step: monitor compression to completion; then launch/verify public bundle + viewer skybox/no-sky + visual proof.
 - Next step: continue no-spend monitoring; acceptance gate remaining is public bundle publish (non-staging) + visual proof refresh if requested.
 
