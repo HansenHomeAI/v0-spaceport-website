@@ -267,3 +267,4 @@
 [2026-05-24T01:07:19Z] friday-mtc SfM heartbeat -> InProgress (CloudWatch [1491/1776]) -> continue monitoring
 [2026-05-24T01:25:59Z] heartbeat poll -> sfm InProgress -> next poll
 [2026-05-24T01:26:34Z] heartbeat(hmc) -> reconfirmed terminal SageMaker + S3 supersplat + viewer/proxy 200 + CI snapshot (exact-head empty [skip ci]) -> next: commit+push ledger
+[2026-05-24T01:47:41Z] friday-mtc: verify sfm InProgress (mapper progressing) -> next monitor

@@ -1,0 +1,15 @@
+branch=agent-40136728-montana-time-capsule
+head=0d35eb35f76336aca297b4a2730eb05cdaf58638
+?? logs/montana-time-capsule/aws-bin-20260524T014416Z.txt
+?? logs/montana-time-capsule/aws-bin-20260524T014428Z.txt
+?? logs/montana-time-capsule/aws-configure-get-region-20260524T014428Z.txt
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T014416Z.json
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T014428Z.json
+?? logs/montana-time-capsule/aws-version-20260524T014416Z.txt
+?? logs/montana-time-capsule/aws-version-20260524T014428Z.txt
+?? logs/montana-time-capsule/git-head-and-status-20260524T014448Z.txt
+?? logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260524T014428Z.json
+?? logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260524T014428Z.json
+?? logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260524T014428Z.json
+?? logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T014428Z.json
+?? logs/montana-time-capsule/sagemaker-list-training-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T014428Z.json

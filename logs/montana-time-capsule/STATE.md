@@ -219,6 +219,28 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remain
 
 Next: continue monitoring `friday-mtc-20260524T0001Z-sfm` until `Completed`, then run exactly one guarded launch command for pinned 3DGS via `scripts/montana_time_capsule/cv_hr_time_capsule.py` (per automation instructions).
 
+## 2026-05-24T01:46:32Z HEARTBEAT monitor (FRIDAY) - no-spend reconfirm: git head/status + AWS identity + canonical Friday SfM still InProgress + CloudWatch progress proof (mapper) + S3 output still empty (EndOfJob) + CI snapshot
+
+- Git:
+  - snapshot: logs/montana-time-capsule/git-head-and-status-20260524T014512Z.txt
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T014512Z.json
+  - region: logs/montana-time-capsule/aws-configure-get-region-20260524T014512Z.txt
+  - version: logs/montana-time-capsule/aws-bin-and-version-20260524T014512Z.txt
+- SageMaker (canonical Friday SfM job still InProgress; do not launch duplicate Friday jobs; do not stop other automations):
+  - describe: logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T014512Z.json
+  - InProgress processing jobs matching run prefix: logs/montana-time-capsule/sagemaker-list-processing-jobs-friday-mtc-20260524T0001Z-InProgress-20260524T014512Z.json
+  - InProgress training jobs matching run prefix: logs/montana-time-capsule/sagemaker-list-training-jobs-friday-mtc-20260524T0001Z-InProgress-20260524T014512Z.json
+  - CloudWatch stream list: logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-sfm-20260524T014632Z.json
+  - CloudWatch tail (progress proof: COLMAP mapper registering images ~1596-1599 and global bundle adjustment at 2026-05-24T01:46:38Z): logs/montana-time-capsule/cloudwatch-tail6h-friday-mtc-20260524T0001Z-sfm-20260524T014646Z.log
+- S3 (SfM output prefix still empty; upload mode is EndOfJob):
+  - recursive listing: logs/montana-time-capsule/s3-ls-recursive-friday-mtc-20260524T0001Z-colmap-20260524T014512Z.txt
+- GitHub Actions snapshot:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T014512Z.json
+  - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T014512Z.json
+
+Next: continue monitoring `friday-mtc-20260524T0001Z-sfm` until `Completed`, then run exactly one guarded launch command for pinned 3DGS via `scripts/montana_time_capsule/cv_hr_time_capsule.py` (per automation instructions).
+
 ## 2026-05-24T01:06:46Z HEARTBEAT monitor (Friday) - status capture: git head + GitHub Actions exact-head snapshot + AWS identity + Friday SfM still InProgress + CloudWatch progress proof + output prefix still empty (EndOfJob)
 
 - Git: agent-40136728-montana-time-capsule @ 29336800b2a24f9bf69d52eb2939a6d921b8bfc5 (clean)
