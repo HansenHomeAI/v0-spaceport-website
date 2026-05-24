@@ -6,7 +6,8 @@
   "evidence_stamp": "20260524T093034Z",
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "bbfb837bdba16337e896dc030f25caca673ccb21"
+    "head": "c1c7a5dd69288bd556a2414123a7dad1593e3226",
+    "head_checked_at": "20260524T093141Z"
   },
   "github": {
     "cdk_latest": {
@@ -19,6 +20,7 @@
       "updatedAt": "2026-05-24T06:19:58Z"
     },
     "exact_head_run_count": 0,
+    "exact_head_sha": "c1c7a5dd69288bd556a2414123a7dad1593e3226",
     "pages_latest": {
       "conclusion": "success",
       "createdAt": "2026-05-24T06:15:37Z",
@@ -39,7 +41,7 @@
     "compression": "Completed",
     "sfm": "Completed"
   },
-  "updated_at": "2026-05-24T09:30:43Z",
+  "updated_at": "2026-05-24T09:32:29Z",
   "viewer": {
     "nosky_http": 404,
     "proxy_http": 200,

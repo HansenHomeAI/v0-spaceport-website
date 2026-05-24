@@ -5,6 +5,15 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-24T09:31:41Z HEARTBEAT monitor - no-spend acceptance checks: exact-head CI still empty due [skip ci] after pushing latest heartbeat logs
+
+- Git: agent-40136728-montana-time-capsule @ c1c7a5dd69288bd556a2414123a7dad1593e3226 (`chore: montana heartbeat 20260524T093034Z [skip ci]`) (clean)
+- Evidence stamp (GitHub exact-head): 20260524T093141Z
+- GitHub Actions:
+  - exact-head runs for c1c7a5dd… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-c1c7a5dd69288bd556a2414123a7dad1593e3226-20260524T093141Z.json
+- Prior full no-spend acceptance evidence (AWS/S3/viewer) remains at: 20260524T093034Z
+- Next step: continue no-spend monitoring; acceptance gate remaining is public bundle publish (non-staging) + visual proof refresh if requested.
+
 ## 2026-05-24T09:30:34Z HEARTBEAT monitor - no-spend acceptance checks: canonical HMC still terminal (SfM/3DGS/compression Completed); staging bundle still present; preview viewer sky/no-sky HTTP 200; sogs-proxy meta.json HTTP 200; public bucket meta.json still 404; exact-head CI empty due [skip ci]
 
 - Git: agent-40136728-montana-time-capsule @ bbfb837b27bc13479e04257cc10ec30b74fd2b97 (`chore: montana heartbeat 20260524T092546Z [skip ci]`) (clean)

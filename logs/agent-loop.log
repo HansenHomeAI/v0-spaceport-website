@@ -323,3 +323,4 @@
 [2026-05-24T09:28:27Z] friday 20260522 -> sfm Completed; 3dgs InProgress (adopted existing; no duplicate launch) -> next monitor 3dgs until Completed
 [2026-05-24T09:29:35Z] montana-heartbeat -> HMC terminal + viewer/proxy 200; public meta 404; exact-head ci 0 ([skip ci]) -> next: wait for public publish gate
 [2026-05-24T09:31:10Z] montana-heartbeat -> refreshed evidence stamp 20260524T093034Z (HMC Completed; viewer+proxy 200; public 404; exact-head ci 0) -> next: wait for public publish gate
+[2026-05-24T09:32:04Z] montana-heartbeat -> post-push exact-head ci still 0 (stamp 20260524T093141Z) -> next: wait for public publish gate
