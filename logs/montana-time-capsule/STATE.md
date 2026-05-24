@@ -115,6 +115,28 @@
   - Pages+CDK latest branch snapshots: logs/montana-time-capsule/gh-run-list-pages-branch-20260524T104614Z.json + logs/montana-time-capsule/gh-run-list-cdk-branch-20260524T104614Z.json
   - exact-head runs for e5c6c580… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T104603Z.json (count: logs/montana-time-capsule/gh-run-count-exact-head-e5c6c58068c4530a42024b3c2bc5b1b06dd4f873-20260524T104603Z.txt)
 - Summary JSON (refreshed): logs/montana-time-capsule/hmc-state.json
+
+## 2026-05-24T13:11:30Z HEARTBEAT monitor - Friday 2026-05-22 Montana time capsule (canonical run friday-mtc-20260524T0001Z)
+
+- Evidence stamp: 20260524T1310Z
+- Git: agent-40136728-montana-time-capsule @ 70f04adb4bd630711c1dc1e22822ea8159ead99b
+- AWS identity (staging): Account 975050048887 (root) ; region us-west-2
+- SageMaker (Friday canonical run_id=friday-mtc-20260524T0001Z):
+  - SfM ProcessingJobStatus=Completed: friday-mtc-20260524T0001Z-sfm (pinned image sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811)
+  - 3DGS TrainingJobStatus=Completed: friday-mtc-20260524T0001Z-3dgs (pinned image sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db)
+    - describe: logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T131145Z.json
+  - Compression ProcessingJobStatus=InProgress (newly launched): friday-mtc-20260524T0001Z-compression (pinned image sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab)
+    - describe: logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T131145Z.json
+    - inprogress list snapshot: logs/montana-time-capsule/sagemaker-list-processing-inprogress-20260524T131145Z.json
+    - cloudwatch log streams (none yet): logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-compression-20260524T131016Z.json
+- S3 outputs:
+  - SfM output (colmap): s3://spaceport-ml-processing-staging/manual-validations/friday-mtc-20260524T0001Z/colmap
+  - 3DGS artifact: s3://spaceport-ml-processing-staging/3dgs/friday-mtc-20260524T0001Z/friday-mtc-20260524T0001Z-3dgs/output/model.tar.gz
+  - Compression output prefix (expected empty until completion): s3://spaceport-ml-processing-staging/compressed/friday-mtc-20260524T0001Z/
+- Guarded launch evidence:
+  - cv_hr_time_capsule launch output: logs/montana-time-capsule/cv-hr-time-capsule-launch-20260524T130722Z.log
+  - Runner state JSON (refreshed from launch output): logs/montana-time-capsule/friday-20260522-state.json
+- Next step: monitor compression to completion; then launch/verify public bundle + viewer skybox/no-sky + visual proof.
 - Next step: continue no-spend monitoring; acceptance gate remaining is public bundle publish (non-staging) + visual proof refresh if requested.
 
 ## 2026-05-24T09:47:20Z HEARTBEAT monitor - no-spend acceptance checks: canonical HMC still terminal (SfM/3DGS/compression Completed); staging bundle still present; hosted viewer now verified at `/sogs-migrated-viewer` (sky/no-sky HTTP 200); public bucket meta.json still 404; exact-head CI empty due [skip ci]

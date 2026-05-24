@@ -358,5 +358,6 @@
 [2026-05-24T12:47:32Z] hmc acceptance refresh -> terminal (sfm/3dgs/compression Completed); staging bundle present; preview viewer+proxy 200; exact-head gh runs 0 ([skip ci]) -> next: await public publish gate
 [2026-05-24T12:48:05Z] friday heartbeat -> sfm Completed; 3dgs InProgress (no duplicate) -> next poll 3dgs
 [2026-05-24T13:07:38Z] hmc-mtc-20260520T2015Z heartbeat -> reconfirm terminal + S3 bundle present + preview viewer/proxy HTTP 200 -> idle
+[2026-05-24T13:07:23Z] friday-mtc-20260524T0001Z -> 3dgs Completed; launched compression ProcessingJob=friday-mtc-20260524T0001Z-compression (InProgress) -> next poll compression
 [2026-05-24T13:08:41Z] mtc heartbeat post-push -> exact-head GH snapshot (skip-ci expected empty) -> idle
 [2026-05-24T13:08:57Z] mtc heartbeat post-push -> exact-head GH snapshot (skip-ci expected empty) -> idle
