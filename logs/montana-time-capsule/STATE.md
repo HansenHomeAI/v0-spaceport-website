@@ -7427,6 +7427,21 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remain
 - gh runs branch: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T012555Z.json
 - gh runs exact head: logs/montana-time-capsule/gh-run-list-exact-head-20260524T012555Z.json
 
+## Heartbeat 2026-05-24T02:08:33Z (automation friday-20260522)
+
+- git proof: logs/montana-time-capsule/git-head-and-status-friday-heartbeat-20260524T020747Z.txt
+- aws identity: logs/montana-time-capsule/aws-sts-get-caller-identity-friday-heartbeat-20260524T020747Z.json
+- sagemaker sfm: friday-mtc-20260524T0001Z-sfm -> InProgress
+  - describe: logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T020833Z.json
+  - InProgress processing jobs: logs/montana-time-capsule/sagemaker-list-processing-jobs-friday-mtc-20260524T0001Z-InProgress-20260524T020833Z.json
+  - InProgress training jobs: logs/montana-time-capsule/sagemaker-list-training-jobs-friday-mtc-20260524T0001Z-InProgress-20260524T020833Z.json
+- cloudwatch:
+  - streams: logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-sfm-20260524T020833Z.json
+  - tail 10m: logs/montana-time-capsule/cloudwatch-tail10m-friday-mtc-20260524T0001Z-sfm-20260524T020833Z.log
+- s3 colmap prefix (expected empty until EndOfJob): logs/montana-time-capsule/s3-ls-recursive-friday-mtc-20260524T0001Z-colmap-20260524T020833Z.txt
+- gh runs branch: logs/montana-time-capsule/gh-run-list-branch-postpush-20260524T020644Z.json
+- gh runs exact head: logs/montana-time-capsule/gh-run-list-exact-head-20260524T020459Z.json
+
 Next: wait for SfM to reach Completed, then run the single guarded  command.
 
 ## 2026-05-24T01:26:51Z HEARTBEAT monitor (HMC) - no-spend reconfirm: git clean + AWS identity + canonical SageMaker terminal (SfM/3DGS/compression Completed; no InProgress) + S3 supersplat bundle present + hosted preview viewer reachable (skybox/no-sky) + sogs-proxy meta fetch HTTP 200 (+CORS) + CI snapshot

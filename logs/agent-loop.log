@@ -271,3 +271,4 @@
 [2026-05-24T01:50:51Z] heartbeat(hmc) -> HMC terminal + S3 supersplat present; viewer skybox/no-sky 200; sogs-proxy meta v2 200+CORS; gh exact-head 0 (skip ci) -> next: commit+push ledger
 [2026-05-24T02:04:59Z] heartbeat(hmc) -> HMC terminal (sfm+3dgs+compression Completed), 0 InProgress jobs; S3 supersplat present; viewer skybox/no-sky 200; proxy meta 200; gh snapshots recorded -> next: commit+push ledger if dirty
 [2026-05-24T02:06:46Z] postpush(ci-snapshot) -> recorded gh run list for HEAD=ff46dd9f458d2a2cc2e2594051421d251678d77d (expect 0 due [skip ci]) -> idle
+[2026-05-24T02:09:51Z] friday-20260522 heartbeat -> sfm InProgress (no new S3 objects) -> continue monitoring
