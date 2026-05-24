@@ -438,3 +438,4 @@
 [2026-05-24T20:46:35Z] heartbeat-verify -> ok (aws/sm terminal, s3 staging meta ok public 404, viewer 200, gh exact-head 0) -> commit ledger
 [2026-05-24T20:47:30Z] heartbeat -> friday-mtc terminal+public meta 200+viewer 200+gh exact-head=0 ([skip ci]) -> commit+push ledger
 [2026-05-24T21:06:47Z] friday heartbeat verify -> SageMaker terminal; public meta 200; no launch -> commit
+[2026-05-24T21:07:09Z] hmc-mtc heartbeat -> terminal confirmed + viewer 200 + public meta 404 -> remain no-spend

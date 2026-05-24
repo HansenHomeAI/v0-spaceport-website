@@ -10734,3 +10734,29 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
   - REST snapshots: logs/montana-time-capsule/gh-api-runs-branch-20260524T204631Z.json; logs/montana-time-capsule/gh-api-runs-head-161370388654dfd8374a23ea7ebf1d6ef9ddd8e0-20260524T204631Z.json
 
 - Decision: do **not** re-launch Friday compute (SfM/3DGS/compression already terminal + validated public reachability); next optional gate is deeper visual QA (camera pose vs render + sky/horizon artifacts) before PR/closeout.
+
+## 2026-05-24T21:07:09Z HEARTBEAT monitor (HMC canonical): no-spend reconfirm via boto3; terminal SageMaker jobs; staging meta.json present; public meta.json still 404; hosted viewer sky/no-sky/proxy HTTP 200; GitHub exact-head workflows=0 ([skip ci])
+
+- Git: agent-40136728-montana-time-capsule @ 793b2f1b84e3e572b6a0b37de2ba9d9f0b7d4985 (chore: friday mtc heartbeat verify 20260524T210620Z [skip ci])
+- Evidence stamp: 20260524T210442Z
+- AWS (boto3, us-west-2; no spend): logs/montana-time-capsule/boto3-sts-20260524T210442Z.json
+  - guardrail InProgress lists: logs/montana-time-capsule/boto3-sagemaker-list-processing-InProgress-20260524T210442Z.json + logs/montana-time-capsule/boto3-sagemaker-list-training-InProgress-20260524T210442Z.json
+  - canonical describes (Completed):
+    - logs/montana-time-capsule/boto3-sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T210442Z.json
+    - logs/montana-time-capsule/boto3-sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T210442Z.json
+    - logs/montana-time-capsule/boto3-sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T210442Z.json
+- S3 staging meta.json HEAD OK: logs/montana-time-capsule/boto3-s3-head-staging-20260524T210442Z.json
+- Public meta.json still missing (404):
+  - spaceport-ml-processing-public: logs/montana-time-capsule/boto3-s3-head-public-20260524T210442Z.err.json
+  - spaceport-ml-processing (diagnostic): logs/montana-time-capsule/boto3-s3-head-alt_public-20260524T210442Z.err.json
+- Hosted preview viewer reachability (HTTP 200):
+  - alias: logs/montana-time-capsule/curlI-alias-20260524T210442Z.headers
+  - proxy meta: logs/montana-time-capsule/curlI-proxy-meta-20260524T210442Z.headers
+  - sky: logs/montana-time-capsule/curlI-viewer-sky-20260524T210442Z.headers
+  - no-sky: logs/montana-time-capsule/curlI-viewer-nosky-20260524T210442Z.headers
+- GitHub Actions (unauthenticated API):
+  - branch runs snapshot: logs/montana-time-capsule/github-actions-runs-branch-20260524T210442Z.json
+  - parsed summary: logs/montana-time-capsule/github-actions-summary-20260524T210442Z.json (exact-head run_count=0)
+- Summary JSON updated: logs/montana-time-capsule/hmc-state.json
+
+- Next step: remain no-spend; acceptance gate still blocked on publishing canonical HMC bundle/meta.json to an intended public bucket (currently 404).
