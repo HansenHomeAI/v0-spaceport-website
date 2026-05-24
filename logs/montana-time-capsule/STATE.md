@@ -7383,4 +7383,8 @@ Next: wait for SfM to reach Completed, then run the single guarded  command.
 
 Next: remain idle; next acceptance gate remains updated browser visual proof (screenshots) for skybox + no-sky in the hosted preview viewer.
 
+### Postpush 2026-05-24T01:27:33Z
+- git head: e706d608a419c1e9b9197f16073e8256f03058d6 (clean): logs/montana-time-capsule/git-head-and-status-postpush-20260524T012733Z.txt
+- gh exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T012733Z.json
+
 - note (2026-05-24T01:26:06Z): previous heartbeat line contained backticks; ignore shell warning; next command is scripts/montana_time_capsule/cv_hr_time_capsule.py --launch once SfM completes.
