@@ -2,11 +2,13 @@
 
 ## 2026-05-24T21:28:39Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: terminal re-verified (no spend); public meta + viewer sky/no-sky HTTP 200; no new compute launched
 
-- Git (pre-commit): agent-40136728-montana-time-capsule @ 3a3e2253c52658a6c2b67a179f832be184d193be (`chore: hmc mtc heartbeat verify 20260524T210442Z [skip ci]`)
+- Git: agent-40136728-montana-time-capsule @ 5f8f1bf9077a46bae6f1212b61a22cfcd4c75664 (`chore: friday mtc heartbeat 20260524T212839Z [skip ci]`)
 - Evidence stamp: 20260524T212839Z
 - GitHub Actions (`gh` via PATH):
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260524T212839Z.json
   - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260524T212839Z.json
+  - post-push branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260524T213002Z.json
+  - post-push exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-postpush-5f8f1bf9077a46bae6f1212b61a22cfcd4c75664-20260524T213002Z.json
 - AWS (us-west-2; no spend):
   - identity: logs/montana-time-capsule/aws-sts-20260524T212839Z.json
   - InProgress guardrail: logs/montana-time-capsule/sm-list-processing-inprogress-20260524T212839Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260524T212839Z.json
