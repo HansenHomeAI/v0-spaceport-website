@@ -246,6 +246,13 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remain
 
 Next: remain idle; do not launch duplicate HMC jobs; acceptance gates remain stable (viewer skybox/no-sky + proxy meta.json reachability).
 
+## 2026-05-24T03:27:32Z postpush CI snapshot (exact-head expected empty due to `[skip ci]`)
+
+- Git: agent-40136728-montana-time-capsule @ 9e54f5dd66ee837c2dd5f5581b6e7932088454a7 (`chore: hmc heartbeat refresh 2026-05-24T03:26Z [skip ci]`) (pushed)
+- CI:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260524T032638Z.json
+  - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T032638Z.json
+
 - Git: agent-40136728-montana-time-capsule @ 6c2dd0b7423a65bc82b9bb2b9da532cebaa726ff (`chore: record postpush ci snapshot 2026-05-23T22:24Z [skip ci]`) (clean)
   - head: logs/montana-time-capsule/git-head-20260523T222737Z.txt
   - status: logs/montana-time-capsule/git-status-20260523T222737Z.txt
