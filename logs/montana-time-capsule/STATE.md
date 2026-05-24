@@ -7760,5 +7760,6 @@ Next: wait for SfM to reach Completed, then run the single guarded `cv_hr_time_c
 - GitHub Actions snapshot:
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T034517Z.json
   - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T034517Z.json
+  - refresh (same expectation; exact-head empty): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T034737Z.json ; logs/montana-time-capsule/gh-run-list-exact-head-20260524T034737Z.json
 
 Next: remain idle for HMC canonical; accept/reject gates are viewer visual proof + public bundle reachability only (no new compute).
