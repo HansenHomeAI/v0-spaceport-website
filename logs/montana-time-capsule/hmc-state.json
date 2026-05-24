@@ -1,11 +1,11 @@
 {
   "run_id": "hmc-mtc-20260520T2015Z",
-  "evidence_stamp": "20260524T204116Z",
-  "updated_at": "20260524T204116Z",
+  "evidence_stamp": "20260524T204710Z",
+  "updated_at": "20260524T204710Z",
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "9cf62e28b890a281056ec6528dd15a623579d0bf",
-    "head_checked_at": "20260524T204116Z"
+    "head": "161370388654dfd8374a23ea7ebf1d6ef9ddd8e0",
+    "head_checked_at": "20260524T204710Z"
   },
   "aws": {
     "account": "975050048887",
@@ -28,22 +28,23 @@
     "public_meta_bucket": "spaceport-ml-processing-public",
     "public_meta_key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json",
     "public_meta_http": 404,
-    "public_meta_err_tail": "An error occurred (404) when calling the HeadObject operation: Not Found",
+    "public_meta_err_tail": null,
     "staging_meta_content_length": 1359,
     "staging_meta_etag": "\"994e5d57f052e552b8cce2e05d4debf4\"",
     "staging_meta_last_modified": "2026-05-21T20:25:10+00:00"
   },
   "viewer": {
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
-    "checked_at": "20260524T204116Z",
+    "checked_at": "20260524T204710Z",
     "base_http": 200,
     "sky_http": 200,
     "nosky_http": 200,
     "proxy_http": 200
   },
   "gh": {
-    "gh_cli_available": true,
-    "exact_head_sha": "9cf62e28b890a281056ec6528dd15a623579d0bf",
-    "exact_head_run_count": 0
+    "gh_cli_available": false,
+    "exact_head_sha": "161370388654dfd8374a23ea7ebf1d6ef9ddd8e0",
+    "exact_head_run_count": 0,
+    "branch_runs_snapshot": "gh-api-runs-branch-20260524T204631Z.json"
   }
 }

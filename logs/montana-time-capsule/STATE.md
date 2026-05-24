@@ -1,5 +1,28 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-24T20:47:10Z HEARTBEAT monitor (HMC canonical): no-spend reconfirm; terminal SageMaker jobs; staging bundle OK; public meta.json still 404; hosted viewer sky/no-sky/proxy HTTP 200; GitHub exact-head workflows=0 (skip ci)
+
+- Git: agent-40136728-montana-time-capsule @ 161370388654dfd8374a23ea7ebf1d6ef9ddd8e0 (`chore: montana hmc heartbeat 20260524T204116Z [skip ci]`)
+- Evidence stamp: 20260524T204710Z
+- AWS (us-west-2; /opt/homebrew/bin/aws; no spend):
+  - identity: logs/montana-time-capsule/aws-sts-20260524T204520Z.json (region: logs/montana-time-capsule/aws-region-20260524T204520Z.txt; aws bin: logs/montana-time-capsule/aws-bin-20260524T204520Z.txt)
+  - InProgress guardrail: logs/montana-time-capsule/sm-list-processing-inprogress-20260524T204520Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260524T204520Z.json (counts: 0/0)
+  - canonical HMC run describes (all Completed):
+    - logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T204520Z.json
+    - logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T204520Z.json
+    - logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T204520Z.json
+- S3 outputs (canonical HMC compressed supersplat bundle):
+  - listing: logs/montana-time-capsule/s3ls-staging-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T204544Z.txt
+  - staging meta head (OK): logs/montana-time-capsule/s3-head-staging-meta-hmc-mtc-20260520T2015Z-20260524T204544Z.json
+  - public meta head (still 404): logs/montana-time-capsule/s3-head-public-meta-hmc-mtc-20260520T2015Z-20260524T204544Z.json
+- Hosted viewer reachability (HTTP):
+  - base: logs/montana-time-capsule/curl-head-viewer-base-20260524T204601Z.txt
+  - sky/no-sky/proxy: logs/montana-time-capsule/curl-head-viewer-sky-20260524T204621Z.txt + logs/montana-time-capsule/curl-head-viewer-nosky-20260524T204621Z.txt + logs/montana-time-capsule/curl-head-viewer-proxy-20260524T204621Z.txt
+- GitHub Actions (via GitHub REST API; `gh` CLI missing in this worktree):
+  - branch runs: logs/montana-time-capsule/gh-api-runs-branch-20260524T204631Z.json
+  - exact-head runs (0 expected due `[skip ci]`): logs/montana-time-capsule/gh-api-runs-head-161370388654dfd8374a23ea7ebf1d6ef9ddd8e0-20260524T204631Z.json
+- State snapshot: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T204710Z)
+
 ## 2026-05-24T20:25:02Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: SfM/3DGS/compression all Completed; public meta.json HTTP 200; viewer sky/no-sky HTTP 200 + screenshots; no new compute launched
 
 - Git: agent-40136728-montana-time-capsule @ 99926ed779f7e0b65d2a813f4c6572fa2f31ec10 (`chore: hmc mtc heartbeat evidence 20260524T2008Z [skip ci]`)
