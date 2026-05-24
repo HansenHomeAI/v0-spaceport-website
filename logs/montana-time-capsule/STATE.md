@@ -7,7 +7,7 @@
 
 ## 2026-05-24T10:45:11Z HEARTBEAT monitor - Friday FRIDAY-20260522 run status refresh: SfM Completed; 3DGS still InProgress (do not relaunch)
 
-- Git: agent-40136728-montana-time-capsule @ e5c6c58068c4530a42024b3c2bc5b1b06dd4f873 (`chore: postpush gh snapshots 20260524T103057Z [skip ci]`) (dirty: new logs only)
+- Git: agent-40136728-montana-time-capsule @ e35bf0753148da587d339c52565b91d7aeb985d0 (`chore: record exact-head ci snapshot 20260524T104632Z [skip ci]`) (clean)
 - Evidence stamp: 20260524T104511Z
 - AWS (us-west-2):
   - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T104511Z.json
@@ -17,6 +17,7 @@
 - S3 (Friday SfM output):
   - colmap listing: logs/montana-time-capsule/s3-ls-colmap-friday-mtc-20260524T0001Z-20260524T104511Z.txt
 - Concise summary: logs/montana-time-capsule/friday-heartbeat-summary-20260524T104511Z.md
+- GitHub Actions (exact-head, expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-62ab3033e2441eff704fb23b498f88b21620d498-20260524T104632Z.json (count: logs/montana-time-capsule/gh-run-count-exact-head-62ab3033e2441eff704fb23b498f88b21620d498-20260524T104632Z.txt)
 - Next step: keep monitoring until `friday-mtc-20260524T0001Z-3dgs` is Completed, then advance to pinned compression stage without launching duplicates.
 
 ## 2026-05-24T09:47:20Z HEARTBEAT monitor - no-spend acceptance checks: canonical HMC still terminal (SfM/3DGS/compression Completed); staging bundle still present; hosted viewer now verified at `/sogs-migrated-viewer` (sky/no-sky HTTP 200); public bucket meta.json still 404; exact-head CI empty due [skip ci]
