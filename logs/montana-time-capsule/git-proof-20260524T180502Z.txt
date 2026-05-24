@@ -1,0 +1,4 @@
+stamp=20260524T180502Z
+branch=agent-40136728-montana-time-capsule
+head=c6000d17dcc16a44291013a24b6e111b5b4b681c
+origin=https://github.com/HansenHomeAI/v0-spaceport-website.git

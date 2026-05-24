@@ -1,0 +1,4 @@
+stamp=20260524T180452Z
+branch=agent-40136728-montana-time-capsule
+head=c6000d17dcc16a44291013a24b6e111b5b4b681c
+remote=origin/agent-40136728-montana-time-capsule
