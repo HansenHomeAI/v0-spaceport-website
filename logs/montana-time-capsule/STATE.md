@@ -7,7 +7,7 @@
 
 ## 2026-05-24T04:27:42Z HEARTBEAT monitor (FRIDAY) - canonical Friday SfM still InProgress; job appears stalled (no CloudWatch since 00:09Z; S3 colmap still empty); no duplicate Friday jobs launched
 
-- Git: agent-40136728-montana-time-capsule @ 526c6ac8c3e388035900e85081540ea466856047 (`chore: record postpush gh snapshot 20260524T042632Z [skip ci]`) (dirty: new logs only)
+- Git: agent-40136728-montana-time-capsule @ 56d405277a3b051467ddfb4e58cc5368d9d65f04 (`chore: friday heartbeat sfm still inprogress 2026-05-24T04:27Z [skip ci]`) (clean)
 - AWS (us-west-2; aws=/opt/homebrew/bin/aws):
   - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T042512Z.json
   - region: logs/montana-time-capsule/aws-configure-get-region-20260524T040441Z.txt
@@ -23,8 +23,8 @@
     - processing: logs/montana-time-capsule/sagemaker-list-processing-jobs-friday-mtc-20260524T0001Z-InProgress-20260524T042819Z.json (expected 1: Friday SfM)
     - training: logs/montana-time-capsule/sagemaker-list-training-jobs-friday-mtc-20260524T0001Z-InProgress-20260524T042655Z.json (expected 0)
 - GitHub Actions snapshot (gh=/opt/homebrew/bin/gh):
-  - exact-head runs for current head `526c6ac8...` (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T042819Z.json
-  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T042819Z.json
+  - exact-head runs for current head `56d40527...` (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T042932Z.json
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260524T042932Z.json
 
 ## 2026-05-24T04:08:00Z HEARTBEAT monitor (FRIDAY) - canonical Friday SfM still InProgress; captured exact SageMaker + CloudWatch + S3 + CI state (no duplicate Friday jobs launched)
 
