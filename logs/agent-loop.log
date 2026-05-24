@@ -292,3 +292,4 @@
 [2026-05-24T04:47:13Z] hmc heartbeat -> verified terminal + preview 200 + s3 present -> next: stay idle unless new acceptance gate
 [2026-05-24T05:04:38Z] hmc heartbeat -> canonical Completed + viewer 200 + s3 bundle present; note friday-mtc SfM still InProgress -> next: idle for HMC; avoid follow-on for friday until Completed
 [2026-05-24T05:08:09Z] friday heartbeat -> sfm still InProgress (last CW 2026-05-24T03:54:13Z; S3 empty) -> next poll
+[2026-05-24T05:27:08Z] heartbeat(no-spend) -> HMC Completed + viewer 200 + bundle present; Friday sfm still InProgress -> commit+push evidence
