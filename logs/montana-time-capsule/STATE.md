@@ -19,11 +19,11 @@
   - list: logs/montana-time-capsule/s3api-list-objects-friday-mtc-20260524T0001Z-colmap-20260524T062932Z.json (KeyCount: 0)
 - Next step: wait for SfM to complete; then run the single guarded `--launch` command for pinned Montana 3DGS.
 
-## 2026-05-24T06:31:12Z HEARTBEAT monitor (HMC) - no-spend reconfirm: canonical HMC still terminal Completed + no InProgress HMC jobs + supersplat bundle present + hosted viewer (skybox/no-sky) HTTP 200 + sogs-proxy meta.json HTTP 200 + exact-head workflows empty due `[skip ci]` (preserve last green Pages+CDK from prior non-skip head)
+## 2026-05-24T06:34:08Z HEARTBEAT monitor (HMC) - no-spend reconfirm: canonical HMC still terminal Completed + no InProgress HMC jobs + supersplat bundle present + hosted viewer (skybox/no-sky) HTTP 200 + sogs-proxy meta.json HTTP 200 + exact-head workflows empty due `[skip ci]` (preserve last green Pages+CDK from prior non-skip head)
 
-- Git: agent-40136728-montana-time-capsule @ cfd148ba6c08cd5b0844182d16708ada96ba5d80 (`chore: record Pages redeploy proof 20260524T0625Z [skip ci]`) (dirty: new logs only)
+- Git: agent-40136728-montana-time-capsule @ 68b3085700f8bd124cdce1a64d7d95c3dd99b0aa (`chore: hmc acceptance heartbeat 20260524T0631Z [skip ci]`) (clean)
 - GitHub Actions (exact-head):
-  - exact-head list (count=0): logs/montana-time-capsule/gh-run-list-exact-head-cfd148ba-20260524T063112Z.json
+  - exact-head list (count=0): logs/montana-time-capsule/gh-run-list-exact-head-68b30857-20260524T063408Z.json
   - last green branch deploy for prior non-skip head 16f29321...: logs/montana-time-capsule/gh-run-list-pages-branch-20260524T063018Z.json + logs/montana-time-capsule/gh-run-list-cdk-branch-20260524T063018Z.json
   - Pages run 26353779608 log (preview URL source): logs/montana-time-capsule/gh-run-view-pages-20260524T062442Z.log
 - Preview URL used for reachability checks:
