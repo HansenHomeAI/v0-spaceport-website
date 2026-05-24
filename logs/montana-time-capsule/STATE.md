@@ -226,6 +226,11 @@
 - GitHub Actions (exact-head, expected empty due `[skip ci]`):
   - runs list: logs/montana-time-capsule/gh-run-list-exact-head-791aea96f397455e8bd215dece99402f82943e76-20260524T114505Z.json (count=logs/montana-time-capsule/gh-run-count-exact-head-791aea96f397455e8bd215dece99402f82943e76-20260524T114505Z.txt)
 - Next step: continue no-spend monitoring; acceptance gate still blocked on public bundle publish (spaceport-public meta.json remains 404).
+
+## 2026-05-24T11:47:41Z HEARTBEAT monitor - post-push exact-head workflow check (expected empty due `[skip ci]`)
+
+- Git: agent-40136728-montana-time-capsule @ 99f57f163ae05f32147eee26756e3761a746502d (`chore: hmc montana heartbeat refresh 20260524T1146Z [skip ci]`) (clean)
+- GitHub Actions (exact-head runs count=0): logs/montana-time-capsule/gh-run-list-exact-head-99f57f163ae05f32147eee26756e3761a746502d-20260524T114738Z.json (count: logs/montana-time-capsule/gh-run-count-exact-head-99f57f163ae05f32147eee26756e3761a746502d-20260524T114738Z.txt)
 - Public reachability (preview proxy -> staging meta.json):
   - URL: logs/montana-time-capsule/sogs-proxy-meta-url-20260524T093034Z.txt
   - headers: logs/montana-time-capsule/curlD-sogs-proxy-meta-20260524T093034Z.headers (HTTP 200)
