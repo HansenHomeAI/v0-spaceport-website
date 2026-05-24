@@ -269,3 +269,4 @@
 [2026-05-24T01:26:34Z] heartbeat(hmc) -> reconfirmed terminal SageMaker + S3 supersplat + viewer/proxy 200 + CI snapshot (exact-head empty [skip ci]) -> next: commit+push ledger
 [2026-05-24T01:47:41Z] friday-mtc: verify sfm InProgress (mapper progressing) -> next monitor
 [2026-05-24T01:50:51Z] heartbeat(hmc) -> HMC terminal + S3 supersplat present; viewer skybox/no-sky 200; sogs-proxy meta v2 200+CORS; gh exact-head 0 (skip ci) -> next: commit+push ledger
+[2026-05-24T02:04:59Z] heartbeat(hmc) -> HMC terminal (sfm+3dgs+compression Completed), 0 InProgress jobs; S3 supersplat present; viewer skybox/no-sky 200; proxy meta 200; gh snapshots recorded -> next: commit+push ledger if dirty
