@@ -374,3 +374,4 @@
 [2026-05-24T14:10:38Z] post-push gh check (a949871d) -> exact-head runs=0 -> done
 [2026-05-24T14:26:20Z] friday-mtc heartbeat -> SfM/3DGS/compression Completed (verified); public meta.json still 404 -> next: await publish gate
 [2026-05-24T14:26:44Z] montana heartbeat -> HMC terminal + viewer/proxy 200 + public 404 -> next: await public publish
+[2026-05-24T14:28:14Z] post-push gh check (9234dd1a) -> exact-head runs=0 -> done
