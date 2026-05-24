@@ -7,9 +7,9 @@
 
 ## 2026-05-24T16:46:14Z HEARTBEAT monitor - Friday FRIDAY-20260522: verified canonical SfM Completed; InProgress=0; S3 outputs present; exact-head CI empty ([skip ci])
 
-- Git: agent-40136728-montana-time-capsule @ c8c8a3408d03f547a008587d582547ea94baf815
-- Evidence stamp: 20260524T164614Z
-- Git proof: logs/montana-time-capsule/git-proof-20260524T164458Z.txt
+- Git: agent-40136728-montana-time-capsule @ a089526bb2d424ed47e0718eb53817440d875043
+- Evidence stamp: 20260524T164702Z
+- Git proof: logs/montana-time-capsule/git-proof-20260524T164702Z.txt
 - AWS (us-west-2; no spend):
   - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T164510Z.json (region: logs/montana-time-capsule/aws-config-region-20260524T164510Z.txt)
   - guardrail visibility (InProgress lists empty):
@@ -20,8 +20,8 @@
   - SfM colmap listing: logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T164544Z.txt
   - compressed listing: logs/montana-time-capsule/s3-ls-compressed-friday-mtc-20260524T0001Z-20260524T164544Z.txt
 - GitHub Actions:
-  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-20260524T164614Z.json
-  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-c8c8a3408d03f547a008587d582547ea94baf815-20260524T164614Z.json
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-20260524T164702Z.json
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-a089526bb2d424ed47e0718eb53817440d875043-20260524T164702Z.json
 - Next step: remain no-spend; acceptance gate still blocked on publishing the canonical Friday bundle/meta.json to the intended public bucket (non-staging).
 
 ## 2026-05-24T16:25:13Z HEARTBEAT monitor - Friday FRIDAY-20260522: reconfirm terminal (SfM Completed); InProgress=0; S3 outputs present; public meta still 404; exact-head CI empty ([skip ci])
