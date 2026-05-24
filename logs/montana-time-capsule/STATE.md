@@ -541,6 +541,16 @@
   - exact-head runs for e5c6c580… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T104603Z.json (count: logs/montana-time-capsule/gh-run-count-exact-head-e5c6c58068c4530a42024b3c2bc5b1b06dd4f873-20260524T104603Z.txt)
 - Summary JSON (refreshed): logs/montana-time-capsule/hmc-state.json
 
+## 2026-05-24T16:48:22Z HEARTBEAT monitor - post-push exact-head workflow check (expected empty due `[skip ci]`)
+
+- Git: agent-40136728-montana-time-capsule @ 8f08630aa31734f653c9b9d97c80b10c58609870 (`chore: friday heartbeat verification 20260524T1646Z [skip ci]`)
+- Evidence stamp: 20260524T164822Z
+- Git proof: logs/montana-time-capsule/git-proof-20260524T164822Z.txt
+- GitHub Actions:
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-20260524T164822Z.json
+  - exact-head runs count=0: logs/montana-time-capsule/gh-run-list-exact-head-8f08630aa31734f653c9b9d97c80b10c58609870-20260524T164822Z.json
+- Summary JSON (refreshed): logs/montana-time-capsule/hmc-state.json
+
 ## 2026-05-24T16:47:02Z HEARTBEAT monitor - post-push exact-head workflow check (expected empty due `[skip ci]`)
 
 - Git: agent-40136728-montana-time-capsule @ a089526bb2d424ed47e0718eb53817440d875043 (`chore: hmc mtc heartbeat 20260524T1644Z [skip ci]`)
