@@ -238,6 +238,35 @@ Next: continue monitoring `friday-mtc-20260524T0001Z-sfm` until `Completed`, the
   - ls root: logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-root-20260524T002546Z.txt (empty)
 
 Next unblocked step: keep monitoring `friday-mtc-20260524T0001Z-sfm` until `ProcessingJobStatus=Completed`; then run the single guarded `cv_hr_time_capsule.py ... --launch` command to advance to pinned 3DGS.
+
+## 2026-05-24T01:06:14Z HEARTBEAT monitor (HMC) - no-spend reconfirm: git head/status + AWS identity + canonical HMC jobs still Completed + no InProgress HMC jobs + supersplat bundle still present + hosted preview viewer (skybox/no-sky) HTTP 200 + signed meta.json via `/api/sogs-proxy/...` HTTP 200 + CI snapshot
+
+- Git:
+  - snapshot: logs/montana-time-capsule/git-head-and-status-20260524T010441Z.txt
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T010441Z.json
+  - region: logs/montana-time-capsule/aws-configure-get-region-20260524T010441Z.txt
+  - version: logs/montana-time-capsule/aws-version-20260524T010441Z.txt
+- SageMaker (canonical run `hmc-mtc-20260520T2015Z`; do not launch duplicate HMC jobs):
+  - SfM processing job Completed: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260524T010441Z.json
+  - 3DGS training job Completed: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260524T010441Z.json
+  - compression processing job Completed: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260524T010441Z.json
+  - InProgress processing jobs matching run prefix (expected 0): logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T010441Z.json
+  - InProgress training jobs matching run prefix (expected 0): logs/montana-time-capsule/sagemaker-list-training-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T010441Z.json
+- S3 supersplat bundle still present:
+  - ls: logs/montana-time-capsule/s3-ls-supersplat-bundle-20260524T010441Z.txt
+  - head meta.json: logs/montana-time-capsule/s3api-head-object-supersplat-meta-20260524T010441Z.json
+  - head background_skybox.webp: logs/montana-time-capsule/s3api-head-object-supersplat-background_skybox-webp-20260524T010441Z.json
+- Hosted preview viewer reachability:
+  - Pages run log (resolved preview alias): logs/montana-time-capsule/gh-pages-run-26200368328-log-20260524T010441Z.txt
+  - preview url: logs/montana-time-capsule/preview-url-20260524T010441Z.txt
+  - viewer skybox URL: logs/montana-time-capsule/viewer-sky-url-20260524T010441Z.txt (headers=logs/montana-time-capsule/curlI-viewer-skybox-20260524T010441Z.headers)
+  - viewer no-sky URL: logs/montana-time-capsule/viewer-nosky-url-20260524T010441Z.txt (headers=logs/montana-time-capsule/curlI-viewer-nosky-20260524T010441Z.headers)
+  - sogs-proxy meta URL: logs/montana-time-capsule/heartbeat-sogs-proxy-meta-url-20260524T010441Z.txt (headers=logs/montana-time-capsule/curlI-sogs-proxy-meta-20260524T010441Z.headers; body=logs/montana-time-capsule/curl-sogs-proxy-meta-20260524T010441Z.body.json)
+  - NOTE: `/api/sogs-proxy` expects a path-style URL (not `?key=`); query form returned 404 earlier in this same heartbeat and was superseded by the saved URL above.
+- CI snapshot:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T010441Z.json
+  - exact-head runs (expected empty if HEAD is `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T010441Z.json
   - region: logs/montana-time-capsule/aws-region-20260523T212851Z.txt
   - version: logs/montana-time-capsule/aws-version-20260523T212851Z.txt
 - SageMaker (canonical HMC jobs still Completed; do not launch duplicate HMC jobs; do not stop other automations):

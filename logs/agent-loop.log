@@ -263,3 +263,4 @@
 [2026-05-24T00:28:33Z] heartbeat-no-spend -> HMC terminal + S3 bundle + viewer+proxy 200 + CI snapshot (exact-head empty [skip ci]) -> idle
 [2026-05-24T00:46:13Z] friday-20260522 sfm -> InProgress; CloudWatch shows feature_extractor processed 960/1776; S3 output still empty (EndOfJob) -> next: monitor SfM to Completed
 [2026-05-24T00:46:44Z] heartbeat -> verified terminal pipeline + viewer HTTP 200 -> commit+push ledger
+[2026-05-24T01:05:23Z] heartbeat -> captured no-spend verification -> next: commit+push ledger if dirty

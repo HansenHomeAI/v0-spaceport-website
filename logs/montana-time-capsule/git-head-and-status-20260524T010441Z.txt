@@ -1,0 +1,3 @@
+branch=agent-40136728-montana-time-capsule
+head=29336800b2a24f9bf69d52eb2939a6d921b8bfc5
+?? logs/montana-time-capsule/git-head-and-status-20260524T010441Z.txt
