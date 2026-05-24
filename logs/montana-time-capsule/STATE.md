@@ -27,6 +27,8 @@
 - GitHub Actions snapshot (gh=/opt/homebrew/bin/gh):
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T040657Z.json
   - exact-head runs for `c4a4d716...` (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T040657Z.json
+  - postpush exact-head runs for current head `da7fa0fa...` (expected empty due `[skip ci]`; count=0): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T040910Z.json + logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T040910Z.count.txt
+  - postpush branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260524T040910Z.json
 
 ## 2026-05-24T04:05:49Z HEARTBEAT monitor (HMC) - no-spend reconfirm: git clean + AWS identity + canonical HMC jobs still Completed + no InProgress HMC jobs + supersplat bundle still present + hosted preview viewer (skybox/no-sky) HTTP 200 + CI snapshot captured
 
