@@ -266,3 +266,4 @@
 [2026-05-24T01:05:23Z] heartbeat -> captured no-spend verification -> next: commit+push ledger if dirty
 [2026-05-24T01:07:19Z] friday-mtc SfM heartbeat -> InProgress (CloudWatch [1491/1776]) -> continue monitoring
 [2026-05-24T01:25:59Z] heartbeat poll -> sfm InProgress -> next poll
+[2026-05-24T01:26:34Z] heartbeat(hmc) -> reconfirmed terminal SageMaker + S3 supersplat + viewer/proxy 200 + CI snapshot (exact-head empty [skip ci]) -> next: commit+push ledger
