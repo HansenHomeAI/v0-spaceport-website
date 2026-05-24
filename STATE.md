@@ -1,6 +1,6 @@
-reason: HMC Montana time capsule monitor (SfM -> 3DGS -> compress -> viewer gates)
-last_step: 2026-05-23T22:24:45Z postpush verify: pushed heartbeat evidence commit (22ef8775; [skip ci]) and recorded branch + exact-head GitHub Actions snapshots (exact-head empty due to `[skip ci]`); evidence in logs/montana-time-capsule/STATE.md.
-next_unblocked_step: idle; do not launch duplicate HMC jobs. Only proceed if a new explicit acceptance gate is requested (promotion/registry/public publish).
+reason: Montana time capsule monitor (SfM -> 3DGS -> compress -> viewer gates)
+last_step: 2026-05-24T10:05:12Z Friday heartbeat: verified SfM `Completed` and 3DGS `InProgress` for canonical run `friday-mtc-20260524T0001Z` (no duplicate launch); evidence in logs/montana-time-capsule/STATE.md.
+next_unblocked_step: continue no-spend monitoring until `friday-mtc-20260524T0001Z-3dgs` reaches `Completed`, then advance to pinned compression (one stage at a time).
 [2026-05-22T15:36:42Z] heartbeat -> terminal reconfirmed (no spend) -> idle
 [2026-05-22T15:37:51Z] heartbeat -> fresh reconfirmed (no spend) -> commit+push evidence
 [2026-05-22T15:38:34Z] heartbeat -> fresh reconfirmed (no spend) -> commit+push evidence
@@ -15,3 +15,4 @@ next_unblocked_step: idle; do not launch duplicate HMC jobs. Only proceed if a n
 [2026-05-23T14:05:08Z] postpush -> recorded gh runs for new head -> idle
 [2026-05-23T18:23:52Z] heartbeat -> awscli sm/s3 + viewer/proxy HTTP200 + gh snapshot -> commit+push ledger
 [2026-05-23T18:25:50Z] postpush -> recorded gh runs for new head -> idle
+[2026-05-24T10:05:12Z] heartbeat -> SfM Completed; 3DGS InProgress; S3+GH snapshots -> commit+push ledger

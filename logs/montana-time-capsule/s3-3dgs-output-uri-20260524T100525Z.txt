@@ -1,0 +1,1 @@
+s3://spaceport-ml-processing-staging/3dgs/friday-mtc-20260524T0001Z/

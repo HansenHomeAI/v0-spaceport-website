@@ -8729,3 +8729,17 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - git head: 700c12556a74b058a5ff5e885d5091a91689a668 (`[skip ci]`)
 - gh exact-head runs (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-700c12556a74b058a5ff5e885d5091a91689a668-postpush-20260524T092854Z.json
 - gh branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260524T092854Z.json
+
+### 20260524T1005Z HEARTBEAT monitor (FRIDAY) - SfM Completed; 3DGS InProgress (no duplicate launch)
+- git: agent-40136728-montana-time-capsule @ fd85c6cb08c4545ceceb72dec3e1db58c09b0a8c (`[skip ci]`)
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T100443Z.json
+  - describe SfM: logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T100512Z.json (status=`Completed`, end=`2026-05-24T02:33:44-06:00`)
+  - describe 3DGS: logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T100512Z.json (status=`InProgress`)
+- S3:
+  - SfM output (colmap, populated): logs/montana-time-capsule/s3-ls-sfm-colmap-20260524T100602Z.txt (Total Objects: 1783; Total Size: 11256841191)
+  - 3DGS output prefix (still empty while InProgress): logs/montana-time-capsule/s3-ls-3dgs-prefix-20260524T100602Z.txt (Total Objects: 0)
+- GitHub Actions (gh=/opt/homebrew/bin/gh):
+  - exact-head runs for fd85c6cb… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-fd85c6cb08c4-20260524T100925Z.json
+  - branch runs snapshot (last Pages+CDK green remains at 2026-05-24T06:15Z): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T100925Z.json
+- Next step: continue monitoring `friday-mtc-20260524T0001Z-3dgs` to terminal; on Completion run pinned compression sha256:a0784727… (smallest next stage).
