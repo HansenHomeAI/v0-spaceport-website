@@ -10118,3 +10118,27 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
   - exact-head check: logs/montana-time-capsule/github-actions-exact-head-check-20260524T174440Z.txt
 - State snapshot: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T174440Z)
 - Next step: remain no-spend; acceptance gate still blocked on publishing canonical HMC bundle/meta.json to intended public bucket (do not relaunch any HMC stages).
+
+## 2026-05-24T17:48:51Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: reconfirm terminal (SfM Completed); InProgress=0; staging outputs present; public supersplat meta.json present; exact-head CI empty ([skip ci]); no duplicate launches
+
+- Git: agent-40136728-montana-time-capsule @ 02044ff8dc63e9d7799975831b5f506d8d08897c (dirty: new heartbeat evidence files only)
+- Canonical Friday run: friday-mtc-20260524T0001Z (input zip: s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.zip; 1776 images)
+- Evidence stamps: 20260524T174525Z (AWS/SageMaker/S3) + 20260524T174659Z (bucket/key probes) + 20260524T174822Z (public meta head) + 20260524T174836Z (GitHub Actions) + 20260524T174851Z (aws region)
+- AWS (us-west-2; `/opt/homebrew/bin/aws`; no spend):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T174525Z.json (region: logs/montana-time-capsule/aws-config-region-20260524T174851Z.txt)
+  - guardrail visibility (InProgress lists empty):
+    - logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T174525Z.json
+    - logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T174525Z.json
+  - SfM describe (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T174525Z.json
+  - 3DGS describe (Completed): logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T174525Z.json
+  - compression describe (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T174525Z.json
+- S3 outputs (staging):
+  - SfM colmap+extras listing (10.5 GiB): logs/montana-time-capsule/s3lsD-friday-mtc-20260524T0001Z-manual-validations-20260524T174525Z.txt
+  - compressed bundle listing (11.8 MiB): logs/montana-time-capsule/s3lsD-friday-mtc-20260524T0001Z-compressed-20260524T174525Z.txt
+- Public bundle reachability:
+  - spaceport-ml-processing supersplat meta.json head (200): logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-friday-mtc-20260524T0001Z-supersplat-meta-20260524T174822Z.json
+  - spaceport-ml-processing compressed_splat meta.json head (404; expected not published in the Friday public publish TSV): logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-friday-mtc-20260524T0001Z-compressed-meta-20260524T174822Z.err
+  - non-canonical buckets (diagnostic only; both 404): logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-public-friday-mtc-20260524T0001Z-supersplat-meta-20260524T174659Z.err + logs/montana-time-capsule/s3api-head-object-spaceport-public-friday-mtc-20260524T0001Z-supersplat-meta-20260524T174659Z.err
+- GitHub Actions (gh; exact-head empty due `[skip ci]`):
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T174836Z.json
+  - exact-head runs (0): logs/montana-time-capsule/gh-run-list-exact-head-02044ff8dc63e9d7799975831b5f506d8d08897c-20260524T174836Z.json
