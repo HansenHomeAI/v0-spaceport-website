@@ -9980,9 +9980,40 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 
 - GitHub Actions exact-head runs (0): logs/montana-time-capsule/gh-run-list-exact-head-3f8446bba0db593d81cde261060c9d06a9d7d4e5-postpush2-20260524T171033Z.json
 
+## 2026-05-24T17:12:30Z HEARTBEAT monitor - Friday FRIDAY-20260522: publish canonical Friday bundle to public bucket + viewer proof (no new jobs)
+
+- Git: agent-40136728-montana-time-capsule @ 8337f52460c335ed129a0e91e28c0b5f4cd2c528 (`chore: post-push gh exact-head proof 20260524T1650Z [skip ci]`)
+- Canonical Friday run: friday-mtc-20260524T0001Z (input zip: s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.zip; 1776 images)
+- Evidence stamps: 20260524T1700Z / 20260524T1712Z / 20260524T1716Z / 20260524T1718Z / 20260524T1727Z
+- AWS (us-west-2; `/opt/homebrew/bin/aws`; guardrail: InProgress=0):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T1700Z.json (region: logs/montana-time-capsule/aws-config-region-20260524T1700Z.txt)
+  - InProgress processing=0: logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T1700Z.json
+  - InProgress training=0: logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T1700Z.json
+  - SfM describe (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T1700Z.json
+  - 3DGS describe (Completed): logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T1700Z.json
+  - compression describe (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T1700Z.json
+- S3 (staging outputs verified):
+  - SfM colmap listing: logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T1702Z.txt
+  - compressed listing: logs/montana-time-capsule/s3-ls-compressed-friday-mtc-20260524T0001Z-20260524T1702Z.txt
+  - staging meta.json head: logs/montana-time-capsule/s3api-head-object-staging-friday-mtc-20260524T0001Z-meta-20260524T1702Z.json
+- Public publish (fixed acceptance blocker; no re-training):
+  - staging -> public sync: logs/montana-time-capsule/aws-s3-sync-staging-to-public-friday-mtc-20260524T0001Z-20260524T1708Z.txt
+  - public copy-object header rewrite (ContentType + immutable Cache-Control): logs/montana-time-capsule/publish-public-copy-object-friday-mtc-20260524T0001Z-20260524T1712Z.tsv
+  - public meta.json head (spaceport-ml-processing): logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-friday-mtc-20260524T0001Z-meta-20260524T1712Z.json
+- Public reachability (direct + preview proxy):
+  - direct meta.json headers: logs/montana-time-capsule/curlD-public-meta-friday-mtc-20260524T0001Z-20260524T1716Z.headers (HTTP 200)
+  - preview sogs-proxy meta.json headers: logs/montana-time-capsule/curlD-sogs-proxy-public-meta-friday-mtc-20260524T0001Z-20260524T1716Z.headers (HTTP 200)
+- Hosted viewer reachability + visual proof (preview URL from logs/montana-time-capsule/PREVIEW_URL-20260524T132658Z.txt):
+  - viewer skybox headers: logs/montana-time-capsule/curlD-viewer-skybox-friday-mtc-20260524T0001Z-20260524T1716Z.headers (HTTP 200)
+  - viewer no-sky headers: logs/montana-time-capsule/curlD-viewer-nosky-friday-mtc-20260524T0001Z-20260524T1716Z.headers (HTTP 200)
+  - viewer smoke results: logs/montana-time-capsule/friday-mtc-20260524T0001Z-results-20260524T1718Z.json
+  - viewer screenshots: logs/montana-time-capsule/friday-mtc-20260524T0001Z-desktop.png-20260524T1718Z.png + logs/montana-time-capsule/friday-mtc-20260524T0001Z-desktop-nosky.png-20260524T1718Z.png
+- GitHub Actions (unauth API; exact-head empty expected due `[skip ci]`):
+  - branch runs: logs/montana-time-capsule/github-api-actions-runs-branch-agent-40136728-montana-time-capsule-20260524T1727Z.json
+  - exact-head runs (0): logs/montana-time-capsule/github-api-actions-runs-headsha-8337f52460c335ed129a0e91e28c0b5f4cd2c528-20260524T1727Z.json
+
 
 ## 2026-05-24T17:11:10Z HEARTBEAT monitor - post-push(3): exact-head=0 for 657b12f5c629e7c61566c39c4972e7d24787f535 ([skip ci])
 
 - GitHub Actions exact-head runs (0): logs/montana-time-capsule/gh-run-list-exact-head-657b12f5c629e7c61566c39c4972e7d24787f535-postpush3-20260524T171110Z.json
 - State snapshot: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T171110Z)
-

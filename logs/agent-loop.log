@@ -400,4 +400,5 @@
 [2026-05-24T17:07:48Z] heartbeat -> HMC terminal reconfirm -> idle
 [2026-05-24T17:09:25Z] postpush -> gh exact-head snapshot -> idle
 [2026-05-24T17:10:33Z] postpush -> gh exact-head snapshot -> idle
+[2026-05-24T17:12:30Z] heartbeat -> friday-mtc publish to spaceport-ml-processing + viewer smoke -> next: commit/push
 [2026-05-24T17:11:10Z] postpush -> gh exact-head snapshot -> idle
