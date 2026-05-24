@@ -30,6 +30,8 @@
 - GitHub Actions snapshot (gh=/opt/homebrew/bin/gh):
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T040549Z.json
   - exact-head runs for `c4a4d716...` (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T040549Z.json
+  - postpush exact-head runs for current head `361c206c...` (expected empty due `[skip ci]`; count=0): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T040707Z.json + logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T040707Z.count.txt
+  - postpush branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260524T040707Z.json
 
 ## 2026-05-24T03:45:17Z HEARTBEAT monitor (FRIDAY) - canonical Friday run SfM still InProgress; captured exact SageMaker + CloudWatch + S3 + CI state (no duplicate Friday jobs launched)
 
