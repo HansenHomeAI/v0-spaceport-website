@@ -5,6 +5,31 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-24T15:48:44Z HEARTBEAT monitor - Friday FRIDAY-20260522: terminal reconfirm (SfM+3DGS+compression Completed); public meta still 404; preview viewer/proxy 200; exact-head CI empty ([skip ci])
+
+- Git: agent-40136728-montana-time-capsule @ 4fc1cdac37f3265dc2de85a702e5ced6885ed6cf (dirty: new heartbeat evidence files only)
+- Evidence stamps: 20260524T154527Z (SageMaker) + 20260524T154552Z (S3) + 20260524T154815Z (HTTP/public head)
+- AWS identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T154527Z.json
+- SageMaker (Friday canonical run_id=friday-mtc-20260524T0001Z):
+  - SfM describe (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T154527Z.json
+  - 3DGS describe (Completed): logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T154527Z.json
+  - compression describe (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T154527Z.json
+- S3 outputs (Friday):
+  - SfM output listing: logs/montana-time-capsule/s3-ls-sfm-colmap-20260524T154552Z.txt
+  - 3DGS output listing: logs/montana-time-capsule/s3-ls-3dgs-output-20260524T154552Z.txt
+  - compressed bundle listing: logs/montana-time-capsule/s3-ls-compressed-20260524T154552Z.txt
+  - staging meta.json head: logs/montana-time-capsule/s3api-head-object-staging-friday-meta-20260524T154552Z.json
+- Public bundle reachability:
+  - proxy meta.json 200: logs/montana-time-capsule/curlD-sogs-proxy-meta-friday-mtc-20260524T0001Z-20260524T154815Z.headers
+  - public bucket meta.json still missing (404): logs/montana-time-capsule/s3api-head-object-public-friday-mtc-20260524T0001Z-meta-20260524T154815Z.err
+- Hosted viewer reachability (preview):
+  - skybox 200: logs/montana-time-capsule/curlD-viewer-skybox-friday-mtc-20260524T0001Z-20260524T154815Z.headers
+  - no-sky 200: logs/montana-time-capsule/curlD-viewer-nosky-friday-mtc-20260524T0001Z-20260524T154815Z.headers
+- GitHub Actions:
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-20260524T154619Z.json (Pages success: 26362313633; CDK success: 26362748385)
+  - exact-head runs for 4fc1cdac… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-4fc1cdac37f3265dc2de85a702e5ced6885ed6cf-20260524T154619Z.json
+- Next step: no-spend monitoring only; acceptance gate still blocked on publishing Friday bundle/meta.json to the intended public bucket (staging+proxy+viewer already green).
+
 ## 2026-05-24T15:24:55Z HEARTBEAT monitor - Friday FRIDAY-20260522: terminal reconfirm (SfM+3DGS+compression Completed); InProgress=0; no duplicate launches
 
 - Git: agent-40136728-montana-time-capsule @ b41a81caf97f4dda845da92bd7aa2feff916d653 (dirty: new heartbeat evidence files)
