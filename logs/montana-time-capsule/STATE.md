@@ -1,5 +1,27 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-24T21:26:02Z HEARTBEAT monitor (HMC canonical): no-spend re-verify; terminal SageMaker jobs confirmed; staging bundle reachable; public meta.json still 404; hosted viewer sky/no-sky/proxy HTTP 200; exact-head GitHub workflows=0 (skip ci)
+
+- Git: agent-40136728-montana-time-capsule @ 3a3e2253c52658a6c2b67a179f832be184d193be (`chore: hmc mtc heartbeat verify 20260524T210442Z [skip ci]`)
+- Evidence stamp: 20260524T212602Z
+- AWS (us-west-2; /opt/homebrew/bin/aws via PATH; no spend):
+  - identity: logs/montana-time-capsule/aws-sts-20260524T212602Z.json
+  - InProgress guardrail: logs/montana-time-capsule/sm-list-processing-inprogress-20260524T212602Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260524T212602Z.json (counts: 0/0)
+  - canonical HMC run describes (all Completed):
+    - logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T212602Z.json
+    - logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T212602Z.json
+    - logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T212602Z.json
+- S3 outputs (canonical HMC compressed supersplat bundle):
+  - listing: logs/montana-time-capsule/s3ls-staging-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T212602Z.txt
+  - staging meta head (OK): logs/montana-time-capsule/s3head-staging-meta-hmc-mtc-20260520T2015Z-20260524T212602Z.json
+  - public meta head (still 404): logs/montana-time-capsule/s3head-public-meta-hmc-mtc-20260520T2015Z-20260524T212602Z.err + logs/montana-time-capsule/s3head-altpublic-meta-hmc-mtc-20260520T2015Z-20260524T212602Z.err
+- Hosted viewer reachability (HTTP):
+  - base/sky/no-sky/proxy: logs/montana-time-capsule/curlI-viewer-base-20260524T212602Z.headers + logs/montana-time-capsule/curlI-viewer-sky-20260524T212602Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-20260524T212602Z.headers + logs/montana-time-capsule/curlI-viewer-proxy-20260524T212602Z.headers
+- GitHub Actions (`gh` via /opt/homebrew/bin/gh):
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260524T212602Z.json (last green: Pages run 26362313633; CDK Deploy run 26362748385)
+  - exact-head runs (0 expected due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T212602Z.json
+- State snapshot updated: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T212602Z)
+
 ## 2026-05-24T21:06:20Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: terminal SageMaker jobs re-verified; public meta.json HTTP 200; no new compute launched (guarded --launch skipped to avoid duplicate jobs)
 
 - Git: agent-40136728-montana-time-capsule @ 869f241fdff0747a2f7515f0c419831339d4ac99 (`chore: mtc post-push gh snapshot 20260524T204955Z [skip ci]`)

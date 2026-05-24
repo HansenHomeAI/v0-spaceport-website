@@ -1,0 +1,28 @@
+branch=agent-40136728-montana-time-capsule
+head=3a3e2253c52658a6c2b67a179f832be184d193be
+ M logs/montana-time-capsule/heartbeat-ts-latest.txt
+?? logs/montana-time-capsule/aws-bin-20260524T212505Z.txt
+?? logs/montana-time-capsule/aws-bin-20260524T212525Z.txt
+?? logs/montana-time-capsule/aws-bin-20260524T212602Z.txt
+?? logs/montana-time-capsule/aws-config-region-20260524T212525Z.txt
+?? logs/montana-time-capsule/aws-region-20260524T212505Z.txt
+?? logs/montana-time-capsule/aws-sts-20260524T212505Z.json
+?? logs/montana-time-capsule/aws-sts-20260524T212525Z.json
+?? logs/montana-time-capsule/aws-version-20260524T212525Z.txt
+?? logs/montana-time-capsule/gh-bin-20260524T212505Z.txt
+?? logs/montana-time-capsule/gh-bin-20260524T212602Z.txt
+?? logs/montana-time-capsule/gh-run-list-branch-20260524T212455Z.json
+?? logs/montana-time-capsule/gh-run-list-branch-20260524T212510Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-20260524T212510Z.json
+?? logs/montana-time-capsule/gh-version-20260524T212455Z.txt
+?? logs/montana-time-capsule/gh-version-20260524T212510Z.txt
+?? logs/montana-time-capsule/git-gh-snapshot-20260524T212510Z.txt
+?? logs/montana-time-capsule/git-head-20260524T212505Z.txt
+?? logs/montana-time-capsule/git-snapshot-20260524T212455Z.txt
+?? logs/montana-time-capsule/git-status-20260524T212505Z.txt
+?? logs/montana-time-capsule/git-status-20260524T212602Z.txt
+?? logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T212525Z.json
+?? logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T212525Z.json
+?? logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T212525Z.json
+?? logs/montana-time-capsule/sm-list-processing-inprogress-20260524T212525Z.json
+?? logs/montana-time-capsule/sm-list-training-inprogress-20260524T212525Z.json

@@ -5,32 +5,30 @@
     "region": "us-west-2",
     "userId": "975050048887"
   },
-  "evidence_stamp": "20260524T210442Z",
+  "evidence_stamp": "20260524T212602Z",
   "gh": {
-    "branch_runs_snapshot": "github-actions-runs-branch-20260524T210442Z.json",
+    "branch_runs_snapshot": "gh-run-list-branch-20260524T212602Z.json",
     "exact_head_run_count": 0,
-    "exact_head_sha": "869f241fdff0747a2f7515f0c419831339d4ac99",
-    "last_success_cdk_run_id": 26362748385,
-    "last_success_pages_run_id": 26362313633,
-    "summary_snapshot": "github-actions-summary-20260524T210442Z.json"
+    "exact_head_sha": "3a3e2253c52658a6c2b67a179f832be184d193be",
+    "summary_snapshot": "gh-run-list-branch-20260524T212602Z.json"
   },
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "869f241fdff0747a2f7515f0c419831339d4ac99",
-    "head_checked_at": "20260524T210442Z"
+    "head": "3a3e2253c52658a6c2b67a179f832be184d193be",
+    "head_checked_at": "20260524T212602Z"
   },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
     "alt_public_meta_bucket": "spaceport-ml-processing",
-    "alt_public_meta_err_tail": "ClientError('An error occurred (404) when calling the HeadObject operation: Not Found')",
+    "alt_public_meta_err_tail": "An error occurred (404) when calling the HeadObject operation: Not Found",
     "compressed_prefix": "s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/",
     "public_meta_bucket": "spaceport-ml-processing-public",
-    "public_meta_err_tail": "ClientError('An error occurred (404) when calling the HeadObject operation: Not Found')",
+    "public_meta_err_tail": "An error occurred (404) when calling the HeadObject operation: Not Found",
     "public_meta_http": 404,
     "public_meta_key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json",
     "staging_meta_content_length": 1359,
     "staging_meta_etag": "\"994e5d57f052e552b8cce2e05d4debf4\"",
-    "staging_meta_last_modified": "2026-05-21 20:25:10+00:00"
+    "staging_meta_last_modified": "2026-05-21T20:25:10+00:00"
   },
   "sagemaker": {
     "3dgs": "Completed",
@@ -42,11 +40,11 @@
     "sfm": "Completed",
     "sfm_job": "hmc-mtc-20260520T2015Z-sfm"
   },
-  "updated_at": "20260524T210442Z",
+  "updated_at": "20260524T212602Z",
   "viewer": {
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
     "base_http": 200,
-    "checked_at": "20260524T210442Z",
+    "checked_at": "20260524T212602Z",
     "nosky_http": 200,
     "proxy_http": 200,
     "sky_http": 200
