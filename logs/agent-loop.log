@@ -297,3 +297,4 @@
 [2026-05-24T05:27:46Z] postpush -> gh exact-head 0 (skip ci) saved -> next idle
 [2026-05-24T05:45:12Z] heartbeat no-spend reconfirm -> artifacts 20260524T054504Z -> next: wait
 [2026-05-24T05:46:45Z] friday heartbeat -> sfm still InProgress (last CW event 2026-05-24T03:54:13Z; S3 colmap empty) -> wait/poll; do not launch 3DGS yet
+[2026-05-24T05:49:18Z] heartbeat HMC no-spend reconfirm -> artifacts 20260524T054909Z -> next: wait

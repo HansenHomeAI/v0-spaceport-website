@@ -8059,3 +8059,33 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - GitHub Actions snapshots:
   - branch: logs/montana-time-capsule/gh-run-list-agent-40136728-montana-time-capsule-20260524T054504Z.json
   - exact head: logs/montana-time-capsule/gh-run-list-exact-head-20260524T054504Z.json
+
+## 2026-05-24T05:49:18Z HEARTBEAT monitor (HMC) - no-spend reconfirm: git clean + AWS identity + canonical HMC jobs still Completed + no InProgress canonical HMC jobs + supersplat bundle meta.json still present + hosted preview viewer (skybox/no-sky) HTTP 200 + /api/sogs-proxy meta.json HTTP 200 (+CORS) + CI snapshot (exact-head may be empty due to [skip ci])
+
+- Git:
+  - branch: agent-40136728-montana-time-capsule
+  - head: 96258347df19733cd1580b3696e88ba7fbc2480c
+  - status porcelain lines: 20
+- AWS identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T054909Z.json
+- SageMaker (canonical run hmc-mtc-20260520T2015Z):
+  - SfM: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260524T054909Z.json
+  - 3DGS: logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T054909Z.json
+  - compression: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260524T054909Z.json
+  - InProgress processing: logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T054909Z.json
+  - InProgress training: logs/montana-time-capsule/sagemaker-list-training-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T054909Z.json
+- S3 supersplat bundle:
+  - ls tail: logs/montana-time-capsule/s3-ls-compressed-hmc-mtc-20260520T2015Z-supersplat_bundle-20260524T054909Z-tail120.txt
+  - head meta.json: logs/montana-time-capsule/s3api-head-object-compressed-hmc-mtc-20260520T2015Z-meta-20260524T054909Z.json
+- Hosted preview viewer reachability (Origin set):
+  - preview url: logs/montana-time-capsule/preview-url-20260524T054909Z.txt
+  - base headers: logs/montana-time-capsule/curlI-preview-base-20260524T054909Z.headers
+  - skybox url: logs/montana-time-capsule/viewer-sky-url-20260524T054909Z.txt
+  - skybox headers: logs/montana-time-capsule/curlI-viewer-skybox-20260524T054909Z.headers
+  - no-sky url: logs/montana-time-capsule/viewer-nosky-url-20260524T054909Z.txt
+  - no-sky headers: logs/montana-time-capsule/curlI-viewer-nosky-20260524T054909Z.headers
+- Signed meta.json via /api/sogs-proxy:
+  - url: logs/montana-time-capsule/sogs-proxy-meta-url-20260524T054909Z.txt
+  - headers: logs/montana-time-capsule/curlI-sogs-proxy-meta-20260524T054909Z.headers
+- GitHub Actions snapshots:
+  - branch: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T054909Z.json
+  - exact head: logs/montana-time-capsule/gh-run-list-exact-head-20260524T054909Z.json
