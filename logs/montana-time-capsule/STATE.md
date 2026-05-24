@@ -30,6 +30,15 @@
 - State snapshot: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T170642Z)
 - Next step: remain no-spend; acceptance gate still blocked on publishing canonical HMC bundle/meta.json to a public bucket (do not relaunch any HMC stages).
 
+## 2026-05-24T17:09:23Z HEARTBEAT monitor - post-push: recorded exact-head=0 for 30f84f0d… ([skip ci])
+
+- Git: agent-40136728-montana-time-capsule @ 30f84f0df76cda20c74c63f0ac437cd3db45e52f
+- Evidence stamp: 20260524T170923Z
+- GitHub Actions:
+  - exact-head runs (0): logs/montana-time-capsule/gh-run-list-exact-head-30f84f0df76cda20c74c63f0ac437cd3db45e52f-postpush-20260524T170923Z.json
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260524T170923Z.json
+- State snapshot: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T170923Z)
+
 ## Branch
 
 - Branch: `agent-40136728-montana-time-capsule`

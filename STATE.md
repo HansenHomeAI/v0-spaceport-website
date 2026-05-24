@@ -17,3 +17,4 @@ next_unblocked_step: continue no-spend monitoring until `friday-mtc-20260524T000
 [2026-05-23T18:25:50Z] postpush -> recorded gh runs for new head -> idle
 [2026-05-24T10:05:12Z] heartbeat -> SfM Completed; 3DGS InProgress; S3+GH snapshots -> commit+push ledger
 [2026-05-24T17:07:48Z] heartbeat -> HMC terminal reconfirm + viewer HTTP check + GH exact-head snapshot -> idle
+[2026-05-24T17:09:25Z] postpush -> recorded gh runs for new head (30f84f0df76cda20c74c63f0ac437cd3db45e52f) -> idle
