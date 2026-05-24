@@ -66,6 +66,11 @@
   - exact-head runs for f4c21d5a… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-f4c21d5a-20260524T094611Z.json
 - Next step: continue monitoring `friday-mtc-20260524T0001Z-3dgs` until `Completed`, then proceed to pinned compression stage (smallest-next-stage only).
 
+## 2026-05-24T09:50:50Z HEARTBEAT monitor - post-push ledger: exact-head CI empty (expected `[skip ci]`)
+
+- Git: agent-40136728-montana-time-capsule @ 87071632286c0b6d685b9d7d953c8f6a313cf13e (`chore: friday heartbeat 20260524T0949Z [skip ci]`) (clean)
+- GitHub Actions (exact-head): logs/montana-time-capsule/gh-run-list-exact-head-87071632-20260524T095050Z.json (count=0)
+
 ## 2026-05-24T09:30:34Z HEARTBEAT monitor - no-spend acceptance checks: canonical HMC still terminal (SfM/3DGS/compression Completed); staging bundle still present; preview viewer sky/no-sky HTTP 200; sogs-proxy meta.json HTTP 200; public bucket meta.json still 404; exact-head CI empty due [skip ci]
 
 - Git: agent-40136728-montana-time-capsule @ bbfb837b27bc13479e04257cc10ec30b74fd2b97 (`chore: montana heartbeat 20260524T092546Z [skip ci]`) (clean)
