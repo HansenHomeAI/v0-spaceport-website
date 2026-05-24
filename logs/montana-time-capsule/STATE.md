@@ -7816,3 +7816,25 @@ Next: wait for SfM to reach Completed, then run the single guarded `cv_hr_time_c
   - refresh (same expectation; exact-head empty): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T034737Z.json ; logs/montana-time-capsule/gh-run-list-exact-head-20260524T034737Z.json
 
 Next: remain idle for HMC canonical; accept/reject gates are viewer visual proof + public bundle reachability only (no new compute).
+
+## 20260524T042512Z HEARTBEAT monitor (HMC) - no-spend reconfirm: git clean + AWS identity + canonical HMC jobs still Completed + no InProgress HMC jobs + supersplat bundle still present + hosted preview viewer (base/skybox/no-sky) HTTP 200 + CI snapshot
+
+- Git: agent-40136728-montana-time-capsule @ a4814b63114a50f198c6d11866fc87541956f89a (a4814b63 chore: record postpush gh snapshot 2026-05-24T04:09Z [skip ci]) (clean)
+- AWS:
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T042512Z.json
+  - version: logs/montana-time-capsule/aws-version-20260524T042512Z.txt
+- SageMaker (canonical run `hmc-mtc-20260520T2015Z`; do not launch duplicate HMC jobs):
+  - SfM describe: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260524T042512Z.json
+  - 3DGS describe: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260524T042512Z.json
+  - compression describe: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260524T042512Z.json
+  - InProgress processing count: 0
+  - InProgress training count: 0
+- S3 supersplat bundle present:
+  - ls: logs/montana-time-capsule/s3-ls-supersplat-bundle-20260524T042512Z.txt
+  - head meta.json: logs/montana-time-capsule/s3api-head-object-supersplat-meta-20260524T042512Z.json
+- Hosted preview viewer reachability:
+  - preview url: logs/montana-time-capsule/preview-url-20260524T042512Z.txt
+  - curl headers: logs/montana-time-capsule/curl-viewer-reachability-20260524T042512Z.txt
+- GitHub Actions snapshot:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260524T042512Z.json
+  - exact-head runs (may be empty if HEAD is [skip ci]): logs/montana-time-capsule/gh-run-list-exact-head-20260524T042512Z.json
