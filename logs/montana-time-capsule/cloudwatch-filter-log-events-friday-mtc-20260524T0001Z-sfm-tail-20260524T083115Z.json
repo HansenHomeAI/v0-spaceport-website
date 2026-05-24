@@ -1,0 +1,139 @@
+{
+    "events": [
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779602078741,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260524 05:54:37.943070 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779602084252,
+            "eventId": "39686452512778471683574451005397931388501611033882263552"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779602924291,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260524 06:08:43.348385 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779602930073,
+            "eventId": "39686471369173574301142849353459284061644912458915315712"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779604475649,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260524 06:34:35.160022 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779604481209,
+            "eventId": "39686505965613044003213306835236651964163139230187257856"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779605500261,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260524 06:51:39.804571 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779605505992,
+            "eventId": "39686528815224183360072146369318769710715084333480214528"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779606344701,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260524 07:05:44.636984 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779606349907,
+            "eventId": "39686547646865458807271553027971109906567479801374244864"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779607017945,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260524 07:16:57.409001 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779607023235,
+            "eventId": "39686562660708359246822400142048232555462256480689913856"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779608898113,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260524 07:48:17.812654 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779608903435,
+            "eventId": "39686604589855857677747053189998662251120332963306930176"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779610257018,
+            "message": "COLMAP[chunk_bundle_adjuster] W20260524 08:10:56.077715 21021 levenberg_marquardt_strategy.cc:126] Linear solver failure. Failed to compute a finite step.",
+            "ingestionTime": 1779610262946,
+            "eventId": "39686634894450011687003494982141610019482155817322283008"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779611404856,
+            "message": "COLMAP[chunk_bundle_adjuster] I20260524 08:30:04.695688 21021 bundle_adjustment_ceres.cc:1137] Bundle adjustment report",
+            "ingestionTime": 1779611410340,
+            "eventId": "39686660492092778877996901903331734344348061353666805760"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779611404856,
+            "message": "COLMAP[chunk_bundle_adjuster]     Residuals : 20923690",
+            "ingestionTime": 1779611410340,
+            "eventId": "39686660492092778877996901903331734344348061353666805761"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779611404856,
+            "message": "COLMAP[chunk_bundle_adjuster]    Parameters : 4234093",
+            "ingestionTime": 1779611410340,
+            "eventId": "39686660492092778877996901903331734344348061353666805762"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779611404856,
+            "message": "COLMAP[chunk_bundle_adjuster]    Iterations : 101",
+            "ingestionTime": 1779611410340,
+            "eventId": "39686660492092778877996901903331734344348061353666805763"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779611404856,
+            "message": "COLMAP[chunk_bundle_adjuster]          Time : 16530 [s]",
+            "ingestionTime": 1779611410340,
+            "eventId": "39686660492092778877996901903331734344348061353666805764"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779611404856,
+            "message": "COLMAP[chunk_bundle_adjuster]  Initial cost : 1.13216 [px]",
+            "ingestionTime": 1779611410340,
+            "eventId": "39686660492092778877996901903331734344348061353666805765"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779611404856,
+            "message": "COLMAP[chunk_bundle_adjuster]    Final cost : 0.742892 [px]",
+            "ingestionTime": 1779611410340,
+            "eventId": "39686660492092778877996901903331734344348061353666805766"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779611404856,
+            "message": "COLMAP[chunk_bundle_adjuster]   Termination : NO_CONVERGENCE",
+            "ingestionTime": 1779611410340,
+            "eventId": "39686660492092778877996901903331734344348061353666805767"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779611404856,
+            "message": "COLMAP[chunk_bundle_adjuster] ",
+            "ingestionTime": 1779611410340,
+            "eventId": "39686660492092778877996901903331734344348061353666805768"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779611406857,
+            "message": "COLMAP[chunk_bundle_adjuster] I20260524 08:30:06.155285 21021 timer.cc:90] Elapsed time: 275.889 [minutes]",
+            "ingestionTime": 1779611410340,
+            "eventId": "39686660536716570020256678809544706607917432727133618185"
+        },
+        {
+            "logStreamName": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+            "timestamp": 1779611415859,
+            "message": "2026-05-24 08:30:15,485 - INFO - [chunk_bundle_adjuster_model_converter_chunk_bundle_adjuster] colmap model_converter --input_path /tmp/colmap_sfm_iet7y6w5/chunk_bundle_adjuster --output_path /tmp/colmap_sfm_iet7y6w5/text_models/chunk_bundle_adjuster/chunk_bundle_adjuster --output_type TXT",
+            "ingestionTime": 1779611421392,
+            "eventId": "39686660737467878297429348343010489003668291382086860800"
+        }
+    ],
+    "searchedLogStreams": [],
+    "nextToken": "Bxkq6kVGFtq2y_MoigeqscPOdhXVbhiVtLoAmXb5jCoif1xzgZMNG4csrXfldI7RAk2rbuPk5Ow4IXr2c_yOBUNwFzEhQdx9ZAt03JJ035LJr2H0Ib81LcXAM3uv1zNZuDsue-Pcrp384NqUJDvHJOxzPZwpy1yF7BJC2Ez1fkGZnEFOrCXTGX3sMBBWYw1b1LIgK-C76fkhUJg2IdhoX6AGo0EIwIRJ-mZL58TXQvsUWxfL8W8IN-bew7HxBdMW4H-Du-w6GCA2DKJvNb8XFP02ehT20hyqTolCLND2z7Y"
+}

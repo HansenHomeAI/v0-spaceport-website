@@ -5,23 +5,40 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
-## 2026-05-24T08:27:25Z HEARTBEAT monitor (FRIDAY) - canonical Friday SfM still InProgress; CW not advancing since last check (last_event_utc=2026-05-24T08:10:57.018Z); S3 colmap still empty; no new jobs launched
+## 2026-05-24T08:31:15Z HEARTBEAT monitor - no-spend acceptance checks: HMC canonical remains terminal (SfM/3DGS/compression Completed); staging bundle reachable via preview proxy; viewer skybox/no-sky both 200; public bucket still 404; Friday SfM still InProgress (linear solver failures observed; S3 colmap empty); no new jobs launched
 
-- Git: agent-40136728-montana-time-capsule @ 1d89c696d1e1c95e9f82f18aa8e33f2cd40ad5cd (`chore: montana heartbeat 20260524T0811Z [skip ci]`) (uncommitted heartbeat artifacts present)
+- Git: agent-40136728-montana-time-capsule @ 233bdb66adaae0797de6add9c2e629f56acb4602 (`chore: friday heartbeat 20260524T0827Z [skip ci]`) (uncommitted heartbeat artifacts present)
 - AWS (us-west-2; aws=/opt/homebrew/bin/aws):
-  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T082902Z.json
-  - describe SfM (InProgress): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T082940Z.json
-  - guardrail InProgress list: logs/montana-time-capsule/sagemaker-list-processing-jobs-InProgress-20260524T082623Z.json
-- CloudWatch (SfM):
+  - version: logs/montana-time-capsule/aws-version-20260524T083115Z.txt
+  - region: logs/montana-time-capsule/aws-configure-get-region-20260524T083115Z.txt
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T083115Z.json
+  - describe HMC SfM (Completed): logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260524T083115Z.json
+  - describe HMC 3DGS training (Completed): logs/montana-time-capsule/sagemaker-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260524T083115Z.json
+  - describe HMC compression (Completed): logs/montana-time-capsule/sagemaker-describe-processing-hmc-mtc-20260520T2015Z-compression-20260524T083115Z.json
+  - guardrail InProgress list (count=1; Friday SfM): logs/montana-time-capsule/sagemaker-list-processing-jobs-InProgress-20260524T083115Z.json
+  - describe Friday SfM (InProgress): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T083115Z.json
+- CloudWatch (Friday SfM):
   - stream: `friday-mtc-20260524T0001Z-sfm/algo-1-1779581031`
-  - describe stream: logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-sfm-20260524T082730Z.json (LastEventTime=2026-05-24T07:16:57.945Z)
-  - tail (paged forward): logs/montana-time-capsule/cloudwatch-get-log-events-friday-mtc-20260524T0001Z-sfm-20260524T082710Z-next.json (last_event_utc=2026-05-24T08:10:57.018Z; last_line contains "Linear solver failure")
-- S3 SfM output (EndOfJob upload; expected empty while InProgress):
-  - list: logs/montana-time-capsule/s3-ls-sfm-output-friday-mtc-20260524T0001Z-colmap-20260524T082940Z.txt (Total Objects: 0)
+  - describe streams: logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-sfm-20260524T083115Z.json
+  - tail window (includes \"Linear solver failure\"): logs/montana-time-capsule/cloudwatch-filter-log-events-friday-mtc-20260524T0001Z-sfm-tail-20260524T083115Z.json
+- S3 (HMC canonical bundle):
+  - staging meta head: logs/montana-time-capsule/s3api-head-object-hmc-mtc-20260520T2015Z-meta-20260524T083115Z.json
+  - staging bundle listing head: logs/montana-time-capsule/s3-ls-hmc-mtc-20260520T2015Z-supersplat_bundle-head-20260524T083115Z.txt
+  - public bucket head (expected 404): logs/montana-time-capsule/s3api-head-object-public-hmc-mtc-20260520T2015Z-meta-20260524T083115Z.err
+- S3 (Friday SfM output; EndOfJob upload; expected empty while InProgress):
+  - list: logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T083115Z.txt
+  - keycount probe: logs/montana-time-capsule/s3api-list-objects-friday-mtc-20260524T0001Z-colmap-20260524T083115Z.json (KeyCount: 0)
+- Public reachability (preview proxy -> staging meta.json):
+  - URL: logs/montana-time-capsule/sogs-proxy-meta-url-20260524T083115Z.txt
+  - headers: logs/montana-time-capsule/curlD-sogs-proxy-meta-20260524T083115Z.headers (HTTP 200)
+  - body: logs/montana-time-capsule/curl-sogs-proxy-meta-20260524T083115Z.json (valid JSON)
+- Hosted viewer reachability (preview):
+  - skybox URL: logs/montana-time-capsule/viewer-sky-url-20260524T083115Z.txt -> logs/montana-time-capsule/curlI-viewer-skybox-20260524T083115Z.headers (HTTP 200)
+  - no-sky URL: logs/montana-time-capsule/viewer-nosky-url-20260524T083115Z.txt -> logs/montana-time-capsule/curlI-viewer-nosky-20260524T083115Z.headers (HTTP 200)
 - GitHub Actions:
-  - exact-head runs for 1d89c696… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-1d89c696-20260524T082622Z.json
-  - branch snapshot (last known green Pages+CDK still 16f29321…): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T082834Z.json
-- Next step: continue no-spend monitoring; only proceed to the guarded 3DGS `--launch` after SfM reaches `Completed`.
+  - exact-head runs for 233bdb66… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-233bdb66adaae0797de6add9c2e629f56acb4602-20260524T083115Z.json
+  - branch snapshot (Pages+CDK last green still at 2026-05-24T06:15Z): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T083115Z.json
+- Next step: continue no-spend monitoring; acceptance gates remain: public bucket reachability + screenshots/visual proof refresh if requested.
 
 ## 2026-05-24T08:11:33Z HEARTBEAT monitor - no-spend acceptance checks: HMC canonical remains terminal (SfM/3DGS/compression Completed); staging bundle reachable via preview proxy; viewer skybox/no-sky both 200; Friday SfM still InProgress; no new jobs launched
 

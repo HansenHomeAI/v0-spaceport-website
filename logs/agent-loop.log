@@ -315,3 +315,4 @@
 [2026-05-24T08:07:14Z] friday sfm heartbeat -> InProgress (cw last 2026-05-24T07:48:18Z; s3 empty) -> wait
 [2026-05-24T08:12:04Z] heartbeat -> HMC canonical terminal; preview proxy+viewer 200; Friday SfM still InProgress -> next: no-spend monitor
 [2026-05-24T08:28:02Z] friday-mtc SfM heartbeat -> InProgress (S3 empty; CW last_event_utc=2026-05-24T08:10:57Z) -> continue monitoring
+[2026-05-24T08:31:15Z] heartbeat -> HMC canonical terminal; proxy+viewer 200; public bucket 404; Friday SfM InProgress (linear solver failures; S3 empty) -> next: no-spend monitor
