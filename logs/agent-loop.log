@@ -406,3 +406,5 @@
 [2026-05-24T17:27:44Z] heartbeat -> friday mtc reconfirm complete (aws/s3/ci) -> next: no-spend monitor
 [2026-05-24T17:46:12Z] heartbeat 20260524T174440Z -> ok (terminal; InProgress=0; viewer 200; public meta 404) -> next: no-spend monitor
 [2026-05-24T17:49:20Z] friday heartbeat -> verified no InProgress; public supersplat meta OK; exact-head=0 ([skip ci]) -> commit+push
+[2026-05-24T18:08:23Z] heartbeat friday FRIDAY-20260522 -> verify Completed (sfm/3dgs/compress) InProgress=0 public-meta-404 -> next no-spend
+[2026-05-24T18:08:52Z] heartbeat -> no-spend reconfirm hmc-mtc-20260520T2015Z (InProgress=0, viewer/proxy=200, public meta 404) -> committed+pushed

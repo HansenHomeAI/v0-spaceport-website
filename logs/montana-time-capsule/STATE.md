@@ -1,5 +1,40 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-24T18:07:59Z HEARTBEAT monitor - post-push reconfirm: exact-head CI empty due `[skip ci]`; hmc-state refreshed
+
+- Git: agent-40136728-montana-time-capsule @ 0da0582ba786d5fd7a52d4cfb48c8470b65c827f (`chore: hmc mtc heartbeat proof 20260524T1804Z [skip ci]`)
+- Evidence stamp: 20260524T180759Z
+- Git proof: logs/montana-time-capsule/git-status-20260524T180759Z.txt
+- GitHub Actions exact-head runs (0): logs/montana-time-capsule/gh-run-list-exact-head-0da0582ba786d5fd7a52d4cfb48c8470b65c827f-20260524T180759Z.json
+- State snapshot: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T180759Z)
+
+## 2026-05-24T18:06:25Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: SfM+3DGS+compression Completed; InProgress=0; no duplicate launches; exact-head CI empty ([skip ci])
+
+- Git: agent-40136728-montana-time-capsule @ c6000d17dcc16a44291013a24b6e111b5b4b681c (`chore: post-push gh exact-head proof 20260524T1749Z [skip ci]`)
+- Evidence stamps: 20260524T180412Z (Git/GH) + 20260524T180625Z (AWS/SageMaker/S3)
+- Git proof: logs/montana-time-capsule/git-proof-20260524T180412Z.txt
+- GitHub Actions:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T180412Z.json (Pages + CDK recent greens)
+  - exact-head runs (0; expected due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-c6000d17dcc16a44291013a24b6e111b5b4b681c-20260524T180412Z.json
+  - commit actions HTML: logs/montana-time-capsule/curl-github-actions-commit-20260524T180412Z.html (headers: logs/montana-time-capsule/curlD-github-actions-commit-20260524T180412Z.headers)
+  - exact-head check: logs/montana-time-capsule/github-actions-exact-head-check-20260524T180412Z.txt
+- AWS (us-west-2; no spend):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T180625Z.json (region: logs/montana-time-capsule/aws-config-region-20260524T180625Z.txt)
+  - guardrail visibility (InProgress lists empty):
+    - logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T180625Z.json
+    - logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T180625Z.json
+  - Friday canonical run describes (all Completed):
+    - logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T180625Z.json
+    - logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T180625Z.json
+    - logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T180625Z.json
+- S3 outputs (Friday):
+  - SfM output listing: logs/montana-time-capsule/s3-ls-sfm-colmap-20260524T180625Z.txt
+  - 3DGS output listing: logs/montana-time-capsule/s3-ls-3dgs-output-20260524T180625Z.txt
+  - compressed bundle listing: logs/montana-time-capsule/s3-ls-compressed-20260524T180625Z.txt
+  - staging meta head: logs/montana-time-capsule/s3api-head-object-staging-friday-meta-20260524T180625Z.json
+  - public meta head (still 404): logs/montana-time-capsule/s3api-head-object-public-friday-meta-20260524T180625Z.err
+- Next step: remain no-spend; do not re-run `cv_hr_time_capsule.py --launch` since the canonical Friday pipeline is already Completed; remaining gate is durable public-bucket publish/reachability evidence (meta.json currently 404 in `spaceport-ml-processing-public`).
+
 ## 2026-05-24T18:04:12Z HEARTBEAT monitor - no-spend reconfirm (HMC): InProgress=0; viewer/proxy 200; public meta.json still 404; gh+aws via /opt/homebrew/bin
 
 - Git: agent-40136728-montana-time-capsule @ c6000d17dcc16a44291013a24b6e111b5b4b681c (`chore: post-push gh exact-head proof 20260524T1749Z [skip ci]`)
