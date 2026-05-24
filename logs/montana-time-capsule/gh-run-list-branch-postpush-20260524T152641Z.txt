@@ -1,0 +1,20 @@
+completed	success	chore: record CDK green 611bf180	CDK Deploy	agent-40136728-montana-time-capsule	push	26362748385	4m30s	2026-05-24T13:36:39Z
+completed	success	chore: friday mtc completion proof 20260524T1327Z	CDK Deploy	agent-40136728-montana-time-capsule	push	26362596297	4m18s	2026-05-24T13:31:14Z
+completed	cancelled	chore: record friday mtc preview url 20260524	CDK Deploy	agent-40136728-montana-time-capsule	push	26362527773	54s	2026-05-24T13:30:25Z
+completed	success	chore: trigger Pages preview 20260524T131327Z	CDK Deploy	agent-40136728-montana-time-capsule	push	26362313634	4m27s	2026-05-24T13:17:03Z
+completed	success	chore: trigger Pages preview 20260524T131327Z	Deploy Next.js to Cloudflare Pages	agent-40136728-montana-time-capsule	push	26362313633	8m50s	2026-05-24T13:17:03Z
+completed	success	chore: friday mtc launch compression 20260524	CDK Deploy	agent-40136728-montana-time-capsule	push	26362207788	4m23s	2026-05-24T13:12:16Z
+completed	success	chore: trigger Pages preview 20260524T061531Z	CDK Deploy	agent-40136728-montana-time-capsule	push	26353779598	4m21s	2026-05-24T06:15:37Z
+completed	success	chore: trigger Pages preview 20260524T061531Z	Deploy Next.js to Cloudflare Pages	agent-40136728-montana-time-capsule	push	26353779608	8m46s	2026-05-24T06:15:37Z
+completed	success	chore: heartbeat hmc acceptance reconfirm 20260524T0609Z	CDK Deploy	agent-40136728-montana-time-capsule	push	26353693174	4m23s	2026-05-24T06:10:47Z
+completed	success	chore: montana heartbeat 20260521T1135Z	CDK Deploy	agent-40136728-montana-time-capsule	push	26223584298	3m42s	2026-05-21T11:38:18Z
+completed	success	chore: record 2026-05-21T02:36Z monitor tick	CDK Deploy	agent-40136728-montana-time-capsule	push	26202111411	4m2s	2026-05-21T02:37:00Z
+completed	success	chore: record CI proof	CDK Deploy	agent-40136728-montana-time-capsule	push	26201762679	4m0s	2026-05-21T02:26:00Z
+completed	success	chore: monitor HMC time capsule SfM	CDK Deploy	agent-40136728-montana-time-capsule	push	26201626086	3m49s	2026-05-21T02:21:34Z
+completed	success	chore: record CI proof	CDK Deploy	agent-40136728-montana-time-capsule	push	26201109151	4m8s	2026-05-21T02:04:32Z
+completed	success	chore: monitor HMC time capsule SfM	CDK Deploy	agent-40136728-montana-time-capsule	push	26200937278	4m2s	2026-05-21T01:59:13Z
+completed	success	chore: trigger Pages preview	CDK Deploy	agent-40136728-montana-time-capsule	push	26200368245	3m59s	2026-05-21T01:41:07Z
+completed	success	chore: trigger Pages preview	Deploy Next.js to Cloudflare Pages	agent-40136728-montana-time-capsule	push	26200368328	7m37s	2026-05-21T01:41:07Z
+completed	success	chore: monitor HMC time capsule SfM	CDK Deploy	agent-40136728-montana-time-capsule	push	26200242062	3m44s	2026-05-21T01:37:11Z
+completed	success	chore: launch hmc time capsule sfm	CDK Deploy	agent-40136728-montana-time-capsule	push	26187619621	3m13s	2026-05-20T20:19:47Z
+completed	success	Deploy Next.js to Cloudflare Pages	Deploy Next.js to Cloudflare Pages	agent-40136728-montana-time-capsule	workflow_dispatch	26131478855	4m30s	2026-05-19T23:26:29Z
