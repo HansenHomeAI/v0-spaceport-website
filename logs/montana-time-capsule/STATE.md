@@ -22,6 +22,7 @@
   - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-20260524T134539Z.json
   - exact-head runs (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T134539Z.json + logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T134631Z.json
 - Runner state JSON refreshed (no launches): logs/montana-time-capsule/friday-20260522-state.json
+- Additional no-spend HMC reachability tick (unchanged): logs/montana-time-capsule/*-20260524T134615Z.*
 - Next step: acceptance gate work remains publishing Friday bundle/meta.json to the public bucket + visual proof; do not relaunch any Friday stages.
 
 ## 2026-05-24T20:20:00Z HEARTBEAT monitor - no-spend acceptance refresh: canonical HMC still terminal; staging bundle + viewer/proxy still reachable; public bundle still missing; exact-head CI empty due [skip ci]
