@@ -1,0 +1,9 @@
+{
+  "Bucket": "spaceport-ml-processing-public",
+  "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json",
+  "error": {
+    "code": "404",
+    "http_status": 404,
+    "message": "Not Found"
+  }
+}
