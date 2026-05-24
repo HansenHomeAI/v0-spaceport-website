@@ -9528,23 +9528,23 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - GitHub Actions (exact-head runs count=0): logs/montana-time-capsule/gh-run-list-exact-head-5f1fa4ae56e861ab85c1969956c76757007aa75a-20260524T140740Z.json
 - Summary JSON updated: logs/montana-time-capsule/hmc-state.json
 
-### 2026-05-24T14:26:20Z HEARTBEAT monitor - Friday FRIDAY-20260522 terminal reconfirm (no duplicate launches); public meta still 404
+### 2026-05-24T14:29:28Z HEARTBEAT monitor - Friday FRIDAY-20260522 terminal reconfirm (no duplicate launches); public meta still 404
 
 - Git: agent-40136728-montana-time-capsule @ 5382b993d95a085372897156e2e7b1e37e7a6ce9 (`chore: record post-push gh empty exact-head 20260524T1414Z [skip ci]`)
-- Evidence stamp: 20260524T142513Z / 20260524T142559Z
+- Evidence stamp: 20260524T142928Z
 - AWS (us-west-2; aws=/opt/homebrew/bin/aws):
-  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T142513Z.json
-  - describe Friday SfM (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T142513Z.json
-  - describe Friday 3DGS (Completed): logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T142513Z.json
-  - describe Friday compression (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T142513Z.json
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T142928Z.json
+  - describe Friday SfM (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T142928Z.json
+  - describe Friday 3DGS (Completed): logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T142928Z.json
+  - describe Friday compression (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T142928Z.json
 - S3 outputs (Friday):
-  - SfM colmap listing (truncated): logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T142513Z.txt
-  - compressed output listing (truncated): logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-compressed-20260524T142513Z.txt
+  - SfM colmap listing: logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T142928Z.txt
+  - compressed output listing: logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-compressed-20260524T142928Z.txt
 - Public bucket publish gate (still missing; expected 404 until published):
-  - spaceport-ml-processing-public head meta.json (404): logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-public-friday-mtc-20260524T0001Z-meta-20260524T142559Z.err
-  - spaceport-public head meta.json (404): logs/montana-time-capsule/s3api-head-object-spaceport-public-friday-mtc-20260524T0001Z-meta-20260524T142559Z.err
+  - spaceport-ml-processing-public head meta.json (404): logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-public-friday-mtc-20260524T0001Z-meta-20260524T142928Z.err
+  - spaceport-public head meta.json (404): logs/montana-time-capsule/s3api-head-object-spaceport-public-friday-mtc-20260524T0001Z-meta-20260524T142928Z.err
 - GitHub Actions (gh=/opt/homebrew/bin/gh):
-  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-20260524T142513Z.txt
-  - exact-head runs for 5382b993… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T142513Z.txt
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-20260524T142928Z.txt
+  - exact-head runs for 5382b993… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T142928Z.txt
 - Decision: the guarded `cv_hr_time_capsule.py ... --launch` command was NOT re-run because Friday SfM/3DGS/compression are already terminal (avoid duplicate Friday launches).
 - Next step: no spend; acceptance gate remains publishing `compressed/friday-mtc-20260524T0001Z/meta.json` to a public bucket (and re-checking reachability) before calling public delivery complete.
