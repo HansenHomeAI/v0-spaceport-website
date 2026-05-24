@@ -3,20 +3,21 @@
     "account": "975050048887",
     "arn": "arn:aws:iam::975050048887:root"
   },
-  "evidence_stamp": "20260524T110748Z",
+  "evidence_stamp": "20260524T111138Z",
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "199a8f80c25da9191f23b12ac36285842bcd3db7",
-    "head_checked_at": "20260524T110748Z"
+    "head": "b53af39fd4f50cfe6f425aeb13d07e02b1cd9b3e",
+    "head_checked_at": "20260524T111138Z"
   },
   "github": {
-    "exact_head_sha": "199a8f80c25da9191f23b12ac36285842bcd3db7",
+    "exact_head_sha": "b53af39fd4f50cfe6f425aeb13d07e02b1cd9b3e",
     "exact_head_run_count": 0,
     "pages_latest": {
       "conclusion": "success",
       "createdAt": "2026-05-24T06:15:37Z",
       "databaseId": 26353779608,
       "displayTitle": "chore: trigger Pages preview 20260524T061531Z",
+      "event": "push",
       "headSha": "16f29321bfe9c53c2c7822ff41ccfc8e12fdf482",
       "status": "completed",
       "updatedAt": "2026-05-24T06:24:23Z",
@@ -28,6 +29,7 @@
       "createdAt": "2026-05-24T06:15:37Z",
       "databaseId": 26353779598,
       "displayTitle": "chore: trigger Pages preview 20260524T061531Z",
+      "event": "push",
       "headSha": "16f29321bfe9c53c2c7822ff41ccfc8e12fdf482",
       "status": "completed",
       "updatedAt": "2026-05-24T06:19:58Z",
@@ -50,5 +52,5 @@
     "nosky_http": 200,
     "proxy_http": 200
   },
-  "updated_at": "2026-05-24T11:07:48Z"
+  "updated_at": "2026-05-24T11:11:38Z"
 }

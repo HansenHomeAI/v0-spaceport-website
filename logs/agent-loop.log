@@ -341,3 +341,4 @@
 [2026-05-24T11:06:20Z] heartbeat -> canonical hmc-mtc-20260520T2015Z still Completed; staging meta present; viewer/proxy HTTP ok; exact-head CI empty ([skip ci]) -> commit+push ledger
 [2026-05-24T11:07:57Z] postpush -> recorded gh runs for new head (199a8f80; [skip ci]) -> idle
 [2026-05-24T11:08:12Z] friday heartbeat -> 3DGS still InProgress; CW last event 2026-05-24T09:14:16Z; no new jobs -> wait
+[2026-05-24T11:11:48Z] heartbeat -> refreshed hmc-state.json for new HEAD (b53af39f) -> commit+push ledger

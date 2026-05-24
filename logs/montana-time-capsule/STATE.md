@@ -8941,3 +8941,10 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
 - Git: agent-40136728-montana-time-capsule @ 76f7af23e8c2ab1bac3bd8be0da817a14ae60e89 ([skip ci]; clean)
 - GitHub Actions (branch): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260524T110920Z.json
 - GitHub Actions (exact-head): logs/montana-time-capsule/gh-run-list-exact-head-76f7af23e8c2ab1bac3bd8be0da817a14ae60e89-postpush-20260524T110920Z.json
+
+## 2026-05-24T11:11:45Z HEARTBEAT monitor - refreshed hmc-state.json for current HEAD
+
+- Git: agent-40136728-montana-time-capsule @ b53af39fd4f50cfe6f425aeb13d07e02b1cd9b3e ([skip ci])
+- GitHub Actions exact-head: logs/montana-time-capsule/gh-run-list-exact-head-b53af39fd4f50cfe6f425aeb13d07e02b1cd9b3e-20260524T111052Z.json
+- GitHub Actions branch: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T111052Z.json
+- hmc-state.json: logs/montana-time-capsule/hmc-state.json
