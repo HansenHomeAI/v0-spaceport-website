@@ -8402,3 +8402,4 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
   - logs/montana-time-capsule/screenshots-20260524T074746Z/hmc-mtc-20260520T2015Z-skybox.png
 - GitHub Actions (postpush exact-head; expected empty because `[skip ci]`):
   - logs/montana-time-capsule/gh-run-list-exact-head-289405cc3104270546810ef80c2cdb735aa14642-20260524T074912Z.json
+  - logs/montana-time-capsule/gh-run-list-exact-head-db3371a3ce523eadca9e8fc2822800116390acf0-20260524T075027Z.json
