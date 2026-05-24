@@ -54,12 +54,13 @@
   },
   "3dgs_image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db",
   "3dgs_job_name": "friday-mtc-20260524T0001Z-3dgs",
-  "3dgs_last_check_utc": "2026-05-24T12:28:44Z",
+  "3dgs_last_check_utc": "2026-05-24T13:45:47Z",
   "3dgs_last_cloudwatch_event_utc": "2026-05-24T09:14:16.268000Z",
-  "3dgs_last_known_status": "InProgress",
+  "3dgs_last_known_status": "Completed",
   "3dgs_status": "Completed",
   "compressed_output_s3_uri": "s3://spaceport-ml-processing-staging/compressed/friday-mtc-20260524T0001Z/",
   "compression_job_name": "friday-mtc-20260524T0001Z-compression",
+  "compression_last_check_utc": "2026-05-24T13:45:47Z",
   "compression_payload": {
     "AppSpecification": {
       "ContainerEntrypoint": [
@@ -186,7 +187,7 @@
   },
   "sfm_image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811",
   "sfm_job_name": "friday-mtc-20260524T0001Z-sfm",
-  "sfm_last_check_utc": "2026-05-24T12:05:14Z",
+  "sfm_last_check_utc": "2026-05-24T13:45:47Z",
   "sfm_last_cloudwatch_event_utc": "2026-05-24T08:31:55Z",
   "sfm_last_known_status": "Completed",
   "sfm_output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/friday-mtc-20260524T0001Z/colmap",
@@ -268,8 +269,8 @@
   },
   "sfm_processing_end_time": "2026-05-24T02:33:44.726000-06:00",
   "sfm_status": "Completed",
-  "status": "completed",
-  "updated_at": "2026-05-24T13:36:05Z",
+  "status": "Completed",
+  "updated_at": "2026-05-24T13:45:47Z",
   "viewer_bundle_s3_uri": "s3://spaceport-ml-processing-staging/compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json",
   "zip_entries": 1776
 }

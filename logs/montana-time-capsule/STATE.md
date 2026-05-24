@@ -5,6 +5,25 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-24T13:45:39Z HEARTBEAT monitor - Friday FRIDAY-20260522: canonical run terminal (SfM+3DGS+compression all Completed); no in-progress SageMaker jobs
+
+- Git: agent-40136728-montana-time-capsule @ b2161f900067f9b1151e08ca16e585426d5e23f0 (`chore: montana heartbeat postcheck 20260524T2030Z [skip ci]`) (local: untracked logs only)
+- Evidence stamp: 20260524T134539Z
+- AWS (us-west-2; note PATH: used `/opt/homebrew/bin/aws`):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T134539Z.json
+  - describe Friday SfM (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T134539Z.json
+  - describe Friday 3DGS (Completed): logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T134539Z.json
+  - describe Friday compression (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T134539Z.json
+  - guardrail visibility (InProgress lists empty): logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T134539Z.json + logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T134539Z.json
+- S3 outputs (Friday):
+  - SfM colmap listing: logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T134539Z.txt
+  - Compression listing: logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-compressed-20260524T134539Z.txt
+- GitHub Actions (note PATH: used `/opt/homebrew/bin/gh`):
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-20260524T134539Z.json
+  - exact-head runs (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T134539Z.json
+- Runner state JSON refreshed (no launches): logs/montana-time-capsule/friday-20260522-state.json
+- Next step: acceptance gate work remains publishing Friday bundle/meta.json to the public bucket + visual proof; do not relaunch any Friday stages.
+
 ## 2026-05-24T20:20:00Z HEARTBEAT monitor - no-spend acceptance refresh: canonical HMC still terminal; staging bundle + viewer/proxy still reachable; public bundle still missing; exact-head CI empty due [skip ci]
 
 - Git: agent-40136728-montana-time-capsule @ 20376a242bba078f9019a10bd9a861e44c8944fe (`chore: montana heartbeat hmc acceptance refresh 20260524T2020Z [skip ci]`) (local: untracked logs only)

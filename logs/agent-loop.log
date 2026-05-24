@@ -365,3 +365,4 @@
 [2026-05-24T13:28:21Z] friday-mtc-20260524T0001Z -> SfM/3DGS/compression Completed; preview proxy+viewer 200 -> commit+push
 [2026-05-24T13:36:14Z] post-push CI -> CDK rerun success for 611bf180 -> monitoring idle
 [2026-05-24T20:20:00Z] hmc-mtc-20260520T2015Z -> terminal; staging bundle meta ok; proxy/viewer 200; public meta 404; exact-head skip-ci -> monitoring idle
+[20260524T134539Z] friday-mtc heartbeat -> all terminal -> update STATE
