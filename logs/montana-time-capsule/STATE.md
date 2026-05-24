@@ -11127,3 +11127,11 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
 - Hosted viewer reachability: base/sky/nosky=200; elevation-proxy meta=404 (evidence: logs/montana-time-capsule/hmc-http-status-20260524T234452Z.txt + curl headers: logs/montana-time-capsule/curlD-hmc-*- 20260524T234452Z.headers)
 - GitHub Actions: branch snapshot=logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T234452Z.json ; exact-head (likely none due [skip ci])=logs/montana-time-capsule/gh-run-list-exact-head-a07ef547-20260524T234452Z.json
 - State snapshot refreshed: logs/montana-time-capsule/hmc-state.json
+
+## 20260524T234730Z HEARTBEAT monitor - postpush exact-head recheck (no spend)
+
+- Git: agent-40136728-montana-time-capsule @ 74ed7cbc6425f08982759d136a6a9019d111e848 (chore: montana heartbeat evidence 20260524T234452Z [skip ci])
+- GitHub Actions exact-head runs: 0 (expected due [skip ci]); snapshot: logs/montana-time-capsule/gh-run-list-exact-head-74ed7cbc-20260524T234730Z.json
+- Viewer: base/sky/nosky=200; elevation-proxy meta=404 (evidence: logs/montana-time-capsule/hmc-http-status-20260524T234730Z.txt)
+- Public bundle meta.json: still 404 (evidence: logs/montana-time-capsule/s3head-public-meta-hmc-mtc-20260520T2015Z-20260524T234730Z.err)
+- State snapshot refreshed: logs/montana-time-capsule/hmc-state.json
