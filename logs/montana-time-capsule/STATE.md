@@ -1,5 +1,20 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-24T17:30:35Z HEARTBEAT monitor - post-push reconfirm (HMC): exact-head CI empty due `[skip ci]`; InProgress=0; hmc-state refreshed
+
+- Git: agent-40136728-montana-time-capsule @ 7606f2a4cf953511696f2e8cb382ba6ca1e1256d (`chore: hmc mtc heartbeat proof 20260524T1728Z [skip ci]`)
+- Evidence stamp: 20260524T173035Z
+- Git proof: logs/montana-time-capsule/git-proof-20260524T173035Z.txt
+- AWS (us-west-2; no spend):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T173035Z.json (region: logs/montana-time-capsule/aws-config-region-20260524T173035Z.txt)
+  - guardrail visibility (InProgress lists empty):
+    - logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T173035Z.json
+    - logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T173035Z.json
+- GitHub Actions (unauth HTML fallback):
+  - commit actions HTML: logs/montana-time-capsule/curl-github-actions-commit-20260524T173035Z.html (headers: logs/montana-time-capsule/curlD-github-actions-commit-20260524T173035Z.headers)
+  - exact-head check: logs/montana-time-capsule/github-actions-exact-head-check-20260524T173035Z.txt
+- State snapshot: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T173035Z)
+
 ## 2026-05-24T17:28:12Z HEARTBEAT monitor - HMC canonical hmc-mtc-20260520T2015Z: terminal reconfirm; InProgress=0; staging meta.json present; public meta.json still 404; hosted viewer sky/no-sky HTTP 200; GitHub Actions verified (public HTML fallback)
 
 - Git: agent-40136728-montana-time-capsule @ 722cdc3d73aae697a257b074f560d467560bb6ea

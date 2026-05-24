@@ -5,7 +5,7 @@
     "region": "us-west-2",
     "userId": "975050048887"
   },
-  "evidence_stamp": "20260524T172812Z",
+  "evidence_stamp": "20260524T173035Z",
   "gh": {
     "cdk_latest_success": {
       "conclusion": "success",
@@ -18,8 +18,10 @@
       "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26362748385",
       "workflowName": "CDK Deploy"
     },
+    "cdk_latest_success_run_id_seen_in_html": 26362748385,
     "exact_head_run_count": 0,
-    "exact_head_sha": "657b12f5c629e7c61566c39c4972e7d24787f535",
+    "exact_head_sha": "7606f2a4cf953511696f2e8cb382ba6ca1e1256d",
+    "gh_cli_available": false,
     "pages_latest_success": {
       "conclusion": "success",
       "createdAt": "2026-05-24T13:17:03Z",
@@ -30,12 +32,13 @@
       "status": "completed",
       "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26362313633",
       "workflowName": "Deploy Next.js to Cloudflare Pages"
-    }
+    },
+    "pages_latest_success_run_id_seen_in_html": 26362313633
   },
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "657b12f5c629e7c61566c39c4972e7d24787f535",
-    "head_checked_at": "20260524T171110Z"
+    "head": "7606f2a4cf953511696f2e8cb382ba6ca1e1256d",
+    "head_checked_at": "20260524T173035Z"
   },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
@@ -52,10 +55,12 @@
     "3dgs_job": "hmc-mtc-20260520T2015Z-3dgs",
     "compression": "Completed",
     "compression_job": "hmc-mtc-20260520T2015Z-compression",
+    "inprogress_processing": 0,
+    "inprogress_training": 0,
     "sfm": "Completed",
     "sfm_job": "hmc-mtc-20260520T2015Z-sfm"
   },
-  "updated_at": "20260524T172812Z",
+  "updated_at": "20260524T173035Z",
   "viewer": {
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
     "checked_at": "20260524T172812Z",
