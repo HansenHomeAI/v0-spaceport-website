@@ -67,6 +67,8 @@
   - exact-head runs for `a0a1f281...`: logs/montana-time-capsule/gh-run-list-exact-head-20260524T030605Z.json (expected 0 due `[skip ci]`; count=logs/montana-time-capsule/gh-run-list-exact-head-count-20260524T030613Z.txt)
   - Pages workflow list: logs/montana-time-capsule/gh-run-list-pages-20260524T030605Z.json
   - CDK workflow list: logs/montana-time-capsule/gh-run-list-cdk-20260524T030605Z.json
+  - postpush branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260524T030927Z.json
+  - postpush exact-head runs for `4423a4b1...` (expected 0 due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T030927Z.json (count=logs/montana-time-capsule/gh-run-list-exact-head-postpush-count-20260524T030927Z.txt)
 
 ## 2026-05-24T02:04:59Z HEARTBEAT monitor (HMC) - no-spend reconfirm: git clean + AWS identity + canonical HMC jobs still Completed + no InProgress HMC jobs + supersplat bundle still present + hosted preview viewer (skybox/no-sky) HTTP 200 + meta.json via `/api/sogs-proxy/<upstream-url>` HTTP 200 (+CORS) + CI snapshot captured
 
