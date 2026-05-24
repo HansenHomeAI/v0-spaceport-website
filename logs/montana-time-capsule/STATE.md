@@ -9548,3 +9548,8 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
   - exact-head runs for 5382b993… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T142928Z.txt
 - Decision: the guarded `cv_hr_time_capsule.py ... --launch` command was NOT re-run because Friday SfM/3DGS/compression are already terminal (avoid duplicate Friday launches).
 - Next step: no spend; acceptance gate remains publishing `compressed/friday-mtc-20260524T0001Z/meta.json` to a public bucket (and re-checking reachability) before calling public delivery complete.
+
+### 2026-05-24T14:31:13Z post-push exact-head workflow check (expected empty due [skip ci])
+
+- Git: agent-40136728-montana-time-capsule @ 5f6b52fbffcce729e427c851b7f3eec82a78e3de (`chore: friday mtc heartbeat 20260524T1429Z [skip ci]`)
+- GitHub Actions (exact-head runs count=0): logs/montana-time-capsule/gh-run-list-exact-head-5f6b52fbffcce729e427c851b7f3eec82a78e3de-20260524T143113Z.txt
