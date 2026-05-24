@@ -435,3 +435,5 @@
 [2026-05-24T20:28:36Z] post-push -> exact-head workflows=0 (skip ci) for 3e37a0c5 -> next: idle/no-spend
 [] heartbeat -> head=9cf62e28b890a281056ec6528dd15a623579d0bf public_meta=404 -> next=await publish gate
 [2026-05-24T20:41:25Z] heartbeat -> viewer sky/no-sky/proxy=200/200/200 public_meta=404 -> next=publish gate
+[2026-05-24T20:46:35Z] heartbeat-verify -> ok (aws/sm terminal, s3 staging meta ok public 404, viewer 200, gh exact-head 0) -> commit ledger
+[2026-05-24T20:47:30Z] heartbeat -> friday-mtc terminal+public meta 200+viewer 200+gh exact-head=0 ([skip ci]) -> commit+push ledger

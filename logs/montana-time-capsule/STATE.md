@@ -10667,3 +10667,26 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
   - exact-head runs (0; expected when HEAD is [skip ci]): logs/montana-time-capsule/gh-run-list-exact-head-9cf62e28b890a281056ec6528dd15a623579d0bf-20260524T204116Z.json
 
 Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended public bucket (meta.json + assets) so direct public reachability passes.
+
+## 2026-05-24T20:46:31Z HEARTBEAT monitor (Friday) - no-spend reconfirm: canonical Friday run terminal + public reachability OK; exact-head CI empty due `[skip ci]`
+
+- Git:
+  - branch/head/status: logs/montana-time-capsule/git-branch-20260524T203935Z.txt; logs/montana-time-capsule/git-head-20260524T203935Z.txt; logs/montana-time-capsule/git-status-20260524T203935Z.txt
+- AWS (aws/gh invoked via `/opt/homebrew/bin/*` because Codex PATH lacks Homebrew bin by default):
+  - identity/region: logs/montana-time-capsule/aws-sts-20260524T204513Z.json; logs/montana-time-capsule/aws-region-20260524T204513Z.txt
+- SageMaker (canonical Friday run `friday-mtc-20260524T0001Z`):
+  - SfM/3DGS/compression describes (all `Completed`): logs/montana-time-capsule/sagemaker-sfm-20260524T204513Z.json; logs/montana-time-capsule/sagemaker-3dgs-20260524T204513Z.json; logs/montana-time-capsule/sagemaker-compression-20260524T204513Z.json
+  - guardrail visibility (InProgress lists): logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T204513Z.json; logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T204513Z.json
+- S3 outputs:
+  - SfM output listing: logs/montana-time-capsule/s3-ls-colmap-20260524T204552Z.txt
+  - compressed output listing: logs/montana-time-capsule/s3-ls-compressed-20260524T204552Z.txt
+  - staging + public supersplat meta head (both OK): logs/montana-time-capsule/s3api-head-staging-meta-20260524T204610Z.json; logs/montana-time-capsule/s3api-head-public-meta-20260524T204610Z.json
+- Public reachability:
+  - public meta HTTP 200: logs/montana-time-capsule/curlI-public-meta-20260524T204610Z.headers
+  - hosted preview viewer HTTP 200 (sky/no-sky): logs/montana-time-capsule/curlI-viewer-sky-20260524T204610Z.headers; logs/montana-time-capsule/curlI-viewer-nosky-20260524T204610Z.headers
+- GitHub Actions:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260524T204621Z.json
+  - exact-head runs (0; expected when HEAD is `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-161370388654dfd8374a23ea7ebf1d6ef9ddd8e0-20260524T204621Z.json
+  - REST snapshots: logs/montana-time-capsule/gh-api-runs-branch-20260524T204631Z.json; logs/montana-time-capsule/gh-api-runs-head-161370388654dfd8374a23ea7ebf1d6ef9ddd8e0-20260524T204631Z.json
+
+- Decision: do **not** re-launch Friday compute (SfM/3DGS/compression already terminal + validated public reachability); next optional gate is deeper visual QA (camera pose vs render + sky/horizon artifacts) before PR/closeout.

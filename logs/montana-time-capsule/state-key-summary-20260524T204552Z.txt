@@ -1,0 +1,9 @@
+run_id=friday-mtc-20260524T0001Z
+sfm_job_name=friday-mtc-20260524T0001Z-sfm
+sfm_status=Completed
+sfm_output_s3_uri=s3://spaceport-ml-processing-staging/manual-validations/friday-mtc-20260524T0001Z/colmap
+3dgs_job_name=friday-mtc-20260524T0001Z-3dgs
+3dgs_status=Completed
+compression_job_name=friday-mtc-20260524T0001Z-compression
+compression_status=Completed
+compressed_output_s3_uri=s3://spaceport-ml-processing-staging/compressed/friday-mtc-20260524T0001Z/
