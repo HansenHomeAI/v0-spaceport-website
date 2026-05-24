@@ -287,3 +287,4 @@
 [2026-05-24T04:06:39Z] heartbeat(hmc) -> verified terminal + viewer 200 + ci snapshot -> next: idle/no-spend
 [2026-05-24T04:08:15Z] friday-20260522 heartbeat -> sfm InProgress (CW active; S3 colmap empty; exact-head gh 0 [skip ci]) -> next: poll until Completed; then run guarded cv_hr_time_capsule --launch
 [20260524T042512Z] heartbeat -> no-spend reconfirm (HMC Completed; InProgress=0; viewer 200; s3 bundle present) -> next: idle
+[2026-05-24T04:28:57Z] FRIDAY heartbeat -> SfM InProgress (no CW since 00:09Z; S3 empty) -> next: wait/poll, do not launch 3DGS
