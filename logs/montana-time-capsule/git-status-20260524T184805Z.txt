@@ -1,0 +1,8 @@
+ M logs/agent-loop.log
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T184803Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-1ddc5abb47cfe35a91b971e2a93ef7ab73b426e4-20260524T184755Z.json
+?? logs/montana-time-capsule/git-branch-20260524T184805Z.txt
+?? logs/montana-time-capsule/git-head-20260524T184805Z.txt
+?? logs/montana-time-capsule/git-status-20260524T184805Z.txt
+?? logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T184803Z.json
+?? logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T184803Z.json
