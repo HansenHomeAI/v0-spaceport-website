@@ -43,6 +43,29 @@
 - Prior full no-spend acceptance evidence (AWS/S3/viewer) remains at: 20260524T093034Z
 - Next step: continue no-spend monitoring; acceptance gate remaining is public bundle publish (non-staging) + visual proof refresh if requested.
 
+## 2026-05-24T09:49:26Z HEARTBEAT monitor - Friday Montana time capsule: SfM is Completed; 3DGS is InProgress (do not relaunch)
+
+- Git: agent-40136728-montana-time-capsule @ f4c21d5a2d03d7198ebf8b3c9cff4ea77781e38b (`chore: montana heartbeat post-push 20260524T093141Z [skip ci]`) (clean)
+- Evidence stamp: 20260524T094926Z
+- AWS identity (us-west-2):
+  - logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T094611Z.json
+- SageMaker (canonical Friday run `friday-mtc-20260524T0001Z`):
+  - SfM describe (Completed; pinned sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811):
+    - logs/montana-time-capsule/sagemaker-describe-friday-mtc-20260524T0001Z-sfm-20260524T094725Z.json
+  - 3DGS describe (InProgress; pinned sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db):
+    - logs/montana-time-capsule/sagemaker-describe-friday-mtc-20260524T0001Z-3dgs-20260524T094611Z.json
+  - Guardrail (no duplicate jobs): list-processing InProgress count=0 (SfM not running):
+    - logs/montana-time-capsule/sagemaker-list-processing-jobs-InProgress-20260524T094921Z.json
+  - CloudWatch (3DGS):
+    - streams: logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-3dgs-20260524T094557Z.json
+    - tail: logs/montana-time-capsule/cloudwatch-get-log-events-friday-mtc-20260524T0001Z-3dgs-20260524T094557Z.json
+- S3 outputs:
+  - SfM colmap listing (objects present): logs/montana-time-capsule/s3api-list-objects-friday-mtc-20260524T0001Z-colmap-20260524T094611Z.json
+  - 3DGS output prefix listing (expected empty while InProgress): logs/montana-time-capsule/s3api-list-objects-friday-mtc-20260524T0001Z-3dgs-20260524T094611Z.json
+- GitHub Actions (exact-head):
+  - exact-head runs for f4c21d5a… (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-f4c21d5a-20260524T094611Z.json
+- Next step: continue monitoring `friday-mtc-20260524T0001Z-3dgs` until `Completed`, then proceed to pinned compression stage (smallest-next-stage only).
+
 ## 2026-05-24T09:30:34Z HEARTBEAT monitor - no-spend acceptance checks: canonical HMC still terminal (SfM/3DGS/compression Completed); staging bundle still present; preview viewer sky/no-sky HTTP 200; sogs-proxy meta.json HTTP 200; public bucket meta.json still 404; exact-head CI empty due [skip ci]
 
 - Git: agent-40136728-montana-time-capsule @ bbfb837b27bc13479e04257cc10ec30b74fd2b97 (`chore: montana heartbeat 20260524T092546Z [skip ci]`) (clean)

@@ -325,3 +325,4 @@
 [2026-05-24T09:31:10Z] montana-heartbeat -> refreshed evidence stamp 20260524T093034Z (HMC Completed; viewer+proxy 200; public 404; exact-head ci 0) -> next: wait for public publish gate
 [2026-05-24T09:32:04Z] montana-heartbeat -> post-push exact-head ci still 0 (stamp 20260524T093141Z) -> next: wait for public publish gate
 [2026-05-24T09:48:13Z] heartbeat -> refreshed AWS/S3/viewer/github proofs (viewer /sogs-migrated-viewer 200; public meta 404; exact-head 0 due skip ci) -> commit+push
+[2026-05-24T09:48:52Z] friday-mtc -> SfM Completed; 3DGS InProgress -> monitor 3DGS
