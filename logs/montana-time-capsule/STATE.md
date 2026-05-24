@@ -20,6 +20,7 @@
   - InProgress guardrail: logs/montana-time-capsule/sm-list-processing-inprogress-20260524T230729Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260524T230729Z.json (counts: 0/0)
   - Latest Friday job lists: logs/montana-time-capsule/sm-list-training-friday-mtc-latest-20260524T230729Z.json + logs/montana-time-capsule/sm-list-processing-friday-mtc-latest-20260524T230729Z.json
   - Public meta HTTP HEAD: logs/montana-time-capsule/curl-head-friday-public-meta-20260524T230729Z.txt
+- Postpush GH snapshot (new head 3f2bf2a6; exact-head runs=0): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T230853Z.json + logs/montana-time-capsule/gh-run-list-exact-head-3f2bf2a63cadcf7b928999f848aadc3692b3f44c-20260524T230853Z.json
 
 ## 2026-05-24T22:48:33Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: no-spend reconfirm; SageMaker terminal (Completed); public meta + hosted viewer still reachable; exact-head GH runs snapshot recorded
 

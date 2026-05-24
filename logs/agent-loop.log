@@ -452,3 +452,4 @@
 [2026-05-24T22:46:33Z] heartbeat(hmc-mtc-20260520T2015Z) -> sagemaker terminal; staging meta OK; public meta 404; viewer 200/200/200; gh head runs 0 -> commit+push
 [2026-05-24T22:47:28Z] heartbeat -> friday-mtc terminal reconfirm (no spend); InProgress=0; meta+viewer reachable; gh snapshot -> commit+push ledger
 [2026-05-24T23:07:29Z] heartbeat -> friday-mtc terminal reconfirm; ran guarded cv_hr_time_capsule --launch (status=completed, no dupes) -> next: keep idle unless new acceptance gate
+[2026-05-24T23:08:53Z] postpush -> gh snapshots recorded for 3f2bf2a6 (exact-head runs 0) -> done
