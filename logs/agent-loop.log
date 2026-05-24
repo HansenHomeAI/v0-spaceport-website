@@ -273,3 +273,4 @@
 [2026-05-24T02:06:46Z] postpush(ci-snapshot) -> recorded gh run list for HEAD=ff46dd9f458d2a2cc2e2594051421d251678d77d (expect 0 due [skip ci]) -> idle
 [2026-05-24T02:09:51Z] friday-20260522 heartbeat -> sfm InProgress (no new S3 objects) -> continue monitoring
 [2026-05-24T02:24:55Z] friday-20260522 heartbeat -> sfm InProgress (output is EndOfJob; no terminal artifacts yet) -> continue monitoring
+[2026-05-24T02:27:03Z] friday-20260522 postpush -> recorded gh exact-head=0 as expected ([skip ci]) -> continue monitoring SfM

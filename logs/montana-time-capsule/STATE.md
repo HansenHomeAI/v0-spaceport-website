@@ -7464,6 +7464,11 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remain
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260524T022523Z.json
   - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T022523Z.json
 
+### Postpush 2026-05-24T02:27:03Z
+- git head: 0e16303f62fac56862da29745d5dd58b4a6c4737 (`[skip ci]`)
+- gh runs branch: logs/montana-time-capsule/gh-run-list-branch-postpush-20260524T022703Z.json
+- gh runs exact head (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T022703Z.json
+
 Next: wait for SfM to reach Completed, then run the single guarded  command.
 
 ## 2026-05-24T01:26:51Z HEARTBEAT monitor (HMC) - no-spend reconfirm: git clean + AWS identity + canonical SageMaker terminal (SfM/3DGS/compression Completed; no InProgress) + S3 supersplat bundle present + hosted preview viewer reachable (skybox/no-sky) + sogs-proxy meta fetch HTTP 200 (+CORS) + CI snapshot
