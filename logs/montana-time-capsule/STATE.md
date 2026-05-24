@@ -219,6 +219,28 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remain
 
 Next: continue monitoring `friday-mtc-20260524T0001Z-sfm` until `Completed`, then run exactly one guarded launch command for pinned 3DGS via `scripts/montana_time_capsule/cv_hr_time_capsule.py` (per automation instructions).
 
+## 2026-05-24T01:06:46Z HEARTBEAT monitor (Friday) - status capture: git head + GitHub Actions exact-head snapshot + AWS identity + Friday SfM still InProgress + CloudWatch progress proof + output prefix still empty (EndOfJob)
+
+- Git: agent-40136728-montana-time-capsule @ 29336800b2a24f9bf69d52eb2939a6d921b8bfc5 (clean)
+  - head: logs/montana-time-capsule/git-head-20260524T010646Z.txt
+  - status: logs/montana-time-capsule/git-status-20260524T010646Z.txt
+- GitHub Actions snapshot:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T010646Z.json
+  - exact-head runs (expected empty for `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T010646Z.json
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T010646Z.json
+  - region: logs/montana-time-capsule/aws-configure-get-region-20260524T010646Z.txt
+  - version: logs/montana-time-capsule/aws-version-20260524T010646Z.txt
+- SageMaker Friday run `friday-mtc-20260524T0001Z`:
+  - SfM processing job still InProgress: logs/montana-time-capsule/sagemaker-describe-friday-mtc-20260524T0001Z-sfm-20260524T010539Z.json
+  - CloudWatch progress proof (feature_extractor): processed file [1491/1776] at 2026-05-24T01:06:07Z:
+    - streams: logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-sfm-20260524T010603Z.json
+    - events: logs/montana-time-capsule/cloudwatch-get-log-events-friday-mtc-20260524T0001Z-sfm-20260524T010613Z.json
+    - tail: logs/montana-time-capsule/cloudwatch-tail-friday-mtc-20260524T0001Z-sfm-20260524T010613Z.log
+  - Output prefix still empty (EndOfJob upload mode): logs/montana-time-capsule/s3-ls-recursive-friday-mtc-20260524T0001Z-colmap-20260524T010627Z.txt
+
+Next: keep monitoring `friday-mtc-20260524T0001Z-sfm` until `Completed`; do not launch any Friday follow-on stage until SfM completes.
+
 ## 2026-05-24T00:26:45Z HEARTBEAT monitor (FRIDAY-20260522) - canonical run `friday-mtc-20260524T0001Z`: SfM still InProgress; CloudWatch confirms live COLMAP feature extraction; S3 output still empty (EndOfJob)
 
 - Git: agent-40136728-montana-time-capsule @ 853c1bd4b02e5eb9f2d7fe8437413e0caf39b93e (`chore: record friday postpush ci proof [skip ci]`) (dirty: new logs pending commit)
