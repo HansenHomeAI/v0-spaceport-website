@@ -1,0 +1,4 @@
+branch=agent-40136728-montana-time-capsule
+head=01cd7f768a437dc3f1fc6fb3828b125e2d6f7431
+01cd7f76 chore: friday heartbeat 20260524T0727Z [skip ci]
+?? logs/montana-time-capsule/git-head-20260524T072839Z.txt
