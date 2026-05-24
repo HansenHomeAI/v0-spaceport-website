@@ -199,6 +199,26 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remain
 - AWS (us-west-2; aws=/opt/homebrew/bin/aws):
   - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260523T212851Z.json
 
+## 2026-05-24T00:46:13Z HEARTBEAT monitor (FRIDAY) - no-spend reconfirm: git head/status + AWS identity + canonical Friday SfM still InProgress + CloudWatch progress proof + S3 output still empty (EndOfJob) + CI snapshot (exact-head empty due to `[skip ci]`)
+
+- Git:
+  - snapshot: logs/montana-time-capsule/git-head-and-status-20260524T004613Z.txt
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T004613Z.json
+  - region: logs/montana-time-capsule/aws-region-20260524T004613Z.txt
+  - version: logs/montana-time-capsule/aws-version-20260524T004613Z.txt
+- SageMaker (canonical Friday SfM job still InProgress; do not launch duplicate Friday jobs; do not stop other automations):
+  - describe: logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T004508Z.json
+  - CloudWatch stream list: logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-sfm-20260524T004540Z.json
+  - CloudWatch tail (progress proof: COLMAP feature_extractor processed file [960/1776] at 2026-05-24T00:45:39Z): logs/montana-time-capsule/cloudwatch-tail-friday-mtc-20260524T0001Z-sfm-20260524T004540Z.log
+- S3 (SfM output prefix empty; upload mode is EndOfJob):
+  - recursive listing: logs/montana-time-capsule/s3-ls-recursive-friday-mtc-20260524T0001Z-colmap-20260524T004508Z.txt
+- CI snapshot:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T004613Z.json
+  - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T004613Z.json
+
+Next: continue monitoring `friday-mtc-20260524T0001Z-sfm` until `Completed`, then run exactly one guarded launch command for pinned 3DGS via `scripts/montana_time_capsule/cv_hr_time_capsule.py` (per automation instructions).
+
 ## 2026-05-24T00:26:45Z HEARTBEAT monitor (FRIDAY-20260522) - canonical run `friday-mtc-20260524T0001Z`: SfM still InProgress; CloudWatch confirms live COLMAP feature extraction; S3 output still empty (EndOfJob)
 
 - Git: agent-40136728-montana-time-capsule @ 853c1bd4b02e5eb9f2d7fe8437413e0caf39b93e (`chore: record friday postpush ci proof [skip ci]`) (dirty: new logs pending commit)
@@ -7246,3 +7266,27 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remain
   - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260524T002703Z.json (expected empty due to `[skip ci]`)
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T002703Z.json (latest `CDK Deploy` success; latest `Deploy Next.js to Cloudflare Pages` success in list)
   - postpush snapshot: logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T002901Z.json (exact-head still empty) + logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260524T002901Z.json
+
+## 2026-05-24T00:46:44Z HEARTBEAT monitor (HMC) - no-spend reconfirm: git head/status + AWS identity + canonical SageMaker terminal (SfM/3DGS/compression Completed; no InProgress) + S3 supersplat bundle present + hosted preview viewer reachable (skybox/no-sky) + sogs-proxy meta fetch HTTP 200 + CI snapshot
+
+- Git: agent-40136728-montana-time-capsule @ 4f7c5f0772c86fabab88c8d5eb587cc6f15f8277 (dirty: new logs pending commit)
+  - proof: logs/montana-time-capsule/git-head-and-status-20260524T004613Z.txt
+- AWS (us-west-2):
+  - sts: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T004613Z.json
+  - region: logs/montana-time-capsule/aws-configure-get-region-20260524T004426Z.txt
+- SageMaker canonical run `hmc-mtc-20260520T2015Z` terminal:
+  - SfM: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260524T004426Z.json
+  - 3DGS: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-training-20260524T004426Z.json
+  - compression: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260524T004426Z.json
+  - InProgress lists: logs/montana-time-capsule/sagemaker-list-processing-hmc-mtc-20260520T2015Z-InProgress-20260524T004426Z.json ; logs/montana-time-capsule/sagemaker-list-training-hmc-mtc-20260520T2015Z-InProgress-20260524T004426Z.json
+- S3 supersplat bundle evidence:
+  - ls: logs/montana-time-capsule/s3-ls-supersplat-bundle-20260524T004537Z.txt
+  - head meta: logs/montana-time-capsule/s3api-head-object-supersplat-meta-20260524T004537Z.json
+  - head skybox: logs/montana-time-capsule/s3api-head-object-supersplat-background-skybox-20260524T004537Z.json
+- Hosted preview viewer reachability:
+  - viewer no-sky headers: logs/montana-time-capsule/curlI-viewer-nosky-20260524T004537Z.headers
+  - viewer skybox headers: logs/montana-time-capsule/curlI-viewer-skybox-20260524T004537Z.headers
+  - sogs-proxy meta headers/body: logs/montana-time-capsule/curlI-sogs-proxy-meta-20260524T004537Z.headers ; logs/montana-time-capsule/curl-sogs-proxy-meta-20260524T004537Z.body.json
+- GitHub Actions snapshot:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T004613Z.json
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260524T004613Z.json

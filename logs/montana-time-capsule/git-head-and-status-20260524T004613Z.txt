@@ -1,0 +1,35 @@
+branch=agent-40136728-montana-time-capsule
+head=4f7c5f0772c86fabab88c8d5eb587cc6f15f8277
+## agent-40136728-montana-time-capsule...origin/agent-40136728-montana-time-capsule
+?? logs/montana-time-capsule/aws-binary-20260524T004426Z.txt
+?? logs/montana-time-capsule/aws-configure-get-region-20260524T004426Z.txt
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T004426Z.json
+?? logs/montana-time-capsule/aws-version-20260524T004426Z.txt
+?? logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-sfm-20260524T004534Z.json
+?? logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-sfm-20260524T004540Z.json
+?? logs/montana-time-capsule/curl-sogs-proxy-meta-20260524T004537Z.body.json
+?? logs/montana-time-capsule/curlI-sogs-proxy-meta-20260524T004537Z.headers
+?? logs/montana-time-capsule/curlI-viewer-nosky-20260524T004537Z.headers
+?? logs/montana-time-capsule/curlI-viewer-skybox-20260524T004537Z.headers
+?? logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T004411Z.json
+?? logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260524T002901Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-20260524T004411Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T002901Z.json
+?? logs/montana-time-capsule/gh-version-20260524T004411Z.txt
+?? logs/montana-time-capsule/git-head-and-status-20260524T004411Z.txt
+?? logs/montana-time-capsule/git-head-and-status-20260524T004613Z.txt
+?? logs/montana-time-capsule/heartbeat-sogs-proxy-meta-url-20260524T004537Z.txt
+?? logs/montana-time-capsule/heartbeat-ts-20260524T004411Z.txt
+?? logs/montana-time-capsule/heartbeat-ts-20260524T004613Z.txt
+?? logs/montana-time-capsule/s3-ls-recursive-friday-mtc-20260524T0001Z-colmap-20260524T004508Z.txt
+?? logs/montana-time-capsule/s3-ls-supersplat-bundle-20260524T004537Z.txt
+?? logs/montana-time-capsule/s3api-head-object-supersplat-background-skybox-20260524T004537Z.json
+?? logs/montana-time-capsule/s3api-head-object-supersplat-meta-20260524T004537Z.json
+?? logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-training-20260524T004426Z.json
+?? logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260524T004426Z.json
+?? logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260524T004426Z.json
+?? logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T004508Z.json
+?? logs/montana-time-capsule/sagemaker-list-processing-hmc-mtc-20260520T2015Z-InProgress-20260524T004426Z.json
+?? logs/montana-time-capsule/sagemaker-list-training-hmc-mtc-20260520T2015Z-InProgress-20260524T004426Z.json
+?? logs/montana-time-capsule/viewer-nosky-url-20260524T004537Z.txt
+?? logs/montana-time-capsule/viewer-sky-url-20260524T004537Z.txt
