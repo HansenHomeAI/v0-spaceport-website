@@ -9161,3 +9161,11 @@ Next: keep polling SfM status + CloudWatch lastEvent; do not launch 3DGS until S
   - exact-head runs for b4140850a1c0c4fe7ff4f6afe940922d27b87d1e (expected empty due [skip ci]): logs/montana-time-capsule/gh-run-list-exact-head-b4140850a1c0c4fe7ff4f6afe940922d27b87d1e-20260524T122844Z.json (count: logs/montana-time-capsule/gh-run-count-exact-head-b4140850a1c0c4fe7ff4f6afe940922d27b87d1e-20260524T122844Z.txt)
   - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T122844Z.json
 - Next step: no action until 3DGS completes or fails; do not relaunch Friday jobs.
+
+## 2026-05-24T12:29:56Z HEARTBEAT monitor - post-push exact-head workflow check (expected empty due [skip ci])
+
+- Git: agent-40136728-montana-time-capsule @ 1c8d131a84e3c3c521d7d1c8d0d3acc0e0688eee (1c8d131a chore: friday mtc heartbeat 20260524T1228Z [skip ci]) (clean)
+- Evidence stamp (GitHub exact-head): 20260524T122954Z
+- GitHub Actions:
+  - exact-head runs for 1c8d131a84e3c3c521d7d1c8d0d3acc0e0688eee (expected empty due [skip ci]): logs/montana-time-capsule/gh-run-list-exact-head-1c8d131a84e3c3c521d7d1c8d0d3acc0e0688eee-20260524T122954Z.json (count: logs/montana-time-capsule/gh-run-count-exact-head-1c8d131a84e3c3c521d7d1c8d0d3acc0e0688eee-20260524T122954Z.txt)
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T122954Z.json
