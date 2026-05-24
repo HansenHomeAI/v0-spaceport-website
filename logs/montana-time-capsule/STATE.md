@@ -20,6 +20,7 @@
   - compressed supersplat bundle listing: logs/montana-time-capsule/s3ls-compressed-friday-mtc-20260524T0001Z-20260524T214521Z.txt
 - GitHub Actions (`/opt/homebrew/bin/gh`):
   - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T214551Z.txt (no new exact-head runs expected due `[skip ci]`)
+  - post-push branch runs snapshot (this heartbeat push produced no new runs due `[skip ci]`): logs/montana-time-capsule/gh-run-list-branch-postpush-20260524T214841Z.txt
 
 ## 2026-05-24T21:28:39Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: terminal re-verified (no spend); public meta + viewer sky/no-sky HTTP 200; no new compute launched
 
