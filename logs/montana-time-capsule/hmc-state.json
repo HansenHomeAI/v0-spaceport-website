@@ -5,7 +5,7 @@
     "region": "us-west-2",
     "userId": "975050048887"
   },
-  "evidence_stamp": "20260524T192810Z",
+  "evidence_stamp": "20260524T194413Z",
   "gh": {
     "cdk_latest_success": {
       "conclusion": "success",
@@ -35,8 +35,8 @@
   },
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "d47c10b584764dcd0adf6acd4ee2695b85fdcfa2",
-    "head_checked_at": "20260524T192810Z"
+    "head": "ce2baea6e06f52b58dc5106167ceba3b96132f6e",
+    "head_checked_at": "20260524T194413Z"
   },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
@@ -47,7 +47,7 @@
     "public_meta_key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json",
     "staging_meta_content_length": 1359,
     "staging_meta_etag": "\"994e5d57f052e552b8cce2e05d4debf4\"",
-    "staging_meta_last_modified": "Thu, 21 May 2026 20:25:10 GMT"
+    "staging_meta_last_modified": "2026-05-21T20:25:10+00:00"
   },
   "sagemaker": {
     "3dgs": "Completed",
@@ -59,10 +59,10 @@
     "sfm": "Completed",
     "sfm_job": "hmc-mtc-20260520T2015Z-sfm"
   },
-  "updated_at": "20260524T192810Z",
+  "updated_at": "20260524T194413Z",
   "viewer": {
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
-    "checked_at": "20260524T192810Z",
+    "checked_at": "20260524T194413Z",
     "nosky_http": 200,
     "proxy_http": 200,
     "sky_http": 200

@@ -425,3 +425,4 @@
 [2026-05-24T19:26:47Z] friday heartbeat -> reconfirm terminal (sfm/3dgs/compression Completed); public meta 200; exact-head=0 (skip ci) -> next: passive/no-spend
 [2026-05-24T19:26:59Z] heartbeat-hmc-canonical -> sagemaker terminal, viewer 200, public meta missing -> wait
 [2026-05-24T19:30:21Z] post-push -> exact-head workflows=0 (skip ci) for a10938bb -> next: idle/no-spend
+[2026-05-24T19:47:00Z] heartbeat -> HMC terminal reconfirm (aws/gh via /opt/homebrew/bin), staging bundle OK, public meta 404, viewer 200 -> next: wait for publish-to-public gate
