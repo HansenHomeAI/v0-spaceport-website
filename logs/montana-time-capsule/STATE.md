@@ -7643,3 +7643,8 @@ Next: remain idle for HMC; continue monitoring friday-mtc SfM to terminal (separ
   - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260524T031335Z.json
 
 Next: wait for SfM to reach Completed, then run the single guarded `cv_hr_time_capsule.py --launch` command exactly once.
+
+### Postpush 2026-05-24T03:14:58Z
+- git head: 4822d1f13026c1a7dceda18aa7bfbab8be7c1dfa (`[skip ci]`)
+- gh branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260524T031458Z.json
+- gh exact-head runs (expected 0 due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T031458Z.json (count: logs/montana-time-capsule/gh-run-list-exact-head-postpush-count-20260524T031458Z.txt)
