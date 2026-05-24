@@ -33,6 +33,41 @@
   - postpush exact-head runs (for new head `df44a895...`; expected 0 due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260524T025020Z.json
   - postpush branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-20260524T025020Z.json
 
+## 2026-05-24T03:06:33Z HEARTBEAT monitor (HMC) - no-spend reconfirm: git head + AWS identity + canonical HMC jobs still Completed + no InProgress HMC jobs + supersplat bundle still present + hosted preview viewer (skybox/no-sky) HTTP 200 + CI exact-head snapshot captured
+
+- Git: agent-40136728-montana-time-capsule @ a0a1f2819ceb5adc1ce2dad1b54cc014d486cd3d (dirty due new logs only)
+  - branch: logs/montana-time-capsule/git-branch-20260524T030408Z.txt
+  - head: logs/montana-time-capsule/git-head-20260524T030408Z.txt
+  - status: logs/montana-time-capsule/git-status-20260524T030408Z.txt
+- AWS (us-west-2; NOTE: `$PATH` in this harness does not include `/opt/homebrew/bin`, so invoke aws via absolute path):
+  - aws path: logs/montana-time-capsule/aws-path-20260524T030536Z.txt
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T030536Z.json
+  - version: logs/montana-time-capsule/aws-version-20260524T030536Z.txt
+- SageMaker (canonical run `hmc-mtc-20260520T2015Z`; do not launch duplicate HMC jobs):
+  - SfM processing job Completed: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260524T030436Z.json
+  - 3DGS training job Completed: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260524T030436Z.json
+  - compression processing job Completed: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260524T030436Z.json
+  - InProgress processing jobs matching run prefix: logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T030436Z.json (expected 0)
+  - InProgress training jobs matching run prefix: logs/montana-time-capsule/sagemaker-list-training-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T030436Z.json (expected 0)
+  - quick status summary: logs/montana-time-capsule/sagemaker-status-summary-20260524T030513Z.json
+- S3 supersplat bundle still present:
+  - ls: logs/montana-time-capsule/s3-ls-supersplat-bundle-20260524T030523Z.txt
+  - head meta.json: logs/montana-time-capsule/s3api-head-object-supersplat-meta-20260524T030523Z.json
+  - downloaded meta.json (size proof): logs/montana-time-capsule/s3cp-supersplat-meta-20260524T030534Z.json + logs/montana-time-capsule/s3cp-supersplat-meta-20260524T030534Z.wc.txt
+- Hosted preview viewer reachability:
+  - preview url: logs/montana-time-capsule/preview-url-20260524T030549Z.txt
+  - reachability: logs/montana-time-capsule/curl-viewer-reachability-20260524T030549Z.txt (expected 200s)
+  - viewer base headers: logs/montana-time-capsule/curlI-viewer-base-20260524T030549Z.headers
+  - viewer skybox headers: logs/montana-time-capsule/curlI-viewer-skybox-20260524T030549Z.headers
+  - viewer no-sky headers: logs/montana-time-capsule/curlI-viewer-nosky-20260524T030549Z.headers
+  - sogs-proxy meta headers/body: logs/montana-time-capsule/curlI-sogs-proxy-meta-20260524T030549Z.headers + logs/montana-time-capsule/curl-sogs-proxy-meta-20260524T030549Z.body.json
+- GitHub Actions snapshot (gh=/opt/homebrew/bin/gh):
+  - gh path: logs/montana-time-capsule/gh-path-20260524T030605Z.txt
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260524T030605Z.json
+  - exact-head runs for `a0a1f281...`: logs/montana-time-capsule/gh-run-list-exact-head-20260524T030605Z.json (expected 0 due `[skip ci]`; count=logs/montana-time-capsule/gh-run-list-exact-head-count-20260524T030613Z.txt)
+  - Pages workflow list: logs/montana-time-capsule/gh-run-list-pages-20260524T030605Z.json
+  - CDK workflow list: logs/montana-time-capsule/gh-run-list-cdk-20260524T030605Z.json
+
 ## 2026-05-24T02:04:59Z HEARTBEAT monitor (HMC) - no-spend reconfirm: git clean + AWS identity + canonical HMC jobs still Completed + no InProgress HMC jobs + supersplat bundle still present + hosted preview viewer (skybox/no-sky) HTTP 200 + meta.json via `/api/sogs-proxy/<upstream-url>` HTTP 200 (+CORS) + CI snapshot captured
 
 - Git: agent-40136728-montana-time-capsule @ 0d35eb35f76336aca297b4a2730eb05cdaf58638 (`chore: add postpush logs 2026-05-24T01:27Z [skip ci]`) (clean)
@@ -7587,3 +7622,21 @@ Next: remain idle; next acceptance gate remains updated browser visual proof (sc
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T022925Z.json
 
 Next: remain idle for HMC; continue monitoring friday-mtc SfM to terminal (separate run).
+
+## 2026-05-24T03:07:27Z HEARTBEAT monitor (FRIDAY-20260522) - friday-mtc SfM still InProgress (do not launch duplicates)
+
+- Git: agent-40136728-montana-time-capsule @ a0a1f2819ceb5adc1ce2dad1b54cc014d486cd3d (working tree has untracked log snapshots only)
+  - proof: logs/montana-time-capsule/git-status-porcelain-20260524T030447Z.txt
+- AWS (us-west-2):
+  - sts: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T030447Z.json
+- SageMaker SfM (processing) `friday-mtc-20260524T0001Z-sfm`:
+  - describe (InProgress): logs/montana-time-capsule/sagemaker-describe-processing-job-friday-mtc-20260524T0001Z-sfm-20260524T030613Z.json
+  - CloudWatch tail (actively registering images): logs/montana-time-capsule/cloudwatch-get-log-events-processingjobs-friday-mtc-20260524T0001Z-sfm-20260524T030654Z.json
+- S3 outputs:
+  - run prefix listing (currently empty; outputs upload EndOfJob): logs/montana-time-capsule/s3-ls-manual-validations-friday-mtc-20260524T0001Z-top-20260524T030613Z.txt
+  - colmap prefix top (not present yet): logs/montana-time-capsule/s3-ls-manual-validations-friday-mtc-20260524T0001Z-colmap-top-20260524T030557Z.txt
+- GitHub Actions snapshot (exact-head expected empty due to `[skip ci]`):
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T030727Z.json
+  - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-20260524T030727Z.json
+
+Next: wait for SfM to reach Completed, then run the single guarded `cv_hr_time_capsule.py --launch` command exactly once.

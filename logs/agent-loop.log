@@ -278,3 +278,5 @@
 [2026-05-24T02:46:27Z] friday-20260522 heartbeat -> sfm InProgress (COLMAP mapper progressing; output EndOfJob so S3 prefix still empty) -> next: monitor SfM to Completed
 [2026-05-24T02:48:17Z] friday-20260522 postpush -> recorded gh exact-head=0 as expected ([skip ci]) -> continue monitoring SfM
 [2026-05-24T02:48:48Z] heartbeat -> HMC terminal + viewer 200 + screenshots captured -> next: idle
+[2026-05-24T03:06:56Z] heartbeat -> verified git/aws/sagemaker/s3/viewer/gh (no-spend) -> commit+push ledger
+[2026-05-24T03:07:48Z] friday-mtc SfM heartbeat -> InProgress (CloudWatch shows COLMAP registering images) -> next: wait for Completed then run guarded launch

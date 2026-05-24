@@ -1,0 +1,8 @@
+base https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev
+HTTP 200
+sky https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/?skybox=1
+HTTP 200
+nosky https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/?skybox=0
+HTTP 200
+sogs https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/api/sogs-proxy/https://spaceport-ml-processing-staging.s3.us-west-2.amazonaws.com/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json
+HTTP 200
