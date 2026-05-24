@@ -2,8 +2,8 @@
 
 ## 2026-05-24T20:47:10Z HEARTBEAT monitor (HMC canonical): no-spend reconfirm; terminal SageMaker jobs; staging bundle OK; public meta.json still 404; hosted viewer sky/no-sky/proxy HTTP 200; GitHub exact-head workflows=0 (skip ci)
 
-- Git: agent-40136728-montana-time-capsule @ 161370388654dfd8374a23ea7ebf1d6ef9ddd8e0 (`chore: montana hmc heartbeat 20260524T204116Z [skip ci]`)
-- Evidence stamp: 20260524T204710Z
+- Git: agent-40136728-montana-time-capsule @ b3e1011a7cc3c0433d00b14422b38631867ce569 (`chore: hmc mtc heartbeat reconfirm 20260524T204710Z [skip ci]`)
+- Evidence stamp: 20260524T204955Z
 - AWS (us-west-2; /opt/homebrew/bin/aws; no spend):
   - identity: logs/montana-time-capsule/aws-sts-20260524T204520Z.json (region: logs/montana-time-capsule/aws-region-20260524T204520Z.txt; aws bin: logs/montana-time-capsule/aws-bin-20260524T204520Z.txt)
   - InProgress guardrail: logs/montana-time-capsule/sm-list-processing-inprogress-20260524T204520Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260524T204520Z.json (counts: 0/0)
@@ -20,8 +20,8 @@
   - sky/no-sky/proxy: logs/montana-time-capsule/curl-head-viewer-sky-20260524T204621Z.txt + logs/montana-time-capsule/curl-head-viewer-nosky-20260524T204621Z.txt + logs/montana-time-capsule/curl-head-viewer-proxy-20260524T204621Z.txt
 - GitHub Actions (via GitHub REST API; `gh` CLI missing in this worktree):
   - branch runs: logs/montana-time-capsule/gh-api-runs-branch-20260524T204631Z.json
-  - exact-head runs (0 expected due `[skip ci]`): logs/montana-time-capsule/gh-api-runs-head-161370388654dfd8374a23ea7ebf1d6ef9ddd8e0-20260524T204631Z.json
-- State snapshot: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T204710Z)
+  - exact-head runs (0 expected due `[skip ci]`): logs/montana-time-capsule/gh-api-runs-head-b3e1011a7cc3c0433d00b14422b38631867ce569-20260524T204916Z.json
+- State snapshot: logs/montana-time-capsule/hmc-state.json (updated_at=20260524T204955Z)
 
 ## 2026-05-24T20:25:02Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: SfM/3DGS/compression all Completed; public meta.json HTTP 200; viewer sky/no-sky HTTP 200 + screenshots; no new compute launched
 

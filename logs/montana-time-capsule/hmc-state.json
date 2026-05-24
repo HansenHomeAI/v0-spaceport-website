@@ -1,11 +1,11 @@
 {
   "run_id": "hmc-mtc-20260520T2015Z",
-  "evidence_stamp": "20260524T204710Z",
-  "updated_at": "20260524T204710Z",
+  "evidence_stamp": "20260524T204955Z",
+  "updated_at": "20260524T204955Z",
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "161370388654dfd8374a23ea7ebf1d6ef9ddd8e0",
-    "head_checked_at": "20260524T204710Z"
+    "head": "b3e1011a7cc3c0433d00b14422b38631867ce569",
+    "head_checked_at": "20260524T204955Z"
   },
   "aws": {
     "account": "975050048887",
@@ -35,7 +35,7 @@
   },
   "viewer": {
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
-    "checked_at": "20260524T204710Z",
+    "checked_at": "20260524T204955Z",
     "base_http": 200,
     "sky_http": 200,
     "nosky_http": 200,
@@ -43,8 +43,8 @@
   },
   "gh": {
     "gh_cli_available": false,
-    "exact_head_sha": "161370388654dfd8374a23ea7ebf1d6ef9ddd8e0",
+    "exact_head_sha": "b3e1011a7cc3c0433d00b14422b38631867ce569",
     "exact_head_run_count": 0,
-    "branch_runs_snapshot": "gh-api-runs-branch-20260524T204631Z.json"
+    "exact_head_runs_snapshot": "gh-api-runs-head-b3e1011a7cc3c0433d00b14422b38631867ce569-20260524T204916Z.json"
   }
 }
