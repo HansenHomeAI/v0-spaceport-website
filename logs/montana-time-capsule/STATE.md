@@ -5,6 +5,33 @@
 - Branch: `agent-40136728-montana-time-capsule`
 - Purpose: preserve and run the exact Montana-era training stack for CV-HR without inheriting later pipeline/container changes.
 
+## 2026-05-24T14:12:00Z HEARTBEAT monitor - Friday FRIDAY-20260522: terminal reconfirm + viewer screenshots captured; public bucket meta.json still 404
+
+- Git: agent-40136728-montana-time-capsule @ 159fd3351e93a379226bab0745877c25c6b488cf (`chore: montana heartbeat gh postpush confirm 20260524T135210Z [skip ci]`)
+- Evidence stamp: 20260524T141200Z
+- AWS (us-west-2; note PATH: used `/opt/homebrew/bin/aws`):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T140900Z.json
+  - guardrail visibility (InProgress lists empty): logs/montana-time-capsule/sagemaker-list-processing-InProgress-20260524T140900Z.json + logs/montana-time-capsule/sagemaker-list-training-InProgress-20260524T140900Z.json
+  - describe Friday SfM (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T140900Z.json
+  - describe Friday 3DGS (Completed): logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T140900Z.json
+  - describe Friday compression (Completed): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-compression-20260524T140900Z.json
+- S3 outputs (Friday):
+  - SfM colmap listing: logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T140900Z.txt
+  - compressed supersplat bundle listing: logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-compressed-20260524T140900Z.txt
+- Public bucket publish gate (still missing):
+  - spaceport-ml-processing-public head meta.json (expected 404): logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-public-friday-mtc-20260524T0001Z-meta-20260524T141200Z.err
+  - spaceport-public head meta.json (expected 404): logs/montana-time-capsule/s3api-head-object-spaceport-public-friday-mtc-20260524T0001Z-meta-20260524T141200Z.err
+- Hosted viewer visual proof (Playwright MCP; evidence stamp 20260524T140733Z):
+  - skybox screenshot: logs/montana-time-capsule/viewer-proof-friday-mtc-20260524T0001Z-sky-20260524T140733Z.png
+  - no-sky screenshot: logs/montana-time-capsule/viewer-proof-friday-mtc-20260524T0001Z-nosky-20260524T140733Z.png
+  - console dump: logs/montana-time-capsule/viewer-proof-console-20260524T140733Z.txt
+  - tools snapshot: logs/montana-time-capsule/playwright-mcp-tools-20260524T140733Z.json
+- GitHub Actions (note PATH: used `/opt/homebrew/bin/gh`):
+  - branch runs (latest known green Pages+CDK earlier today): logs/montana-time-capsule/gh-run-list-agent-40136728-20260524T141000Z.txt
+  - exact-head runs (expected empty due `[skip ci]`): logs/montana-time-capsule/gh-run-list-commit-20260524T141000Z.txt
+- Decision: SfM already `Completed`, so the guarded `cv_hr_time_capsule.py ... --launch` command was NOT re-run (avoid duplicate Friday launches).
+- Next step: no spend; acceptance gate remaining is publishing Friday bundle/meta.json to a public bucket + (optionally) refreshed viewer proof on request.
+
 ## 2026-05-24T13:49:49Z HEARTBEAT monitor - no-spend HMC acceptance refresh: canonical HMC still terminal; staging bundle + viewer/proxy still reachable; public bundle still missing; exact-head CI empty due [skip ci]
 
 - Git: agent-40136728-montana-time-capsule @ 9844fd3756a56e04b2c67d59a83e811f648c220a (`chore: record hmc reachability tick 20260524T1346Z [skip ci]`) (local: logs + state refresh)
