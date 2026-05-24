@@ -321,3 +321,4 @@
 [2026-05-24T08:53:15Z] heartbeat -> OK (no-spend checks) -> next: wait
 [2026-05-24T09:06:14Z] friday-mtc -> SfM Completed; launched 3DGS job friday-mtc-20260524T0001Z-3dgs (InProgress) -> next: monitor 3DGS
 [2026-05-24T09:28:27Z] friday 20260522 -> sfm Completed; 3dgs InProgress (adopted existing; no duplicate launch) -> next monitor 3dgs until Completed
+[2026-05-24T09:29:35Z] montana-heartbeat -> HMC terminal + viewer/proxy 200; public meta 404; exact-head ci 0 ([skip ci]) -> next: wait for public publish gate
