@@ -1,0 +1,120 @@
+{
+  "created_at": "2026-05-24T00:01:27Z",
+  "dataset": "FRIDAY-20260522",
+  "first_images": [
+    "109MEDIA_DJI_0797.JPG",
+    "109MEDIA_DJI_0798.JPG",
+    "109MEDIA_DJI_0799.JPG",
+    "109MEDIA_DJI_0800.JPG",
+    "109MEDIA_DJI_0801.JPG"
+  ],
+  "input_etag": "8484b9ad1089adb721f1b31dfc85fc23-896",
+  "input_image_count": 1776,
+  "input_s3_uri": "s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.zip",
+  "input_size_bytes": 7514816344,
+  "last_action": "launched_sfm",
+  "last_images": [
+    "111MEDIA_DJI_0570.JPG",
+    "111MEDIA_DJI_0571.JPG",
+    "111MEDIA_DJI_0572.JPG",
+    "111MEDIA_DJI_0573.JPG",
+    "111MEDIA_DJI_0574.JPG"
+  ],
+  "profile": "brass-chunked",
+  "profile_note": "Exact Brass Lantern chunked SfM image; default reproducible Montana profile.",
+  "run_id": "friday-mtc-20260524T0001Z",
+  "sfm_environment": {
+    "AWS_DEFAULT_REGION": "us-west-2",
+    "COLMAP_CHUNK_MIN_CORE_REGISTERED_RATIO": "0.90",
+    "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+    "PYTHONUNBUFFERED": "1",
+    "SFM_BENCHMARK_SUBSET_STRATEGY": "friday_20260522_full_1776_montana_time_capsule",
+    "SFM_BRANCH_NAME": "agent-40136728-montana-time-capsule",
+    "SFM_GIT_HEAD": "0e3f3e57759cd2bf65effc60064bc2874fa97eb7",
+    "SFM_INPUT_URI": "s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.zip",
+    "SFM_JOB_NAME": "friday-mtc-20260524T0001Z-sfm",
+    "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/friday-mtc-20260524T0001Z/colmap"
+  },
+  "sfm_image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811",
+  "sfm_job_name": "friday-mtc-20260524T0001Z-sfm",
+  "sfm_output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/friday-mtc-20260524T0001Z/colmap",
+  "sfm_payload": {
+    "AppSpecification": {
+      "ContainerEntrypoint": [
+        "/opt/ml/code/run_sfm.sh"
+      ],
+      "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811"
+    },
+    "Environment": {
+      "AWS_DEFAULT_REGION": "us-west-2",
+      "COLMAP_CHUNK_MIN_CORE_REGISTERED_RATIO": "0.90",
+      "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+      "PYTHONUNBUFFERED": "1",
+      "SFM_BENCHMARK_SUBSET_STRATEGY": "friday_20260522_full_1776_montana_time_capsule",
+      "SFM_BRANCH_NAME": "agent-40136728-montana-time-capsule",
+      "SFM_GIT_HEAD": "0e3f3e57759cd2bf65effc60064bc2874fa97eb7",
+      "SFM_INPUT_URI": "s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.zip",
+      "SFM_JOB_NAME": "friday-mtc-20260524T0001Z-sfm",
+      "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/friday-mtc-20260524T0001Z/colmap"
+    },
+    "ProcessingInputs": [
+      {
+        "InputName": "sfm-input",
+        "S3Input": {
+          "LocalPath": "/opt/ml/processing/input",
+          "S3CompressionType": "None",
+          "S3DataDistributionType": "FullyReplicated",
+          "S3DataType": "S3Prefix",
+          "S3InputMode": "File",
+          "S3Uri": "s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.zip"
+        }
+      }
+    ],
+    "ProcessingJobName": "friday-mtc-20260524T0001Z-sfm",
+    "ProcessingOutputConfig": {
+      "Outputs": [
+        {
+          "AppManaged": false,
+          "OutputName": "colmap-output",
+          "S3Output": {
+            "LocalPath": "/opt/ml/processing/output",
+            "S3UploadMode": "EndOfJob",
+            "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/friday-mtc-20260524T0001Z/colmap"
+          }
+        }
+      ]
+    },
+    "ProcessingResources": {
+      "ClusterConfig": {
+        "InstanceCount": 1,
+        "InstanceType": "ml.g4dn.xlarge",
+        "VolumeSizeInGB": 100
+      }
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "StoppingCondition": {
+      "MaxRuntimeInSeconds": 86400
+    },
+    "Tags": [
+      {
+        "Key": "Project",
+        "Value": "Spaceport"
+      },
+      {
+        "Key": "Component",
+        "Value": "SfM"
+      },
+      {
+        "Key": "Profile",
+        "Value": "montana-time-capsule"
+      },
+      {
+        "Key": "Dataset",
+        "Value": "FRIDAY-20260522"
+      }
+    ]
+  },
+  "status": "sfm_started",
+  "updated_at": "2026-05-24T00:03:05Z",
+  "zip_entries": 1776
+}

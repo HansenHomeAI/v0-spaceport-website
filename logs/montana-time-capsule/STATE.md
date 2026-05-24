@@ -33,6 +33,34 @@
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260523T232708Z.json
   - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260523T232708Z.json
 
+## 2026-05-24T00:05:20Z HEARTBEAT monitor (HMC) - no-spend reconfirm: git head + AWS identity + canonical HMC jobs still Completed + no InProgress HMC jobs + supersplat bundle still present + hosted preview viewer (skybox/no-sky) HTTP 200 + signed meta.json via `/api/sogs-proxy` HTTP 200 (+CORS) + CI snapshot (exact-head empty due to `[skip ci]`)
+
+- Git: agent-40136728-montana-time-capsule @ 0e3f3e57759cd2bf65effc60064bc2874fa97eb7 (`chore: postpush ci snapshot 2026-05-23T23:52Z [skip ci]`) (dirty: new logs pending commit)
+  - head: logs/montana-time-capsule/git-head-20260524T000437Z.txt
+  - status: logs/montana-time-capsule/git-status-20260524T000437Z.txt
+- AWS (us-west-2; aws=/opt/homebrew/bin/aws):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T000437Z.json
+  - region: logs/montana-time-capsule/aws-configure-get-region-20260524T000437Z.txt
+  - version: logs/montana-time-capsule/aws-version-20260524T000437Z.txt
+- SageMaker (canonical run `hmc-mtc-20260520T2015Z`; do not launch duplicate HMC jobs):
+  - SfM processing job Completed: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-sfm-20260524T000437Z.json
+  - 3DGS training job Completed: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-3dgs-20260524T000437Z.json
+  - compression processing job Completed: logs/montana-time-capsule/sagemaker-describe-hmc-mtc-20260520T2015Z-compression-20260524T000437Z.json
+  - InProgress processing jobs matching run prefix (expected 0): logs/montana-time-capsule/sagemaker-list-processing-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T000437Z.json
+  - InProgress training jobs matching run prefix (expected 0): logs/montana-time-capsule/sagemaker-list-training-jobs-hmc-mtc-20260520T2015Z-InProgress-20260524T000437Z.json
+- S3 supersplat bundle still present:
+  - recursive listing: logs/montana-time-capsule/s3-ls-recursive-supersplat_bundle-20260524T000437Z.txt
+  - head meta.json: logs/montana-time-capsule/s3api-head-object-supersplat-meta-20260524T000437Z.json
+  - head background_skybox.webp: logs/montana-time-capsule/s3api-head-object-supersplat-background_skybox-webp-20260524T000437Z.json
+- Hosted preview viewer reachability:
+  - preview url: logs/montana-time-capsule/preview-url-20260524T000505Z.txt
+  - viewer skybox URL: logs/montana-time-capsule/viewer-sky-url-20260524T000505Z.txt (headers=logs/montana-time-capsule/curlI-viewer-skybox-20260524T000505Z.headers)
+  - viewer no-sky URL: logs/montana-time-capsule/viewer-nosky-url-20260524T000505Z.txt (headers=logs/montana-time-capsule/curlI-viewer-nosky-20260524T000505Z.headers)
+  - sogs-proxy meta URL: logs/montana-time-capsule/heartbeat-sogs-proxy-meta-url-20260524T000505Z.txt (headers=logs/montana-time-capsule/curlI-sogs-proxy-meta-20260524T000505Z.headers; body=logs/montana-time-capsule/curl-sogs-proxy-meta-20260524T000505Z.body.json)
+- GitHub Actions snapshot:
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T000437Z.json
+  - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-20260524T000437Z.json
+
 ## 2026-05-23T22:48:51Z HEARTBEAT monitor (HMC) - no-spend reconfirm: git head + AWS identity + canonical HMC SageMaker jobs still Completed + supersplat bundle still present + hosted preview viewer (skybox/no-sky) HTTP 200 + signed meta.json via `/api/sogs-proxy` HTTP 200 + CI snapshot (exact-head empty due to `[skip ci]`)
 
 - Git: agent-40136728-montana-time-capsule @ 0a0e04948326a57d54112e04c4d89eb60f939165 (`chore: heartbeat ci snapshot refresh 2026-05-23T22:27Z [skip ci]`) (dirty: new logs pending commit)
@@ -7111,3 +7139,36 @@ Next: remain idle; do not launch duplicate HMC jobs; next acceptance gate remain
 - CI:
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260523T234820Z.json
   - exact-head runs (expected empty due to `[skip ci]`): logs/montana-time-capsule/gh-run-list-exacthead-32acc7d318c67dc45272c291f6ef0e58d66b7dbf-postpush-20260523T234820Z.json
+## 2026-05-24T00:04:04Z Friday 2026-05-22 new-property ingest and SfM launch
+
+- Source media:
+  - Mounted card: `/Volumes/DJI_SD`
+  - Selected by local file date `2026-05-22` (Friday; user referred to "Friday the 23rd", but this machine's calendar/filesystem show Friday as `2026-05-22`).
+  - Count: `1776` JPEGs, `7,514,476,850` bytes.
+  - Source folders: `109MEDIA` (`203`), `110MEDIA` (`999`), `111MEDIA` (`574`).
+  - Local flat copy: `/Users/gabrielhansen/spaceport-training-ingest/friday-20260522-new-property/images`
+  - Local manifest: `/Users/gabrielhansen/spaceport-training-ingest/friday-20260522-new-property/manifest.json`
+- Upload:
+  - Archive key: `1779580731329-friday-20260522-new-property-flat.zip`
+  - S3 archive: `s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.zip`
+  - S3 manifest: `s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.manifest.json`
+  - S3 file list: `s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.file-list.txt`
+  - Upload command used a streamed ZIP (`zip -0 -q -@ - | tee >(shasum -a 256) | aws s3 cp - ...`) to avoid writing a second 7.5GB local ZIP on a nearly full disk.
+  - ZIP SHA-256 from stream: `af06ade9f235be1168a4e87460f9b7f971c90effe6de964d1a9ae08284142ab4`
+  - S3 head: `ContentLength=7514816344`, ETag `"8484b9ad1089adb721f1b31dfc85fc23-896"`, VersionId `S40o1XkkyZIVsucOPKiGUCJKCDNN1JDT`, metadata `photo-count=1776`.
+  - Runner remote ZIP parse: `zip_entries=1776`, `input_image_count=1776`; state file `logs/montana-time-capsule/friday-20260522-state.json`.
+- Launch:
+  - Guarded duplicate check before launch: no `friday-mtc` processing or training jobs existed.
+  - Command:
+    - `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py --dataset-id FRIDAY-20260522 --run-prefix friday-mtc --subset-strategy friday_20260522_full_1776_montana_time_capsule --input-s3-uri s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.zip --expected-image-count 1776 --state-file logs/montana-time-capsule/friday-20260522-state.json --search-prefix friday-20260522 --search-token friday20260522 --launch`
+  - Current canonical run: `friday-mtc-20260524T0001Z`
+  - Active stage: SfM processing job `friday-mtc-20260524T0001Z-sfm`
+  - SfM image: `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811`
+  - SfM profile/env: `brass-chunked`, `COLMAP_ENABLE_SPATIAL_CHUNKING=1`, `COLMAP_CHUNK_MIN_CORE_REGISTERED_RATIO=0.90`
+  - SfM output: `s3://spaceport-ml-processing-staging/manual-validations/friday-mtc-20260524T0001Z/colmap`
+  - Describe snapshot: `logs/montana-time-capsule/sagemaker-describe-friday-mtc-20260524T0001Z-sfm-20260524T000404Z.json` (`ProcessingJobStatus=InProgress`, `ProcessingStartTime=null` at first poll)
+  - S3 output snapshot: `logs/montana-time-capsule/s3api-list-friday-mtc-20260524T0001Z-colmap-20260524T000404Z.json` (`KeyCount=0`, expected before EndOfJob upload)
+  - CloudWatch stream snapshot: `logs/montana-time-capsule/cloudwatch-streams-friday-mtc-20260524T0001Z-sfm-20260524T000404Z-prefix.json` (`0` streams at first poll)
+- Automation:
+  - Created active 20-minute heartbeat automation `friday-20260522-montana-heartbeat-monitor`.
+  - Next unblocked step: monitor SfM until terminal. If SfM completes, run the same guarded runner command with `--launch` exactly once to start pinned Montana 3DGS. If SfM fails, capture exact SageMaker describe, CloudWatch logs, S3 listing, and failure reason before patching or retrying any smaller stage.
