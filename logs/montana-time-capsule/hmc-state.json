@@ -5,15 +5,15 @@
     "region": "us-west-2",
     "userId": "975050048887"
   },
-  "evidence_stamp": "20260525T040616Z",
+  "evidence_stamp": "20260525T042408Z",
   "gh": {
     "branch_runs_snapshot": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T040616Z.json",
     "exact_head_snapshot": "logs/montana-time-capsule/gh-run-list-exact-head-72e4d62d-20260525T040616Z.json"
   },
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "72e4d62dd7077f2945da0e1d1817883457d2f6c9",
-    "head_checked_at": "20260525T040616Z"
+    "head": "74ce9bb6469649224e5c1dfe80c677a3a54cb1a7",
+    "head_checked_at": "20260525T042408Z"
   },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
@@ -21,7 +21,7 @@
     "public_meta_bucket": "spaceport-ml-processing-public",
     "public_meta_http": 404,
     "public_meta_key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json",
-    "staging_listing_tail": "logs/montana-time-capsule/s3ls-staging-compressed-hmc-mtc-20260520T2015Z-20260525T040421Z.txt",
+    "staging_listing_tail": "logs/montana-time-capsule/s3ls-staging-compressed-hmc-mtc-20260520T2015Z-20260525T042408Z.txt",
     "staging_meta_content_length": 1359,
     "staging_meta_etag": "\"994e5d57f052e552b8cce2e05d4debf4\"",
     "staging_meta_last_modified": "2026-05-21T20:25:10+00:00"
@@ -44,11 +44,11 @@
       "status": "Completed"
     }
   },
-  "updated_at": "20260525T040616Z",
+  "updated_at": "20260525T042408Z",
   "viewer": {
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
     "base_http": 200,
-    "checked_at": "20260525T040421Z",
+    "checked_at": "20260525T042408Z",
     "elevation_proxy_http": 404,
     "nosky_http": 200,
     "sky_http": 200

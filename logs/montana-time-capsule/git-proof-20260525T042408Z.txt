@@ -1,0 +1,6 @@
+## git
+stamp=20260525T042408Z
+agent-40136728-montana-time-capsule
+74ce9bb6469649224e5c1dfe80c677a3a54cb1a7
+?? logs/montana-time-capsule/git-proof-20260525T042408Z.txt
+74ce9bb6 chore: record gh tooling proof 20260525T041220Z [skip ci]
