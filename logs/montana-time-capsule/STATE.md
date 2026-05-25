@@ -11806,3 +11806,15 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
     - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T034522Z.json
     - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-0ebadf7c-20260525T034522Z.json
   - State snapshot refreshed: logs/montana-time-capsule/hmc-state.json
+
+## 20260525T034759Z postpush/no-spend - refreshed full HMC acceptance proofs on new head; all terminal; viewer HTTP 200 (proxy non-200); public meta.json still 404
+
+- Git: agent-40136728-montana-time-capsule @ 6d10e5f82336fe66466942523bcb00913b65bb93
+- Evidence stamp: 20260525T034759Z
+  - Git proof: logs/montana-time-capsule/git-proof-20260525T034759Z.txt
+  - AWS identity/region/version: logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T034759Z.json + logs/montana-time-capsule/aws-config-region-20260525T034759Z.txt + logs/montana-time-capsule/aws-version-20260525T034759Z.txt
+  - InProgress guardrail: logs/montana-time-capsule/sm-list-processing-inprogress-20260525T034759Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T034759Z.json
+  - Canonical describes (Completed): logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T034759Z.json + logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T034759Z.json + logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T034759Z.json
+  - S3 meta heads: logs/montana-time-capsule/s3head-staging-meta-hmc-mtc-20260520T2015Z-20260525T034759Z.json + logs/montana-time-capsule/s3head-public-meta-hmc-mtc-20260520T2015Z-20260525T034759Z.err
+  - Viewer HEAD: logs/montana-time-capsule/curlI-hmc-viewer-alias-20260525T034759Z.headers + logs/montana-time-capsule/curlI-hmc-viewer-sky-20260525T034759Z.headers + logs/montana-time-capsule/curlI-hmc-viewer-nosky-20260525T034759Z.headers + logs/montana-time-capsule/curlI-hmc-viewer-proxy-20260525T034759Z.headers
+  - GH snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T034759Z.json + logs/montana-time-capsule/gh-run-list-exact-head-6d10e5f8-20260525T034759Z.json
