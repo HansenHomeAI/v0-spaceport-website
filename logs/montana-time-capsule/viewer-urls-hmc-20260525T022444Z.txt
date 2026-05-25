@@ -1,0 +1,4 @@
+https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev
+https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/?sky=1
+https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/?sky=0
+https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/api/elevation?url=s3://spaceport-ml-processing-public/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json
