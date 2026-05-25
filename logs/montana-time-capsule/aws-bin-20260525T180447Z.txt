@@ -1,0 +1,1 @@
+AWS_BIN=/opt/homebrew/bin/aws
