@@ -12972,6 +12972,14 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
     - Branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T130617Z.json
     - Exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-b118301c25c81ed56da8d3ffb8e8040fc17f30d2-20260525T130617Z.json
 
+### Post-push GitHub Actions check 20260525T130925Z
+
+- Git: agent-40136728-montana-time-capsule @ 346568ddc9b45562eadf02cad52e9beee5289ca4 (`chore: friday heartbeat verify 20260525T1307Z [skip ci]`)
+- Evidence:
+  - Branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T130925Z.json
+  - Exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-346568ddc9b45562eadf02cad52e9beee5289ca4-postpush-20260525T130925Z.json (expected 0 for skip-ci head)
+  - Last successful CI on this branch (for non-skip-ci head 963518c4…): CDK Deploy run 26401435610 + Cloudflare Pages run 26401435613 (both `success` in branch snapshot above)
+
 ## 2026-05-25T13:07:11Z HEARTBEAT monitor - HMC Montana time capsule canonical `hmc-mtc-20260520T2015Z`: still terminal (SfM/3DGS/compression Completed); SageMaker InProgress=0; compressed supersplat bundle present; public meta HTTP 200; hosted viewer base/sky/nosky HTTP 200; no new jobs launched
 
 - Evidence stamp: 20260525T130711Z
