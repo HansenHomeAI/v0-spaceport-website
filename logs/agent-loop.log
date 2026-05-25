@@ -623,3 +623,4 @@
 [2026-05-25T21:09:58Z] postpush gh snapshot -> head a10fdaf9 -> saved logs/montana-time-capsule/gh-run-list-exact-head-a10fdaf9-postpush-20260525T210910Z.json
 [2026-05-25T21:11:03Z] postpush gh snapshot -> head 6785e813 -> saved logs/montana-time-capsule/gh-run-list-exact-head-6785e813-postpush-20260525T211049Z.json
 [2026-05-25T21:27:04Z] montana-time-capsule heartbeat -> hmc-mtc-20260520T2015Z terminal + viewer/meta HTTP 200 + InProgress 0/0 -> idle
+[2026-05-25T21:29:49Z] postpush gh snapshot -> head 0cc3ed66 -> saved logs/montana-time-capsule/gh-run-list-exact-head-0cc3ed66-postpush-20260525T212947Z.json
