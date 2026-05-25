@@ -5,15 +5,15 @@
     "region": "us-west-2",
     "userId": "975050048887"
   },
-  "evidence_stamp": "20260525T044717Z",
+  "evidence_stamp": "20260525T044925Z",
   "gh": {
-    "branch_runs_snapshot": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T044717Z.json",
-    "exact_head_snapshot": "logs/montana-time-capsule/gh-run-list-exact-head-95d315dc-postpush-20260525T044717Z.json"
+    "branch_runs_snapshot": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T044925Z.json",
+    "exact_head_snapshot": "logs/montana-time-capsule/gh-run-list-exact-head-5d7f8180-20260525T044925Z.json"
   },
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "95d315dc07ba3c94185d227019a7b6e27d80ab60",
-    "head_checked_at": "20260525T044717Z"
+    "head": "5d7f8180c2ca4b27adaf49a948a52a44875e30fd",
+    "head_checked_at": "20260525T044925Z"
   },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
@@ -21,7 +21,7 @@
     "public_meta_bucket": "spaceport-ml-processing-public",
     "public_meta_http": 404,
     "public_meta_key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json",
-    "staging_listing_tail": "logs/montana-time-capsule/s3ls-staging-compressed-hmc-mtc-20260520T2015Z-20260525T044717Z.txt",
+    "staging_listing_tail": "logs/montana-time-capsule/s3ls-staging-compressed-hmc-mtc-20260520T2015Z-20260525T044925Z.txt",
     "staging_meta_content_length": 1359,
     "staging_meta_etag": "\"994e5d57f052e552b8cce2e05d4debf4\"",
     "staging_meta_last_modified": "2026-05-21T20:25:10+00:00"
@@ -44,11 +44,11 @@
       "status": "Completed"
     }
   },
-  "updated_at": "20260525T044717Z",
+  "updated_at": "20260525T044925Z",
   "viewer": {
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
     "base_http": 200,
-    "checked_at": "20260525T044717Z",
+    "checked_at": "20260525T044925Z",
     "elevation_proxy_http": 404,
     "nosky_http": 200,
     "sky_http": 200

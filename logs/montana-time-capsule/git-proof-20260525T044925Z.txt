@@ -1,0 +1,12 @@
+# git
+ts=20260525T044925Z
+agent-40136728-montana-time-capsule
+5d7f8180c2ca4b27adaf49a948a52a44875e30fd
+?? logs/montana-time-capsule/git-proof-20260525T044925Z.txt
+commit 5d7f8180c2ca4b27adaf49a948a52a44875e30fd
+Author:     Gabriel Hansen <gbhbyu@gmail.com>
+AuthorDate: Sun May 24 22:49:11 2026 -0600
+Commit:     Gabriel Hansen <gbhbyu@gmail.com>
+CommitDate: Sun May 24 22:49:11 2026 -0600
+
+    chore: record postpush gh evidence 20260525T0447Z [skip ci]
