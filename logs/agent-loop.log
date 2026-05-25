@@ -572,5 +572,4 @@
 [2026-05-25T14:06:21Z] heartbeat(hmc-mtc-20260520T2015Z) -> ok (sagemaker terminal; public meta 200; viewer 200) -> next: visual proof gate
 [20260525T141200Z] postpush ci -> CDK Deploy success run=26404616422 head=354c69d6
 [2026-05-25T14:12:10Z] friday heartbeat 20260525T140528 -> terminal (sfm/3dgs/cmp Completed; inprogress=0); cdk deploy run 26404616422 success -> next: idle
-[2026-05-25T14:29:03Z] heartbeat(hmc-mtc-20260520T2015Z) -> refreshed evidence stamp 20260525T142850Z -> next: add visual screenshot proof (sky vs no-sky)
 [2026-05-25T14:29:15Z] friday heartbeat 20260525T142618 -> terminal (sfm/3dgs/compression Completed; inprogress=0); public meta+viewer HEAD ok -> next: idle
