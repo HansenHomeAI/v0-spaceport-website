@@ -11185,3 +11185,19 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
   - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T000743Z.json
   - exact-head runs (0 expected due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-a6d51321-20260525T000743Z.json
 - State snapshot refreshed: logs/montana-time-capsule/hmc-state.json (updated_at=20260525T000743Z)
+
+## 20260525T001036Z HEARTBEAT monitor - postpush re-verify (no spend; exact-head GH runs=0 due [skip ci])
+
+- Git: agent-40136728-montana-time-capsule @ 3dd1ca6a0a7a7c0831a6aed41c9b05bbcb4d792e (chore: heartbeat evidence 20260525T000743Z [skip ci])
+- AWS identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T001036Z.json (region: logs/montana-time-capsule/aws-config-region-20260525T001036Z.txt)
+- SageMaker InProgress guardrail: processing=0 training=0 (snapshots: logs/montana-time-capsule/sm-list-processing-inprogress-20260525T001036Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T001036Z.json)
+- Canonical run: hmc-mtc-20260520T2015Z (sfm/3dgs/compression: Completed; refreshed describes:
+  - logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T001036Z.json
+  - logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T001036Z.json
+  - logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T001036Z.json)
+- Public bundle meta.json: still 404 (evidence: logs/montana-time-capsule/s3head-public-meta-hmc-mtc-20260520T2015Z-20260525T001036Z.err)
+- Hosted viewer reachability: base/sky/nosky=200; elevation-proxy meta=404 (evidence: logs/montana-time-capsule/hmc-viewer-http-status-20260525T001036Z.txt)
+- GitHub Actions:
+  - branch snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T001036Z.json
+  - exact-head snapshot (0 expected due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-3dd1ca6a-20260525T001036Z.json
+- State snapshot refreshed: logs/montana-time-capsule/hmc-state.json (updated_at=20260525T001036Z)
