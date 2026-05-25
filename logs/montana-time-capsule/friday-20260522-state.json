@@ -194,6 +194,26 @@
     "111MEDIA_DJI_0573.JPG",
     "111MEDIA_DJI_0574.JPG"
   ],
+  "latest_heartbeat": {
+    "aws_evidence_stamp": "20260525T130548Z",
+    "checked_at_utc": "2026-05-25T13:07:50Z",
+    "evidence_files": {
+      "aws_identity": "logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T130548Z.json",
+      "boto3_session": "logs/montana-time-capsule/boto3-session-20260525T130548Z.json",
+      "describe_3dgs": "logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T130548Z.json",
+      "describe_compression": "logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T130548Z.json",
+      "describe_sfm": "logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T130548Z.json",
+      "gh_branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T130617Z.json",
+      "gh_exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-b118301c25c81ed56da8d3ffb8e8040fc17f30d2-20260525T130617Z.json",
+      "list_processing_inprogress": "logs/montana-time-capsule/sm-list-processing-inprogress-20260525T130548Z.json",
+      "list_training_inprogress": "logs/montana-time-capsule/sm-list-training-inprogress-20260525T130548Z.json",
+      "s3_list_3dgs": "logs/montana-time-capsule/s3-list-3dgs-friday-mtc-20260524T0001Z-20260525T130548Z.json",
+      "s3_list_compressed": "logs/montana-time-capsule/s3-list-compressed-friday-mtc-20260524T0001Z-20260525T130548Z.json",
+      "s3_list_manual_validations": "logs/montana-time-capsule/s3-list-manual-validations-friday-mtc-20260524T0001Z-20260525T130548Z.json"
+    },
+    "gh_evidence_stamp": "20260525T130617Z",
+    "gh_exact_head_sha": "b118301c25c81ed56da8d3ffb8e8040fc17f30d2"
+  },
   "profile": "brass-chunked",
   "profile_note": "Exact Brass Lantern chunked SfM image; default reproducible Montana profile.",
   "public_meta_bucket": "spaceport-ml-processing",

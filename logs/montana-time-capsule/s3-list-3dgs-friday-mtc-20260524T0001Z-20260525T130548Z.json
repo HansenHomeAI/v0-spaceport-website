@@ -1,0 +1,12 @@
+{
+  "bucket": "spaceport-ml-processing-staging",
+  "objects": [
+    {
+      "Key": "3dgs/friday-mtc-20260524T0001Z/friday-mtc-20260524T0001Z-3dgs/output/model.tar.gz",
+      "LastModified": "2026-05-24T12:54:09+00:00",
+      "Size": 81994255
+    }
+  ],
+  "prefix": "3dgs/friday-mtc-20260524T0001Z/",
+  "truncated": false
+}

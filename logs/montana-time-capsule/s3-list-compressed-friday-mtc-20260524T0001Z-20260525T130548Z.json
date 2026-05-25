@@ -1,0 +1,117 @@
+{
+  "bucket": "spaceport-ml-processing-staging",
+  "objects": [
+    {
+      "Key": "compressed/friday-mtc-20260524T0001Z/compressed_splat/means_l.webp",
+      "LastModified": "2026-05-24T13:14:52+00:00",
+      "Size": 1090906
+    },
+    {
+      "Key": "compressed/friday-mtc-20260524T0001Z/compressed_splat/means_u.webp",
+      "LastModified": "2026-05-24T13:14:52+00:00",
+      "Size": 720560
+    },
+    {
+      "Key": "compressed/friday-mtc-20260524T0001Z/compressed_splat/meta.json",
+      "LastModified": "2026-05-24T13:14:52+00:00",
+      "Size": 1372
+    },
+    {
+      "Key": "compressed/friday-mtc-20260524T0001Z/compressed_splat/quats.webp",
+      "LastModified": "2026-05-24T13:14:52+00:00",
+      "Size": 1170110
+    },
+    {
+      "Key": "compressed/friday-mtc-20260524T0001Z/compressed_splat/scales.webp",
+      "LastModified": "2026-05-24T13:14:52+00:00",
+      "Size": 631730
+    },
+    {
+      "Key": "compressed/friday-mtc-20260524T0001Z/compressed_splat/sh0.webp",
+      "LastModified": "2026-05-24T13:14:52+00:00",
+      "Size": 866442
+    },
+    {
+      "Key": "compressed/friday-mtc-20260524T0001Z/compressed_splat/shN_centroids.webp",
+      "LastModified": "2026-05-24T13:14:52+00:00",
+      "Size": 973572
+    },
+    {
+      "Key": "compressed/friday-mtc-20260524T0001Z/compressed_splat/shN_labels.webp",
+      "LastModified": "2026-05-24T13:14:52+00:00",
+      "Size": 697512
+    },
+    {
+      "Key": "compressed/friday-mtc-20260524T0001Z/sogs_compression_summary.json",
+      "LastModified": "2026-05-24T13:14:52+00:00",
+      "Size": 2309
+    },
+    {
+      "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/background_manifest.json",
+      "LastModified": "2026-05-24T13:14:52+00:00",
+      "Size": 978
+    },
+    {
+      "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/background_skybox.webp",
+      "LastModified": "2026-05-24T13:14:52+00:00",
+      "Size": 37848
+    },
+    {
+      "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/export_manifest.json",
+      "LastModified": "2026-05-24T13:14:52+00:00",
+      "Size": 951
+    },
+    {
+      "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/means_l.webp",
+      "LastModified": "2026-05-24T13:14:52+00:00",
+      "Size": 1090906
+    },
+    {
+      "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/means_u.webp",
+      "LastModified": "2026-05-24T13:14:52+00:00",
+      "Size": 720560
+    },
+    {
+      "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json",
+      "LastModified": "2026-05-24T13:14:52+00:00",
+      "Size": 1372
+    },
+    {
+      "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/quats.webp",
+      "LastModified": "2026-05-24T13:14:52+00:00",
+      "Size": 1170110
+    },
+    {
+      "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/scales.webp",
+      "LastModified": "2026-05-24T13:14:52+00:00",
+      "Size": 631730
+    },
+    {
+      "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/settings.json",
+      "LastModified": "2026-05-24T13:14:52+00:00",
+      "Size": 242
+    },
+    {
+      "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/sh0.webp",
+      "LastModified": "2026-05-24T13:14:52+00:00",
+      "Size": 866442
+    },
+    {
+      "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/shN_centroids.webp",
+      "LastModified": "2026-05-24T13:14:52+00:00",
+      "Size": 973572
+    },
+    {
+      "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/shN_labels.webp",
+      "LastModified": "2026-05-24T13:14:52+00:00",
+      "Size": 697512
+    },
+    {
+      "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/training_metadata.json",
+      "LastModified": "2026-05-24T13:14:52+00:00",
+      "Size": 1487
+    }
+  ],
+  "prefix": "compressed/friday-mtc-20260524T0001Z/",
+  "truncated": false
+}

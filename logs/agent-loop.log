@@ -553,3 +553,4 @@
 [2026-05-25T12:26:38Z] heartbeat -> friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z terminal; inprogress=0; public HEAD 200; exact-head runs empty (skip ci) -> next: idle
 [2026-05-25T12:53:48Z] heartbeat -> friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z still terminal (sfm/3dgs/compression completed); public meta/viewer HTTP 200; avoided duplicate launch; recorded aws+s3+gh evidence -> next: idle
 [2026-05-25T12:54:57Z] postpush gh snapshot head=7253161e -> recorded (exact-head runs expected 0 for [skip ci])
+[2026-05-25T13:06:54Z] heartbeat -> friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z terminal; inprogress=0; S3 outputs present; exact-head snapshot captured -> commit/push ledger
