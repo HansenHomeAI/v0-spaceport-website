@@ -567,3 +567,4 @@
 [2026-05-25T13:48:14Z] postpush ci -> CDK Deploy rerun success run=26402909276 head=7a2c8e6e; Pages not triggered
 [20260525T134844Z] postpush -> recorded gh runs for head 3420518f -> head=3420518f exact_head_runs=0
 [2026-05-25T13:49:33Z] postpush gh snapshot head=3420518f -> recorded (exact-head runs expected 0 for [skip ci])
+[2026-05-25T13:50:26Z] postpush gh snapshot head=0eb5c7b5 -> recorded (exact-head runs expected 0 for [skip ci])
