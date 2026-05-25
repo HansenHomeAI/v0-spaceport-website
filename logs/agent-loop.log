@@ -596,3 +596,4 @@
 [2026-05-25T16:07:39Z] heartbeat-hmc -> verified terminal + viewer/meta 200; GH snapshot; no spend -> commit/push evidence
 [2026-05-25T16:11:49Z] heartbeat-hmc -> refreshed evidence_stamp=20260525T161014Z; viewer/meta 200; sm terminal -> commit/push
 [2026-05-25T16:24:36Z] heartbeat-hmc -> refreshed evidence_stamp=20260525T162436Z; viewer/meta 200; sm terminal (Completed); inprogress 0/0; gh snapshots captured -> next: idle
+[2026-05-25T16:28:17Z] friday heartbeat -> terminal (sfm/3dgs/compression Completed; inprogress 0) -> record/push
