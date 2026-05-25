@@ -1,0 +1,3 @@
+https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing.s3.us-west-2.amazonaws.com%2Fcompressed%2Ffriday-mtc-20260524T0001Z%2Fsupersplat_bundle%2Fmeta.json&skybox=background_skybox.webp
+https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing.s3.us-west-2.amazonaws.com%2Fcompressed%2Ffriday-mtc-20260524T0001Z%2Fsupersplat_bundle%2Fmeta.json&skybox=off
+https://spaceport-ml-processing.s3.us-west-2.amazonaws.com/compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json

@@ -479,3 +479,4 @@
 [20260525T024748Z] montana-time-capsule postpush gh snapshot -> branch_runs=23 exact_head_runs=0 -> next: idle
 [20260525T024810Z] exact-head gh snapshot -> exact_head_runs=0 -> next: idle
 [2026-05-25T03:07:00Z] heartbeat-hmc -> ok(no-spend) -> next: wait
+[2026-05-25T03:07:33Z] postpush-gh-snapshot -> ok -> next: wait
