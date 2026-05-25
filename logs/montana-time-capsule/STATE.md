@@ -13,6 +13,7 @@
     - default (skybox on): logs/montana-time-capsule/curlI-viewer-default-20260525T091245Z.headers
     - no-sky (`skybox=off`): logs/montana-time-capsule/curlI-viewer-nosky-20260525T091245Z.headers
   - GitHub Actions snapshots (`/opt/homebrew/bin/gh`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T091255Z.json + logs/montana-time-capsule/gh-run-list-exact-head-27dc9455-20260525T091255Z.json
+  - Postpush GH snapshot (expected 0 runs on `[skip ci]`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T091525Z.json + logs/montana-time-capsule/gh-run-list-exact-head-6d6fc712-postpush-20260525T091525Z.json + logs/montana-time-capsule/gh-summary-postpush-20260525T091525Z.txt
   - Summary JSON updated: logs/montana-time-capsule/hmc-state.json
 
 ## 2026-05-25T08:47:19Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical `friday-mtc-20260524T0001Z`: verified terminal SageMaker (SfM/3DGS/compression Completed); InProgress=0; S3 outputs present; public meta HTTP 200; viewer proof captured (sky + no-sky)
