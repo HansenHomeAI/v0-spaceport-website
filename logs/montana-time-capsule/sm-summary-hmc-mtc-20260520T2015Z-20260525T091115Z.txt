@@ -1,0 +1,5 @@
+inprogress_processing_count 0
+inprogress_training_count 0
+sfm Completed
+3dgs Completed
+compression Completed

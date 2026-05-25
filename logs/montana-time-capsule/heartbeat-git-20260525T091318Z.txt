@@ -1,0 +1,39 @@
+# git branch
+agent-40136728-montana-time-capsule
+# git head
+27dc94557b553ee79969bf7793ad8d8311d53f9b
+# git status
+?? logs/montana-time-capsule/aws-config-region-20260525T091049Z.txt
+?? logs/montana-time-capsule/aws-config-region-20260525T091115Z.txt
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T091049Z.json
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T091115Z.json
+?? logs/montana-time-capsule/aws-version-20260525T091049Z.txt
+?? logs/montana-time-capsule/aws-version-20260525T091115Z.txt
+?? logs/montana-time-capsule/curlI-prod-meta-hmc-mtc-20260520T2015Z-20260525T091208Z.headers
+?? logs/montana-time-capsule/curlI-prod-meta-hmc-mtc-20260520T2015Z-20260525T091222Z.headers
+?? logs/montana-time-capsule/curlI-viewer-default-20260525T091245Z.headers
+?? logs/montana-time-capsule/curlI-viewer-nosky-20260525T091245Z.headers
+?? logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T091255Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-27dc9455-20260525T091255Z.json
+?? logs/montana-time-capsule/heartbeat-git-20260525T090949Z.txt
+?? logs/montana-time-capsule/heartbeat-git-20260525T091318Z.txt
+?? logs/montana-time-capsule/s3head-prod-meta-hmc-mtc-20260520T2015Z-20260525T091208Z.json
+?? logs/montana-time-capsule/s3head-prod-meta-hmc-mtc-20260520T2015Z-20260525T091222Z.json
+?? logs/montana-time-capsule/s3ls-prod-compressed-hmc-mtc-20260520T2015Z-20260525T091222Z.txt
+?? logs/montana-time-capsule/s3ls-staging-compressed-hmc-mtc-20260520T2015Z-20260525T091222Z.txt
+?? logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T091049Z.json
+?? logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T091115Z.json
+?? logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T091049Z.json
+?? logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T091115Z.json
+?? logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T091049Z.json
+?? logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T091115Z.json
+?? logs/montana-time-capsule/sm-list-processing-inprogress-20260525T091049Z.json
+?? logs/montana-time-capsule/sm-list-processing-inprogress-20260525T091115Z.json
+?? logs/montana-time-capsule/sm-list-training-inprogress-20260525T091049Z.json
+?? logs/montana-time-capsule/sm-list-training-inprogress-20260525T091115Z.json
+?? logs/montana-time-capsule/sm-summary-hmc-mtc-20260520T2015Z-20260525T091049Z.txt
+?? logs/montana-time-capsule/sm-summary-hmc-mtc-20260520T2015Z-20260525T091115Z.txt
+?? logs/montana-time-capsule/viewer-url-default-20260525T091245Z.txt
+?? logs/montana-time-capsule/viewer-url-nosky-20260525T091245Z.txt
+# git log -1
+27dc9455 (HEAD -> agent-40136728-montana-time-capsule, origin/agent-40136728-montana-time-capsule) chore: postpush gh snapshot 20260525T090917Z [skip ci]

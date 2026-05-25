@@ -520,3 +520,4 @@
 [2026-05-25T08:46:51Z] heartbeat 20260525T084442Z -> SageMaker terminal + S3/meta + viewer 200 -> update ledgers
 [2026-05-25T08:48:10Z] postpush 20260525T084807Z -> gh run list exact-head recorded
 [2026-05-25T08:48:13Z] friday-mtc-20260524T0001Z heartbeat -> SageMaker terminal + viewer proof PNGs captured -> commit+push ledger
+[2026-05-25T09:14:22Z] hmc heartbeat -> terminal (InProgress=0) + meta/viewer 200 -> next: no action; keep monitoring
