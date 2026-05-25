@@ -1,5 +1,13 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-25T04:27:42Z exact-head refresh - recorded branch + exact-head GitHub snapshots on current head (expected empty on `[skip ci]` head)
+
+- Git: agent-40136728-montana-time-capsule @ be64fe74676152ecd6beb25c088a3431f8f30e94 (`chore: postpush gh snapshot 20260525T042649Z [skip ci]`)
+- Evidence stamp: 20260525T042742Z
+  - GitHub Actions branch snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-exacthead-20260525T042742Z.json
+  - GitHub Actions exact-head snapshot: logs/montana-time-capsule/gh-run-list-exact-head-be64fe74-20260525T042742Z.json
+  - State snapshot refreshed: logs/montana-time-capsule/hmc-state.json
+
 ## 2026-05-25T04:24:08Z HEARTBEAT monitor (HMC canonical hmc-mtc-20260520T2015Z): no-spend re-verify; InProgress=0; SfM/3DGS/compression Completed; staging bundle present; public meta.json still 404; hosted viewer base/sky/no-sky HTTP 200; elevation proxy 404; exact-head GH runs 0 (expected on `[skip ci]` head)
 
 - Git: agent-40136728-montana-time-capsule @ 74ce9bb6469649224e5c1dfe80c677a3a54cb1a7
