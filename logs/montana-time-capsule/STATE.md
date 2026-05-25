@@ -1,5 +1,18 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-25T07:26:10Z HEARTBEAT monitor (HMC canonical `hmc-mtc-20260520T2015Z`): terminal; no-spend; InProgress=0; public meta HTTP 200; hosted viewer base/sky/no-sky HTTP 200
+
+- Evidence stamp: 20260525T072610Z
+  - Git status/head: logs/montana-time-capsule/git-status-20260525T072610Z.txt + logs/montana-time-capsule/git-head-20260525T072610Z.txt + logs/montana-time-capsule/git-head-detail-20260525T072610Z.txt
+  - AWS identity/region/version: logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T072610Z.json + logs/montana-time-capsule/aws-config-region-20260525T072610Z.txt + logs/montana-time-capsule/aws-version-20260525T072610Z.txt
+  - InProgress guardrail (max-results=50): logs/montana-time-capsule/sm-list-processing-inprogress-20260525T072610Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T072610Z.json (counts: 0/0)
+  - Canonical HMC describes (all Completed): logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T072610Z.json + logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T072610Z.json + logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T072610Z.json
+  - S3 outputs: logs/montana-time-capsule/s3ls-staging-compressed-hmc-mtc-20260520T2015Z-20260525T072610Z.txt + logs/montana-time-capsule/s3ls-prod-compressed-hmc-mtc-20260520T2015Z-20260525T072610Z.txt
+  - Public meta reachability (HTTP HEAD 200): logs/montana-time-capsule/curlI-prod-meta-hmc-mtc-20260520T2015Z-20260525T072610Z.headers + logs/montana-time-capsule/s3head-prod-meta-hmc-mtc-20260520T2015Z-20260525T072610Z.json
+  - Hosted viewer HTTP HEAD 200: logs/montana-time-capsule/curlI-viewer-base-20260525T072610Z.headers + logs/montana-time-capsule/curlI-viewer-sky-20260525T072610Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-20260525T072610Z.headers
+  - GitHub Actions snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T072610Z.json + logs/montana-time-capsule/gh-run-list-exact-head-a79eaa13-20260525T072610Z.json
+  - Summary JSON updated: logs/montana-time-capsule/hmc-state.json
+
 ## 2026-05-25T06:24:30Z HEARTBEAT monitor (HMC canonical `hmc-mtc-20260520T2015Z`): terminal; no-spend; InProgress=0; public meta HTTP 200; hosted viewer base/sky/no-sky HTTP 200
 
 - Evidence stamp: 20260525T062430Z
