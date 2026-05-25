@@ -13,6 +13,7 @@
   - GitHub Actions snapshots (`/opt/homebrew/bin/gh`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T104853Z.json + logs/montana-time-capsule/gh-run-list-exact-head-027170e7-20260525T104853Z.json
   - Summary JSON updated: logs/montana-time-capsule/hmc-state.json
 
+- Postpush GH snapshot (head `3e1a070b` is `[skip ci]` so exact-head runs may be empty): logs/montana-time-capsule/git-head-postpush-20260525T105041Z.txt + logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T105041Z.json + logs/montana-time-capsule/gh-run-list-exact-head-3e1a070b-postpush-20260525T105041Z.json
 ## 2026-05-25T10:46:50Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical `friday-mtc-20260524T0001Z`: terminal (SfM/3DGS/compression Completed); InProgress=0; S3 outputs present; no new jobs launched
 
 - Evidence stamp: 20260525T104521Z
