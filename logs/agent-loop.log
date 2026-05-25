@@ -543,3 +543,5 @@
 [2026-05-25T11:49:39Z] heartbeat-hmc -> terminal/inprogress=0 + s3 prod meta + viewer http200 + screenshots captured -> commit/push ledger
 [2026-05-25T11:51:38Z] postpush gh snapshot head=ce8a9660 -> recorded (exact-head runs expected 0 for [skip ci])
 [2026-05-25T12:06:44Z] HMC heartbeat -> terminal (0 inprogress) + meta/viewer 200 -> next: no-spend monitor
+[2026-05-25T12:07:45Z] postpush gh snapshot head=393139e7 -> recorded (exact-head runs expected 0 for [skip ci])
+[2026-05-25T12:07:46Z] friday heartbeat -> terminal verified (SfM/3DGS/compression Completed; inprogress=0; http200; exact-head=0) -> commit/push ledger
