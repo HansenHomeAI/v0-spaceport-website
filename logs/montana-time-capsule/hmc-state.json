@@ -21,11 +21,18 @@
     "status": "logs/montana-time-capsule/git-status-20260525T122511Z.txt"
   },
   "postpush": {
-    "gh_branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T115105Z.json",
-    "gh_exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-ce8a9660-postpush-20260525T115105Z.json",
+    "gh_branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T122751Z.json",
+    "gh_exact_head": "3d0942bd",
+    "gh_exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-3d0942bd-postpush-20260525T122751Z.json",
     "git_head": "logs/montana-time-capsule/git-head-postpush-20260525T115105Z.txt",
     "head_short": "ce8a9660",
-    "stamp": "20260525T115105Z"
+    "prod_meta_head": "logs/montana-time-capsule/curlI-prod-meta-hmc-postpush-20260525T122751Z.headers",
+    "stamp": "20260525T115105Z",
+    "updated_at": "20260525T122751Z",
+    "viewer_base_head": "logs/montana-time-capsule/curlI-viewer-base-postpush-20260525T122751Z.headers",
+    "viewer_nosky_head": "logs/montana-time-capsule/curlI-viewer-nosky-postpush-20260525T122751Z.headers",
+    "viewer_sky_head": "logs/montana-time-capsule/curlI-viewer-sky-postpush-20260525T122751Z.headers",
+    "viewer_urls": "logs/montana-time-capsule/viewer-urls-postpush-20260525T122751Z.txt"
   },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {

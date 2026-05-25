@@ -39,6 +39,8 @@
   - GitHub Actions snapshots (`/opt/homebrew/bin/gh`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T122511Z.json + logs/montana-time-capsule/gh-run-list-exact-head-960e6a8f-20260525T122511Z.json
   - Machine-readable state: logs/montana-time-capsule/hmc-state.json
 
+- Postpush snapshot (head `0308520d` is `[skip ci]` so exact-head runs may be empty): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T122751Z.json + logs/montana-time-capsule/gh-run-list-exact-head-0308520d-postpush-20260525T122751Z.json + logs/montana-time-capsule/curlI-prod-meta-hmc-postpush-20260525T122751Z.headers + logs/montana-time-capsule/curlI-viewer-base-postpush-20260525T122751Z.headers + logs/montana-time-capsule/curlI-viewer-sky-postpush-20260525T122751Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-postpush-20260525T122751Z.headers
+
 ## 2026-05-25T12:05:34Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: still terminal (SfM/3DGS/compression Completed); InProgress=0; S3 outputs present; public meta HTTP 200; hosted viewer base/sky/no-sky HTTP 200; exact-head GH runs empty (expected on `[skip ci]` head `a99d727f`)
 
 - Evidence stamp: 20260525T120534Z
