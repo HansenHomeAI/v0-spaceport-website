@@ -1,0 +1,324 @@
+{
+    "StackResourceSummaries": [
+        {
+            "LogicalResourceId": "CDKMetadata",
+            "PhysicalResourceId": "4a092ac0-8298-11f0-aa99-0635e2e96369",
+            "ResourceType": "AWS::CDK::Metadata",
+            "LastUpdatedTimestamp": "2026-04-13T16:55:59.113000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "CompressorLogGroupE5787FAB",
+            "PhysicalResourceId": "/aws/sagemaker/processing-jobs/compressor-staging",
+            "ResourceType": "AWS::Logs::LogGroup",
+            "LastUpdatedTimestamp": "2026-04-17T19:28:24.661000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "GaussianLogGroup41FA227E",
+            "PhysicalResourceId": "/aws/sagemaker/training-jobs/3dgs-staging",
+            "ResourceType": "AWS::Logs::LogGroup",
+            "LastUpdatedTimestamp": "2026-04-17T19:28:24.676000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "MLLambdaExecutionRole125D4473",
+            "PhysicalResourceId": "Spaceport-ML-Lambda-Role-staging",
+            "ResourceType": "AWS::IAM::Role",
+            "LastUpdatedTimestamp": "2026-04-17T19:28:24.680000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "MLPipelineStateMachine274288C8",
+            "PhysicalResourceId": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+            "ResourceType": "AWS::StepFunctions::StateMachine",
+            "LastUpdatedTimestamp": "2026-04-13T16:56:38.396000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "NotificationFunction0492F7EA",
+            "PhysicalResourceId": "Spaceport-MLNotification-staging",
+            "ResourceType": "AWS::Lambda::Function",
+            "LastUpdatedTimestamp": "2026-04-13T16:56:06.862000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "NotificationLambdaRole8517A721",
+            "PhysicalResourceId": "Spaceport-Notification-Lambda-Role-staging",
+            "ResourceType": "AWS::IAM::Role",
+            "LastUpdatedTimestamp": "2026-04-17T19:28:24.704000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SageMakerExecutionRole7843F3B8",
+            "PhysicalResourceId": "Spaceport-SageMaker-Role-staging",
+            "ResourceType": "AWS::IAM::Role",
+            "LastUpdatedTimestamp": "2026-04-17T19:28:24.667000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SfMLogGroup9D957983",
+            "PhysicalResourceId": "/aws/sagemaker/processing-jobs/sfm-staging",
+            "ResourceType": "AWS::Logs::LogGroup",
+            "LastUpdatedTimestamp": "2026-04-17T19:28:24.670000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportMLApi05F9F32F",
+            "PhysicalResourceId": "wz0ezgptue",
+            "ResourceType": "AWS::ApiGateway::RestApi",
+            "LastUpdatedTimestamp": "2026-04-17T19:28:32.164000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportMLApiAccount2E8DDE79",
+            "PhysicalResourceId": "Spacep-Space-8QzVATigZBsL",
+            "ResourceType": "AWS::ApiGateway::Account",
+            "LastUpdatedTimestamp": "2025-08-26T16:18:54.002000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportMLApiCloudWatchRole9037A752",
+            "PhysicalResourceId": "SpaceportMLPipelineStagin-SpaceportMLApiCloudWatchR-3jqAQkUEmjKE",
+            "ResourceType": "AWS::IAM::Role",
+            "LastUpdatedTimestamp": "2025-08-26T16:18:51.307000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportMLApiDeployment652F0B22414f0a9fe478715b16b9ff26a4cfdcfa",
+            "PhysicalResourceId": "72ju7y",
+            "ResourceType": "AWS::ApiGateway::Deployment",
+            "LastUpdatedTimestamp": "2026-04-13T16:56:56.175000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportMLApiDeploymentStageprod6030F986",
+            "PhysicalResourceId": "prod",
+            "ResourceType": "AWS::ApiGateway::Stage",
+            "LastUpdatedTimestamp": "2026-04-13T16:56:58.462000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportMLApiOPTIONSCCC6C165",
+            "PhysicalResourceId": "wz0ezgptue|mlhkqiplvk|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2025-08-26T16:18:39.151000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportMLApistartjob9E8141D6",
+            "PhysicalResourceId": "mi5b6t",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "LastUpdatedTimestamp": "2025-08-26T16:18:37.663000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportMLApistartjobOPTIONSA6E192D5",
+            "PhysicalResourceId": "wz0ezgptue|mi5b6t|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2025-08-26T16:18:40.875000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportMLApistartjobPOST3A6CE183",
+            "PhysicalResourceId": "wz0ezgptue|mi5b6t|POST",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2026-03-06T12:22:27.604000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportMLApistartjobPOSTApiPermissionSpaceportMLPipelineStagingStackSpaceportMLApi9CC98ACFPOSTstartjob3D52A9F7",
+            "PhysicalResourceId": "SpaceportMLPipelineStagingStack-SpaceportMLApistartjobPOSTApiPermissionSpaceportMLPipel-frIgysUNy3rD",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-03-06T12:22:34.511000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportMLApistartjobPOSTApiPermissionTestSpaceportMLPipelineStagingStackSpaceportMLApi9CC98ACFPOSTstartjob29963EC3",
+            "PhysicalResourceId": "SpaceportMLPipelineStagingStack-SpaceportMLApistartjobPOSTApiPermissionTestSpaceportMLP-aA08WwYDm9B6",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-03-06T12:22:26.924000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportMLApistopjob4B3E6FF6",
+            "PhysicalResourceId": "zsixhs",
+            "ResourceType": "AWS::ApiGateway::Resource",
+            "LastUpdatedTimestamp": "2025-08-26T16:18:37.717000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportMLApistopjobOPTIONSBC8AB93E",
+            "PhysicalResourceId": "wz0ezgptue|zsixhs|OPTIONS",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2025-08-26T16:18:41.143000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportMLApistopjobPOST1A4225CA",
+            "PhysicalResourceId": "wz0ezgptue|zsixhs|POST",
+            "ResourceType": "AWS::ApiGateway::Method",
+            "LastUpdatedTimestamp": "2026-03-06T12:22:26.495000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportMLApistopjobPOSTApiPermissionSpaceportMLPipelineStagingStackSpaceportMLApi9CC98ACFPOSTstopjob86AB5144",
+            "PhysicalResourceId": "SpaceportMLPipelineStagingStack-SpaceportMLApistopjobPOSTApiPermissionSpaceportMLPipeli-KBmpFPjWor5M",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-03-06T12:22:34.474000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "SpaceportMLApistopjobPOSTApiPermissionTestSpaceportMLPipelineStagingStackSpaceportMLApi9CC98ACFPOSTstopjob09BE833E",
+            "PhysicalResourceId": "SpaceportMLPipelineStagingStack-SpaceportMLApistopjobPOSTApiPermissionTestSpaceportMLPi-0ijEZ2rBpVfB",
+            "ResourceType": "AWS::Lambda::Permission",
+            "LastUpdatedTimestamp": "2026-03-06T12:22:26.930000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "StartMLJobFunction1AB8819D",
+            "PhysicalResourceId": "Spaceport-StartMLJob-staging",
+            "ResourceType": "AWS::Lambda::Function",
+            "LastUpdatedTimestamp": "2026-04-13T16:56:53.279000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "StepFunctionFailureAlarmAFD82A85",
+            "PhysicalResourceId": "SpaceportMLPipeline-Failures-staging",
+            "ResourceType": "AWS::CloudWatch::Alarm",
+            "LastUpdatedTimestamp": "2026-03-06T12:22:17.035000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "StepFunctionsExecutionRole5B21F5A6",
+            "PhysicalResourceId": "Spaceport-StepFunctions-Role-staging",
+            "ResourceType": "AWS::IAM::Role",
+            "LastUpdatedTimestamp": "2026-03-06T12:21:51.728000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "StepFunctionsExecutionRoleDefaultPolicyD10BF6E3",
+            "PhysicalResourceId": "Space-StepF-Yn72UtPSavuW",
+            "ResourceType": "AWS::IAM::Policy",
+            "LastUpdatedTimestamp": "2026-04-13T16:56:23.902000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "StepFunctionsLogGroup8EBFF7CF",
+            "PhysicalResourceId": "/aws/stepfunctions/ml-pipeline-staging",
+            "ResourceType": "AWS::Logs::LogGroup",
+            "LastUpdatedTimestamp": "2026-04-17T19:28:24.682000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "StopJobFunction085274E3",
+            "PhysicalResourceId": "Spaceport-StopJobFunction-staging",
+            "ResourceType": "AWS::Lambda::Function",
+            "LastUpdatedTimestamp": "2026-03-06T12:22:24.231000+00:00",
+            "ResourceStatus": "UPDATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        },
+        {
+            "LogicalResourceId": "StopJobFunctionServiceRole4125FFAF",
+            "PhysicalResourceId": "SpaceportMLPipelineStagin-StopJobFunctionServiceRol-eJ34Kb7sqpUx",
+            "ResourceType": "AWS::IAM::Role",
+            "LastUpdatedTimestamp": "2025-08-26T16:18:51.080000+00:00",
+            "ResourceStatus": "CREATE_COMPLETE",
+            "DriftInformation": {
+                "StackResourceDriftStatus": "NOT_CHECKED"
+            }
+        }
+    ]
+}

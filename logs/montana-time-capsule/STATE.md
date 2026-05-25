@@ -12185,3 +12185,10 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
     - logs/montana-time-capsule/curlI-friday-viewer-sky-20260525T054632Z.headers
     - logs/montana-time-capsule/curlI-friday-viewer-nosky-20260525T054632Z.headers
   - GitHub Actions snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T054548Z.json + logs/montana-time-capsule/gh-run-list-exact-head-867d8d27-20260525T054548Z.json
+
+### Post-push GitHub Actions check 20260525T054737Z
+
+- Git: agent-40136728-montana-time-capsule @ fe48c502b4e3e45952beefac74f70811a032051c (fe48c502 chore: friday heartbeat verify 20260525T0546Z [skip ci])
+- Evidence stamp: 20260525T054737Z
+- Branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T054737Z.json
+- Exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-fe48c502-postpush-20260525T054737Z.json (expected 0 for [skip ci] head)
