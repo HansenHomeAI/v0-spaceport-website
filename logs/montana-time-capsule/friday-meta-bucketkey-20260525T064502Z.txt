@@ -1,0 +1,2 @@
+bucket=spaceport-ml-processing-staging
+key=compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json

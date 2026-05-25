@@ -1,0 +1,9 @@
+3dgs_image_uri=975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db
+compressed_output_s3_uri=s3://spaceport-ml-processing-staging/compressed/friday-mtc-20260524T0001Z/
+compressor_image_uri=975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab
+gaussian_model_artifact_s3_uri=s3://spaceport-ml-processing-staging/3dgs/friday-mtc-20260524T0001Z/friday-mtc-20260524T0001Z-3dgs/output/model.tar.gz
+gaussian_output_s3_uri=s3://spaceport-ml-processing-staging/3dgs/friday-mtc-20260524T0001Z/
+input_s3_uri=s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.zip
+sfm_image_uri=975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811
+sfm_output_s3_uri=s3://spaceport-ml-processing-staging/manual-validations/friday-mtc-20260524T0001Z/colmap
+viewer_bundle_s3_uri=s3://spaceport-ml-processing-staging/compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json
