@@ -12574,3 +12574,28 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
 ### Post-push GH snapshot 20260525T084807Z (commit 85e9d998)
 - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-postpush-85e9d998-20260525T084807Z.json
 - branch runs: logs/montana-time-capsule/gh-run-list-branch-postpush-agent-40136728-montana-time-capsule-20260525T084807Z.json
+
+## 2026-05-25T09:06:30Z HEARTBEAT monitor (FRIDAY canonical `friday-mtc-20260524T0001Z`): terminal; no-spend; public meta HTTP 200
+
+- Git: agent-40136728-montana-time-capsule @ 5ae2471d4ca7fa32d276c621b5ae246d36b103a3 (5ae2471d chore: montana postpush gh snapshot 20260525T084807Z [skip ci])
+- Evidence stamp: 20260525T090515Z
+  - AWS identity/region/version (`/opt/homebrew/bin/aws`; us-west-2):
+    - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T090515Z.json
+    - region: logs/montana-time-capsule/aws-config-region-20260525T090515Z.txt
+    - version: logs/montana-time-capsule/aws-version-20260525T090515Z.txt
+  - InProgress guardrail (max-results=50):
+    - processing: logs/montana-time-capsule/sm-list-processing-inprogress-20260525T090515Z.json
+    - training: logs/montana-time-capsule/sm-list-training-inprogress-20260525T090515Z.json
+  - Canonical Friday SageMaker statuses (all Completed):
+    - logs/montana-time-capsule/sm-summary-friday-mtc-20260524T0001Z-20260525T090515Z.txt
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T090515Z.json
+    - logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T090515Z.json
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T090515Z.json
+  - S3 outputs proof:
+    - logs/montana-time-capsule/s3-proof-friday-mtc-20260524T0001Z-20260525T090515Z.txt
+  - Public bundle reachability (meta.json headers):
+    - logs/montana-time-capsule/public-meta-url-20260525T090546Z.txt
+    - logs/montana-time-capsule/curl-public-meta-headers-20260525T090546Z.txt
+  - GitHub Actions snapshots (branch + exact head; exact-head empty expected on [skip ci]):
+    - logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T090557Z.json
+    - logs/montana-time-capsule/gh-run-list-exact-head-5ae2471d-20260525T090557Z.json
