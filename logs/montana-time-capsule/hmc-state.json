@@ -16,11 +16,11 @@
     "head": "ae52c258"
   },
   "postpush": {
-    "gh_branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T154732Z.json",
-    "gh_exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-fec179c2-postpush-20260525T154732Z.json",
-    "head_short": "fec179c2",
-    "stamp": "20260525T154732Z",
-    "updated_at": "20260525T154732Z"
+    "gh_branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T154820Z.json",
+    "gh_exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-454bd0fc-postpush-20260525T154820Z.json",
+    "head_short": "454bd0fc",
+    "stamp": "20260525T154820Z",
+    "updated_at": "20260525T154820Z"
   },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
