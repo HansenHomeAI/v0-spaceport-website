@@ -12419,3 +12419,16 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
 
 - Git: agent-40136728-montana-time-capsule @ bf6e80dd591f305be6e05fcd9621cb2500df85e7 (bf6e80dd chore: friday heartbeat verify 20260525T074613Z [skip ci])
 - Evidence: logs/montana-time-capsule/gh-actions-postpush-unauth-20260525T074815Z.json (sha_total expected 0 for `[skip ci]` head)
+
+## 20260525T074916Z HEARTBEAT monitor (HMC canonical `hmc-mtc-20260520T2015Z`): terminal; no-spend; InProgress=0; public meta.json HTTP 200; viewer base/sky/no-sky HTTP 200; exact-head GH runs empty (expected for `[skip ci]` head)
+
+- Git: agent-40136728-montana-time-capsule @ 4c38ad860025f42cac1701415049d3ed5d5b93eb
+- Evidence stamp: 20260525T074916Z
+  - Git proof: logs/montana-time-capsule/git-proof-20260525T074916Z.txt
+  - AWS identity/region/version: logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T074916Z.json + logs/montana-time-capsule/aws-config-region-20260525T074916Z.txt + logs/montana-time-capsule/aws-version-20260525T074916Z.txt
+  - InProgress guardrail: logs/montana-time-capsule/sm-list-processing-inprogress-20260525T074916Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T074916Z.json
+  - Canonical HMC describes (all Completed): logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T074916Z.json + logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T074916Z.json + logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T074916Z.json
+  - S3 outputs (compressed supersplat bundle): logs/montana-time-capsule/s3ls-staging-compressed-hmc-mtc-20260520T2015Z-20260525T074916Z.txt + logs/montana-time-capsule/s3ls-prod-compressed-hmc-mtc-20260520T2015Z-20260525T074916Z.txt
+  - Public bundle HTTP: logs/montana-time-capsule/curlI-prod-meta-hmc-mtc-20260520T2015Z-20260525T074916Z.headers + logs/montana-time-capsule/s3head-prod-meta-hmc-mtc-20260520T2015Z-20260525T074916Z.json
+  - Viewer HTTP: logs/montana-time-capsule/curlI-viewer-base-20260525T074916Z.headers + logs/montana-time-capsule/curlI-viewer-sky-20260525T074916Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-20260525T074916Z.headers
+  - GitHub Actions snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T074916Z.json + logs/montana-time-capsule/gh-run-list-exact-head-4c38ad86-20260525T074916Z.json
