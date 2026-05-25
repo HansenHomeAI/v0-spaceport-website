@@ -46,3 +46,4 @@
 [20260525T054606Z] heartbeat(friday) -> terminal; InProgress=0; viewer+meta 200; no dup -> commit+push
 [20260525T054737Z] postpush(gh) -> snapshot -> done
 [2026-05-25T05:48:36Z] heartbeat -> HMC hmc-mtc-20260520T2015Z public meta published to s3://spaceport-ml-processing/... (200 OK) -> update STATE.md + hmc-state.json; commit+push
+[2026-05-25T06:07:40Z] hmc heartbeat -> terminal (InProgress 0/0, prod meta 200, viewer 200/200/200, gh exact-head empty on skip-ci head) -> next: wait for new acceptance gates

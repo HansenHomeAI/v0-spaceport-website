@@ -1,0 +1,3 @@
+branch=agent-40136728-montana-time-capsule
+head=2f2ad52573b780aa7b649a8aac34259fc12192ac
+2f2ad525 chore: friday heartbeat 20260525T0606Z [skip ci]

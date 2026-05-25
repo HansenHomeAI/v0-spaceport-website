@@ -11,6 +11,18 @@
   - GitHub Actions snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T060459Z.json + logs/montana-time-capsule/gh-run-list-exact-head-d51a1427-20260525T060459Z.json
   - Guarded stage launcher (executed once; state re-emitted/updated; no duplicate Friday jobs launched): logs/montana-time-capsule/cv-hr-time-capsule-launch-20260525T060545Z.log
 
+## 2026-05-25T06:04:21Z HEARTBEAT monitor (HMC canonical `hmc-mtc-20260520T2015Z`): terminal; no-spend; InProgress=0; public meta HTTP 200; hosted viewer base/sky/no-sky HTTP 200
+
+- Evidence stamp: 20260525T060421Z
+  - Git status/head: logs/montana-time-capsule/git-status-20260525T060421Z.txt + logs/montana-time-capsule/git-head-20260525T060421Z.txt + logs/montana-time-capsule/git-head-detail-20260525T060421Z.txt
+  - AWS identity/region/version: logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T060421Z.json + logs/montana-time-capsule/aws-config-region-20260525T060421Z.txt + logs/montana-time-capsule/aws-version-20260525T060421Z.txt
+  - InProgress guardrail (max-results=50): logs/montana-time-capsule/sm-list-processing-inprogress-20260525T060421Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T060421Z.json (counts: 0/0)
+  - Canonical HMC describes (all Completed): logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T060421Z.json + logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T060421Z.json + logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T060421Z.json
+  - Public meta reachability (HTTP HEAD 200): logs/montana-time-capsule/curlI-prod-meta-hmc-mtc-20260520T2015Z-20260525T060421Z.headers + logs/montana-time-capsule/s3head-prod-meta-hmc-mtc-20260520T2015Z-20260525T060421Z.json
+  - Hosted viewer HTTP HEAD 200: logs/montana-time-capsule/curlI-viewer-base-20260525T060421Z.headers + logs/montana-time-capsule/curlI-viewer-sky-20260525T060421Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-20260525T060421Z.headers
+  - GitHub Actions snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T060421Z.json + logs/montana-time-capsule/gh-run-list-exact-head-d51a1427-20260525T060421Z.json
+  - Summary JSON updated: logs/montana-time-capsule/hmc-state.json
+
 ## 2026-05-25T05:49:02Z HEARTBEAT monitor (HMC canonical `hmc-mtc-20260520T2015Z`): terminal; published bundle to public S3; public meta now HTTP 200
 
 - Git: agent-40136728-montana-time-capsule @ 47e6d2dd6616c1c9f35ea199cc7502e4b1a15a01 (`chore: postpush gh snapshot 20260525T0547Z [skip ci]`)

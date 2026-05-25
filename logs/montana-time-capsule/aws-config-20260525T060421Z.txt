@@ -1,0 +1,6 @@
+      Name                    Value             Type    Location
+      ----                    -----             ----    --------
+   profile                <not set>             None    None
+access_key     ****************YCE6 shared-credentials-file    
+secret_key     ****************pOqE shared-credentials-file    
+    region                us-west-2      config-file    ~/.aws/config
