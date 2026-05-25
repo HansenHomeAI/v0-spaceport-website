@@ -1,0 +1,25 @@
+{
+  "aws": {
+    "region": "us-west-2",
+    "sts": "logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T164450Z.json"
+  },
+  "git": {
+    "branch": "logs/montana-time-capsule/git-branch-20260525T164450Z.txt",
+    "head": "7ca173db59d544751d36d6c9606bc670605ad0b9"
+  },
+  "run_id": "hmc-mtc-20260520T2015Z",
+  "s3": {
+    "meta_content_length": 1359,
+    "meta_etag": "\"89e1a1d12752cd0887f1a74230971cca\"",
+    "meta_last_modified": "2026-05-25T05:48:03+00:00",
+    "meta_url": "https://spaceport-ml-processing.s3.us-west-2.amazonaws.com/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json"
+  },
+  "sagemaker": {
+    "3dgs_status": "Completed",
+    "compression_status": "Completed",
+    "inprogress_processing": 0,
+    "inprogress_training": 0,
+    "sfm_status": "Completed"
+  },
+  "updated_at": "20260525T164450Z"
+}

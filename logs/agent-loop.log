@@ -598,3 +598,4 @@
 [2026-05-25T16:24:36Z] heartbeat-hmc -> refreshed evidence_stamp=20260525T162436Z; viewer/meta 200; sm terminal (Completed); inprogress 0/0; gh snapshots captured -> next: idle
 [2026-05-25T16:28:17Z] friday heartbeat -> terminal (sfm/3dgs/compression Completed; inprogress 0) -> record/push
 [2026-05-25T16:29:14Z] postpush gh snapshot -> head 26ed8f7c (skip ci) -> done
+[2026-05-25T16:46:25Z] heartbeat(hmc-mtc-20260520T2015Z) -> verified terminal + public reachability ok (stamp=20260525T164450Z) -> next: await new acceptance gate
