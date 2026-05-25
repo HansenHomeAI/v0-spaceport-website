@@ -1,0 +1,25 @@
+agent-40136728-montana-time-capsule
+751d17f1eb4d73d0a1405de328fcbaeb483709ec
+ M logs/montana-time-capsule/_last_heartbeat_ts.txt
+?? logs/montana-time-capsule/_heartbeat_ts_20260525T064502Z.txt
+?? logs/montana-time-capsule/aws-config-region-20260525T064502Z.txt
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T064502Z.json
+?? logs/montana-time-capsule/aws-version-20260525T064502Z.txt
+?? logs/montana-time-capsule/curlD-friday-meta-public-20260525T064502Z.headers
+?? logs/montana-time-capsule/curlD-friday-viewer-nosky-20260525T064502Z.headers
+?? logs/montana-time-capsule/curlD-friday-viewer-sky-20260525T064502Z.headers
+?? logs/montana-time-capsule/friday-job-names-20260525T064502Z.tsv
+?? logs/montana-time-capsule/friday-meta-bucketkey-20260525T064502Z.txt
+?? logs/montana-time-capsule/friday-meta-public-url-20260525T064502Z.txt
+?? logs/montana-time-capsule/friday-s3-keys-20260525T064502Z.txt
+?? logs/montana-time-capsule/git-proof-20260525T064611Z.txt
+?? logs/montana-time-capsule/s3-head-friday-meta-20260525T064502Z.json
+?? logs/montana-time-capsule/s3ls-friday-3dgs-20260525T064502Z.txt
+?? logs/montana-time-capsule/s3ls-friday-compressed-20260525T064502Z.txt
+?? logs/montana-time-capsule/s3ls-friday-sfm-20260525T064502Z.txt
+?? logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T064502Z.json
+?? logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T064502Z.json
+?? logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T064502Z.json
+?? logs/montana-time-capsule/sm-list-processing-inprogress-20260525T064502Z.json
+?? logs/montana-time-capsule/sm-list-training-inprogress-20260525T064502Z.json
+751d17f1 chore: postpush gh snapshot 20260525T0627Z [skip ci]
