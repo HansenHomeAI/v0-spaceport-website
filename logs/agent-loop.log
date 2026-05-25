@@ -607,3 +607,4 @@
 [2026-05-25T17:05:27Z] heartbeat(hmc-mtc-20260520T2015Z) -> refreshed evidence stamp 20260525T170527Z -> next: idle (no-spend)
 [2026-05-25T17:08:33Z] postpush gh snapshot 20260525T170833Z (head=98d7f05b) -> exact-head workflows 0 (skip ci) -> next: idle
 [2026-05-25T17:27:02Z] heartbeat(hmc-mtc-20260520T2015Z) -> verified terminal + viewer/meta HTTP200 -> next: wait for new acceptance gate
+[2026-05-25T17:27:41Z] postpush gh snapshot 20260525T172730Z (head=40a7d1df) -> exact-head workflows 0 (skip ci) -> next: idle
