@@ -24,6 +24,14 @@
     - exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-6c70a77c-20260525T040421Z.json
   - State snapshot refreshed: logs/montana-time-capsule/hmc-state.json
 
+## 2026-05-25T04:06:16Z postpush - refreshed branch + exact-head GitHub snapshots on current head (expected empty on `[skip ci]` head)
+
+- Git: agent-40136728-montana-time-capsule @ 72e4d62dfb0d4c149eaaedb6ac431176c16aa31d (`chore: heartbeat hmc state 20260525T040421Z [skip ci]`)
+- Evidence stamp: 20260525T040616Z
+  - GitHub Actions branch snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T040616Z.json
+  - GitHub Actions exact-head snapshot: logs/montana-time-capsule/gh-run-list-exact-head-72e4d62d-20260525T040616Z.json
+  - State snapshot refreshed: logs/montana-time-capsule/hmc-state.json
+
 ## 2026-05-25T02:45:42Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: no-spend re-verify; SfM/3DGS/compression Completed; InProgress=0; S3 outputs present; public meta + hosted viewer sky/no-sky HEAD 200; exact-head GH runs empty (expected for `[skip ci]`); no duplicate jobs launched
 
 - Git: agent-40136728-montana-time-capsule @ cf6867e7fedfdc51010556fdba907b322c05e99d (`chore: postpush gh snapshot 20260525T022917Z [skip ci]`)
