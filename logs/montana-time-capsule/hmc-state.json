@@ -22,6 +22,16 @@
     "status": "logs/montana-time-capsule/git-status-20260525T210510Z.txt"
   },
   "note": "Heartbeat no-spend verification at 2026-05-25T21:07:06Z",
+  "postpush": {
+    "branch": "agent-40136728-montana-time-capsule",
+    "gh_branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T210910Z.json",
+    "gh_exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-a10fdaf9-postpush-20260525T210910Z.json",
+    "gh_version": "logs/montana-time-capsule/gh-version-20260525T210510Z.txt",
+    "head": "a10fdaf9d21ab8af1b7d570365f1a722cc38cb4b",
+    "head_short": "a10fdaf9",
+    "stamp": "20260525T210910Z"
+  },
+  "postpush_updated_at": "20260525T210910Z",
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
     "compressed_prefix": "s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/",
@@ -45,7 +55,7 @@
     "list_training_inprogress": "logs/montana-time-capsule/sm-list-training-inprogress-20260525T210510Z.json",
     "sfm_status": "Completed"
   },
-  "updated_at": "20260525T210510Z",
+  "updated_at": "20260525T210910Z",
   "viewer": {
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
     "base_head": "logs/montana-time-capsule/curlI-viewer-base-20260525T210510Z.headers",
