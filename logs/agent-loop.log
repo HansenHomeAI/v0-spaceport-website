@@ -618,3 +618,4 @@
 [2026-05-25T19:08:02Z] heartbeat evidence refresh -> ok (no-spend; HMC terminal) -> commit+push ledger
 [2026-05-25T19:09:04Z] postpush gh snapshot -> head bad0cd41 -> saved logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T190838Z.json
 [2026-05-25T20:28:12Z] montana-time-capsule heartbeat -> hmc-mtc-20260520T2015Z terminal + viewer/meta HTTP 200 -> idle
+[2026-05-25T14:48:04-0600] heartbeat -> hmc-mtc-20260520T2015Z -> reverified terminal + reachability ok -> next: wait for new acceptance gate
