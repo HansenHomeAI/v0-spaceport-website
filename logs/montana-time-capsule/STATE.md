@@ -12414,3 +12414,8 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
   - GitHub Actions snapshot (unauth GitHub API; no `gh`/token): logs/montana-time-capsule/gh-actions-runs-unauth-20260525T074613Z.json (branch history present; sha runs empty for this head)
 
 - Action: no further launches (pipeline already completed; guardrail against duplicate Friday jobs).
+
+### Post-push GitHub Actions check 20260525T074815Z
+
+- Git: agent-40136728-montana-time-capsule @ bf6e80dd591f305be6e05fcd9621cb2500df85e7 (bf6e80dd chore: friday heartbeat verify 20260525T074613Z [skip ci])
+- Evidence: logs/montana-time-capsule/gh-actions-postpush-unauth-20260525T074815Z.json (sha_total expected 0 for `[skip ci]` head)
