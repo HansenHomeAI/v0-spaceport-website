@@ -11553,3 +11553,10 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
   - Viewer HEAD headers: logs/montana-time-capsule/curlI-hmc-alias-20260525T021027Z.headers + logs/montana-time-capsule/curlI-hmc-sky-20260525T021027Z.headers + logs/montana-time-capsule/curlI-hmc-nosky-20260525T021027Z.headers + logs/montana-time-capsule/curlI-hmc-proxy-20260525T021027Z.headers
   - GH snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T021027Z.json + logs/montana-time-capsule/gh-run-list-exact-head-ea709482-20260525T021027Z.json
   - Snapshot: logs/montana-time-capsule/hmc-state.json
+
+### Post-push GitHub Actions check 2026-05-25T02:13:00Z
+
+- Git: agent-40136728-montana-time-capsule @ 87e38ee543bd16f8b1ea7c9912317e2eb5eafc18 (chore: hmc heartbeat proof 20260525T021027Z [skip ci])
+- Evidence stamp: 20260525T021258Z
+- Branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T021258Z.json (count=23)
+- Exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-87e38ee5-postpush-20260525T021258Z.json (count=0; expected 0 for [skip ci] head)
