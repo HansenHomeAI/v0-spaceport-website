@@ -1,0 +1,19 @@
+HTTP/1.1 200 OK
+x-amz-id-2: /kHR4jOL+OnNLKRbdGiOR4qhw/cVKO+5aYrP+6Ctx2xsCYd23cM5nuNkqjccKZXUKaWuanwXSyM=
+x-amz-request-id: 2JGGX0NQE7K5ZHP7
+Date: Mon, 25 May 2026 12:52:12 GMT
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: GET, HEAD
+Access-Control-Expose-Headers: ETag, Content-Length, Content-Range, Accept-Ranges, x-amz-version-id
+Access-Control-Max-Age: 86400
+Vary: Origin, Access-Control-Request-Headers, Access-Control-Request-Method
+Last-Modified: Sun, 24 May 2026 17:08:06 GMT
+ETag: "6db972a5b06efb831cee42e4aad4443c"
+x-amz-server-side-encryption: AES256
+Cache-Control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: a5q2Msf.yBUYKQ_i.R696mQq1XSlvosb
+Accept-Ranges: bytes
+Content-Type: application/json
+Content-Length: 1372
+Server: AmazonS3
+

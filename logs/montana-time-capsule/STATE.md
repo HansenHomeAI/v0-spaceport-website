@@ -12922,3 +12922,18 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
 - Evidence stamp: 20260525T114819Z
   - GitHub Actions branch snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T114819Z.json
   - GitHub Actions exact-head snapshot (empty; expected for `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-af376b43-postpush-20260525T114819Z.json
+
+## 2026-05-25T12:49:08Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical `friday-mtc-20260524T0001Z`: still terminal (SfM/3DGS/compression Completed); public bundle reachable w/ CORS + immutable caching; viewer sky/no-sky HTTP 200; no new jobs launched
+
+- Note: The automation prompt expected SfM might still be InProgress; AWS/SageMaker now confirms SfM is already `Completed` (and downstream 3DGS/compression are also `Completed`), so the guarded `cv_hr_time_capsule.py --launch` command was intentionally NOT re-run to avoid duplicating Friday jobs.
+- Evidence stamps
+  - AWS/SageMaker/S3/public reachability (20260525T124637Z):
+    - Git (local pre-fetch snapshot): logs/montana-time-capsule/git-head-20260525T124637Z.txt + logs/montana-time-capsule/git-head-detail-20260525T124637Z.txt + logs/montana-time-capsule/git-status-20260525T124637Z.txt + logs/montana-time-capsule/git-log1-20260525T124637Z.txt
+    - AWS identity/region/version (/opt/homebrew/bin/aws): logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T124637Z.json + logs/montana-time-capsule/aws-config-region-20260525T124637Z.txt + logs/montana-time-capsule/aws-version-20260525T124637Z.txt
+    - SageMaker describes (all Completed): logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T124637Z.json + logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T124637Z.json + logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T124637Z.json
+    - S3 outputs: logs/montana-time-capsule/s3ls-manual-validations-friday-mtc-20260524T0001Z-20260525T124637Z.txt + logs/montana-time-capsule/s3ls-compressed-friday-mtc-20260524T0001Z-supersplat_bundle-20260525T124637Z.txt + logs/montana-time-capsule/s3api-head-staging-compressed-meta-friday-mtc-20260524T0001Z-20260525T124637Z.json
+    - Public meta + hosted viewer reachability (HTTP HEAD 200): logs/montana-time-capsule/curlI-friday-public-meta-20260525T124637Z.headers + logs/montana-time-capsule/curlI-friday-viewer-sky-20260525T124637Z.headers + logs/montana-time-capsule/curlI-friday-viewer-nosky-20260525T124637Z.headers
+    - GitHub Actions: logs/montana-time-capsule/gh-run-view-26401262451-20260525T124637Z.json (CDK Deploy run 26401262451 concluded `success`)
+  - Git/GitHub Actions (post-fetch exact-head snapshots; 20260525T124908Z):
+    - Git head/status: logs/montana-time-capsule/git-head-20260525T124908Z.txt + logs/montana-time-capsule/git-head-detail-20260525T124908Z.txt + logs/montana-time-capsule/git-status-20260525T124908Z.txt + logs/montana-time-capsule/git-log1-20260525T124908Z.txt
+    - GitHub Actions branch + exact-head snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T124908Z.json + logs/montana-time-capsule/gh-run-list-exact-head-963518c490a15e6cd93e9fb522ed43a067746476-20260525T124908Z.json
