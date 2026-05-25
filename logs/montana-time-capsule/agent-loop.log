@@ -42,3 +42,4 @@
 [20260525T050454Z] friday heartbeat -> verified terminal (sfm/3dgs/compression Completed; inprogress 0/0); s3 outputs present; gh snapshots refreshed -> next: idle monitor (avoid duplicate launch)
 [20260525T050710Z] postpush gh snapshot -> exact-head count 0 (skip ci) -> next: idle
 [20260525T052620Z] hmc heartbeat -> verified terminal (Completed/Completed/Completed; inprogress 0/0); viewer base/sky/nosky 200/200/200; public meta 404 -> next: wait for public bundle gate
+[20260525T052956Z] postpush gh snapshot -> branch_runs=20 exact_head_runs=0 (skip ci expected) -> next: idle monitor

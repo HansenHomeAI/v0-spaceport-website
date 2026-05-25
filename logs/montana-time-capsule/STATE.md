@@ -1,5 +1,12 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-25T05:29:56Z postpush GitHub snapshot (current head `ece5b71e` is `[skip ci]` so exact-head runs are expected empty)
+
+- Git: agent-40136728-montana-time-capsule @ ece5b71e54f0eb1b07b96f63ac908835dad9113e (`chore: hmc heartbeat 20260525T052620Z [skip ci]`)
+- Evidence stamp: 20260525T052956Z
+  - GitHub Actions branch snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T052956Z.json
+  - GitHub Actions exact-head snapshot: logs/montana-time-capsule/gh-run-list-exact-head-ece5b71e-postpush-20260525T052956Z.json
+
 ## 2026-05-25T05:26:20Z HEARTBEAT monitor (HMC canonical `hmc-mtc-20260520T2015Z`): terminal; no-spend; viewer reachable; public meta still 404
 
 - Git: agent-40136728-montana-time-capsule @ 254b1255c5d730c1435d07b045e47f15ddcb10fe (`chore: postpush gh snapshot 20260525T051117Z [skip ci]`)
