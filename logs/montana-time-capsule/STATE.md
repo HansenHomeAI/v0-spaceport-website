@@ -23,6 +23,15 @@
     - exact-head runs snapshot (empty; expected for `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-64ce1c5a-20260525T014520Z.json
   - State snapshot refreshed: logs/montana-time-capsule/hmc-state.json
 
+## 2026-05-25T01:47:31Z postpush - refreshed GitHub run snapshots on new head (expected empty on `[skip ci]` head)
+
+- Git: agent-40136728-montana-time-capsule @ e0978b91c4fa0ad9139e0d931241c4f1bc40638c (`chore: hmc-mtc heartbeat verify 20260525T014520Z [skip ci]`)
+- Evidence stamp: 20260525T014731Z
+  - GitHub Actions (`/opt/homebrew/bin/gh`):
+    - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T014731Z.json
+    - exact-head runs snapshot (empty; expected for `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-e0978b91-postpush-20260525T014731Z.json
+  - State snapshot refreshed: logs/montana-time-capsule/hmc-state.json
+
 ## 2026-05-25T01:28:16Z postpush - refreshed GitHub run snapshots on new head (expected empty on `[skip ci]` head)
 
 - Git: agent-40136728-montana-time-capsule @ f04aff3b31a8f90b5b85d458baf43f6c0aa45354 (`chore: friday heartbeat tick 20260525T012630Z [skip ci]`)
