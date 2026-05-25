@@ -471,3 +471,4 @@
 [2026-05-25T01:28:36Z] postpush gh -> exact-head runs 0 ([skip ci]) -> next: commit/push
 [2026-05-25T01:32:50Z] heartbeat-hmc -> ok (public meta 404; viewer base/sky/nosky ok) -> idle
 [2026-05-25T01:33:39Z] postpush-gh-snapshot -> ok (exact-head runs=0) -> idle
+[2026-05-25T01:46:52Z] heartbeat -> hmc-mtc terminal reconfirm (no spend); InProgress=0; staging meta + viewer/proxy HTTP200; exact-head CI 0 ([skip ci]) -> commit+push ledger (evidence 20260525T014520Z)

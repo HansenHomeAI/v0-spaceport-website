@@ -1,5 +1,28 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-25T01:45:20Z HEARTBEAT monitor - HMC canonical hmc-mtc-20260520T2015Z: no-spend re-verify; SageMaker terminal (Completed); S3 bundle present; hosted viewer + proxy HTTP 200; exact-head GH runs empty (expected for `[skip ci]`)
+
+- Git: agent-40136728-montana-time-capsule @ 64ce1c5af9eca4f730a549330d3e59b7eb79946c (`chore: postpush gh snapshot 20260525T013323Z [skip ci]`)
+- Evidence stamp: 20260525T014520Z
+  - Git proof: logs/montana-time-capsule/git-proof-20260525T014520Z.txt
+  - AWS identity/region: logs/montana-time-capsule/aws-config-region-20260525T014520Z.txt + logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T014520Z.json
+  - InProgress guardrail (max-results=50): logs/montana-time-capsule/sm-list-processing-inprogress-20260525T014520Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T014520Z.json
+  - HMC canonical describes (all Completed):
+    - logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T014520Z.json
+    - logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T014520Z.json
+    - logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T014520Z.json
+  - S3 outputs:
+    - compressed bundle listing: logs/montana-time-capsule/s3ls-hmc-compressed-20260525T014520Z.txt
+    - staging meta head-object: logs/montana-time-capsule/s3head-staging-meta-hmc-20260525T014520Z.json
+    - public meta head-object (404): logs/montana-time-capsule/s3head-public-meta-hmc-20260525T014520Z.err
+  - Hosted viewer reachability (HTTP headers):
+    - viewer/proxy headers (200): logs/montana-time-capsule/curlI-hmc-viewer-20260525T014520Z.headers
+    - urls: logs/montana-time-capsule/viewer-urls-hmc-20260525T013054Z.txt
+  - GitHub Actions (`/opt/homebrew/bin/gh`):
+    - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T014520Z.json
+    - exact-head runs snapshot (empty; expected for `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-64ce1c5a-20260525T014520Z.json
+  - State snapshot refreshed: logs/montana-time-capsule/hmc-state.json
+
 ## 2026-05-25T01:28:16Z postpush - refreshed GitHub run snapshots on new head (expected empty on `[skip ci]` head)
 
 - Git: agent-40136728-montana-time-capsule @ f04aff3b31a8f90b5b85d458baf43f6c0aa45354 (`chore: friday heartbeat tick 20260525T012630Z [skip ci]`)

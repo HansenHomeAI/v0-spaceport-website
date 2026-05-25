@@ -1,0 +1,5 @@
+2026-05-24 02:33:38  222.7 MiB manual-validations/friday-mtc-20260524T0001Z/colmap/sparse/0/points3D.txt
+2026-05-24 02:33:38  218 Bytes manual-validations/friday-mtc-20260524T0001Z/colmap/sparse/0/rigs.txt
+
+Total Objects: 1783
+   Total Size: 10.5 GiB

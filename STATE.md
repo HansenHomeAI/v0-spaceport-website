@@ -1,5 +1,5 @@
 reason: Montana time capsule monitor (SfM -> 3DGS -> compress -> viewer gates)
-last_step: 2026-05-24T23:07:29Z Friday canonical run re-verified terminal (SfM/3DGS/compression Completed); SageMaker InProgress=0; ran guarded `cv_hr_time_capsule.py --launch` (status=completed; no duplicate jobs); evidence recorded in logs/montana-time-capsule/.
+last_step: 2026-05-25T01:45:20Z HMC canonical run re-verified terminal (SfM/3DGS/compression Completed); SageMaker InProgress=0; staging bundle present; hosted viewer (sky/no-sky) + proxy HTTP200; evidence recorded in logs/montana-time-capsule/.
 next_unblocked_step: no compute to launch; optional deeper viewer QA (camera/sky artifacts) before PR/closeout.
 [2026-05-22T15:36:42Z] heartbeat -> terminal reconfirmed (no spend) -> idle
 [2026-05-22T15:37:51Z] heartbeat -> fresh reconfirmed (no spend) -> commit+push evidence
@@ -26,3 +26,4 @@ next_unblocked_step: no compute to launch; optional deeper viewer QA (camera/sky
 [2026-05-24T22:05:20Z] heartbeat -> friday-mtc terminal reconfirm (no spend); InProgress=0; S3 present; gh snapshot -> commit+push ledger
 [2026-05-24T22:48:33Z] heartbeat -> friday-mtc terminal reconfirm (no spend); InProgress=0; meta+viewer reachable; gh snapshot -> commit+push ledger
 [2026-05-24T23:07:29Z] heartbeat -> friday-mtc terminal reconfirm; ran guarded cv_hr_time_capsule --launch (status=completed, no dupes); evidence stamp 20260524T230543Z -> idle
+[2026-05-25T01:45:20Z] heartbeat -> hmc-mtc terminal reconfirm (no spend); InProgress=0; staging meta + viewer/proxy HTTP200; exact-head CI 0 ([skip ci]) -> commit+push ledger
