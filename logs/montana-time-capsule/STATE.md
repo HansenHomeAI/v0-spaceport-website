@@ -11269,3 +11269,19 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
 
 - Git: agent-40136728-montana-time-capsule @ 228ef98f3570e99eb50686a589b14a563525c36c (chore: friday mtc heartbeat 20260525T0028Z [skip ci])
 - GitHub Actions exact-head runs: 0 (expected due `[skip ci]`); snapshot: logs/montana-time-capsule/gh-actions-runs-agent-40136728-montana-time-capsule-20260525T003022Z.json
+
+## 2026-05-25T00:48:23Z HEARTBEAT monitor (Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z): no-spend re-verify; SageMaker terminal; S3 + public reachability OK; GH exact-head empty (skip ci)
+
+- Git: agent-40136728-montana-time-capsule @ af8d6aefd41f95917e1e96d900f7e9f4cfe592a6
+- Evidence stamp: 20260525T004644Z
+- AWS (boto3; region us-west-2; no spend):
+  - identity: logs/montana-time-capsule/sts-identity-20260525T004644Z.json (arn: arn:aws:iam::975050048887:root)
+  - InProgress guardrail (max-results=20): logs/montana-time-capsule/sm-list-processing-inprogress-20260525T004644Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T004644Z.json (counts: 0/0)
+  - Friday canonical job statuses: SfM=Completed 3DGS=Completed compression=Completed (describe bundle: logs/montana-time-capsule/sm-describe-friday-jobs-20260525T004644Z.json)
+- S3 outputs + meta head proof: logs/montana-time-capsule/s3-proof-friday-20260525T004644Z.json
+- Public reachability (HTTP headers):
+  - meta: logs/montana-time-capsule/curl-headers-friday-public-meta-20260525T004644Z.txt
+  - viewer sky/no-sky: logs/montana-time-capsule/curl-headers-friday-viewer-sky-20260525T004644Z.txt + logs/montana-time-capsule/curl-headers-friday-viewer-nosky-20260525T004644Z.txt
+- GitHub Actions (`/opt/homebrew/bin/gh`):
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T004644Z.json
+  - exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-af8d6aefd41f95917e1e96d900f7e9f4cfe592a6-20260525T004644Z.json

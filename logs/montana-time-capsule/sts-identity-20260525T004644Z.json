@@ -1,0 +1,17 @@
+{
+  "Account": "975050048887",
+  "Arn": "arn:aws:iam::975050048887:root",
+  "ResponseMetadata": {
+    "HTTPHeaders": {
+      "content-length": "387",
+      "content-type": "text/xml",
+      "date": "Mon, 25 May 2026 00:48:02 GMT",
+      "x-amz-sts-extended-request-id": "MTp1cy13ZXN0LTI6UzoxNzc5NjcwMDgyNzUzOlI6Tzh2U3F3bmQ=",
+      "x-amzn-requestid": "a6d20983-7393-4f2a-ad5e-26700ebfabf5"
+    },
+    "HTTPStatusCode": 200,
+    "RequestId": "a6d20983-7393-4f2a-ad5e-26700ebfabf5",
+    "RetryAttempts": 0
+  },
+  "UserId": "975050048887"
+}

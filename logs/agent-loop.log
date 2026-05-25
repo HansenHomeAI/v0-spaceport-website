@@ -463,3 +463,4 @@
 [2026-05-25T00:28:08Z] postpush -> gh snapshots recorded for 01c740d9 (exact-head runs 0 due to [skip ci]) -> next: idle monitor
 [2026-05-25T00:29:26Z] postpush -> gh exact-head runs 0 for 228ef98f ([skip ci]) -> next: commit+push snapshot
 [2026-05-25T00:30:02Z] postpush -> gh snapshots recorded for dc9fc33c (exact-head runs 0 due to [skip ci]) -> next: idle monitor
+[20260525T004644Z] friday heartbeat -> sfm/3dgs/compression Completed; public meta+viewer 200; inprogress 0/0 -> commit+push
