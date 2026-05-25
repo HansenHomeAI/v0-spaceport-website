@@ -570,3 +570,5 @@
 [2026-05-25T13:50:26Z] postpush gh snapshot head=0eb5c7b5 -> recorded (exact-head runs expected 0 for [skip ci])
 [2026-05-25T13:54:50Z] heartbeat(hmc-mtc-20260520T2015Z) -> ok (public meta 200; viewer 200; terminal) -> next: visual/camera proof if needed
 [2026-05-25T14:06:21Z] heartbeat(hmc-mtc-20260520T2015Z) -> ok (sagemaker terminal; public meta 200; viewer 200) -> next: visual proof gate
+[20260525T141200Z] postpush ci -> CDK Deploy success run=26404616422 head=354c69d6
+[2026-05-25T14:12:10Z] friday heartbeat 20260525T140528 -> terminal (sfm/3dgs/cmp Completed; inprogress=0); cdk deploy run 26404616422 success -> next: idle

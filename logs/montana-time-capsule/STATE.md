@@ -13149,3 +13149,78 @@ LEARN MORE
   - logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T140528.json
   - logs/montana-time-capsule/gh-run-list-exact-head-653294bf-20260525T140528.json
 - summary json: logs/montana-time-capsule/hmc-state.json
+- Postpush GH snapshot (20260525T141200):
+  - logs/montana-time-capsule/gh-run-list-exact-head-354c69d6-postpush-20260525T141200.json
+  - logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T141200.json
+
+## 2026-05-25T14:12:10Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical : verified terminal SageMaker (SfM/3DGS/compression Completed); InProgress=0; S3 outputs present; exact-head GH run (CDK Deploy) completed success; no new jobs launched
+
+- Evidence stamp: 20260525T140528
+  - Heartbeat core: logs/montana-time-capsule/heartbeat-core-20260525T140528.txt
+  - Git head/detail/status: logs/montana-time-capsule/git-branch-20260525T140528.txt + logs/montana-time-capsule/git-head-20260525T140528.txt + logs/montana-time-capsule/git-head-detail-20260525T140528.txt + logs/montana-time-capsule/git-status-20260525T140528.txt + logs/montana-time-capsule/git-log1-20260525T140528.txt
+  - AWS identity/region/version (; us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T140528.json + logs/montana-time-capsule/aws-config-region-20260525T140528.txt + logs/montana-time-capsule/aws-version-20260525T140528.txt
+  - InProgress guardrail (max-results=50): logs/montana-time-capsule/sm-list-processing-inprogress-20260525T140528.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T140528.json
+  - Canonical Friday describes (all Completed): logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T140528.json + logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T140528.json + logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T140528.json
+  - S3 outputs: logs/montana-time-capsule/s3ls-colmap-friday-20260525T140528.txt + logs/montana-time-capsule/s3ls-compressed-staging-friday-20260525T140528.txt + logs/montana-time-capsule/s3head-public-meta-friday-20260525T140528.json
+  - GitHub Actions snapshots (Work seamlessly with GitHub from the command line.
+
+USAGE
+  gh <command> <subcommand> [flags]
+
+CORE COMMANDS
+  auth:        Authenticate gh and git with GitHub
+  browse:      Open repositories, issues, pull requests, and more in the browser
+  codespace:   Connect to and manage codespaces
+  gist:        Manage gists
+  issue:       Manage issues
+  org:         Manage organizations
+  pr:          Manage pull requests
+  project:     Work with GitHub Projects.
+  release:     Manage releases
+  repo:        Manage repositories
+
+GITHUB ACTIONS COMMANDS
+  cache:       Manage GitHub Actions caches
+  run:         View details about workflow runs
+  workflow:    View details about GitHub Actions workflows
+
+ALIAS COMMANDS
+  co:          Alias for "pr checkout"
+
+ADDITIONAL COMMANDS
+  alias:       Create command shortcuts
+  api:         Make an authenticated GitHub API request
+  attestation: Work with artifact attestations
+  completion:  Generate shell completion scripts
+  config:      Manage configuration for gh
+  extension:   Manage gh extensions
+  gpg-key:     Manage GPG keys
+  label:       Manage labels
+  ruleset:     View info about repo rulesets
+  search:      Search for repositories, issues, and pull requests
+  secret:      Manage GitHub secrets
+  ssh-key:     Manage SSH keys
+  status:      Print information about relevant issues, pull requests, and notifications across repositories
+  variable:    Manage GitHub Actions variables
+
+HELP TOPICS
+  actions:     Learn about working with GitHub Actions
+  environment: Environment variables that can be used with gh
+  exit-codes:  Exit codes used by gh
+  formatting:  Formatting options for JSON data exported from gh
+  mintty:      Information about using gh with MinTTY
+  reference:   A comprehensive reference of all gh commands
+
+FLAGS
+  --help      Show help for command
+  --version   Show gh version
+
+EXAMPLES
+  $ gh issue create
+  $ gh repo clone cli/cli
+  $ gh pr checkout 321
+
+LEARN MORE
+  Use `gh <command> <subcommand> --help` for more information about a command.
+  Read the manual at https://cli.github.com/manual
+  Learn about exit codes using `gh help exit-codes`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T140528.json + logs/montana-time-capsule/gh-run-list-exact-head-354c69d6-20260525T140528.json + logs/montana-time-capsule/gh-run-watch-26404616422-20260525T140528.txt
