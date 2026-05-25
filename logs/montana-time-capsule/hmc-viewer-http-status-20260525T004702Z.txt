@@ -1,0 +1,4 @@
+/ 200
+/?sky=1 200
+/?sky=0 200
+/proxy/elevation?url=https%3A%2F%2Fexample.com 404

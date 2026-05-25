@@ -11285,3 +11285,30 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
 - GitHub Actions (`/opt/homebrew/bin/gh`):
   - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T004644Z.json
   - exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-af8d6aefd41f95917e1e96d900f7e9f4cfe592a6-20260525T004644Z.json
+
+## 2026-05-25T00:49:00Z HEARTBEAT monitor - HMC canonical 20260525T004702Z: no-spend re-verify; SageMaker terminal; staging bundle OK; public meta.json still 404; viewer base/sky/no-sky HTTP 200
+
+- Git: agent-40136728-montana-time-capsule @ af8d6aefd41f95917e1e96d900f7e9f4cfe592a6
+- Evidence stamp: 20260525T004702Z
+- AWS identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T004702Z.json (region: logs/montana-time-capsule/aws-config-region-20260525T004702Z.txt)
+- InProgress guardrail (max-results=20): logs/montana-time-capsule/sm-list-processing-inprogress-20260525T004702Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T004702Z.json
+- canonical HMC run describes (all Completed):
+  - logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T004702Z.json
+  - logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T004702Z.json
+  - logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T004702Z.json
+- S3 outputs (canonical HMC compressed supersplat bundle):
+  - listing: logs/montana-time-capsule/s3ls-staging-compressed-hmc-mtc-20260520T2015Z-20260525T004702Z.txt
+  - staging meta head (OK): logs/montana-time-capsule/s3head-staging-meta-hmc-mtc-20260520T2015Z-20260525T004702Z.json
+  - public meta head (still 404): logs/montana-time-capsule/s3head-public-meta-hmc-mtc-20260520T2015Z-20260525T004702Z.err
+- Hosted viewer reachability: logs/montana-time-capsule/hmc-viewer-http-status-20260525T004702Z.txt (alias: https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev)
+- GitHub Actions (/opt/homebrew/bin/gh):
+  - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T004702Z.json
+  - exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-af8d6aef-20260525T004702Z.json
+  - state snapshot: logs/montana-time-capsule/hmc-state.json
+
+### Post-push GitHub Actions check 2026-05-25T00:49:11Z
+
+- Git: agent-40136728-montana-time-capsule @ 82fb00d7e814f47b07646ba4865bfd990f99cd32
+- Evidence stamp: 20260525T004910Z
+- Branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T004910Z.json (count=20)
+- Exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-82fb00d7e814f47b07646ba4865bfd990f99cd32-postpush-20260525T004910Z.json (count=0)
