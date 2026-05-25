@@ -458,3 +458,4 @@
 [2026-05-24T23:27:59Z] postpush -> gh snapshots recorded for 26729d2f (exact-head runs 0) -> done
 [2026-05-25T00:05:58Z] friday-mtc verify -> InProgress 0; SfM/3DGS/compression Completed -> next: passive monitor
 [2026-05-25T00:06:46Z] postpush -> stored proof + gh snapshots for 8b26598 (exact-head may be 0 due to [skip ci]) -> next: idle monitor
+[2026-05-25T00:07:01Z] postpush -> refreshed exact-head gh snapshot for df3345e -> done
