@@ -1,0 +1,11 @@
+{
+    "AcceptRanges": "bytes",
+    "LastModified": "2026-05-24T08:33:13+00:00",
+    "ContentLength": 2770214912,
+    "ETag": "\"4a391432d9f6266c514fd16c38a29870-529\"",
+    "VersionId": "QUB4O8RlQybWRh9d8tsi21EI6A2n.dfq",
+    "ContentType": "binary/octet-stream",
+    "ServerSideEncryption": "aws:kms",
+    "Metadata": {},
+    "SSEKMSKeyId": "arn:aws:kms:us-west-2:975050048887:key/e498a88e-6b23-44e3-90bd-f35b25d6e420"
+}

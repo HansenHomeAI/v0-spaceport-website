@@ -1,0 +1,4 @@
+colmap_lines 1783
+compressed_public_lines 13
+colmap_first 2026-05-24 02:33:13 2770214912 manual-validations/friday-mtc-20260524T0001Z/colmap/database.db
+compressed_first 2026-05-24 11:08:01        978 compressed/friday-mtc-20260524T0001Z/supersplat_bundle/background_manifest.json

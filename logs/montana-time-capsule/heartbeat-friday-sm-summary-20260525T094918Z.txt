@@ -1,0 +1,5 @@
+processing_inprogress_count 0
+training_inprogress_count 0
+friday-mtc-20260524T0001Z-sfm status Completed
+friday-mtc-20260524T0001Z-3dgs status Completed
+friday-mtc-20260524T0001Z-compression status Completed

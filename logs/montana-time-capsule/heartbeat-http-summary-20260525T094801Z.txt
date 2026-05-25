@@ -1,0 +1,4 @@
+curlI-friday-meta-public-20260525T094801Z.headers HTTP/1.1 200 OK
+curlI-friday-viewer-base-20260525T094801Z.headers HTTP/2 200 
+curlI-friday-viewer-sky-20260525T094801Z.headers HTTP/2 200 
+curlI-friday-viewer-nosky-20260525T094801Z.headers HTTP/2 200 
