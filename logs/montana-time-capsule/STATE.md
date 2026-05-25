@@ -1,5 +1,13 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-25T01:07:29Z postpush - refreshed GitHub run snapshots on new head (expected empty on `[skip ci]` head)
+
+- Git: agent-40136728-montana-time-capsule @ 49ddc99e002f4e55ec9580127c7a3d037045d342 (`chore: friday heartbeat tick 20260525T010550Z [skip ci]`)
+- Evidence stamp: 20260525T010729Z
+  - GitHub Actions (`/opt/homebrew/bin/gh`):
+    - branch runs snapshot: logs/montana-time-capsule/gh-run-list-postpush-20260525T010729Z.txt
+    - exact-head runs snapshot (empty; expected for `[skip ci]` head): logs/montana-time-capsule/gh-run-list-exact-head-49ddc99e-20260525T010729Z.txt
+
 ## 2026-05-25T01:05:50Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: terminal re-verify (no spend); SageMaker InProgress=0; public meta + hosted viewer (sky/no-sky) HTTP 200; no duplicate jobs launched
 
 - Git: agent-40136728-montana-time-capsule @ 608229b6e89522435c1dbd92d1d06aa2baf7e2c9 (`chore: postpush gh snapshot 20260525T005056Z [skip ci]`)
