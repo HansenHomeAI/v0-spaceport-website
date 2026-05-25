@@ -13006,3 +13006,16 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
 - Evidence:
   - Branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T131512Z.json
   - Exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-214116c7-postpush-20260525T131512Z.json (expected 0 for skip-ci head)
+# Montana Time Capsule CV-HR State
+
+## 2026-05-25T13:26:06Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical `friday-mtc-20260524T0001Z`: terminal (SfM/3DGS/compression Completed); InProgress=0; S3 outputs present; public meta + hosted viewer sky/no-sky HTTP 200; guarded pipeline command executed (no duplicate jobs)
+
+- Evidence stamp: 20260525T132606Z
+  - Git head/detail/status: logs/montana-time-capsule/git-branch-20260525T132606Z.txt + logs/montana-time-capsule/git-head-20260525T132606Z.txt + logs/montana-time-capsule/git-head-detail-20260525T132606Z.txt + logs/montana-time-capsule/git-status-20260525T132606Z.txt + logs/montana-time-capsule/git-log1-20260525T132606Z.txt
+  - AWS identity/region/version (`/opt/homebrew/bin/aws`; us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T132606Z.json + logs/montana-time-capsule/aws-config-region-20260525T132606Z.txt + logs/montana-time-capsule/aws-version-20260525T132606Z.txt
+  - InProgress guardrail (max-results=50): logs/montana-time-capsule/sm-list-processing-inprogress-20260525T132606Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T132606Z.json (counts: 0/0)
+  - Canonical Friday describes (all Completed): logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T132606Z.json + logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T132606Z.json + logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T132606Z.json
+  - Input/S3 outputs: logs/montana-time-capsule/s3head-input-zip-friday-20260525T132606Z.json + logs/montana-time-capsule/s3ls-colmap-friday-20260525T132606Z.txt + logs/montana-time-capsule/s3head-colmap-db-friday-20260525T132606Z.json + logs/montana-time-capsule/s3ls-compressed-public-friday-20260525T132606Z.txt + logs/montana-time-capsule/s3head-public-meta-friday-20260525T132606Z.json
+  - Public meta + hosted viewer reachability (HTTP HEAD 200): logs/montana-time-capsule/curlI-friday-public-meta-20260525T132606Z.headers + logs/montana-time-capsule/curlI-friday-viewer-sky-20260525T132606Z.headers + logs/montana-time-capsule/curlI-friday-viewer-nosky-20260525T132606Z.headers
+  - Guarded pipeline command (script output): logs/montana-time-capsule/heartbeat-friday-cv-hr-time-capsule-20260525T132540Z.log
+  - GitHub Actions snapshots (`/opt/homebrew/bin/gh`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T132606Z.json + logs/montana-time-capsule/gh-run-list-exact-head-e25d42be-20260525T132606Z.json

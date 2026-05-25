@@ -1,0 +1,4 @@
+                           PRE images/
+                           PRE sparse/
+2026-05-24 02:33:13 2770214912 database.db
+2026-05-24 02:33:38       5985 sfm_metadata.json

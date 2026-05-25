@@ -1,0 +1,1 @@
+https://spaceport-ml-processing.s3.us-west-2.amazonaws.com/compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json
