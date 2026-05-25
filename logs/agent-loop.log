@@ -590,3 +590,4 @@
 [2026-05-25T15:47:34Z] postpush gh snapshot 20260525T154732Z -> exact-head workflows captured -> next: idle
 [2026-05-25T15:47:56Z] postpush gh snapshot 20260525T154754Z (head=9b1cb233) -> exact-head workflows captured -> next: idle
 [2026-05-25T15:48:22Z] postpush gh snapshot 20260525T154820Z (head=454bd0fc) -> exact-head workflows captured -> next: idle
+[2026-05-25T15:45:29Z] friday heartbeat -> terminal (sfm/3dgs/compression Completed; inprogress=0; compressed meta 200; viewer sky/no-sky 200); public/ copy missing (404/403) -> next: idle

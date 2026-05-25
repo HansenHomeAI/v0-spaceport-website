@@ -13306,3 +13306,18 @@ Evidence snapshot: logs/montana-time-capsule/hmc-state.json (evidence_stamp=2026
   - GitHub Actions: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T152734Z.json + logs/montana-time-capsule/gh-run-list-exact-head-f606d256-20260525T152734Z.json (exact-head empty because HEAD is [skip ci])
 
 - Machine-readable state refreshed: logs/montana-time-capsule/hmc-state.json (evidence_stamp=20260525T152734Z)
+
+## 2026-05-25T15:45:29Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical `friday-mtc-20260524T0001Z`: terminal (SfM/3DGS/compression Completed); InProgress=0; S3 outputs present; canonical public meta (compressed/*) HTTP 200; hosted viewer sky/no-sky HTTP 200; no new jobs launched
+
+- Evidence stamp: 20260525T154529Z
+  - Git: logs/montana-time-capsule/git-head-20260525T154529Z.txt + logs/montana-time-capsule/git-head-detail-20260525T154529Z.txt + logs/montana-time-capsule/git-status-20260525T154529Z.txt
+  - AWS (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T154529Z.json + logs/montana-time-capsule/aws-version-20260525T154529Z.txt
+  - SageMaker guardrail (expected 0/0): logs/montana-time-capsule/sm-list-processing-inprogress-20260525T154529Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T154529Z.json
+  - Friday describes (all Completed): logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T154529Z.json + logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T154529Z.json + logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T154529Z.json
+  - S3 outputs: logs/montana-time-capsule/s3head-input-zip-friday-20260525T154529Z.json + logs/montana-time-capsule/s3ls-colmap-friday-20260525T154529Z.txt + logs/montana-time-capsule/s3ls-compressed-friday-20260525T154529Z.txt
+  - Canonical public meta (compressed/*): logs/montana-time-capsule/s3head-friday-meta-compressed-direct-20260525T154529Z.json + logs/montana-time-capsule/curlI-friday-meta-compressed-direct-20260525T154529Z.headers
+  - Note: prior public copy path `public/manual-validations/.../compressed/meta.json` is currently missing (S3 head 404; HTTP 403): logs/montana-time-capsule/s3head-public-copy-meta-friday-20260525T154529Z.err + logs/montana-time-capsule/curlI-friday-meta-public-20260525T154529Z.headers
+  - Viewer reachability (Friday): logs/montana-time-capsule/curlI-viewer-friday-sky-20260525T154529Z.headers + logs/montana-time-capsule/curlI-viewer-friday-nosky-20260525T154529Z.headers
+  - GitHub Actions: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T154529Z.json + logs/montana-time-capsule/gh-run-list-exact-head-ae52c258-20260525T154529Z.json (exact-head empty because HEAD is [skip ci])
+
+- Machine-readable state refreshed: logs/montana-time-capsule/friday-20260522-state.json (heartbeat_evidence_stamp=20260525T154529Z)
