@@ -1,5 +1,27 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-25T02:25:04Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: prompt said SfM InProgress, but canonical is terminal (SfM/3DGS/compression Completed); InProgress=0; S3 outputs present; exact-head GH runs empty (expected for `[skip ci]`); no duplicate jobs launched
+
+- Git: agent-40136728-montana-time-capsule @ fb68ca79be68a54788b0229a8a148c8e4ac37ceb (`chore: postpush gh snapshot 20260525T021404Z [skip ci]`)
+- Evidence stamp: 20260525T022504Z
+  - Git proof: logs/montana-time-capsule/git-proof-20260525T022504Z.txt
+  - AWS identity/region/version (`/opt/homebrew/bin/aws`; us-west-2):
+    - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T022504Z.json
+    - region: logs/montana-time-capsule/aws-config-region-20260525T022504Z.txt
+    - version: logs/montana-time-capsule/aws-version-20260525T022504Z.txt
+  - InProgress guardrail (max-results=50): logs/montana-time-capsule/sm-list-processing-inprogress-20260525T022504Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T022504Z.json (counts: 0/0)
+  - Friday canonical describes (all Completed):
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T022504Z.json
+    - logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T022504Z.json
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T022504Z.json
+  - S3 outputs (tail listings):
+    - SfM COLMAP listing: logs/montana-time-capsule/s3ls-friday-colmap-20260525T022504Z.txt
+    - 3DGS artifacts listing: logs/montana-time-capsule/s3ls-friday-3dgs-20260525T022504Z.txt
+    - compressed bundle listing: logs/montana-time-capsule/s3ls-friday-compressed-20260525T022504Z.txt
+  - GitHub Actions (`/opt/homebrew/bin/gh`):
+    - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T022504Z.json
+    - exact-head runs snapshot (empty; expected for `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-fb68ca79-20260525T022504Z.json
+
 ## 2026-05-25T02:06:28Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: no-spend re-verify; InProgress=0; SageMaker terminal (SfM/3DGS/compression Completed); S3 outputs present; public meta + hosted viewer sky/no-sky HTTP 200; exact-head GH runs empty (expected for `[skip ci]`); no duplicate jobs launched
 
 - Git: agent-40136728-montana-time-capsule @ 765858c34c193ded438cd803e048aa41f562bcf1 (`chore: postpush gh snapshot 20260525T015114Z [skip ci]`)
