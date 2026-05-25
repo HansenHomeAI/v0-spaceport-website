@@ -12054,3 +12054,10 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
   - InProgress guardrail: logs/montana-time-capsule/sagemaker-list-processing-inprogress-friday-mtc-20260524T0001Z-20260525T050454Z.json + logs/montana-time-capsule/sagemaker-list-training-inprogress-friday-mtc-20260524T0001Z-20260525T050454Z.json
   - S3 tails (colmap/3dgs/compressed): logs/montana-time-capsule/s3-ls-colmap-tail-20260525T050454Z.txt + logs/montana-time-capsule/s3-ls-3dgs-tail-20260525T050454Z.txt + logs/montana-time-capsule/s3-ls-compressed-tail-20260525T050454Z.txt
   - GitHub Actions (/opt/homebrew/bin/gh): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T050454Z.json + logs/montana-time-capsule/gh-run-list-exact-head-bff12ee5587b9a8ad2de9ecf078b43e147caeada-20260525T050454Z.json
+
+### Post-push GitHub Actions check 20260525T050628Z
+
+- Git: agent-40136728-montana-time-capsule @ 97b39c17d23a5678ff013c02928be98495364740 (`chore: friday heartbeat verify 20260525T050454Z [skip ci]`)
+- Evidence stamp: 20260525T050628Z
+- Branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T050628Z.json
+- Exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-97b39c17d23a5678ff013c02928be98495364740-postpush-20260525T050628Z.json (expected 0 for [skip ci] head)

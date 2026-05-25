@@ -1,0 +1,5 @@
+2026-05-24 07:14:52  681.2 KiB compressed/friday-mtc-20260524T0001Z/supersplat_bundle/shN_labels.webp
+2026-05-24 07:14:52    1.5 KiB compressed/friday-mtc-20260524T0001Z/supersplat_bundle/training_metadata.json
+
+Total Objects: 22
+   Total Size: 11.8 MiB
