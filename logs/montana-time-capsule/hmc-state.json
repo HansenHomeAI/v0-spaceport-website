@@ -31,13 +31,18 @@
     "status": "logs/montana-time-capsule/git-status-20260525T202519Z.txt"
   },
   "postpush": {
+    "branch": "agent-40136728-montana-time-capsule",
     "gh_branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T190838Z.json",
     "gh_exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-bad0cd41-postpush-20260525T190838Z.json",
     "gh_version": "logs/montana-time-capsule/gh-version-postpush-20260525T190838Z.txt",
+    "head": "2033f8433c8407597a9108a24c8c4bac76d53b82",
     "head_short": "bad0cd41",
-    "stamp": "20260525T190838Z",
+    "run_list_branch": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T202842Z.json",
+    "run_list_exact_head": "logs/montana-time-capsule/gh-run-list-exact-head-2033f843-postpush-20260525T202842Z.json",
+    "stamp": "20260525T202842Z",
     "updated_at": "20260525T190838Z"
   },
+  "postpush_updated_at": "20260525T202842Z",
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
     "compressed_prefix": "s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/",
