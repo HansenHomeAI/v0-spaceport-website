@@ -475,3 +475,4 @@
 [2026-05-25T01:47:31Z] friday heartbeat -> terminal reconfirm; inprogress 0/0; public meta 200; viewer sky/nosky 200; cv_hr_time_capsule --launch ran (no dupes) -> next: optional deeper viewer QA
 [2026-05-25T01:48:04Z] postpush -> recorded gh runs for new head (e0978b91c4fa0ad9139e0d931241c4f1bc40638c) -> idle (evidence 20260525T014731Z)
 [2026-05-25T01:51:14Z] postpush -> gh snapshots recorded for ec789816 (exact-head runs 0 due to [skip ci]) -> next: idle/no-spend
+[2026-05-25T02:46:50Z] heartbeat -> friday-mtc-20260524T0001Z terminal (SfM/3DGS/compress) + public HEAD 200 + GH exact-head empty ([skip ci]) -> next: idle monitor

@@ -1,0 +1,17 @@
+ts=20260525T024649Z
+pwd=/Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule
+agent-40136728-montana-time-capsule
+cf6867e7fedfdc51010556fdba907b322c05e99d
+ M logs/montana-time-capsule/STATE.md
+ M logs/montana-time-capsule/_last_heartbeat_ts.txt
+?? logs/montana-time-capsule/aws-config-region-20260525T024441Z.txt
+?? logs/montana-time-capsule/aws-version-20260525T024441Z.txt
+?? logs/montana-time-capsule/curlI-friday-public-20260525T024542Z.headers
+?? logs/montana-time-capsule/friday-urls-20260525T024542Z.txt
+?? logs/montana-time-capsule/git-proof-20260525T024441Z.txt
+?? logs/montana-time-capsule/git-proof-20260525T024649Z.txt
+?? logs/montana-time-capsule/s3ls-friday-3dgs-20260525T024542Z.txt
+?? logs/montana-time-capsule/s3ls-friday-compressed-20260525T024542Z.txt
+?? logs/montana-time-capsule/s3ls-friday-run-manual-validations-tail-20260525T024542Z.txt
+?? logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T024542Z.json
+?? logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T024542Z.json
