@@ -528,3 +528,5 @@
 [2026-05-25T09:51:38Z] friday heartbeat -> terminal (SfM/3DGS/compression Completed; HTTP 200; GH ok) -> next: idle/poll later
 [2026-05-25T10:04:18Z] hmc heartbeat -> all terminal+200s -> next: keep monitoring acceptance gates
 [2026-05-25T10:07:34Z] friday heartbeat -> terminal confirmed (sfm/3dgs/compress completed; http200; gh ok) -> no action
+[2026-05-25T10:26:32Z] heartbeat hmc hmc-mtc-20260520T2015Z -> sm Completed/Completed/Completed inprog=0/0 meta_http=? viewer=?/?/? -> next=idle monitor
+[2026-05-25T10:27:33Z] heartbeat Friday -> terminal verified (SfM/3DGS/compression Completed; InProgress=0; HTTP 200) -> commit+push ledger
