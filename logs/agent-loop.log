@@ -562,3 +562,4 @@
 [2026-05-25T13:15:12Z] postpush gh snapshot head=214116c7 -> recorded (exact-head runs expected 0 for [skip ci])
 [2026-05-25T13:26:56Z] friday heartbeat -> sfm/3dgs/compression Completed; inprogress=0; state refreshed (20260525T132606Z) -> next: passive monitor
 [2026-05-25T13:27:29Z] heartbeat -> verified HMC terminal + HTTP HEADs + GH snapshot -> ledger updated
+[2026-05-25T13:31:01Z] postpush -> recorded gh runs for head 38d2435be908858a25cc6ccdecc853eac3c03e3a -> idle

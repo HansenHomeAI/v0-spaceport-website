@@ -15,6 +15,13 @@
     "git_status": "logs/montana-time-capsule/git-status-20260525T132716.txt",
     "head": "e25d42beafc20726914033bb1cbc8470661e9a72"
   },
+  "postpush": {
+    "gh_branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T133059.json",
+    "gh_exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-38d2435b-postpush-20260525T133059.json",
+    "head_short": "38d2435b",
+    "stamp": "20260525T133059",
+    "updated_at": "20260525T133059"
+  },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
     "compressed_prefix": "s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/",

@@ -13039,3 +13039,9 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
   - Correct viewer URL set: logs/montana-time-capsule/viewer-urls-correct-20260525T132956.txt
   - Hosted viewer HEAD checks (corrected): logs/montana-time-capsule/curlI-viewer-base-correct-20260525T132956.headers + logs/montana-time-capsule/curlI-viewer-default-correct-20260525T132956.headers + logs/montana-time-capsule/curlI-viewer-sky-correct-20260525T132956.headers + logs/montana-time-capsule/curlI-viewer-nosky-correct-20260525T132956.headers
   - Summary JSON updated: logs/montana-time-capsule/hmc-state.json
+
+## 20260525T133059Z postpush - recorded GH run list + exact-head filter for new git head 38d2435b (expect 0 when [skip ci])
+
+- Evidence stamp: 20260525T133059
+  - GitHub Actions snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T133059.json + logs/montana-time-capsule/gh-run-list-exact-head-38d2435b-postpush-20260525T133059.json
+  - Summary JSON updated: logs/montana-time-capsule/hmc-state.json
