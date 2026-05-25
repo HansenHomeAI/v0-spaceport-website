@@ -1,0 +1,14 @@
+HTTP/1.1 200 OK
+x-amz-id-2: MM2/G2BMiUroRT31Vqdyem2YRRYk6VIEQZIC+gI0fjek7giNiQ0b+0Mt2CgI90pzzS+5VzFLMu4=
+x-amz-request-id: 5911QHDDNMREP948
+Date: Mon, 25 May 2026 08:07:52 GMT
+Last-Modified: Sun, 24 May 2026 17:08:06 GMT
+ETag: "6db972a5b06efb831cee42e4aad4443c"
+x-amz-server-side-encryption: AES256
+Cache-Control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: a5q2Msf.yBUYKQ_i.R696mQq1XSlvosb
+Accept-Ranges: bytes
+Content-Type: application/json
+Content-Length: 1372
+Server: AmazonS3
+

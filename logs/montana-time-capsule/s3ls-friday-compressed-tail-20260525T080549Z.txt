@@ -1,0 +1,3 @@
+                           PRE compressed_splat/
+                           PRE supersplat_bundle/
+2026-05-24 07:14:52       2309 sogs_compression_summary.json
