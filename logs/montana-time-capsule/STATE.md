@@ -11,6 +11,8 @@
   - Hosted viewer reachability (HTTP HEAD 200): logs/montana-time-capsule/curlI-viewer-default-20260525T102619Z.headers + logs/montana-time-capsule/curlI-viewer-sky-20260525T102619Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-20260525T102619Z.headers
   - GitHub Actions snapshots (`/opt/homebrew/bin/gh`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T102619Z.json + logs/montana-time-capsule/gh-run-list-exact-head-020bdbdf-20260525T102619Z.json
 
+- Postpush GH snapshot (head `01a21bf3` is `[skip ci]` so exact-head runs may be empty): logs/montana-time-capsule/git-head-postpush-20260525T103011Z.txt + logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T103011Z.json + logs/montana-time-capsule/gh-run-list-exact-head-01a21bf3-postpush-20260525T103011Z.json
+
 ## 2026-05-25T10:06:31Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical `friday-mtc-20260524T0001Z`: still terminal (SfM/3DGS/compression Completed); InProgress=0; S3 outputs + public meta HTTP 200; hosted viewer sky/no-sky HTTP 200; no new jobs launched (postpush head `1d95f09b` is `[skip ci]` so exact-head runs are empty as expected)
 
 - Evidence stamp: 20260525T100503Z + 20260525T100631Z

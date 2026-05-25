@@ -14,6 +14,13 @@
     "branch": "agent-40136728-montana-time-capsule",
     "head": "020bdbdf3dc7b25b055d63982f2d8f0ac30838b1"
   },
+  "postpush": {
+    "gh_branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T103011Z.json",
+    "gh_exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-01a21bf3-postpush-20260525T103011Z.json",
+    "git_head": "logs/montana-time-capsule/git-head-postpush-20260525T103011Z.txt",
+    "head_short": "01a21bf3",
+    "stamp": "20260525T103011Z"
+  },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
     "compressed_prefix": "s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/",
