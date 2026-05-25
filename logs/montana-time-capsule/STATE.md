@@ -13303,68 +13303,7 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
   - S3 outputs + prod meta head: logs/montana-time-capsule/s3ls-staging-supersplat-bundle-hmc-20260525T135342Z.txt + logs/montana-time-capsule/s3ls-prod-supersplat-bundle-hmc-20260525T135342Z.txt + logs/montana-time-capsule/s3head-prod-meta-hmc-hmc-mtc-20260520T2015Z-20260525T135342Z.json
   - Public meta reachability (HTTP HEAD): logs/montana-time-capsule/curlI-prod-meta-hmc-20260525T135342Z.headers
   - Hosted viewer reachability (HTTP HEAD): logs/montana-time-capsule/viewer-urls-correct-20260525T135342Z.txt + logs/montana-time-capsule/curlI-viewer-base-correct-20260525T135342Z.headers + logs/montana-time-capsule/curlI-viewer-sky-correct-20260525T135342Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-correct-20260525T135342Z.headers
-  - GitHub Actions snapshots (Work seamlessly with GitHub from the command line.
-
-USAGE
-  gh <command> <subcommand> [flags]
-
-CORE COMMANDS
-  auth:        Authenticate gh and git with GitHub
-  browse:      Open repositories, issues, pull requests, and more in the browser
-  codespace:   Connect to and manage codespaces
-  gist:        Manage gists
-  issue:       Manage issues
-  org:         Manage organizations
-  pr:          Manage pull requests
-  project:     Work with GitHub Projects.
-  release:     Manage releases
-  repo:        Manage repositories
-
-GITHUB ACTIONS COMMANDS
-  cache:       Manage GitHub Actions caches
-  run:         View details about workflow runs
-  workflow:    View details about GitHub Actions workflows
-
-ALIAS COMMANDS
-  co:          Alias for "pr checkout"
-
-ADDITIONAL COMMANDS
-  alias:       Create command shortcuts
-  api:         Make an authenticated GitHub API request
-  attestation: Work with artifact attestations
-  completion:  Generate shell completion scripts
-  config:      Manage configuration for gh
-  extension:   Manage gh extensions
-  gpg-key:     Manage GPG keys
-  label:       Manage labels
-  ruleset:     View info about repo rulesets
-  search:      Search for repositories, issues, and pull requests
-  secret:      Manage GitHub secrets
-  ssh-key:     Manage SSH keys
-  status:      Print information about relevant issues, pull requests, and notifications across repositories
-  variable:    Manage GitHub Actions variables
-
-HELP TOPICS
-  actions:     Learn about working with GitHub Actions
-  environment: Environment variables that can be used with gh
-  exit-codes:  Exit codes used by gh
-  formatting:  Formatting options for JSON data exported from gh
-  mintty:      Information about using gh with MinTTY
-  reference:   A comprehensive reference of all gh commands
-
-FLAGS
-  --help      Show help for command
-  --version   Show gh version
-
-EXAMPLES
-  $ gh issue create
-  $ gh repo clone cli/cli
-  $ gh pr checkout 321
-
-LEARN MORE
-  Use `gh <command> <subcommand> --help` for more information about a command.
-  Read the manual at https://cli.github.com/manual
-  Learn about exit codes using `gh help exit-codes`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T135342Z.json + logs/montana-time-capsule/gh-run-list-exact-head-09a1188f-20260525T135342Z.json
+  - GitHub Actions snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T135342Z.json + logs/montana-time-capsule/gh-run-list-exact-head-09a1188f-20260525T135342Z.json
   - Summary JSON updated: logs/montana-time-capsule/hmc-state.json
 
 ## Heartbeat 20260525T140528
@@ -13585,3 +13524,14 @@ Evidence snapshot: logs/montana-time-capsule/hmc-state.json (evidence_stamp=2026
   - Machine-readable state: logs/montana-time-capsule/hmc-state.json
 
 - Postpush workflow snapshot (HEAD `6785e813`; `[skip ci]`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T211049Z.json + logs/montana-time-capsule/gh-run-list-exact-head-6785e813-postpush-20260525T211049Z.json
+
+## 2026-05-25T21:46:20Z HEARTBEAT monitor - canonical `hmc-mtc-20260520T2015Z`: verified git/head/status, AWS identity ok, SageMaker terminal (SfM/3DGS/compression Completed), InProgress=0/0, S3 supersplat bundle/meta still present (staging+prod), prod meta HTTP 200, hosted preview viewer base/sky/no-sky URLs HTTP 200; no new jobs launched (no-spend checks only)
+
+- Evidence stamp: 20260525T214529Z
+  - Git: logs/montana-time-capsule/git-branch-20260525T214529Z.txt + logs/montana-time-capsule/git-head-20260525T214529Z.txt + logs/montana-time-capsule/git-head-detail-20260525T214529Z.txt + logs/montana-time-capsule/git-status-20260525T214529Z.txt + logs/montana-time-capsule/git-log1-20260525T214529Z.txt
+  - AWS identity/region/version (`/opt/homebrew/bin/aws`; us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T214529Z.json + logs/montana-time-capsule/aws-config-region-20260525T214529Z.txt + logs/montana-time-capsule/aws-version-20260525T214529Z.txt + logs/montana-time-capsule/aws-path-20260525T214529Z.txt
+  - SageMaker: logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T214529Z.json + logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T214529Z.json + logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T214529Z.json; InProgress lists: logs/montana-time-capsule/sm-list-processing-inprogress-20260525T214529Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T214529Z.json
+  - S3/meta reachability: logs/montana-time-capsule/s3ls-staging-supersplat-bundle-hmc-mtc-20260520T2015Z-20260525T214529Z.txt + logs/montana-time-capsule/s3ls-prod-supersplat-bundle-hmc-mtc-20260520T2015Z-20260525T214529Z.txt + logs/montana-time-capsule/s3head-prod-meta-hmc-mtc-20260520T2015Z-20260525T214529Z.json + logs/montana-time-capsule/curlI-prod-meta-hmc-mtc-20260520T2015Z-20260525T214529Z.headers
+  - Viewer reachability (HTTP 200 base + sky/no-sky): logs/montana-time-capsule/viewer-urls-20260525T214529Z.txt + logs/montana-time-capsule/curlI-viewer-base-20260525T214529Z.headers + logs/montana-time-capsule/curlI-viewer-sky-hmc-mtc-20260520T2015Z-20260525T214529Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-hmc-mtc-20260520T2015Z-20260525T214529Z.headers
+  - GitHub Actions snapshots (`/opt/homebrew/bin/gh`; exact-head may be empty on `[skip ci]` head): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T214529Z.json + logs/montana-time-capsule/gh-run-list-exact-head-762c77dd-20260525T214529Z.json + logs/montana-time-capsule/gh-version-20260525T214529Z.txt
+  - Machine-readable state: logs/montana-time-capsule/hmc-state.json
