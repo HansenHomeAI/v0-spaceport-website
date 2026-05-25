@@ -1,3 +1,5 @@
+/Users/gabrielhansen/Library/Python/3.9/lib/python/site-packages/boto3/compat.py:89: PythonDeprecationWarning: Boto3 will no longer support Python 3.9 starting April 29, 2026. To continue receiving service updates, bug fixes, and security updates please upgrade to Python 3.10 or later. More information can be found here: https://aws.amazon.com/blogs/developer/python-support-policy-updates-for-aws-sdks-and-tools/
+  warnings.warn(warning, PythonDeprecationWarning)
 {
   "3dgs_cloudwatch_log_group": "/aws/sagemaker/TrainingJobs",
   "3dgs_cloudwatch_log_stream": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
