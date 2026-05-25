@@ -533,3 +533,4 @@
 [2026-05-25T10:30:14Z] postpush gh snapshot head=01a21bf3 -> recorded
 [2026-05-25T10:46:50Z] friday heartbeat -> terminal/no-spend -> next: continue heartbeat
 [2026-05-25T10:50:07Z] hmc heartbeat -> terminal+meta200+viewer200+exact-head0 -> next: passive monitor
+[2026-05-25T11:05:02Z] friday heartbeat -> sm Completed/Completed/Completed inprog=0/0 s3 outputs present exact-head=0 -> next=idle monitor
