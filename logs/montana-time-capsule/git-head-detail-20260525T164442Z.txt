@@ -1,0 +1,7 @@
+commit 0f152508171e2b4201ec6b2cd3e685624265415c
+Author:     Gabriel Hansen <gbhbyu@gmail.com>
+AuthorDate: Mon May 25 10:47:21 2026 -0600
+Commit:     Gabriel Hansen <gbhbyu@gmail.com>
+CommitDate: Mon May 25 10:47:21 2026 -0600
+
+    chore: add hmc heartbeat evidence artifacts [skip ci]

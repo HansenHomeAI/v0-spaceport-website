@@ -1,0 +1,6 @@
+ M logs/agent-loop.log
+ M logs/montana-time-capsule/STATE.md
+?? logs/montana-time-capsule/git-branch-20260525T164442Z.txt
+?? logs/montana-time-capsule/git-head-20260525T164442Z.txt
+?? logs/montana-time-capsule/git-head-detail-20260525T164442Z.txt
+?? logs/montana-time-capsule/git-status-20260525T164442Z.txt

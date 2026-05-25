@@ -599,3 +599,4 @@
 [2026-05-25T16:28:17Z] friday heartbeat -> terminal (sfm/3dgs/compression Completed; inprogress 0) -> record/push
 [2026-05-25T16:29:14Z] postpush gh snapshot -> head 26ed8f7c (skip ci) -> done
 [2026-05-25T16:46:25Z] heartbeat(hmc-mtc-20260520T2015Z) -> verified terminal + public reachability ok (stamp=20260525T164450Z) -> next: await new acceptance gate
+[2026-05-25T16:47:46Z] heartbeat(friday-mtc-20260524T0001Z) -> verified terminal (sfm/3dgs/compress Completed; inprogress 0/0); guarded runner no-op (already completed); s3 meta 200; gh snapshot (skip ci head) -> next: idle

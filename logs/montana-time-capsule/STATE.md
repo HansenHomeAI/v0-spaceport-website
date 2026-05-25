@@ -1,5 +1,18 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-25T16:46:30Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical `friday-mtc-20260524T0001Z`: re-verified git/head, AWS identity ok, SageMaker terminal (SfM/3DGS/compression Completed), InProgress=0/0; ran guarded `cv_hr_time_capsule.py --launch` which detected pipeline already `completed` (no new jobs launched); S3 compressed meta reachable; exact-head GH runs snapshot captured (head is `[skip ci]`, so may be empty)
+
+- Evidence stamp: 20260525T164630Z (git stamp: 20260525T164442Z; aws stamp: 20260525T164506Z; s3 stamp: 20260525T164544Z; gh stamp: 20260525T164558Z; runner stamp: 20260525T164623Z)
+  - Git head/detail/status: logs/montana-time-capsule/git-branch-20260525T164442Z.txt + logs/montana-time-capsule/git-head-20260525T164442Z.txt + logs/montana-time-capsule/git-head-detail-20260525T164442Z.txt + logs/montana-time-capsule/git-status-20260525T164442Z.txt + logs/montana-time-capsule/git-log1-20260525T164442Z.txt
+  - AWS identity/region/version (`/opt/homebrew/bin/aws`; us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T164506Z.json + logs/montana-time-capsule/aws-config-region-20260525T164506Z.txt + logs/montana-time-capsule/aws-version-20260525T164506Z.txt
+  - InProgress guardrail (pre): logs/montana-time-capsule/sm-list-processing-inprogress-20260525T164506Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T164506Z.json (counts: 0/0)
+  - Canonical Friday describes (all Completed): logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T164506Z.json + logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T164506Z.json + logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T164506Z.json
+  - S3 outputs + compressed meta reachability: logs/montana-time-capsule/s3ls-staging-manual-validations-friday-mtc-20260524T0001Z-20260525T164544Z.txt + logs/montana-time-capsule/s3ls-staging-colmap-friday-mtc-20260524T0001Z-20260525T164544Z.txt + logs/montana-time-capsule/s3ls-staging-compressed-friday-mtc-20260524T0001Z-20260525T164544Z.txt + logs/montana-time-capsule/s3head-staging-compressed-friday-meta-20260525T164544Z.json + logs/montana-time-capsule/curlI-friday-meta-compressed-direct-20260525T164544Z.headers
+  - Runner (guarded `--launch`, no new jobs): `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py … --launch` at 20260525T164623Z (local log file is gitignored)
+  - InProgress guardrail (post): logs/montana-time-capsule/sm-list-processing-inprogress-postlaunch-20260525T164630Z.json + logs/montana-time-capsule/sm-list-training-inprogress-postlaunch-20260525T164630Z.json (counts: 0/0)
+  - GitHub Actions snapshots (`/opt/homebrew/bin/gh`; head is `[skip ci]`): logs/montana-time-capsule/gh-version-20260525T164558Z.txt + logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T164558Z.json + logs/montana-time-capsule/gh-run-list-exact-head-7ca173db-20260525T164558Z.json
+  - Summary JSON: logs/montana-time-capsule/friday-20260522-state.json
+
 ## 2026-05-25T16:44:50Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: verified git/head (branch `agent-40136728-montana-time-capsule`), AWS identity ok, SageMaker terminal (SfM/3DGS/compression Completed), InProgress=0, S3 supersplat bundle present (staging+prod), public meta HTTP 200, hosted viewer HMC base/sky/no-sky HTTP 200, exact-head GH workflows snapshot captured; no new jobs launched
 
 - Evidence stamp: 20260525T164450Z
