@@ -13444,3 +13444,10 @@ Evidence snapshot: logs/montana-time-capsule/hmc-state.json (evidence_stamp=2026
   - Public reachability (HTTP HEAD 200): logs/montana-time-capsule/curlI-prod-meta-hmc-20260525T170527Z.headers
   - Hosted viewer reachability (HTTP HEAD 200): logs/montana-time-capsule/curlI-viewer-base-20260525T170527Z.headers + logs/montana-time-capsule/curlI-viewer-sky-hmc-20260525T170527Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-hmc-20260525T170527Z.headers
   - GitHub Actions snapshots: logs/montana-time-capsule/gh-repo-20260525T170527Z.json + logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T170527Z.json + logs/montana-time-capsule/gh-run-list-exact-head-7de480b1-20260525T170527Z.json
+
+---
+### Postpush 20260525T170833Z (2026-05-25T17:08:33Z)
+
+- pushed heartbeat commit `98d7f05b` ([skip ci]); exact-head workflows expected empty by design
+- postpush branch run list: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T170833Z.json
+- postpush exact-head run list: logs/montana-time-capsule/gh-run-list-exact-head-98d7f05b-postpush-20260525T170833Z.json

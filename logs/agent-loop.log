@@ -605,3 +605,4 @@
 [2026-05-25T16:52:33Z] postpush gh snapshot 20260525T165218Z -> head c70e17e5 (skip ci) -> idle
 [2026-05-25T16:53:04Z] postpush gh snapshot 20260525T165252Z -> head 73b6f115 (skip ci) -> idle
 [2026-05-25T17:05:27Z] heartbeat(hmc-mtc-20260520T2015Z) -> refreshed evidence stamp 20260525T170527Z -> next: idle (no-spend)
+[2026-05-25T17:08:33Z] postpush gh snapshot 20260525T170833Z (head=98d7f05b) -> exact-head workflows 0 (skip ci) -> next: idle
