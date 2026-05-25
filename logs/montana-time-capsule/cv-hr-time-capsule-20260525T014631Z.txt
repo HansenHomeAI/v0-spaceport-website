@@ -1,0 +1,289 @@
+{
+  "3dgs_cloudwatch_log_group": "/aws/sagemaker/TrainingJobs",
+  "3dgs_cloudwatch_log_stream": "friday-mtc-20260524T0001Z-3dgs/algo-1-1779613610",
+  "3dgs_environment": {
+    "APPEARANCE_EMBED_DIM": "64",
+    "AWS_DEFAULT_REGION": "us-west-2",
+    "BACKGROUND_APPEARANCE_MODE": "auto_camera",
+    "BACKGROUND_SELECTION_MAX_FRAMES": "32",
+    "BACKGROUND_SELECTION_STRIDE": "5",
+    "BACKGROUND_SKYBOX_HEIGHT": "1024",
+    "BACKGROUND_SKYBOX_QUALITY": "95",
+    "BACKGROUND_SKYBOX_WIDTH": "2048",
+    "BG_SH_DEGREE": "8",
+    "BILATERAL_PROCESSING": "false",
+    "COMMERCIAL_LICENSE": "true",
+    "CUDA_HOME": "/usr/local/cuda",
+    "CULL_ALPHA_THRESH": "0.12",
+    "CULL_SCALE_THRESH": "0.35",
+    "ENABLE_ALPHA_LOSS": "true",
+    "ENABLE_BG_MODEL": "true",
+    "ENABLE_ROBUST_MASK": "true",
+    "FLOATER_PRUNING_ENABLED": "true",
+    "FLOATER_PRUNING_MAX_COLOR_DISTANCE": "0.18",
+    "FLOATER_PRUNING_MAX_OPACITY": "0.75",
+    "FLOATER_PRUNING_MIN_EDGE_SUPPORT": "1",
+    "FLOATER_PRUNING_MIN_SKY_VIEWS": "2",
+    "FLOATER_PRUNING_MIN_VIEWS": "6",
+    "FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN": "0.02",
+    "FLOATER_PRUNING_SKY_MIN_LUMINANCE": "0.3",
+    "FLOATER_PRUNING_SKY_MIN_SATURATION": "0.08",
+    "FLOATER_PRUNING_TOP_REGION_RATIO": "0.35",
+    "FLOATER_PRUNING_TOP_VIEW_FRACTION": "0.9",
+    "FRAMEWORK": "nerfstudio",
+    "LD_LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+    "LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+    "LICENSE": "apache_2_0",
+    "LOG_INTERVAL": "100",
+    "MAX_ITERATIONS": "30000",
+    "MAX_NUM_GAUSSIANS": "1500000",
+    "MEMORY_OPTIMIZATION": "true",
+    "METHODOLOGY": "spaceport_splatfacto_w_light_skybox",
+    "MODEL_VARIANT": "splatfacto-w-light",
+    "NEVER_MASK_UPPER": "0.4",
+    "OUTPUT_FORMAT": "ply",
+    "PYTHONUNBUFFERED": "1",
+    "RASTERIZE_MODE": "classic",
+    "SAGEMAKER_PROGRAM": "train.py",
+    "SH_DEGREE": "3",
+    "SOGS_COMPATIBLE": "true",
+    "TARGET_PSNR": "35.0",
+    "TORCH_CUDA_ARCH_LIST": "8.0 8.6",
+    "TRAINING_TIMEOUT_SECONDS": "14400",
+    "USE_SCALE_REGULARIZATION": "true"
+  },
+  "3dgs_image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db",
+  "3dgs_job_name": "friday-mtc-20260524T0001Z-3dgs",
+  "3dgs_last_check_utc": "2026-05-25T01:05:50Z",
+  "3dgs_last_cloudwatch_event_utc": "2026-05-24T09:14:16.268000Z",
+  "3dgs_last_known_status": "Completed",
+  "3dgs_status": "Completed",
+  "compressed_output_s3_uri": "s3://spaceport-ml-processing-staging/compressed/friday-mtc-20260524T0001Z/",
+  "compression_job_name": "friday-mtc-20260524T0001Z-compression",
+  "compression_last_check_utc": "2026-05-25T01:05:50Z",
+  "compression_payload": {
+    "AppSpecification": {
+      "ContainerEntrypoint": [
+        "python3",
+        "compress.py"
+      ],
+      "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab"
+    },
+    "Environment": {
+      "AWS_DEFAULT_REGION": "us-west-2",
+      "PYTHONUNBUFFERED": "1"
+    },
+    "ProcessingInputs": [
+      {
+        "AppManaged": false,
+        "InputName": "gaussian-model",
+        "S3Input": {
+          "LocalPath": "/opt/ml/processing/input",
+          "S3CompressionType": "None",
+          "S3DataDistributionType": "FullyReplicated",
+          "S3DataType": "S3Prefix",
+          "S3InputMode": "File",
+          "S3Uri": "s3://spaceport-ml-processing-staging/3dgs/friday-mtc-20260524T0001Z/friday-mtc-20260524T0001Z-3dgs/output/model.tar.gz"
+        }
+      }
+    ],
+    "ProcessingJobName": "friday-mtc-20260524T0001Z-compression",
+    "ProcessingOutputConfig": {
+      "Outputs": [
+        {
+          "AppManaged": false,
+          "OutputName": "compressed-model",
+          "S3Output": {
+            "LocalPath": "/opt/ml/processing/output",
+            "S3UploadMode": "EndOfJob",
+            "S3Uri": "s3://spaceport-ml-processing-staging/compressed/friday-mtc-20260524T0001Z/"
+          }
+        }
+      ]
+    },
+    "ProcessingResources": {
+      "ClusterConfig": {
+        "InstanceCount": 1,
+        "InstanceType": "ml.g4dn.xlarge",
+        "VolumeSizeInGB": 50
+      }
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "StoppingCondition": {
+      "MaxRuntimeInSeconds": 86400
+    },
+    "Tags": [
+      {
+        "Key": "Project",
+        "Value": "Spaceport"
+      },
+      {
+        "Key": "Component",
+        "Value": "Compression"
+      },
+      {
+        "Key": "Profile",
+        "Value": "montana-time-capsule"
+      },
+      {
+        "Key": "Dataset",
+        "Value": "FRIDAY-20260522"
+      }
+    ]
+  },
+  "compression_status": "Completed",
+  "compressor_image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab",
+  "created_at": "2026-05-24T00:01:27Z",
+  "dataset": "FRIDAY-20260522",
+  "evidence": {
+    "aws_identity": "logs/montana-time-capsule/aws-sts-get-caller-identity-20260524T122844Z.json",
+    "cloudwatch_last_event_utc": "logs/montana-time-capsule/cloudwatch-last-event-utc-friday-mtc-20260524T0001Z-3dgs-20260524T122844Z.txt",
+    "cloudwatch_streams_3dgs": "logs/montana-time-capsule/cloudwatch-describe-log-streams-friday-mtc-20260524T0001Z-3dgs-20260524T122844Z.json",
+    "describe_3dgs": "logs/montana-time-capsule/sagemaker-describe-training-friday-mtc-20260524T0001Z-3dgs-20260524T122844Z.json",
+    "describe_sfm": "logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260524T122844Z.json",
+    "gh_branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260524T122844Z.json",
+    "gh_exact_head": "logs/montana-time-capsule/gh-run-list-exact-head-b4140850a1c0c4fe7ff4f6afe940922d27b87d1e-20260524T122844Z.json",
+    "list_training_inprogress": "logs/montana-time-capsule/sagemaker-list-training-inprogress-name-contains-friday-mtc-20260524T0001Z-20260524T122844Z.json",
+    "s3_ls_3dgs": "logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-3dgs-20260524T122844Z.txt",
+    "s3_ls_colmap": "logs/montana-time-capsule/s3-ls-friday-mtc-20260524T0001Z-colmap-20260524T122844Z.txt"
+  },
+  "first_images": [
+    "109MEDIA_DJI_0797.JPG",
+    "109MEDIA_DJI_0798.JPG",
+    "109MEDIA_DJI_0799.JPG",
+    "109MEDIA_DJI_0800.JPG",
+    "109MEDIA_DJI_0801.JPG"
+  ],
+  "gaussian_model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/3dgs/friday-mtc-20260524T0001Z/friday-mtc-20260524T0001Z-3dgs/output/model.tar.gz",
+  "gaussian_output_s3_uri": "s3://spaceport-ml-processing-staging/3dgs/friday-mtc-20260524T0001Z/",
+  "input_etag": "8484b9ad1089adb721f1b31dfc85fc23-896",
+  "input_image_count": 1776,
+  "input_s3_uri": "s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.zip",
+  "input_size_bytes": 7514816344,
+  "last_action": "completed",
+  "last_images": [
+    "111MEDIA_DJI_0570.JPG",
+    "111MEDIA_DJI_0571.JPG",
+    "111MEDIA_DJI_0572.JPG",
+    "111MEDIA_DJI_0573.JPG",
+    "111MEDIA_DJI_0574.JPG"
+  ],
+  "profile": "brass-chunked",
+  "profile_note": "Exact Brass Lantern chunked SfM image; default reproducible Montana profile.",
+  "public_meta_bucket": "spaceport-ml-processing",
+  "public_meta_head_evidence": "logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-compressed_friday-mtc-20260524T0001Z_supersplat_bundle_meta.json-20260525T010550Z.json",
+  "public_meta_key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json",
+  "public_meta_url": "https://spaceport-ml-processing.s3.us-west-2.amazonaws.com/compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json",
+  "run_id": "friday-mtc-20260524T0001Z",
+  "sfm_cloudwatch_log_group": "/aws/sagemaker/ProcessingJobs",
+  "sfm_cloudwatch_log_stream": "friday-mtc-20260524T0001Z-sfm/algo-1-1779581031",
+  "sfm_environment": {
+    "AWS_DEFAULT_REGION": "us-west-2",
+    "COLMAP_CHUNK_MIN_CORE_REGISTERED_RATIO": "0.90",
+    "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+    "PYTHONUNBUFFERED": "1",
+    "SFM_BENCHMARK_SUBSET_STRATEGY": "friday_20260522_full_1776_montana_time_capsule",
+    "SFM_BRANCH_NAME": "agent-40136728-montana-time-capsule",
+    "SFM_GIT_HEAD": "0e3f3e57759cd2bf65effc60064bc2874fa97eb7",
+    "SFM_INPUT_URI": "s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.zip",
+    "SFM_JOB_NAME": "friday-mtc-20260524T0001Z-sfm",
+    "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/friday-mtc-20260524T0001Z/colmap"
+  },
+  "sfm_image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811",
+  "sfm_job_name": "friday-mtc-20260524T0001Z-sfm",
+  "sfm_last_check_utc": "2026-05-25T01:05:50Z",
+  "sfm_last_cloudwatch_event_utc": "2026-05-24T08:31:55Z",
+  "sfm_last_known_status": "Completed",
+  "sfm_output_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/friday-mtc-20260524T0001Z/colmap",
+  "sfm_payload": {
+    "AppSpecification": {
+      "ContainerEntrypoint": [
+        "/opt/ml/code/run_sfm.sh"
+      ],
+      "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811"
+    },
+    "Environment": {
+      "AWS_DEFAULT_REGION": "us-west-2",
+      "COLMAP_CHUNK_MIN_CORE_REGISTERED_RATIO": "0.90",
+      "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+      "PYTHONUNBUFFERED": "1",
+      "SFM_BENCHMARK_SUBSET_STRATEGY": "friday_20260522_full_1776_montana_time_capsule",
+      "SFM_BRANCH_NAME": "agent-40136728-montana-time-capsule",
+      "SFM_GIT_HEAD": "0e3f3e57759cd2bf65effc60064bc2874fa97eb7",
+      "SFM_INPUT_URI": "s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.zip",
+      "SFM_JOB_NAME": "friday-mtc-20260524T0001Z-sfm",
+      "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/friday-mtc-20260524T0001Z/colmap"
+    },
+    "ProcessingInputs": [
+      {
+        "InputName": "sfm-input",
+        "S3Input": {
+          "LocalPath": "/opt/ml/processing/input",
+          "S3CompressionType": "None",
+          "S3DataDistributionType": "FullyReplicated",
+          "S3DataType": "S3Prefix",
+          "S3InputMode": "File",
+          "S3Uri": "s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.zip"
+        }
+      }
+    ],
+    "ProcessingJobName": "friday-mtc-20260524T0001Z-sfm",
+    "ProcessingOutputConfig": {
+      "Outputs": [
+        {
+          "AppManaged": false,
+          "OutputName": "colmap-output",
+          "S3Output": {
+            "LocalPath": "/opt/ml/processing/output",
+            "S3UploadMode": "EndOfJob",
+            "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/friday-mtc-20260524T0001Z/colmap"
+          }
+        }
+      ]
+    },
+    "ProcessingResources": {
+      "ClusterConfig": {
+        "InstanceCount": 1,
+        "InstanceType": "ml.g4dn.xlarge",
+        "VolumeSizeInGB": 100
+      }
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "StoppingCondition": {
+      "MaxRuntimeInSeconds": 86400
+    },
+    "Tags": [
+      {
+        "Key": "Project",
+        "Value": "Spaceport"
+      },
+      {
+        "Key": "Component",
+        "Value": "SfM"
+      },
+      {
+        "Key": "Profile",
+        "Value": "montana-time-capsule"
+      },
+      {
+        "Key": "Dataset",
+        "Value": "FRIDAY-20260522"
+      }
+    ]
+  },
+  "sfm_processing_end_time": "2026-05-24T02:33:44.726000-06:00",
+  "sfm_status": "Completed",
+  "status": "completed",
+  "updated_at": "2026-05-25T01:46:34Z",
+  "updated_at_utc": "2026-05-24T22:31:20Z",
+  "viewer_bundle_s3_uri": "s3://spaceport-ml-processing-staging/compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json",
+  "viewer_playwright_nosky_log": "logs/montana-time-capsule/playwright-sogs-migrated-nosky-20260524T222939Z.txt",
+  "viewer_playwright_nosky_screenshot": "logs/montana-time-capsule/sogs-migrated-viewer-nosky-20260524T222939Z.png",
+  "viewer_playwright_sky_log": "logs/montana-time-capsule/playwright-sogs-migrated-sky-20260524T222939Z.txt",
+  "viewer_playwright_sky_screenshot": "logs/montana-time-capsule/sogs-migrated-viewer-sky-20260524T222939Z.png",
+  "viewer_public_http_status_evidence": "logs/montana-time-capsule/friday-http-status-20260525T010550Z.txt",
+  "viewer_public_meta_head_public": "logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-compressed_friday-mtc-20260524T0001Z_supersplat_bundle_meta.json-20260525T010550Z.json",
+  "viewer_public_nosky_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing.s3.us-west-2.amazonaws.com%2Fcompressed%2Ffriday-mtc-20260524T0001Z%2Fsupersplat_bundle%2Fmeta.json&skybox=off",
+  "viewer_public_sky_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing.s3.us-west-2.amazonaws.com%2Fcompressed%2Ffriday-mtc-20260524T0001Z%2Fsupersplat_bundle%2Fmeta.json&skybox=background_skybox.webp",
+  "zip_entries": 1776
+}

@@ -11468,3 +11468,32 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
 - Git: agent-40136728-montana-time-capsule @ 38be8a91438e3c0857480408f5bdf5f553d50bc5 (`chore: hmc mtc heartbeat proof 20260525T013054Z [skip ci]`)
 - Evidence stamp: 20260525T013323Z
   - GitHub Actions: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T013323Z.json (count=23) + logs/montana-time-capsule/gh-run-list-exact-head-38be8a91-20260525T013323Z.json (count=0)
+
+## 2026-05-25T01:47:31Z HEARTBEAT monitor (FRIDAY canonical friday-mtc-20260524T0001Z): no-spend terminal reconfirm; guarded cv_hr_time_capsule --launch ran (no dupes); public meta + hosted viewer sky/no-sky HTTP200
+
+- Git: agent-40136728-montana-time-capsule @ 64ce1c5af9eca4f730a549330d3e59b7eb79946c (`chore: postpush gh snapshot 20260525T013323Z [skip ci]`)
+- Evidence stamp: 20260525T014600Z
+  - GitHub Actions (branch snapshot; exact-head expected empty on [skip ci]):
+    - logs/montana-time-capsule/gh-run-list-branch-20260525T014526Z.json
+  - AWS identity/region:
+    - logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T014544Z.json
+    - logs/montana-time-capsule/aws-config-region-20260525T014544Z.txt
+  - InProgress guardrail:
+    - logs/montana-time-capsule/sm-list-processing-inprogress-20260525T014600Z.json (count=0)
+    - logs/montana-time-capsule/sm-list-training-inprogress-20260525T014600Z.json (count=0)
+  - Canonical Friday describes (expect Completed):
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T014600Z.json
+    - logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T014600Z.json
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T014600Z.json
+  - S3 outputs:
+    - SfM colmap tail listing: logs/montana-time-capsule/s3-ls-friday-colmap-tail-20260525T014614Z.txt
+    - compressed bundle tail listing: logs/montana-time-capsule/s3-ls-friday-compressed-tail-20260525T014614Z.txt
+  - Public meta reachability:
+    - headers: logs/montana-time-capsule/curl-headers-public-meta-20260525T014614Z.txt
+    - code: logs/montana-time-capsule/curl-code-public-meta-20260525T014614Z.txt (200)
+  - Guarded launcher output (no duplicate launches expected/observed):
+    - logs/montana-time-capsule/cv-hr-time-capsule-20260525T014631Z.txt
+    - post-launch InProgress guardrail: logs/montana-time-capsule/sm-list-processing-inprogress-postcv-20260525T014641Z.json + logs/montana-time-capsule/sm-list-training-inprogress-postcv-20260525T014641Z.json
+  - Hosted viewer reachability:
+    - urls: logs/montana-time-capsule/viewer-urls-20260525T014702Z.txt
+    - headers/codes: logs/montana-time-capsule/curl-headers-viewer-sky-20260525T014702Z.txt + logs/montana-time-capsule/curl-code-viewer-sky-20260525T014702Z.txt; logs/montana-time-capsule/curl-headers-viewer-nosky-20260525T014702Z.txt + logs/montana-time-capsule/curl-code-viewer-nosky-20260525T014702Z.txt
