@@ -531,3 +531,4 @@
 [2026-05-25T10:26:32Z] heartbeat hmc hmc-mtc-20260520T2015Z -> sm Completed/Completed/Completed inprog=0/0 meta_http=? viewer=?/?/? -> next=idle monitor
 [2026-05-25T10:27:33Z] heartbeat Friday -> terminal verified (SfM/3DGS/compression Completed; InProgress=0; HTTP 200) -> commit+push ledger
 [2026-05-25T10:30:14Z] postpush gh snapshot head=01a21bf3 -> recorded
+[2026-05-25T10:46:50Z] friday heartbeat -> terminal/no-spend -> next: continue heartbeat

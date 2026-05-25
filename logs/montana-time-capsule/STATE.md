@@ -1,5 +1,16 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-25T10:46:50Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical `friday-mtc-20260524T0001Z`: terminal (SfM/3DGS/compression Completed); InProgress=0; S3 outputs present; no new jobs launched
+
+- Evidence stamp: 20260525T104521Z
+  - Git head/detail/status: logs/montana-time-capsule/git-branch-20260525T104521Z.txt + logs/montana-time-capsule/git-head-20260525T104521Z.txt + logs/montana-time-capsule/git-head-detail-20260525T104521Z.txt + logs/montana-time-capsule/git-status-20260525T104521Z.txt
+  - AWS identity/region/version (`/opt/homebrew/bin/aws`; us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T104521Z.json + logs/montana-time-capsule/aws-config-region-20260525T104521Z.txt + logs/montana-time-capsule/aws-version-20260525T104521Z.txt
+  - InProgress guardrail (max-results=50): logs/montana-time-capsule/sm-list-processing-inprogress-20260525T104521Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T104521Z.json
+  - Canonical Friday describes (all Completed): logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T104521Z.json + logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T104521Z.json + logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T104521Z.json
+  - Input + outputs: logs/montana-time-capsule/s3head-input-zip-friday-20260525T104521Z.json + logs/montana-time-capsule/s3ls-colmap-friday-20260525T104521Z.txt + logs/montana-time-capsule/s3ls-compressed-friday-20260525T104521Z.txt
+  - GitHub Actions snapshots (`/opt/homebrew/bin/gh`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T104521Z.json + logs/montana-time-capsule/gh-run-list-exact-head-318c9e5d-20260525T104521Z.json
+  - Summary JSON refreshed: logs/montana-time-capsule/friday-20260522-state.json
+
 ## 2026-05-25T10:26:19Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: still terminal (SfM/3DGS/compression Completed); InProgress=0; S3 outputs present; public meta HTTP 200; hosted viewer sky/no-sky HTTP 200; no new jobs launched
 
 - Evidence stamp: 20260525T102619Z
