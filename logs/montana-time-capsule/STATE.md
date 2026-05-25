@@ -20,6 +20,8 @@
   - Postcopy commit pushed (`[skip ci]`): exact-head runs expected empty: 20260525T055031Z
     - GitHub Actions branch snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postcopy-20260525T055031Z.json
     - GitHub Actions exact-head snapshot (empty): logs/montana-time-capsule/gh-run-list-exact-head-fba38f53-postcopy-20260525T055031Z.json
+  - Postcopy snapshot after follow-up `[skip ci]` commit (head `15bd47b8`): exact-head runs empty: 20260525T055110Z
+    - GitHub Actions exact-head snapshot (empty): logs/montana-time-capsule/gh-run-list-exact-head-15bd47b8-20260525T055110Z.json
   - Summary JSON updated: logs/montana-time-capsule/hmc-state.json
 
 ## 2026-05-25T05:29:56Z postpush GitHub snapshot (current head `ece5b71e` is `[skip ci]` so exact-head runs are expected empty)
