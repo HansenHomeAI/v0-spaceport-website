@@ -1,5 +1,13 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-25T00:06:32Z postpush - stored proof + refreshed GitHub run snapshots (expected empty on `[skip ci]` head)
+
+- Git: agent-40136728-montana-time-capsule @ 8b26598e92d583256020bb624f0d1aa50e3422de
+- Evidence stamp: 20260525T000632Z
+  - GitHub Actions:
+    - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T000632Z.json
+    - exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-8b26598-20260525T000632Z.json
+
 ## 2026-05-25T00:05:39Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: verified terminal (no InProgress); no duplicate jobs launched
 
 - Git: agent-40136728-montana-time-capsule @ a07ef547d4e3311639eb88959f96f384f5cd1404
