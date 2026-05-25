@@ -1,0 +1,10 @@
+HTTP/2 405 
+date: Mon, 25 May 2026 05:45:40 GMT
+content-length: 0
+x-matched-path: /api/elevation-proxy
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=0SmH350ZAtet716eg%2B5XPX97jGdPpC48PtR88Mg0683Uta08YzfGMXMkxo411cXoI9vIlEtZABqvYOQfsGGYR4az%2Fq88hcvL%2FKhyUp5vaKRDd5KjqEXFsB6IPGexn9Prx1XlNsH7GsXm%2Fuovpu2NjVroZLwF%2FcVdPuzBGw%2Fs3mn95orZkrdrlPPGqK7JoV%2F6MCSNkI2vQ%2BhoRITYNAWoZkDG"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: a0123c3bcf20328e-SLC
+alt-svc: h3=":443"; ma=86400
+

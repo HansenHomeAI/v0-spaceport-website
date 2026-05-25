@@ -1,0 +1,17 @@
+## agent-40136728-montana-time-capsule...origin/agent-40136728-montana-time-capsule
+ M logs/montana-time-capsule/_last_heartbeat_ts.txt
+ M logs/montana-time-capsule/friday-20260522-state.json
+?? logs/montana-time-capsule/_heartbeat_ts_20260525T054511Z.txt
+?? logs/montana-time-capsule/aws-config-region-20260525T054511Z.txt
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T054511Z.json
+?? logs/montana-time-capsule/aws-version-20260525T054511Z.txt
+?? logs/montana-time-capsule/curlI-public-meta-friday-mtc-20260524T0001Z-20260525T054511Z.headers
+?? logs/montana-time-capsule/git-status-20260525T054539Z.txt
+?? logs/montana-time-capsule/heartbeat-now-20260525T054539Z.txt
+?? logs/montana-time-capsule/s3head-staging-meta-friday-mtc-20260524T0001Z-20260525T054511Z.json
+?? logs/montana-time-capsule/s3ls-staging-compressed-friday-mtc-20260524T0001Z-20260525T054511Z.txt
+?? logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T054511Z.json
+?? logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T054511Z.json
+?? logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T054511Z.json
+?? logs/montana-time-capsule/sm-list-processing-inprogress-20260525T054511Z.json
+?? logs/montana-time-capsule/sm-list-training-inprogress-20260525T054511Z.json

@@ -1,0 +1,88 @@
+{
+    "Stacks": [
+        {
+            "StackId": "arn:aws:cloudformation:us-west-2:975050048887:stack/SpaceportMLPipelineStagingStack/4a092ac0-8298-11f0-aa99-0635e2e96369",
+            "StackName": "SpaceportMLPipelineStagingStack",
+            "Parameters": [
+                {
+                    "ParameterKey": "BootstrapVersion",
+                    "ParameterValue": "/cdk-bootstrap/hnb659fds/version",
+                    "ResolvedValue": "18"
+                }
+            ],
+            "CreationTime": "2025-08-26T16:18:24.067000+00:00",
+            "LastUpdatedTime": "2026-04-17T19:28:15.475000+00:00",
+            "RollbackConfiguration": {},
+            "StackStatus": "UPDATE_ROLLBACK_COMPLETE",
+            "DisableRollback": false,
+            "NotificationARNs": [],
+            "Capabilities": [
+                "CAPABILITY_IAM",
+                "CAPABILITY_NAMED_IAM",
+                "CAPABILITY_AUTO_EXPAND"
+            ],
+            "Outputs": [
+                {
+                    "OutputKey": "SpaceportMLApiEndpointD01B3725",
+                    "OutputValue": "https://wz0ezgptue.execute-api.us-west-2.amazonaws.com/prod/"
+                },
+                {
+                    "OutputKey": "CompressorRepositoryUri",
+                    "OutputValue": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor",
+                    "Description": "Compressor ECR Repository URI"
+                },
+                {
+                    "OutputKey": "EnvironmentName",
+                    "OutputValue": "staging",
+                    "Description": "Deployment environment name"
+                },
+                {
+                    "OutputKey": "GaussianRepositoryUri",
+                    "OutputValue": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs",
+                    "Description": "3DGS ECR Repository URI"
+                },
+                {
+                    "OutputKey": "StepFunctionArn",
+                    "OutputValue": "arn:aws:states:us-west-2:975050048887:stateMachine:SpaceportMLPipeline-staging",
+                    "Description": "ML Pipeline Step Function ARN"
+                },
+                {
+                    "OutputKey": "MLPipelineApiUrl",
+                    "OutputValue": "https://wz0ezgptue.execute-api.us-west-2.amazonaws.com/prod/",
+                    "Description": "ML Pipeline API Gateway URL"
+                },
+                {
+                    "OutputKey": "BranchId",
+                    "OutputValue": "shared",
+                    "Description": "Branch preview identifier"
+                },
+                {
+                    "OutputKey": "BranchName",
+                    "OutputValue": "development",
+                    "Description": "Git branch name for this deployment"
+                },
+                {
+                    "OutputKey": "MLBucketName",
+                    "OutputValue": "spaceport-ml-processing-staging",
+                    "Description": "ML Processing S3 Bucket"
+                },
+                {
+                    "OutputKey": "MLApiUrl",
+                    "OutputValue": "https://wz0ezgptue.execute-api.us-west-2.amazonaws.com/prod/",
+                    "Description": "ML Pipeline API Gateway URL"
+                },
+                {
+                    "OutputKey": "SfMRepositoryUri",
+                    "OutputValue": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm",
+                    "Description": "SfM ECR Repository URI"
+                }
+            ],
+            "RoleARN": "arn:aws:iam::975050048887:role/cdk-hnb659fds-cfn-exec-role-975050048887-us-west-2",
+            "Tags": [],
+            "EnableTerminationProtection": false,
+            "DriftInformation": {
+                "StackDriftStatus": "NOT_CHECKED"
+            }
+        }
+    ]
+}
