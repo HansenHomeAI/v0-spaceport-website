@@ -12,7 +12,7 @@
   - GitHub Actions snapshots (`/opt/homebrew/bin/gh`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T120902Z.json + logs/montana-time-capsule/gh-run-list-exact-head-a99d727f-20260525T120902Z.json
   - Guarded pipeline command executed (idempotent; no duplicate launches): logs/montana-time-capsule/cv-hr-time-capsule-launch-friday-20260522-20260525T120647Z.json
 
-- Postpush GH snapshot (head `8655e813` is `[skip ci]` so exact-head runs are empty): logs/montana-time-capsule/git-head-postpush-20260525T121159Z.txt + logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T121159Z.json + logs/montana-time-capsule/gh-run-list-exact-head-8655e813-postpush-20260525T121159Z.json
+  - NOTE: postpush GH snapshots are recorded in follow-up commits (head changes each snapshot commit).
 
 ## 2026-05-25T12:05:34Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: still terminal (SfM/3DGS/compression Completed); InProgress=0; S3 outputs present; public meta HTTP 200; hosted viewer base/sky/no-sky HTTP 200; exact-head GH runs empty (expected on `[skip ci]` head `a99d727f`)
 
