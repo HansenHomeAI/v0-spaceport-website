@@ -257,6 +257,7 @@
 [2026-05-24T00:04:04Z] friday-20260522 ingest -> copied 1776 SD photos, streamed ZIP to spaceport-uploads-staging, validated remote ZIP count, launched SfM friday-mtc-20260524T0001Z-sfm -> next: heartbeat monitor SfM
 [2026-05-24T00:09:00Z] friday-20260522 sfm -> CloudWatch live; extracted 1776 images; GPS+orientation priors found on all images -> next: monitor SfM to terminal
 [2026-05-24T00:10:00Z] friday-20260522 postpush -> exact-head gh runs empty as expected for [skip ci] -> next: heartbeat monitor SfM
+[2026-05-25T17:04:00Z] friday viewer visual QA -> hosted viewer loads and camera moves; terrain/roads/buildings recognizable; close-up quality has blur/sky-floater artifacts and inherited Canyon Vista labels -> next: quality remediation before production claim
 [2026-05-24T00:06:18Z] heartbeat-no-spend -> HMC jobs Completed + viewer 200 + CI snapshot ok -> commit+push ledger
 [2026-05-24T00:07:28Z] postpush-ci-snapshot -> exact-head empty ([skip ci]); branch runs still green -> idle
 [2026-05-24T00:26:45Z] friday-20260522 sfm -> InProgress; CloudWatch shows feature_extractor processed 460/1776; S3 output still empty (EndOfJob) -> next: monitor SfM to Completed

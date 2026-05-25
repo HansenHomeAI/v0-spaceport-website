@@ -13414,3 +13414,33 @@ Evidence snapshot: logs/montana-time-capsule/hmc-state.json (evidence_stamp=2026
 - pushed heartbeat commit `af789257` ([skip ci]); exact-head workflows expected empty by design
 - postpush branch run list: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T155137Z.json
 - postpush exact-head run list: logs/montana-time-capsule/gh-run-list-exact-head-af789257-postpush-20260525T155137Z.json
+
+## 2026-05-25T17:04:00Z Friday viewer visual QA
+
+- Tested hosted Friday viewer in the in-app browser:
+  - skybox URL: `https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.us-west-2.amazonaws.com%2Fcompressed%2Ffriday-mtc-20260524T0001Z%2Fsupersplat_bundle%2Fmeta.json&skybox=background_skybox.webp`
+  - no-sky URL: `https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing-staging.s3.us-west-2.amazonaws.com%2Fcompressed%2Ffriday-mtc-20260524T0001Z%2Fsupersplat_bundle%2Fmeta.json&skybox=off`
+- Interaction proof:
+  - camera drag and scroll changed the viewpoint; viewer remained responsive.
+  - console logs showed no serious runtime error; latest log was the expected `XrNavigation` startup message from `supersplat-viewer/index.js`.
+- Screenshot evidence:
+  - `logs/montana-time-capsule/friday-live-browser-sky-clean-20260525Tvisual.png`
+  - `logs/montana-time-capsule/friday-live-browser-sky-clean-moved-20260525Tvisual.png`
+  - `logs/montana-time-capsule/friday-live-browser-nosky-clean-20260525Tvisual.png`
+- Visual assessment:
+  - Recognizable: valley terrain, mountain/horizon line, roads/driveways, field boundaries, treelines, individual buildings/roofs, and larger property layout.
+  - Not acceptable as a "great" close-up production splat: foreground/near-orbit views have strong blur, black/white sky-floater artifacts, smeared ground surfaces, and visible ghosting.
+  - Overlay issue: route still shows inherited `Canyon Vista` controls and tap labels; labels are not authoritative for this new property. Visual QA therefore toggled tap labels off for clean screenshots.
+- Current conclusion: viewer works and is not blank/uniform blur, but quality is only broad aerial-context usable. It should not be called a polished production-quality property viewer until the sky/floater artifacts and incorrect inherited labels are fixed or a stronger training/viewer configuration is rerun.
+
+## 2026-05-25T17:05:27Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: no-spend re-verify; SageMaker terminal (SfM/3DGS/compression Completed); InProgress=0; S3 supersplat bundle present (staging+prod); public meta HTTP 200; hosted viewer base/sky/no-sky HTTP 200; exact-head GH workflows snapshot captured (HEAD is [skip ci])
+
+- Evidence stamp: 20260525T170527Z
+  - Git: `git rev-parse` HEAD `7de480b1` (branch `agent-40136728-montana-time-capsule`); upstream is `origin/agent-40136728-montana-time-capsule`
+  - AWS identity/region/version: logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T170527Z.json + logs/montana-time-capsule/aws-config-region-20260525T170527Z.txt + logs/montana-time-capsule/aws-version-20260525T170527Z.txt
+  - SageMaker guardrail (expected 0/0): logs/montana-time-capsule/sm-list-processing-inprogress-20260525T170527Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T170527Z.json
+  - Canonical HMC describes (all Completed): logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T170527Z.json + logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T170527Z.json + logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T170527Z.json
+  - S3 outputs: logs/montana-time-capsule/s3ls-staging-supersplat-bundle-hmc-20260525T170527Z.txt + logs/montana-time-capsule/s3ls-prod-supersplat-bundle-hmc-20260525T170527Z.txt + logs/montana-time-capsule/s3head-prod-meta-hmc-20260525T170527Z.json
+  - Public reachability (HTTP HEAD 200): logs/montana-time-capsule/curlI-prod-meta-hmc-20260525T170527Z.headers
+  - Hosted viewer reachability (HTTP HEAD 200): logs/montana-time-capsule/curlI-viewer-base-20260525T170527Z.headers + logs/montana-time-capsule/curlI-viewer-sky-hmc-20260525T170527Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-hmc-20260525T170527Z.headers
+  - GitHub Actions snapshots: logs/montana-time-capsule/gh-repo-20260525T170527Z.json + logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T170527Z.json + logs/montana-time-capsule/gh-run-list-exact-head-7de480b1-20260525T170527Z.json
