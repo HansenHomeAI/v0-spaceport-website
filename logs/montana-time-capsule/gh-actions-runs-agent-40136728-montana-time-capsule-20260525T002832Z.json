@@ -1,0 +1,108 @@
+{
+  "branch": "agent-40136728-montana-time-capsule",
+  "head_sha": "dc9fc33cf09aabd9280ebfaf32e58495a10fc8c1",
+  "head_sha_runs": 0,
+  "runs": [
+    {
+      "conclusion": "success",
+      "created_at": "2026-05-24T13:36:39Z",
+      "display_title": "chore: record CDK green 611bf180",
+      "head_sha": "c817529d848a5c54f19862298aac8e0f84f5bddb",
+      "html_url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26362748385",
+      "id": 26362748385,
+      "name": "CDK Deploy",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "created_at": "2026-05-24T13:29:52Z",
+      "display_title": "chore: friday mtc completion proof 20260524T1327Z",
+      "head_sha": "611bf1805b56a6e1c8c7e2a6d3c742d3da5d41f4",
+      "html_url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26362596297",
+      "id": 26362596297,
+      "name": "CDK Deploy",
+      "status": "completed"
+    },
+    {
+      "conclusion": "cancelled",
+      "created_at": "2026-05-24T13:26:44Z",
+      "display_title": "chore: record friday mtc preview url 20260524",
+      "head_sha": "7fbfd3a68deac1cf2d7f03b2624acbd9988430c8",
+      "html_url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26362527773",
+      "id": 26362527773,
+      "name": "CDK Deploy",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "created_at": "2026-05-24T13:17:03Z",
+      "display_title": "chore: trigger Pages preview 20260524T131327Z",
+      "head_sha": "689eb3cf13b08cc1ca35ba6a498966dca4ec6e8a",
+      "html_url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26362313634",
+      "id": 26362313634,
+      "name": "CDK Deploy",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "created_at": "2026-05-24T13:17:03Z",
+      "display_title": "chore: trigger Pages preview 20260524T131327Z",
+      "head_sha": "689eb3cf13b08cc1ca35ba6a498966dca4ec6e8a",
+      "html_url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26362313633",
+      "id": 26362313633,
+      "name": "Deploy Next.js to Cloudflare Pages",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "created_at": "2026-05-24T13:12:16Z",
+      "display_title": "chore: friday mtc launch compression 20260524",
+      "head_sha": "d377a0adacb41f72bd48952ac800f9afe6d59cb5",
+      "html_url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26362207788",
+      "id": 26362207788,
+      "name": "CDK Deploy",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "created_at": "2026-05-24T06:15:37Z",
+      "display_title": "chore: trigger Pages preview 20260524T061531Z",
+      "head_sha": "16f29321bfe9c53c2c7822ff41ccfc8e12fdf482",
+      "html_url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26353779598",
+      "id": 26353779598,
+      "name": "CDK Deploy",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "created_at": "2026-05-24T06:15:37Z",
+      "display_title": "chore: trigger Pages preview 20260524T061531Z",
+      "head_sha": "16f29321bfe9c53c2c7822ff41ccfc8e12fdf482",
+      "html_url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26353779608",
+      "id": 26353779608,
+      "name": "Deploy Next.js to Cloudflare Pages",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "created_at": "2026-05-24T06:10:47Z",
+      "display_title": "chore: heartbeat hmc acceptance reconfirm 20260524T0609Z",
+      "head_sha": "e434f511c2cd79eb5f6d2443ca03a28baec9f8a7",
+      "html_url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26353693174",
+      "id": 26353693174,
+      "name": "CDK Deploy",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "created_at": "2026-05-21T11:38:18Z",
+      "display_title": "chore: montana heartbeat 20260521T1135Z",
+      "head_sha": "0e48d07ae2c60cbe606070887c60989660f48c74",
+      "html_url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26223584298",
+      "id": 26223584298,
+      "name": "CDK Deploy",
+      "status": "completed"
+    }
+  ],
+  "ts": "20260525T002832Z"
+}

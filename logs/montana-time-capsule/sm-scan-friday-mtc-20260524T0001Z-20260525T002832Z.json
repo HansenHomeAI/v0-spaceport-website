@@ -1,0 +1,24 @@
+{
+  "processing_jobs": [
+    {
+      "creation": "2026-05-24 07:07:23.510000-06:00",
+      "name": "friday-mtc-20260524T0001Z-compression",
+      "status": "Completed"
+    },
+    {
+      "creation": "2026-05-23 18:03:05.148000-06:00",
+      "name": "friday-mtc-20260524T0001Z-sfm",
+      "status": "Completed"
+    }
+  ],
+  "region": "us-west-2",
+  "run_prefix": "friday-mtc-20260524T0001Z",
+  "training_jobs": [
+    {
+      "creation": "2026-05-24 03:05:56.570000-06:00",
+      "name": "friday-mtc-20260524T0001Z-3dgs",
+      "status": "Completed"
+    }
+  ],
+  "ts": "20260525T002832Z"
+}

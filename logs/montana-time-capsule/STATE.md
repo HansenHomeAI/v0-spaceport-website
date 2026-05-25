@@ -11241,17 +11241,17 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
 
 - Git: agent-40136728-montana-time-capsule @ d6420820af052ac09c3194d02216a96ed1982f73 (chore: postpush heartbeat verify 20260525T001036Z [skip ci])
 - AWS (us-west-2; using boto3 since `aws` missing in this environment):
-  - identity: logs/montana-time-capsule/sts-identity-20260525T002511Z.json
+  - identity: logs/montana-time-capsule/sts-identity-20260525T002832Z.json
   - SageMaker describes (all Completed; canonical Friday run `friday-mtc-20260524T0001Z`):
-    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T002511Z.json
-    - logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T002511Z.json
-    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T002511Z.json
-  - run scan (NameContains=`friday-mtc-20260524T0001Z`): logs/montana-time-capsule/sm-scan-friday-mtc-20260524T0001Z-20260525T002511Z.json
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T002832Z.json
+    - logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T002832Z.json
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T002832Z.json
+  - run scan (NameContains=`friday-mtc-20260524T0001Z`): logs/montana-time-capsule/sm-scan-friday-mtc-20260524T0001Z-20260525T002832Z.json
 - S3 outputs (verified present):
-  - SfM output prefix sample keys: logs/montana-time-capsule/s3-proof-20260525T002530Z.json
-  - viewer bundle meta head (OK): logs/montana-time-capsule/s3-proof-20260525T002530Z.json
+  - SfM output prefix sample keys: logs/montana-time-capsule/s3-proof-20260525T002832Z.json
+  - viewer bundle meta head (OK): logs/montana-time-capsule/s3-proof-20260525T002832Z.json
 - Hosted viewer reachability (HTTP 200):
-  - sky headers: logs/montana-time-capsule/curl-headers-viewer-sky-20260525T002540Z.txt
-  - no-sky headers: logs/montana-time-capsule/curl-headers-viewer-nosky-20260525T002540Z.txt
+  - sky headers: logs/montana-time-capsule/curl-headers-friday-viewer-sky-20260525T002834Z.txt
+  - no-sky headers: logs/montana-time-capsule/curl-headers-friday-viewer-nosky-20260525T002834Z.txt
 - GitHub Actions (using unauth REST API since `gh` missing in this environment):
-  - branch run snapshot (no exact-head runs due `[skip ci]`): logs/montana-time-capsule/gh-actions-runs-agent-40136728-montana-time-capsule-20260525T002614Z.json
+  - branch run snapshot (no exact-head runs due `[skip ci]`): logs/montana-time-capsule/gh-actions-runs-agent-40136728-montana-time-capsule-20260525T002832Z.json

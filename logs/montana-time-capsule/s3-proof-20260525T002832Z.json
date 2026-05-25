@@ -1,0 +1,30 @@
+{
+  "checks": [
+    {
+      "ok": true,
+      "sample_keys": [
+        "manual-validations/friday-mtc-20260524T0001Z/colmap/database.db",
+        "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0797.JPG",
+        "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0798.JPG",
+        "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0799.JPG",
+        "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0800.JPG"
+      ],
+      "uri": "s3://spaceport-ml-processing-staging/manual-validations/friday-mtc-20260524T0001Z/colmap/"
+    },
+    {
+      "etag": "\"8b0dd907e62697907206e6eb5522e796\"",
+      "last_modified": "2026-05-24 13:14:52+00:00",
+      "ok": true,
+      "size": 1372,
+      "uri": "s3://spaceport-ml-processing-staging/compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json"
+    },
+    {
+      "etag": "\"8484b9ad1089adb721f1b31dfc85fc23-896\"",
+      "last_modified": "2026-05-23 23:59:09+00:00",
+      "ok": true,
+      "size": 7514816344,
+      "uri": "s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.zip"
+    }
+  ],
+  "ts": "20260525T002832Z"
+}
