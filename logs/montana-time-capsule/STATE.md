@@ -12937,3 +12937,10 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
   - Git/GitHub Actions (post-fetch exact-head snapshots; 20260525T124908Z):
     - Git head/status: logs/montana-time-capsule/git-head-20260525T124908Z.txt + logs/montana-time-capsule/git-head-detail-20260525T124908Z.txt + logs/montana-time-capsule/git-status-20260525T124908Z.txt + logs/montana-time-capsule/git-log1-20260525T124908Z.txt
     - GitHub Actions branch + exact-head snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T124908Z.json + logs/montana-time-capsule/gh-run-list-exact-head-963518c490a15e6cd93e9fb522ed43a067746476-20260525T124908Z.json
+
+### Post-push GitHub Actions check 20260525T125323Z
+
+- Git: agent-40136728-montana-time-capsule @ 7253161efc05d9c6caac2177cd512c4c9789085b (7253161e chore: friday heartbeat evidence 20260525T1249Z [skip ci])
+- Evidence:
+  - Branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T125323Z.json
+  - Exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-7253161efc05d9c6caac2177cd512c4c9789085b-postpush-20260525T125323Z.json (expected 0 for skip-ci head)
