@@ -12044,3 +12044,13 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
 - Evidence stamp: 20260525T045243Z
 - Branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T045243Z.json
 - Exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-dba9d5c2-postpush-20260525T045243Z.json (expected 0 for [skip ci] head)
+
+## 2026-05-25T05:04:54Z HEARTBEAT monitor (Friday canonical friday-mtc-20260524T0001Z): no-spend re-verify; SfM/3DGS/compression terminal; InProgress 0/0; outputs present; exact-head GH snapshot refreshed
+
+- Git: agent-40136728-montana-time-capsule @ bff12ee5587b9a8ad2de9ecf078b43e147caeada (`chore: postpush gh snapshot 20260525T045243Z [skip ci]`)
+- Evidence stamp: 20260525T050454Z
+  - AWS identity (/opt/homebrew/bin/aws): logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T050454Z.json
+  - Canonical describe (SfM): logs/montana-time-capsule/sagemaker-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T050454Z.json
+  - InProgress guardrail: logs/montana-time-capsule/sagemaker-list-processing-inprogress-friday-mtc-20260524T0001Z-20260525T050454Z.json + logs/montana-time-capsule/sagemaker-list-training-inprogress-friday-mtc-20260524T0001Z-20260525T050454Z.json
+  - S3 tails (colmap/3dgs/compressed): logs/montana-time-capsule/s3-ls-colmap-tail-20260525T050454Z.txt + logs/montana-time-capsule/s3-ls-3dgs-tail-20260525T050454Z.txt + logs/montana-time-capsule/s3-ls-compressed-tail-20260525T050454Z.txt
+  - GitHub Actions (/opt/homebrew/bin/gh): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T050454Z.json + logs/montana-time-capsule/gh-run-list-exact-head-bff12ee5587b9a8ad2de9ecf078b43e147caeada-20260525T050454Z.json

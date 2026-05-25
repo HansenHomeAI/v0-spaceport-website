@@ -1,0 +1,42 @@
+[20260524T212505Z] begin heartbeat checks
+[20260524T212602Z] heartbeat checks begin
+[20260524T212602Z] heartbeat checks end
+[2026-05-24T21:47:32Z] friday-mtc heartbeat -> runner idempotent; no spend; jobs Completed; inprogress=0 -> next: push ledger
+[2026-05-24T23:08:04Z] hmc-mtc heartbeat -> verified terminal + viewer200; public meta 404 -> next: wait for public bundle gate
+[2026-05-24T23:46:08Z] friday-mtc heartbeat -> no spend; jobs Completed; inprogress=0; public meta/viewer HEAD ok -> next: idle monitor
+[2026-05-24T23:46:48Z] heartbeat 20260524T234452Z -> ok(no-spend), public404 persists -> next: investigate publish path for public meta.json
+[2026-05-24T23:48:33Z] postpush 20260524T234730Z -> gh exact-head 0 (skip ci), viewer ok -> next: await explicit gate to publish public bundle
+[20260525T000509Z] heartbeat evidence -> wrote heartbeat-evidence-20260525T000509Z.log -> next: update STATE.md + hmc-state.json
+[20260525T000743Z] heartbeat refresh -> wrote aws/sm/s3/viewer/gh snapshots -> next: update STATE.md + hmc-state.json
+[20260525T001036Z] postpush verify -> snapshots updated -> next: update STATE.md + hmc-state.json + push
+[20260525T0026Z] friday mtc verify -> sm/s3/viewer ok; gh exact-head 0 due skip ci -> next: commit+push heartbeat evidence
+[2026-05-25T00:49:00Z] heartbeat -> hmc canonical: sm terminal; public meta 404; viewer 200 -> next passive monitor
+[2026-05-25T01:06:54Z] friday heartbeat -> terminal sfm/3dgs/compression; public meta+viewer 200; no spend -> next: monitor for regressions
+[2026-05-25T02:06:28Z] friday heartbeat -> InProgress=0; SfM/3DGS/compression Completed; public meta+viewer 200; exact-head gh 0 (skip ci) -> next: commit+push ledger/logs
+[20260525T020828Z] hmc canonical heartbeat -> viewer ok, public meta  -> next: commit+push logs
+[20260525T020835Z] hmc canonical heartbeat -> viewer ok, public meta 404 -> next: commit+push logs
+[20260525T021027Z] hmc canonical heartbeat -> viewer ok, public meta 404 -> next: commit+push evidence
+[20260525T021258Z] postpush gh snapshot -> branch=23 exact_head=0 -> next: commit+push
+[2026-05-25T02:25:04Z] heartbeat friday-mtc -> verified terminal (SfM/3DGS/compression Completed; InProgress=0) -> next: no action (avoid duplicate launches)
+[2026-05-25T02:28:05Z] heartbeat hmc-mtc -> verified terminal + viewer(200/200/200) + screenshots captured; public meta still 404 -> next: idle monitor
+[2026-05-25T02:29:17Z] postpush gh snapshot -> branch=23 exact_head=0 (skip ci) -> next: idle monitor
+[20260525T024406Z] heartbeat verify -> ok (viewer 200/200/200, s3 public meta 404, sagemaker completed) -> next: wait for public bundle gate
+[20260525T024649Z] heartbeat verify -> ok (sagemaker terminal, viewer 200/200/200, public_meta 404) -> next: wait on public bundle gate
+[20260525T024748Z] postpush gh snapshot -> branch_runs=23 exact_head_runs=0 -> next: idle
+[2026-05-25T03:05:12Z] friday heartbeat -> terminal sfm/3dgs/compression; inprogress=0; public meta+viewer HEAD ok -> next: idle monitor
+[2026-05-25T03:25:34Z] heartbeat -> viewer /sky=200 /nosky=404; public meta=MISSING; inprogress proc/train=/ -> next: investigate viewer 404 regression (no code changes unless proven)
+[2026-05-25T03:26:52Z] heartbeat -> viewer base/sky/nosky=0/0/0; public meta=0; inprogress proc/train=0/0 -> next: diagnose viewer 404 regression (no-spend)
+[2026-05-25T03:27:14Z] viewer-check -> base/sky/nosky=200/404/404 -> next: keep monitoring; investigate why sky routes 404
+[20260525T032605Z] friday heartbeat -> SfM/3DGS/compression Completed; inprogress 0/0; public meta head OK; gh snapshots refreshed -> next: viewer sky/nosky manual recheck if needed
+[2026-05-25T03:28:11Z] viewer-check -> base/?sky=1/?sky=0=200/200/200 -> next: keep monitoring public bundle meta 404
+[20260525T032815Z] postpush gh snapshot -> exact-head count 0 (skip ci)
+[2026-05-25T03:29:14Z] viewer-check -> base/?sky=1/?sky=0/proxy=200/200/200/404 -> next: public meta still 404; no action
+[20260525T034515Z] friday heartbeat -> verified terminal + reachable public meta -> commit+push
+[20260525T034627Z] postpush gh snapshot -> recorded
+[2026-05-25T04:12:30Z] friday heartbeat -> verified terminal + public meta 200; gh exact-head empty (skip ci) -> commit+push
+[2026-05-25T04:25:53Z] friday heartbeat -> verified terminal (sfm/3dgs/compression Completed); inprogress 0/0; public meta HEAD captured; gh exact-head empty (skip ci) -> next: no action (avoid duplicate launch)
+[20260525T044502Z] hmc heartbeat -> verified terminal + viewer base/sky/nosky 200/200/200; public meta 404 -> next: commit+push ledger/logs
+[20260525T044659Z] friday heartbeat -> verified terminal (sfm/3dgs/compression Completed; inprogress 0/0); public meta URL ok; skip-ci head so exact-head gh runs empty -> next: idle monitor
+[20260525T044925Z] hmc heartbeat -> verified terminal + viewer 200/200/200; public meta 404; head=95d315dc -> next: idle monitor
+[20260525T045114Z] hmc heartbeat -> repinned state to head=8e358543; viewer 200/200/200; public meta 404 -> next: idle
+[20260525T050454Z] friday heartbeat -> verified terminal (sfm/3dgs/compression Completed; inprogress 0/0); s3 outputs present; gh snapshots refreshed -> next: idle monitor (avoid duplicate launch)
