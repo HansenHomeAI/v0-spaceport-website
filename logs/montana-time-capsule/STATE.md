@@ -1,5 +1,19 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-25T00:05:39Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: verified terminal (no InProgress); no duplicate jobs launched
+
+- Git: agent-40136728-montana-time-capsule @ a07ef547d4e3311639eb88959f96f384f5cd1404
+- Evidence stamp: 20260525T000444Z
+  - Git proof: logs/montana-time-capsule/git-proof-20260525T000444Z.txt
+  - AWS proof (identity/region/version): logs/montana-time-capsule/aws-proof-20260525T000444Z.txt
+  - InProgress guardrail (max-results=20): logs/montana-time-capsule/sm-list-processing-inprogress-20260525T000444Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T000444Z.json (counts: 0/0)
+  - Friday canonical describes (all Completed): logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T000444Z.json + logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T000444Z.json + logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T000444Z.json
+  - S3 outputs (sample listings): logs/montana-time-capsule/s3ls-friday-colmap-20260525T000444Z.txt + logs/montana-time-capsule/s3ls-friday-compressed-20260525T000444Z.txt
+  - Hosted viewer reachability (sky/no-sky HEAD): logs/montana-time-capsule/curl-head-friday-viewer-20260525T000527Z.txt
+  - GitHub Actions:
+    - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T000444Z.json
+    - exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-20260525T000444Z.json
+
 ## 2026-05-24T23:45:20Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: no-spend re-verify; SageMaker InProgress=0; SfM/3DGS/compression Completed; S3 + public viewer/meta reachable; no duplicate jobs launched
 
 - Git: agent-40136728-montana-time-capsule @ a07ef547d4e3311639eb88959f96f384f5cd1404 (`chore: postpush gh exact-head snapshot 20260524T232856Z [skip ci]`)
