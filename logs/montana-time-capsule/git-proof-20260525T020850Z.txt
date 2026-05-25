@@ -1,0 +1,22 @@
+branch=agent-40136728-montana-time-capsule
+head=765858c34c193ded438cd803e048aa41f562bcf1
+ M logs/montana-time-capsule/STATE.md
+?? logs/montana-time-capsule/aws-config-region-20260525T020517Z.txt
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T020517Z.json
+?? logs/montana-time-capsule/aws-version-20260525T020517Z.txt
+?? logs/montana-time-capsule/curlI-friday-public-meta-20260525T020610Z.headers
+?? logs/montana-time-capsule/curlI-friday-viewer-nosky-20260525T020610Z.headers
+?? logs/montana-time-capsule/curlI-friday-viewer-sky-20260525T020610Z.headers
+?? logs/montana-time-capsule/friday-urls-from-state-20260525T020610Z.txt
+?? logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T020628Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-765858c3-20260525T020628Z.json
+?? logs/montana-time-capsule/git-proof-20260525T020452Z.txt
+?? logs/montana-time-capsule/git-proof-20260525T020850Z.txt
+?? logs/montana-time-capsule/s3ls-friday-3dgs-20260525T020610Z.txt
+?? logs/montana-time-capsule/s3ls-friday-colmap-20260525T020610Z.txt
+?? logs/montana-time-capsule/s3ls-friday-compressed-20260525T020610Z.txt
+?? logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T020517Z.json
+?? logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T020517Z.json
+?? logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T020517Z.json
+?? logs/montana-time-capsule/sm-list-processing-inprogress-20260525T020517Z.json
+?? logs/montana-time-capsule/sm-list-training-inprogress-20260525T020517Z.json
