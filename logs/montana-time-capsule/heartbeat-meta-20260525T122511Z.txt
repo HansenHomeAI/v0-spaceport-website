@@ -1,0 +1,3 @@
+agent heartbeat evidence 20260525T122511Z
+git_branch=agent-40136728-montana-time-capsule
+git_head=960e6a8ff6445674ceb96ff5d297958989d50f35

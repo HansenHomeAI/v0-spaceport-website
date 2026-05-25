@@ -1,0 +1,7 @@
+commit 960e6a8ff6445674ceb96ff5d297958989d50f35
+Author:     Gabriel Hansen <gbhbyu@gmail.com>
+AuthorDate: Mon May 25 06:12:38 2026 -0600
+Commit:     Gabriel Hansen <gbhbyu@gmail.com>
+CommitDate: Mon May 25 06:12:38 2026 -0600
+
+    chore: clarify postpush snapshot bookkeeping [skip ci]

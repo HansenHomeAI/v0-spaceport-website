@@ -1,5 +1,17 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-25T12:24:43Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical `friday-mtc-20260524T0001Z`: terminal (SfM/3DGS/compression Completed); InProgress=0; S3 outputs present; public meta + hosted viewer sky/no-sky HTTP 200; exact-head GH runs empty (expected on `[skip ci]` head `960e6a8f`)
+
+- Evidence stamp: 20260525T122443Z
+  - Git head/detail/status: logs/montana-time-capsule/git-branch-20260525T122443Z.txt + logs/montana-time-capsule/git-head-20260525T122443Z.txt + logs/montana-time-capsule/git-head-detail-20260525T122443Z.txt + logs/montana-time-capsule/git-status-20260525T122443Z.txt + logs/montana-time-capsule/git-log1-20260525T122443Z.txt
+  - AWS identity/region/version (`/opt/homebrew/bin/aws`; us-west-2; acct 975050048887): logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T122443Z.json + logs/montana-time-capsule/aws-config-region-20260525T122443Z.txt + logs/montana-time-capsule/aws-version-20260525T122443Z.txt
+  - InProgress guardrail (max-results=50): logs/montana-time-capsule/sm-list-processing-inprogress-20260525T122443Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T122443Z.json (counts: 0/0)
+  - Canonical Friday describes (all Completed): logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T122443Z.json + logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T122443Z.json + logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T122443Z.json
+  - S3 outputs: logs/montana-time-capsule/s3ls-input-zip-20260525T122443Z.txt + logs/montana-time-capsule/s3ls-colmap-friday-mtc-20260524T0001Z-20260525T122443Z.txt + logs/montana-time-capsule/s3ls-compressed-friday-mtc-20260524T0001Z-20260525T122443Z.txt + logs/montana-time-capsule/s3head-staging-colmap-database-friday-mtc-20260524T0001Z-20260525T122443Z.json + logs/montana-time-capsule/s3head-staging-compressed-supersplat-meta-friday-mtc-20260524T0001Z-20260525T122443Z.json + logs/montana-time-capsule/s3head-staging-compressed-compressed_splat-meta-friday-mtc-20260524T0001Z-20260525T122443Z.json
+    - NOTE: `s3://spaceport-ml-processing-staging/compressed/friday-mtc-20260524T0001Z/meta.json` is not present; the canonical bundle meta is `compressed/.../supersplat_bundle/meta.json` (tracked in friday-20260522-state.json).
+  - Public reachability (HTTP HEAD 200): logs/montana-time-capsule/curlI-friday-public-meta-20260525T122443Z.headers + logs/montana-time-capsule/curlI-friday-viewer-sky-20260525T122443Z.headers + logs/montana-time-capsule/curlI-friday-viewer-nosky-20260525T122443Z.headers
+  - GitHub Actions snapshots (`/opt/homebrew/bin/gh`): logs/montana-time-capsule/gh-version-20260525T122443Z.txt + logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T122443Z.json + logs/montana-time-capsule/gh-run-list-exact-head-960e6a8-20260525T122443Z.json
+
 ## 2026-05-25T12:06:59Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical `friday-mtc-20260524T0001Z`: still terminal (SfM/3DGS/compression Completed); InProgress=0; S3 outputs present; public meta + hosted viewer sky/no-sky HTTP 200; exact-head GH runs empty (expected on `[skip ci]` head `a99d727f`)
 
 - Evidence stamp: 20260525T120902Z
@@ -13,6 +25,19 @@
   - Guarded pipeline command executed (idempotent; no duplicate launches): logs/montana-time-capsule/cv-hr-time-capsule-launch-friday-20260522-20260525T120647Z.json
 
   - NOTE: postpush GH snapshots are recorded in follow-up commits (head changes each snapshot commit).
+
+## 2026-05-25T12:25:26Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: no-spend re-verify; terminal SageMaker jobs (SfM/3DGS/compression Completed); InProgress=0; S3 outputs present; public meta HTTP 200; hosted viewer base/sky/no-sky HTTP 200; exact-head GH runs empty (expected on `[skip ci]` head `960e6a8f`)
+
+- Evidence stamp: 20260525T122511Z
+  - Git head/detail/status: logs/montana-time-capsule/git-branch-20260525T122511Z.txt + logs/montana-time-capsule/git-head-20260525T122511Z.txt + logs/montana-time-capsule/git-head-detail-20260525T122511Z.txt + logs/montana-time-capsule/git-status-20260525T122511Z.txt
+  - AWS identity/region/version (`/opt/homebrew/bin/aws`; us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T122511Z.json + logs/montana-time-capsule/aws-config-region-20260525T122511Z.txt + logs/montana-time-capsule/aws-version-20260525T122511Z.txt
+  - InProgress guardrail (max-results=50): logs/montana-time-capsule/sm-list-processing-inprogress-20260525T122511Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T122511Z.json (counts: 0/0)
+  - Canonical HMC describes (all Completed): logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T122511Z.json + logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T122511Z.json + logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T122511Z.json
+  - S3 outputs: logs/montana-time-capsule/s3ls-staging-supersplat-bundle-hmc-20260525T122511Z.txt + logs/montana-time-capsule/s3ls-prod-supersplat-bundle-hmc-20260525T122511Z.txt
+  - Public reachability (HTTP HEAD 200): logs/montana-time-capsule/curlI-prod-meta-hmc-20260525T122511Z.headers
+  - Hosted viewer reachability (HTTP HEAD 200): logs/montana-time-capsule/curlI-viewer-base-20260525T122520Z.headers + logs/montana-time-capsule/curlI-viewer-sky-20260525T122520Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-20260525T122520Z.headers
+  - GitHub Actions snapshots (`/opt/homebrew/bin/gh`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T122511Z.json + logs/montana-time-capsule/gh-run-list-exact-head-960e6a8f-20260525T122511Z.json
+  - Machine-readable state: logs/montana-time-capsule/hmc-state.json
 
 ## 2026-05-25T12:05:34Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: still terminal (SfM/3DGS/compression Completed); InProgress=0; S3 outputs present; public meta HTTP 200; hosted viewer base/sky/no-sky HTTP 200; exact-head GH runs empty (expected on `[skip ci]` head `a99d727f`)
 
