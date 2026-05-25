@@ -575,3 +575,5 @@
 [2026-05-25T14:29:15Z] friday heartbeat 20260525T142618 -> terminal (sfm/3dgs/compression Completed; inprogress=0); public meta+viewer HEAD ok -> next: idle
 [2026-05-25T14:31:09Z] heartbeat(hmc-mtc-20260520T2015Z) -> refreshed evidence stamp 20260525T143055Z -> next: add visual screenshot proof (sky vs no-sky)
 [2026-05-25T14:34:37Z] acceptance(viewer screenshots) -> captured 20260525T143209Z -> next: camera input-vs-render checks
+[20260525T144637Z] heartbeat -> friday-mtc-20260524T0001Z terminal (sfm/3dgs/compression Completed; inprogress 0/0) -> next: idle monitor
+[2026-05-25T14:47:23Z] heartbeat evidence 20260525T144510Z -> no-spend checks ok (viewer+meta 200, SM idle) -> next: wait / acceptance review

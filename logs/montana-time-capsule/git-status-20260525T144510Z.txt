@@ -1,0 +1,60 @@
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T144434Z.json
+?? logs/montana-time-capsule/aws-version-20260525T144434Z.txt
+?? logs/montana-time-capsule/curlI-prod-meta-hmc-20260525T144434Z.headers
+?? logs/montana-time-capsule/curlI-viewer-base-20260525T144434Z.headers
+?? logs/montana-time-capsule/curlI-viewer-nosky-20260525T144434Z.headers
+?? logs/montana-time-capsule/curlI-viewer-sky-20260525T144434Z.headers
+?? logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T144434Z.json
+?? logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T144456Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-cf025c99-20260525T144456Z.json
+?? logs/montana-time-capsule/git-branch-20260525T144456Z.txt
+?? logs/montana-time-capsule/git-head-20260525T144456Z.txt
+?? logs/montana-time-capsule/git-head-detail-20260525T144434Z.txt
+?? logs/montana-time-capsule/git-head-detail-20260525T144456Z.txt
+?? logs/montana-time-capsule/git-head-detail-20260525T144510Z.txt
+?? logs/montana-time-capsule/git-log1-20260525T144456Z.txt
+?? logs/montana-time-capsule/git-status-20260525T144434Z.txt
+?? logs/montana-time-capsule/git-status-20260525T144456Z.txt
+?? logs/montana-time-capsule/git-status-20260525T144510Z.txt
+?? logs/montana-time-capsule/s3head-prod-meta-hmc-20260525T144434Z.json
+?? logs/montana-time-capsule/s3ls-prod-supersplat-bundle-hmc-20260525T144434Z.txt
+?? logs/montana-time-capsule/s3ls-staging-supersplat-bundle-hmc-20260525T144434Z.txt
+?? logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T144434Z.json
+?? logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T144434Z.json
+?? logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T144434Z.json
+?? logs/montana-time-capsule/sm-list-processing-inprogress-20260525T144434Z.json
+?? logs/montana-time-capsule/sm-list-training-inprogress-20260525T144434Z.json
+---
+On branch agent-40136728-montana-time-capsule
+Your branch is up to date with 'origin/agent-40136728-montana-time-capsule'.
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T144434Z.json
+	logs/montana-time-capsule/aws-version-20260525T144434Z.txt
+	logs/montana-time-capsule/curlI-prod-meta-hmc-20260525T144434Z.headers
+	logs/montana-time-capsule/curlI-viewer-base-20260525T144434Z.headers
+	logs/montana-time-capsule/curlI-viewer-nosky-20260525T144434Z.headers
+	logs/montana-time-capsule/curlI-viewer-sky-20260525T144434Z.headers
+	logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T144434Z.json
+	logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T144456Z.json
+	logs/montana-time-capsule/gh-run-list-exact-head-cf025c99-20260525T144456Z.json
+	logs/montana-time-capsule/git-branch-20260525T144456Z.txt
+	logs/montana-time-capsule/git-head-20260525T144456Z.txt
+	logs/montana-time-capsule/git-head-detail-20260525T144434Z.txt
+	logs/montana-time-capsule/git-head-detail-20260525T144456Z.txt
+	logs/montana-time-capsule/git-head-detail-20260525T144510Z.txt
+	logs/montana-time-capsule/git-log1-20260525T144456Z.txt
+	logs/montana-time-capsule/git-status-20260525T144434Z.txt
+	logs/montana-time-capsule/git-status-20260525T144456Z.txt
+	logs/montana-time-capsule/git-status-20260525T144510Z.txt
+	logs/montana-time-capsule/s3head-prod-meta-hmc-20260525T144434Z.json
+	logs/montana-time-capsule/s3ls-prod-supersplat-bundle-hmc-20260525T144434Z.txt
+	logs/montana-time-capsule/s3ls-staging-supersplat-bundle-hmc-20260525T144434Z.txt
+	logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T144434Z.json
+	logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T144434Z.json
+	logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T144434Z.json
+	logs/montana-time-capsule/sm-list-processing-inprogress-20260525T144434Z.json
+	logs/montana-time-capsule/sm-list-training-inprogress-20260525T144434Z.json
+
+nothing added to commit but untracked files present (use "git add" to track)
