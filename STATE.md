@@ -1,5 +1,5 @@
 reason: Montana time capsule monitor (SfM -> 3DGS -> compress -> viewer gates)
-last_step: 2026-05-25T13:29:56Z HMC canonical run re-verified terminal (SfM/3DGS/compression Completed); SageMaker InProgress=0/0; prod meta HTTP 200; hosted viewer reachability verified via ?bundle=... skybox on/off; latest successful Pages+CDK runs green (head 963518c4); evidence stamps 20260525T132716Z + 20260525T132956Z recorded in logs/montana-time-capsule/.
+last_step: 2026-05-25T17:45:42Z HMC canonical run re-verified terminal (SfM/3DGS/compression Completed); SageMaker InProgress=0/0; S3 outputs present (staging+prod); prod meta HTTP 200; hosted preview viewer base/sky/no-sky HTTP 200; GH branch+exact-head snapshots captured (head is [skip ci]); evidence stamp 20260525T174542Z recorded in logs/montana-time-capsule/.
 next_unblocked_step: no compute to launch; optional deeper viewer QA (camera/sky artifacts + input-vs-render checks) before PR/closeout; otherwise idle monitor.
 [2026-05-22T15:36:42Z] heartbeat -> terminal reconfirmed (no spend) -> idle
 [2026-05-22T15:37:51Z] heartbeat -> fresh reconfirmed (no spend) -> commit+push evidence
@@ -33,3 +33,4 @@ next_unblocked_step: no compute to launch; optional deeper viewer QA (camera/sky
 [2026-05-25T07:13:27Z] postpush -> recorded gh runs for new head (ef1d4f2c7d61a3f50c87681215a38ab5183e73b5); exact-head expected 0 ([skip ci]) -> idle
 [2026-05-25T13:06:54Z] heartbeat -> friday-mtc terminal reconfirm (no spend); InProgress=0/0; S3 present; exact-head GH snapshot -> commit/push ledger
 [2026-05-25T13:29:56Z] heartbeat -> hmc-mtc terminal reconfirm (no spend); InProgress=0/0; public meta HTTP200; hosted viewer bundle URLs HTTP200; latest Pages+CDK green -> commit/push ledger
+[2026-05-25T17:45:42Z] heartbeat -> hmc-mtc terminal reconfirm (no spend); InProgress=0/0; S3 present; prod meta+viewer HTTP200; gh branch+exact-head snapshots -> next: idle
