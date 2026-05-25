@@ -12330,3 +12330,16 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
 - Evidence stamp: 20260525T065125Z
   - GitHub Actions branch snapshot: logs/montana-time-capsule/gh-run-list-branch-postpush-20260525T065125Z.json
   - GitHub Actions exact-head snapshot: logs/montana-time-capsule/gh-run-list-exact-head-4c17b7bf-postpush-20260525T065125Z.json
+
+## 20260525T070619Z HEARTBEAT monitor (HMC canonical `hmc-mtc-20260520T2015Z`): terminal; no-spend; InProgress=0; public meta HTTP 200; hosted viewer base/sky/no-sky HTTP 200
+
+- Evidence stamp: 20260525T070512Z
+  - Git status/head: logs/montana-time-capsule/git-status-20260525T070419Z.txt + logs/montana-time-capsule/git-head-20260525T070419Z.txt + logs/montana-time-capsule/git-head-detail-20260525T070419Z.txt
+  - AWS identity/region/version: logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T070432Z.json + logs/montana-time-capsule/aws-config-region-20260525T070432Z.txt + logs/montana-time-capsule/aws-version-20260525T070432Z.txt
+  - InProgress guardrail (max-results=50): logs/montana-time-capsule/sm-list-processing-inprogress-20260525T070432Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T070432Z.json (counts: 0/0)
+  - Canonical HMC describes (all Completed): logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T070432Z.json + logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T070432Z.json + logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T070432Z.json
+  - S3 outputs: logs/montana-time-capsule/s3ls-staging-compressed-hmc-mtc-20260520T2015Z-20260525T070449Z.txt + logs/montana-time-capsule/s3ls-prod-compressed-hmc-mtc-20260520T2015Z-20260525T070449Z.txt
+  - Public meta reachability (HTTP HEAD 200): logs/montana-time-capsule/curlI-prod-meta-hmc-mtc-20260520T2015Z-20260525T070503Z.headers + logs/montana-time-capsule/s3head-prod-meta-hmc-mtc-20260520T2015Z-20260525T070449Z.json
+  - Hosted viewer HTTP HEAD 200: logs/montana-time-capsule/curlI-viewer-base-20260525T070503Z.headers + logs/montana-time-capsule/curlI-viewer-sky-20260525T070503Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-20260525T070503Z.headers
+  - GitHub Actions snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T070512Z.json + logs/montana-time-capsule/gh-run-list-exact-head-52163a1a-20260525T070512Z.json
+  - Summary JSON updated: logs/montana-time-capsule/hmc-state.json
