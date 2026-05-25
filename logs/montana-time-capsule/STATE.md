@@ -12323,3 +12323,10 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
   - GitHub Actions snapshots:
     - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260525T064502Z.json
     - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-e9f2b28e-20260525T064502Z.json (expected empty on [skip ci] head)
+
+## 2026-05-25T06:51:34Z postpush - refreshed branch + exact-head GitHub snapshots on current head (expected empty on [skip ci] head)
+
+- Git: agent-40136728-montana-time-capsule @ 4c17b7bf69204f6472d2049f7806b78c3c733d4c (chore: friday heartbeat 20260525T065125Z [skip ci])
+- Evidence stamp: 20260525T065125Z
+  - GitHub Actions branch snapshot: logs/montana-time-capsule/gh-run-list-branch-postpush-20260525T065125Z.json
+  - GitHub Actions exact-head snapshot: logs/montana-time-capsule/gh-run-list-exact-head-4c17b7bf-postpush-20260525T065125Z.json
