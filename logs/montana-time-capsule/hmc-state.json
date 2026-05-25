@@ -6,21 +6,21 @@
   },
   "evidence_stamp": "20260525T144510Z",
   "gh": {
-    "branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T144510Z.json",
-    "exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-cf025c99-20260525T144510Z.json"
+    "branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T144951Z.json",
+    "exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-301bdb2b-postpush-20260525T144951Z.json"
   },
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "git_head_detail": "logs/montana-time-capsule/git-head-detail-20260525T144510Z.txt",
-    "git_status": "logs/montana-time-capsule/git-status-20260525T144510Z.txt",
-    "head": "cf025c99"
+    "git_head_detail": "logs/montana-time-capsule/git-head-detail-20260525T144951Z.txt",
+    "git_status": "logs/montana-time-capsule/git-status-20260525T144951Z.txt",
+    "head": "301bdb2b"
   },
   "postpush": {
-    "gh_branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T143123Z.json",
-    "gh_exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-c50c508c-postpush-20260525T143123Z.json",
-    "head_short": "c50c508c",
-    "stamp": "20260525T143123Z",
-    "updated_at": "20260525T143123Z"
+    "gh_branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T144951Z.json",
+    "gh_exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-301bdb2b-postpush-20260525T144951Z.json",
+    "head_short": "301bdb2b",
+    "stamp": "20260525T144951Z",
+    "updated_at": "20260525T144951Z"
   },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
@@ -51,7 +51,7 @@
     "inprogress_training": "logs/montana-time-capsule/sm-list-training-inprogress-20260525T144510Z.json",
     "sfm_status": "Completed"
   },
-  "updated_at": "20260525T144510Z",
+  "updated_at": "20260525T144951Z",
   "viewer": {
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
     "screenshot_dir": "logs/montana-time-capsule/screenshots-20260525T143209Z",

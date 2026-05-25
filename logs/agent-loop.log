@@ -578,3 +578,4 @@
 [20260525T144637Z] heartbeat -> friday-mtc-20260524T0001Z terminal (sfm/3dgs/compression Completed; inprogress 0/0) -> next: idle monitor
 [2026-05-25T14:47:23Z] heartbeat evidence 20260525T144510Z -> no-spend checks ok (viewer+meta 200, SM idle) -> next: wait / acceptance review
 [2026-05-25T14:48:55Z] postpush gh snapshot 20260525T144824Z -> exact-head workflows 0 (skip ci) -> next: wait
+[2026-05-25T14:49:53Z] postpush gh snapshot 20260525T144951Z -> exact-head workflows 0 (skip ci) -> next: wait
