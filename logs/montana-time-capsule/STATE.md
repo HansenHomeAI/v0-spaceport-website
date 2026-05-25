@@ -12,6 +12,8 @@
   - GitHub Actions snapshots (`/opt/homebrew/bin/gh`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T110516Z.json + logs/montana-time-capsule/gh-run-list-exact-head-d24ccda6-20260525T110807Z.json
   - Summary JSON refreshed: logs/montana-time-capsule/hmc-state.json
 
+- Postpush GH snapshot (head `ae5cce95` is `[skip ci]` so exact-head runs may be empty): logs/montana-time-capsule/git-head-postpush-20260525T110958Z.txt + logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T110958Z.json + logs/montana-time-capsule/gh-run-list-exact-head-ae5cce95-postpush-20260525T110958Z.json
+
 ## 2026-05-25T10:48:53Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: verified terminal SageMaker (SfM/3DGS/compression Completed); InProgress=0; S3 outputs present; public meta HTTP 200; hosted viewer sky/no-sky HTTP 200; exact-head GH runs empty (expected on `[skip ci]` head)
 
 - Evidence stamp: 20260525T104420Z (git/GH refreshed at 20260525T104853Z)
