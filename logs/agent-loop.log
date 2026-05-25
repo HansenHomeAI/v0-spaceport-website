@@ -524,3 +524,4 @@
 [2026-05-25T09:26:33Z] heartbeat -> friday canonical terminal (SfM/3DGS/compression Completed; InProgress 0/0) -> commit+push ledger
 [20260525T092436Z] heartbeat -> verified AWS terminal + S3/meta/viewer 200 + GH exact-head empty ([skip ci]) -> commit+push ledger
 [2026-05-25T09:46:21Z] heartbeat(hmc-mtc-20260520T2015Z) -> all gates passing (InProgress=0, meta/viewer 200) -> commit+push ledger
+[2026-05-25T09:46:55Z] postpush gh snapshot -> exact-head expected empty ([skip ci]) -> commit+push ledger
