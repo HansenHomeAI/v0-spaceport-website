@@ -555,3 +555,5 @@
 [2026-05-25T12:54:57Z] postpush gh snapshot head=7253161e -> recorded (exact-head runs expected 0 for [skip ci])
 [2026-05-25T13:06:54Z] heartbeat -> friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z terminal; inprogress=0; S3 outputs present; exact-head snapshot captured -> commit/push ledger
 [2026-05-25T13:09:25Z] postpush gh snapshot head=346568dd -> recorded (exact-head runs expected 0 for [skip ci])
+[2026-05-25T13:11:06Z] postpush gh snapshot head=d8eaf2bc -> recorded (exact-head runs expected 0 for [skip ci])
+[2026-05-25T13:09:39Z] hmc heartbeat -> terminal verified (inprogress=0; s3 present; public meta + viewer base/sky/nosky http200; exact-head=0 expected for [skip ci]) -> commit/push ledger

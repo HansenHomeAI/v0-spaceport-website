@@ -12980,14 +12980,22 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
   - Exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-346568ddc9b45562eadf02cad52e9beee5289ca4-postpush-20260525T130925Z.json (expected 0 for skip-ci head)
   - Last successful CI on this branch (for non-skip-ci head 963518c4…): CDK Deploy run 26401435610 + Cloudflare Pages run 26401435613 (both `success` in branch snapshot above)
 
-## 2026-05-25T13:07:11Z HEARTBEAT monitor - HMC Montana time capsule canonical `hmc-mtc-20260520T2015Z`: still terminal (SfM/3DGS/compression Completed); SageMaker InProgress=0; compressed supersplat bundle present; public meta HTTP 200; hosted viewer base/sky/nosky HTTP 200; no new jobs launched
+### Post-push GitHub Actions check 20260525T131106Z
 
-- Evidence stamp: 20260525T130711Z
+- Git: agent-40136728-montana-time-capsule @ d8eaf2bc5de3f10e31ff8e1779982be8a5354d52 (`chore: record postpush gh snapshot 20260525T1309Z [skip ci]`)
+- Evidence:
+  - Branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T131106Z.json
+  - Exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-d8eaf2bc5de3f10e31ff8e1779982be8a5354d52-postpush-20260525T131106Z.json (expected 0 for skip-ci head)
+  - Last successful CI on this branch (for non-skip-ci head 963518c4…): CDK Deploy run 26401435610 + Cloudflare Pages run 26401435613 (both `success` in branch snapshot above)
+
+## 2026-05-25T13:09:39Z HEARTBEAT monitor - HMC Montana time capsule canonical `hmc-mtc-20260520T2015Z`: still terminal (SfM/3DGS/compression Completed); SageMaker InProgress=0; compressed supersplat bundle present; public meta HTTP 200; hosted viewer base/sky/nosky HTTP 200; no new jobs launched
+
+- Evidence stamp: 20260525T130939Z
   - Summary JSON refreshed: logs/montana-time-capsule/hmc-state.json
-  - Git head/status: logs/montana-time-capsule/git-head-detail-20260525T130711Z.txt + logs/montana-time-capsule/git-status-20260525T130711Z.txt
-  - AWS identity/region/version: logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T130711Z.json + logs/montana-time-capsule/aws-region-20260525T130711Z.txt + logs/montana-time-capsule/aws-version-20260525T130711Z.txt
-  - SageMaker describes (all Completed): logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T130711Z.json + logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T130711Z.json + logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T130711Z.json
-  - SageMaker InProgress lists: logs/montana-time-capsule/sm-list-processing-inprogress-20260525T130711Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T130711Z.json
-  - S3 listings + prod meta head: logs/montana-time-capsule/s3ls-staging-supersplat-bundle-hmc-20260525T130711Z.txt + logs/montana-time-capsule/s3ls-prod-supersplat-bundle-hmc-20260525T130711Z.txt + logs/montana-time-capsule/s3head-prod-meta-hmc-mtc-20260520T2015Z-20260525T130711Z.json
-  - Public meta + hosted viewer reachability (HTTP HEAD 200): logs/montana-time-capsule/curlI-prod-meta-hmc-20260525T130711Z.headers + logs/montana-time-capsule/curlI-viewer-default-20260525T130711Z.headers + logs/montana-time-capsule/curlI-viewer-sky-20260525T130711Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-20260525T130711Z.headers
-  - GitHub Actions branch + exact-head snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T130711Z.json + logs/montana-time-capsule/gh-run-list-exact-head-b118301c-20260525T130711Z.json (expected empty for `[skip ci]` head)
+  - Git head/status: logs/montana-time-capsule/git-head-detail-20260525T130939Z.txt + logs/montana-time-capsule/git-status-20260525T130939Z.txt
+  - AWS identity/region/version: logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T130939Z.json + logs/montana-time-capsule/aws-region-20260525T130939Z.txt + logs/montana-time-capsule/aws-version-20260525T130939Z.txt
+  - SageMaker describes (all Completed): logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T130939Z.json + logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T130939Z.json + logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T130939Z.json
+  - SageMaker InProgress lists: logs/montana-time-capsule/sm-list-processing-inprogress-20260525T130939Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T130939Z.json
+  - S3 listings + prod meta head: logs/montana-time-capsule/s3ls-staging-supersplat-bundle-hmc-20260525T130939Z.txt + logs/montana-time-capsule/s3ls-prod-supersplat-bundle-hmc-20260525T130939Z.txt + logs/montana-time-capsule/s3head-prod-meta-hmc-mtc-20260520T2015Z-20260525T130939Z.json
+  - Public meta + hosted viewer reachability (HTTP HEAD 200): logs/montana-time-capsule/curlI-prod-meta-hmc-20260525T130939Z.headers + logs/montana-time-capsule/curlI-viewer-default-20260525T130939Z.headers + logs/montana-time-capsule/curlI-viewer-sky-20260525T130939Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-20260525T130939Z.headers
+  - GitHub Actions branch + exact-head snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T130939Z.json + logs/montana-time-capsule/gh-run-list-exact-head-b118301c-20260525T130939Z.json (expected empty for `[skip ci]` head)
