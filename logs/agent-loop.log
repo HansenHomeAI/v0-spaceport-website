@@ -488,3 +488,4 @@
 [2026-05-25T04:07:24Z] heartbeat-friday -> terminal (0 inprogress); public meta 200 -> next: idle monitor
 [2026-05-25T04:07:58Z] tooling-proof -> recorded gh auth/version -> next: idle monitor
 [2026-05-25T04:24:08Z] heartbeat-hmc -> terminal (0 inprogress); viewer base/sky/nosky 200; public meta 404 persists; elevation 404; gh exact-head 0 ([skip ci]) -> next: commit+push ledger
+[2026-05-25T04:26:49Z] postpush-gh-snapshot -> branch/exact-head snapshots captured on 3bf23964 -> next: idle monitor

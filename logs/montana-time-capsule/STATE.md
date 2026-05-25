@@ -25,6 +25,14 @@
     - exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-74ce9bb6-20260525T042408Z.json
   - State snapshot refreshed: logs/montana-time-capsule/hmc-state.json
 
+## 2026-05-25T04:26:49Z postpush - refreshed branch + exact-head GitHub snapshots on current head (expected empty on `[skip ci]` head)
+
+- Git: agent-40136728-montana-time-capsule @ 3bf23964c51908d0a53d6a45f7ed67a480bdb39c (`chore: heartbeat hmc state 20260525T042408Z [skip ci]`)
+- Evidence stamp: 20260525T042649Z
+  - GitHub Actions branch snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T042649Z.json
+  - GitHub Actions exact-head snapshot: logs/montana-time-capsule/gh-run-list-exact-head-3bf23964-postpush-20260525T042649Z.json
+  - State snapshot refreshed: logs/montana-time-capsule/hmc-state.json
+
 ## 2026-05-25T04:04:21Z HEARTBEAT monitor (HMC canonical hmc-mtc-20260520T2015Z): no-spend re-verify; terminal SageMaker; InProgress=0; staging bundle present; public meta.json still 404; hosted viewer base/sky/no-sky HTTP 200; exact-head GH runs empty (expected on `[skip ci]` head); no duplicate jobs launched
 
 - Git: agent-40136728-montana-time-capsule @ 6c70a77c36ac38b60301cc5b5cc38a23d6068103
