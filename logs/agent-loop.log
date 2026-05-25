@@ -517,3 +517,4 @@
 [2026-05-25T08:26:04Z] heartbeat -> hmc-mtc-20260520T2015Z terminal; meta+viewer 200; inprogress 0 -> next: no-spend monitor
 [20260525T082713Z] friday heartbeat -> terminal (InProgress=0) -> next: no action; keep monitoring
 [20260525T082732Z] postpush-gh-snapshot -> recorded -> next: idle
+[2026-05-25T08:46:51Z] heartbeat 20260525T084442Z -> SageMaker terminal + S3/meta + viewer 200 -> update ledgers

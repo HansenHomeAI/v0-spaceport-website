@@ -12532,3 +12532,24 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
   - Git head: logs/montana-time-capsule/git-head-postpush-20260525T082732Z.txt
   - Branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T082732Z.json
   - Exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-07a0b6cd-postpush-20260525T082732Z.json (expected 0 for `[skip ci]` head)
+
+## 2026-05-25T08:44:42Z HEARTBEAT monitor (HMC canonical hmc-mtc-20260520T2015Z): no-spend re-verify; terminal SageMaker jobs (SfM/3DGS/compression Completed); InProgress=0; S3 staging+prod bundle present; public meta HTTP 200; hosted viewer base/sky/no-sky HEAD 200; exact-head GH runs empty (expected for [skip ci]); no duplicate jobs launched
+
+- Evidence stamp: 20260525T084442Z
+- Git: branch=agent-40136728-montana-time-capsule head=f8289ca8e37be75a9bbbc48ae4485579001bf36c
+- AWS (us-west-2):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T084442Z.json
+  - region: logs/montana-time-capsule/aws-config-region-20260525T084442Z.txt
+- SageMaker:
+  - InProgress: logs/montana-time-capsule/sm-list-processing-inprogress-20260525T084442Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T084442Z.json
+  - describes: logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T084442Z.json + logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T084442Z.json + logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T084442Z.json
+- S3 bundle outputs:
+  - staging listing: logs/montana-time-capsule/s3ls-staging-compressed-hmc-mtc-20260520T2015Z-20260525T084442Z.txt
+  - prod listing: logs/montana-time-capsule/s3ls-prod-compressed-hmc-mtc-20260520T2015Z-20260525T084442Z.txt
+  - prod meta head-object: logs/montana-time-capsule/s3head-prod-meta-hmc-mtc-20260520T2015Z-20260525T084442Z.json
+  - prod meta HTTP HEAD 200: logs/montana-time-capsule/curlI-prod-meta-hmc-mtc-20260520T2015Z-20260525T084442Z.headers
+- Hosted viewer HTTP HEAD 200:
+  - base: logs/montana-time-capsule/curlI-viewer-base-20260525T084442Z.headers
+  - sky: logs/montana-time-capsule/curlI-viewer-sky-20260525T084442Z.headers
+  - no-sky: logs/montana-time-capsule/curlI-viewer-nosky-20260525T084442Z.headers
+- GitHub Actions (exact head): logs/montana-time-capsule/gh-run-list-exact-head-f8289ca8-20260525T084442Z.json

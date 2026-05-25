@@ -1,0 +1,21 @@
+ M logs/montana-time-capsule/LAST_HEARTBEAT_STAMP.txt
+?? logs/montana-time-capsule/_heartbeat_ts_20260525T084502Z.txt
+?? logs/montana-time-capsule/aws-config-region-20260525T084427Z.txt
+?? logs/montana-time-capsule/aws-config-region-20260525T084442Z.txt
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T084427Z.json
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T084442Z.json
+?? logs/montana-time-capsule/aws-version-20260525T084427Z.txt
+?? logs/montana-time-capsule/aws-version-20260525T084442Z.txt
+?? logs/montana-time-capsule/git-branch-20260525T084502Z.txt
+?? logs/montana-time-capsule/git-head-20260525T084502Z.txt
+?? logs/montana-time-capsule/git-status-20260525T084502Z.txt
+?? logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T084427Z.json
+?? logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T084442Z.json
+?? logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T084427Z.json
+?? logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T084442Z.json
+?? logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T084427Z.json
+?? logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T084442Z.json
+?? logs/montana-time-capsule/sm-list-processing-inprogress-20260525T084427Z.json
+?? logs/montana-time-capsule/sm-list-processing-inprogress-20260525T084442Z.json
+?? logs/montana-time-capsule/sm-list-training-inprogress-20260525T084427Z.json
+?? logs/montana-time-capsule/sm-list-training-inprogress-20260525T084442Z.json

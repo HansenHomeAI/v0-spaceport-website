@@ -1,0 +1,4 @@
+OK tools=logs/montana-time-capsule/playwright-mcp-tools-20260525T084639Z.json
+OK sky=logs/montana-time-capsule/viewer-proof-friday-mtc-20260524T0001Z-sky-20260525T084639Z.png
+OK nosky=logs/montana-time-capsule/viewer-proof-friday-mtc-20260524T0001Z-nosky-20260525T084639Z.png
+OK console=logs/montana-time-capsule/viewer-proof-console-20260525T084639Z.txt
