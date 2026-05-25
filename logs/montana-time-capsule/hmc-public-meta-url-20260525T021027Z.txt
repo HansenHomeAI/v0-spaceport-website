@@ -1,0 +1,1 @@
+https://spaceport-ml-processing-public.s3.us-west-2.amazonaws.com/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json

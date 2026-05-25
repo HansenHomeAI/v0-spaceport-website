@@ -1,0 +1,3 @@
+branch=agent-40136728-montana-time-capsule
+head=ea709482e4ae5b3c7cb0855e92d257ea338fc9f6
+?? logs/montana-time-capsule/git-proof-20260525T021027Z.txt
