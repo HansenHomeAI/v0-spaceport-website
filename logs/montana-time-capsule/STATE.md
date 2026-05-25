@@ -1,5 +1,18 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-25T09:44:43Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: verified terminal SageMaker; InProgress=0; S3 prod meta HTTP 200; viewer base/sky/no-sky HTTP 200; branch GH runs show latest Pages+CDK green; exact-head runs empty (expected on `[skip ci]` head)
+
+- Evidence stamp: 20260525T094443Z
+  - Git proof: logs/montana-time-capsule/heartbeat-git-20260525T094443Z.txt
+  - AWS identity/region/version (`/opt/homebrew/bin/aws`; us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T094443Z.json + logs/montana-time-capsule/aws-config-region-20260525T094443Z.txt + logs/montana-time-capsule/aws-version-20260525T094443Z.txt
+  - InProgress guardrail (max-results=50): logs/montana-time-capsule/sm-list-processing-inprogress-20260525T094443Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T094443Z.json (counts: 0/0)
+  - Canonical describes (all Completed): logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T094443Z.json + logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T094443Z.json + logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T094443Z.json
+  - S3 outputs: logs/montana-time-capsule/s3ls-staging-compressed-hmc-mtc-20260520T2015Z-20260525T094443Z.txt + logs/montana-time-capsule/s3ls-prod-compressed-hmc-mtc-20260520T2015Z-20260525T094443Z.txt + logs/montana-time-capsule/s3head-prod-meta-hmc-mtc-20260520T2015Z-20260525T094443Z.json
+  - Public meta reachability (HTTP HEAD 200): logs/montana-time-capsule/curlI-prod-meta-hmc-mtc-20260520T2015Z-20260525T094443Z.headers
+  - Hosted viewer reachability (HTTP HEAD 200): logs/montana-time-capsule/curlI-viewer-default-20260525T094443Z.headers + logs/montana-time-capsule/curlI-viewer-sky-20260525T094443Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-20260525T094443Z.headers
+  - GitHub Actions snapshots (`/opt/homebrew/bin/gh`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T094443Z.json + logs/montana-time-capsule/gh-run-list-exact-head-ce5fd0c0-20260525T094443Z.json
+  - Summary JSON updated: logs/montana-time-capsule/hmc-state.json
+
 ## 2026-05-25T09:24:36Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: verified terminal SageMaker; InProgress=0; S3 prod meta HTTP 200; viewer base/sky/no-sky HTTP 200; exact-head GH runs empty (expected on `[skip ci]` head)
 
 - Evidence stamp: 20260525T092436Z
