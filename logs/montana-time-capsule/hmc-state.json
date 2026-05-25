@@ -24,17 +24,17 @@
   "note": "Heartbeat no-spend verification at 20260525T234614Z",
   "postpush": {
     "branch": "agent-40136728-montana-time-capsule",
-    "gh_branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T232801Z.json",
-    "gh_exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-6772d986-postpush-20260525T232801Z.json",
-    "gh_run_list_branch_postpush": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T232801Z.json",
-    "gh_run_list_exact_head_postpush": "logs/montana-time-capsule/gh-run-list-exact-head-6772d986-postpush-20260525T232801Z.json",
-    "gh_version_postpush": "logs/montana-time-capsule/gh-version-postpush-20260525T232801Z.txt",
-    "git_head_postpush": "logs/montana-time-capsule/git-head-postpush-20260525T232801Z.txt",
-    "head": "6772d986b1d450e28a9b600d5c0ceb378da35c56",
-    "head_short": "6772d986",
-    "stamp": "20260525T232801Z"
+    "gh_branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T234904Z.json",
+    "gh_exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-c8998eb4-postpush-20260525T234904Z.json",
+    "gh_run_list_branch_postpush": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T234904Z.json",
+    "gh_run_list_exact_head_postpush": "logs/montana-time-capsule/gh-run-list-exact-head-c8998eb4-postpush-20260525T234904Z.json",
+    "gh_version_postpush": "logs/montana-time-capsule/gh-version-postpush-20260525T234904Z.txt",
+    "git_head_postpush": "logs/montana-time-capsule/git-head-postpush-20260525T234904Z.txt",
+    "head": "c8998eb46bcde7a2f860b9b35e4333b14ed2d45d",
+    "head_short": "c8998eb4",
+    "stamp": "20260525T234904Z"
   },
-  "postpush_updated_at": "20260525T232801Z",
+  "postpush_updated_at": "20260525T234904Z",
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
     "compressed_prefix": "s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/",
