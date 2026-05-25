@@ -616,3 +616,4 @@
 [2026-05-25T18:46:44Z] heartbeat(hmc-mtc-20260520T2015Z) -> verified terminal + S3/meta/viewer HTTP200 (stamp=20260525T184425Z); inprogress 0/0 -> next: idle
 [2026-05-25T18:47:17Z] postpush gh snapshot 20260525T184711Z (head=5503e0d7) -> exact-head workflows captured -> next: idle
 [2026-05-25T19:08:02Z] heartbeat evidence refresh -> ok (no-spend; HMC terminal) -> commit+push ledger
+[2026-05-25T19:09:04Z] postpush gh snapshot -> head bad0cd41 -> saved logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T190838Z.json
