@@ -538,3 +538,4 @@
 [2026-05-25T11:09:19Z] heartbeat-hmc -> terminal/inprogress=0 + s3+viewer http200 + gh exact-head empty ([skip ci]) -> next: wait
 [2026-05-25T11:24:51Z] heartbeat-hmc -> terminal/inprogress=0 + s3+viewer http200 + gh exact-head empty ([skip ci]) -> next: wait
 [2026-05-25T11:27:15Z] postpush gh snapshot head=19fe6bba -> recorded
+[2026-05-25T11:28:14Z] friday heartbeat -> terminal verified (SfM/3DGS/compression Completed; inprogress=0; http200) -> commit/push ledger

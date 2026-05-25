@@ -1,5 +1,17 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-25T11:27:25Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical `friday-mtc-20260524T0001Z`: still terminal (SfM/3DGS/compression Completed); InProgress=0; S3 outputs present; public meta + hosted viewer sky/no-sky HTTP 200; no new jobs launched (exact-head workflows empty on `[skip ci]` head)
+
+- Evidence stamp: 20260525T112526Z
+  - Git head/detail/status: logs/montana-time-capsule/git-head-20260525T112506Z.txt + logs/montana-time-capsule/git-head-detail-20260525T112506Z.txt + logs/montana-time-capsule/git-status-20260525T112506Z.txt
+  - AWS identity/region/version (`/opt/homebrew/bin/aws`; us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T112506Z.json + logs/montana-time-capsule/aws-config-region-20260525T112506Z.txt + logs/montana-time-capsule/aws-version-20260525T112506Z.txt
+  - InProgress guardrail (max-results=50): logs/montana-time-capsule/sm-list-processing-inprogress-20260525T112526Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T112526Z.json (counts: 0/0)
+  - Canonical Friday describes (all Completed): logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T112526Z.json + logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T112526Z.json + logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T112526Z.json
+  - S3 outputs: logs/montana-time-capsule/s3ls-input-zip-20260525T112526Z.txt + logs/montana-time-capsule/s3ls-colmap-friday-mtc-20260524T0001Z-20260525T112526Z.txt + logs/montana-time-capsule/s3ls-compressed-friday-mtc-20260524T0001Z-20260525T112526Z.txt + logs/montana-time-capsule/s3head-staging-colmap-database-friday-mtc-20260524T0001Z-20260525T112526Z.json + logs/montana-time-capsule/s3head-staging-compressed-meta-friday-mtc-20260524T0001Z-20260525T112526Z.json + logs/montana-time-capsule/s3head-public-compressed-meta-friday-mtc-20260524T0001Z-20260525T112526Z.json
+  - Public reachability (HTTP HEAD 200): logs/montana-time-capsule/curlI-friday-meta-public-20260525T112607Z.headers + logs/montana-time-capsule/curlI-friday-viewer-sky-20260525T112607Z.headers + logs/montana-time-capsule/curlI-friday-viewer-nosky-20260525T112607Z.headers
+  - GitHub Actions snapshots (`/opt/homebrew/bin/gh`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T112552Z.json + logs/montana-time-capsule/gh-run-list-exact-head-1c6d6642-20260525T112552Z.json
+  - Summary JSON refreshed: logs/montana-time-capsule/friday-20260522-state.json
+
 ## 2026-05-25T11:24:51Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: still terminal SageMaker (SfM/3DGS/compression Completed); InProgress=0; S3 outputs present; public meta HTTP 200; hosted viewer base/sky/no-sky HTTP 200; exact-head GH runs empty (expected on `[skip ci]` head `1c6d6642`)
 
 - Evidence stamp: 20260525T112451Z
