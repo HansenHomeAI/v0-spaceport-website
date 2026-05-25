@@ -12665,3 +12665,10 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
   - GitHub Actions snapshots (exact head empty expected on [skip ci]):
     - logs/montana-time-capsule/gh-run-list-exacthead-20260525T093022Z.json
     - logs/montana-time-capsule/gh-run-list-branch-20260525T093022Z.json
+
+### Post-push GitHub Actions check 20260525T093236Z
+
+- Git: agent-40136728-montana-time-capsule @ 356634a6ead28853de72a55d8bb7e57088b2f922 (356634a6 chore: friday heartbeat verify 20260525T0930Z [skip ci])
+- Evidence:
+  - Branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T093236Z.json
+  - Exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-356634a6-postpush-20260525T093236Z.json (expected 0 for skip-ci head)
