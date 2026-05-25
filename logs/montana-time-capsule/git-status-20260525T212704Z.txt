@@ -1,0 +1,4 @@
+?? logs/montana-time-capsule/git-branch-20260525T212704Z.txt
+?? logs/montana-time-capsule/git-head-20260525T212704Z.txt
+?? logs/montana-time-capsule/git-head-detail-20260525T212704Z.txt
+?? logs/montana-time-capsule/git-status-20260525T212704Z.txt
