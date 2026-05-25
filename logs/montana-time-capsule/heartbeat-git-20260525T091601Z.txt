@@ -1,0 +1,11 @@
+# git branch
+agent-40136728-montana-time-capsule
+# git head
+5ddfbc63db1313774f7c29ec497418d2b0dba4f8
+# git status
+?? logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T091512Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-6d6fc712-postpush-20260525T091512Z.json
+?? logs/montana-time-capsule/gh-summary-postpush-20260525T091512Z.txt
+?? logs/montana-time-capsule/heartbeat-git-20260525T091601Z.txt
+# git log -1
+5ddfbc63 (HEAD -> agent-40136728-montana-time-capsule, origin/agent-40136728-montana-time-capsule) chore: record postpush gh snapshot 20260525T0915Z [skip ci]
