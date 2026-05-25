@@ -559,3 +559,4 @@
 [2026-05-25T13:09:39Z] hmc heartbeat -> terminal verified (inprogress=0; s3 present; public meta + viewer base/sky/nosky http200; exact-head=0 expected for [skip ci]) -> commit/push ledger
 
 [2026-05-25T13:13:05Z] hmc heartbeat -> terminal verified (inprogress=0; s3 present; public meta + viewer base/sky/nosky http200; exact-head=0 expected for [skip ci]) -> commit/push ledger
+[2026-05-25T13:15:12Z] postpush gh snapshot head=214116c7 -> recorded (exact-head runs expected 0 for [skip ci])

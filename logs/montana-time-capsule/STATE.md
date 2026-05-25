@@ -12999,3 +12999,10 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
   - S3 listings + prod meta head: logs/montana-time-capsule/s3ls-staging-supersplat-bundle-hmc-20260525T131305Z.txt + logs/montana-time-capsule/s3ls-prod-supersplat-bundle-hmc-20260525T131305Z.txt + logs/montana-time-capsule/s3head-prod-meta-hmc-mtc-20260520T2015Z-20260525T131305Z.json
   - Public meta + hosted viewer reachability (HTTP HEAD 200): logs/montana-time-capsule/curlI-prod-meta-hmc-20260525T131305Z.headers + logs/montana-time-capsule/curlI-viewer-default-20260525T131305Z.headers + logs/montana-time-capsule/curlI-viewer-sky-20260525T131305Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-20260525T131305Z.headers
   - GitHub Actions branch + exact-head snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T131305Z.json + logs/montana-time-capsule/gh-run-list-exact-head-b118301c-20260525T131305Z.json (expected empty for `[skip ci]` head)
+
+### Post-push GitHub Actions check 20260525T131512Z
+
+- Git: agent-40136728-montana-time-capsule @ 214116c7 (214116c7 chore: HMC heartbeat evidence 20260525T131305Z [skip ci])
+- Evidence:
+  - Branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T131512Z.json
+  - Exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-214116c7-postpush-20260525T131512Z.json (expected 0 for skip-ci head)
