@@ -1,0 +1,5 @@
+completed	success	chore: record CDK green 611bf180	CDK Deploy	agent-40136728-montana-time-capsule	push	26362748385	4m30s	2026-05-24T13:36:39Z
+completed	success	chore: friday mtc completion proof 20260524T1327Z	CDK Deploy	agent-40136728-montana-time-capsule	push	26362596297	4m18s	2026-05-24T13:31:14Z
+completed	cancelled	chore: record friday mtc preview url 20260524	CDK Deploy	agent-40136728-montana-time-capsule	push	26362527773	54s	2026-05-24T13:30:25Z
+completed	success	chore: trigger Pages preview 20260524T131327Z	CDK Deploy	agent-40136728-montana-time-capsule	push	26362313634	4m27s	2026-05-24T13:17:03Z
+completed	success	chore: trigger Pages preview 20260524T131327Z	Deploy Next.js to Cloudflare Pages	agent-40136728-montana-time-capsule	push	26362313633	8m50s	2026-05-24T13:17:03Z

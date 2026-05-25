@@ -1,0 +1,21 @@
+{
+    "ProcessingJobSummaries": [
+        {
+            "ProcessingJobName": "friday-mtc-20260524T0001Z-compression",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/friday-mtc-20260524T0001Z-compression",
+            "CreationTime": "2026-05-24T07:07:23.510000-06:00",
+            "ProcessingEndTime": "2026-05-24T07:14:56.355000-06:00",
+            "LastModifiedTime": "2026-05-24T07:17:25.335000-06:00",
+            "ProcessingJobStatus": "Completed"
+        },
+        {
+            "ProcessingJobName": "friday-mtc-20260524T0001Z-sfm",
+            "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/friday-mtc-20260524T0001Z-sfm",
+            "CreationTime": "2026-05-23T18:03:05.148000-06:00",
+            "ProcessingEndTime": "2026-05-24T02:33:44.726000-06:00",
+            "LastModifiedTime": "2026-05-24T03:03:21.631000-06:00",
+            "ProcessingJobStatus": "Completed"
+        }
+    ],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTRGCBLNKUVSVxIu5oUBdDotAtaJLC+wBFm7pWR98Uv83L3qIwLQKRhWE0Cxm93c6jp3K017vRME6Hv2BBAIVIsj/fvgk6fCyi1HlqhYFqE4zA6X8DCYgpba8zgm8HLNqk2ByI6u2trx6euUYChY3wbD7AP/ztvoPBWxSxhGNfxUpBjjY/yEhTsl6y3AVuaQmMMrPVHo0jAhy3/ouirmTD9C4GTLuQh19qm8TTVtwb1Vuqymz1qVzNp0AHR9uL+56Za+2C2t0xx5yiIXN2bEdWP761b8NGxsFdVFTNKqo8RZA/7mjkWSFvntQIsrK2D33aQy+czhC3+14u1JfTTFM2PmfUXECOWI9hO+V3J/v35oCIRR4SBNEeQfU3eNW5mJ61BqWVmmauluOqRNK2Dc5j2DDTSx8d9Kfn7YUESCkKtWmYGYABw2wTmDddP3AG3xxa9/Z1s8YHre57NWi9LvaU6awFoh7Ve0PuETZbqTAnBiETWCb1efnOachsGAKNJt1nHTwJkuQN4WQ="
+}
