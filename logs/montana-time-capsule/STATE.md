@@ -1,5 +1,11 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-25T02:26:50Z postpush - refreshed exact-head GitHub snapshot on current head (expected empty on `[skip ci]` head)
+
+- Git: agent-40136728-montana-time-capsule @ ddd66717f88d9294a235ccab26d4e1dd85cec65a
+- Evidence stamp: 20260525T022650Z
+  - GitHub Actions exact-head snapshot: logs/montana-time-capsule/gh-run-list-exact-head-ddd66717-20260525T022650Z.json
+
 ## 2026-05-25T02:25:04Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: prompt said SfM InProgress, but canonical is terminal (SfM/3DGS/compression Completed); InProgress=0; S3 outputs present; exact-head GH runs empty (expected for `[skip ci]`); no duplicate jobs launched
 
 - Git: agent-40136728-montana-time-capsule @ fb68ca79be68a54788b0229a8a148c8e4ac37ceb (`chore: postpush gh snapshot 20260525T021404Z [skip ci]`)
