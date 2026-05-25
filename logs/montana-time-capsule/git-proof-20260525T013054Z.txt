@@ -1,0 +1,6 @@
+stamp=20260525T013054Z
+pwd=/Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule
+branch=agent-40136728-montana-time-capsule
+head=7a38e359fd12faaef0f366e18cd67e24ae07f497
+status_porcelain:
+?? logs/montana-time-capsule/git-proof-20260525T013054Z.txt

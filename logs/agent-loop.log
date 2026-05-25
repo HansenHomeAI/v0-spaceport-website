@@ -469,3 +469,4 @@
 [2026-05-25T01:08:37Z] postpush gh -> exact-head runs 0 ([skip ci]); state refreshed -> next: idle monitor
 [2026-05-25T01:27:46Z] friday heartbeat -> verified terminal (sfm/3dgs/compression completed; meta+viewer 200; gh exact-head empty on skip-ci) -> next: commit/push logs
 [2026-05-25T01:28:36Z] postpush gh -> exact-head runs 0 ([skip ci]) -> next: commit/push
+[2026-05-25T01:32:50Z] heartbeat-hmc -> ok (public meta 404; viewer base/sky/nosky ok) -> idle
