@@ -1,0 +1,58 @@
+{
+    "ProcessingInputs": [
+        {
+            "InputName": "gaussian-model",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/3dgs/friday-mtc-20260524T0001Z/friday-mtc-20260524T0001Z-3dgs/output/model.tar.gz",
+                "LocalPath": "/opt/ml/processing/input",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated",
+                "S3CompressionType": "None"
+            }
+        }
+    ],
+    "ProcessingOutputConfig": {
+        "Outputs": [
+            {
+                "OutputName": "compressed-model",
+                "S3Output": {
+                    "S3Uri": "s3://spaceport-ml-processing-staging/compressed/friday-mtc-20260524T0001Z/",
+                    "LocalPath": "/opt/ml/processing/output",
+                    "S3UploadMode": "EndOfJob"
+                },
+                "AppManaged": false
+            }
+        ]
+    },
+    "ProcessingJobName": "friday-mtc-20260524T0001Z-compression",
+    "ProcessingResources": {
+        "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 50
+        }
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 86400
+    },
+    "AppSpecification": {
+        "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab",
+        "ContainerEntrypoint": [
+            "python3",
+            "compress.py"
+        ]
+    },
+    "Environment": {
+        "AWS_DEFAULT_REGION": "us-west-2",
+        "PYTHONUNBUFFERED": "1"
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/friday-mtc-20260524T0001Z-compression",
+    "ProcessingJobStatus": "Completed",
+    "ProcessingEndTime": "2026-05-24T07:14:56.355000-06:00",
+    "ProcessingStartTime": "2026-05-24T07:08:01.169000-06:00",
+    "LastModifiedTime": "2026-05-24T07:17:25.335000-06:00",
+    "CreationTime": "2026-05-24T07:07:23.510000-06:00"
+}
