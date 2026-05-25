@@ -1,0 +1,4 @@
+agent-40136728-montana-time-capsule
+f46f5305c2d68237b5fdd070c470ce016e203fc6
+?? logs/montana-time-capsule/git-proof-postpush-20260525T051052Z.txt
+f46f5305 chore: postpush gh snapshot 20260525T050952Z [skip ci]
