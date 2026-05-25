@@ -628,3 +628,4 @@
 [2026-05-25T22:05:49Z] heartbeat -> hmc canonical no-spend evidence 20260525T220549Z -> next: update STATE.md + commit/push
 [2026-05-25T22:48:59Z] heartbeat hmc-mtc-20260520T2015Z -> verified terminal + viewer/meta HTTP 200 -> next: wait for new acceptance gate
 [2026-05-25T23:10:20Z] montana-time-capsule heartbeat -> hmc canonical verified (git/aws/sm/s3/meta/viewer) head 32b249d6; exact-head GH empty (skip ci) -> next: commit+push ledger
+[2026-05-25T23:11:58Z] postpush gh snapshot -> head 7da49a88 -> saved logs/montana-time-capsule/gh-run-list-exact-head-7da49a88-postpush-20260525T231127Z.json
