@@ -579,3 +579,5 @@
 [2026-05-25T14:47:23Z] heartbeat evidence 20260525T144510Z -> no-spend checks ok (viewer+meta 200, SM idle) -> next: wait / acceptance review
 [2026-05-25T14:48:55Z] postpush gh snapshot 20260525T144824Z -> exact-head workflows 0 (skip ci) -> next: wait
 [2026-05-25T14:49:53Z] postpush gh snapshot 20260525T144951Z -> exact-head workflows 0 (skip ci) -> next: wait
+[2026-05-25T15:07:12Z] friday heartbeat 20260525T150526Z -> terminal confirmed -> next: idle
+[2026-05-25T15:07:43Z] heartbeat(hmc-mtc-20260520T2015Z) -> terminal confirmed + viewer/meta 200 + inprogress=0 -> commit+push ledger
