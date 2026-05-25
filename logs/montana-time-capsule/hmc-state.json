@@ -24,17 +24,17 @@
   "note": "Heartbeat no-spend verification at 2026-05-25T22:45:56Z",
   "postpush": {
     "branch": "agent-40136728-montana-time-capsule",
-    "gh_branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T214529Z.json",
-    "gh_exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-762c77dd-20260525T214529Z.json",
-    "gh_run_list_branch_postpush": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T222943Z.json",
-    "gh_run_list_exact_head_postpush": "logs/montana-time-capsule/gh-run-list-exact-head-76287b54-postpush-20260525T222943Z.json",
-    "gh_version_postpush": "logs/montana-time-capsule/gh-version-postpush-20260525T222943Z.txt",
-    "git_head_postpush": "logs/montana-time-capsule/git-head-postpush-20260525T222943Z.txt",
-    "head": "76287b540eeb54dba8bd512b23a4b6bd654ea06b",
-    "head_short": "76287b54",
-    "stamp": "20260525T222943Z"
+    "gh_branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T224932Z.json",
+    "gh_exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-28911cd9-postpush-20260525T224932Z.json",
+    "gh_run_list_branch_postpush": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T224932Z.json",
+    "gh_run_list_exact_head_postpush": "logs/montana-time-capsule/gh-run-list-exact-head-28911cd9-postpush-20260525T224932Z.json",
+    "gh_version_postpush": "logs/montana-time-capsule/gh-version-postpush-20260525T224932Z.txt",
+    "git_head_postpush": "logs/montana-time-capsule/git-head-postpush-20260525T224932Z.txt",
+    "head": "28911cd9e51342e63e50e6a950880ee304131af5",
+    "head_short": "28911cd9",
+    "stamp": "20260525T224932Z"
   },
-  "postpush_updated_at": "20260525T222943Z",
+  "postpush_updated_at": "20260525T224932Z",
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
     "compressed_prefix": "s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/",
