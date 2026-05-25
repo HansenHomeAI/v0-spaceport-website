@@ -592,3 +592,5 @@
 [2026-05-25T15:48:22Z] postpush gh snapshot 20260525T154820Z (head=454bd0fc) -> exact-head workflows captured -> next: idle
 [2026-05-25T15:45:29Z] friday heartbeat -> terminal (sfm/3dgs/compression Completed; inprogress=0; compressed meta 200; viewer sky/no-sky 200); public/ copy missing (404/403) -> next: idle
 [2026-05-25T15:51:37Z] postpush gh snapshot 20260525T155137Z -> exact-head workflows 0 (skip ci) -> next: idle
+[2026-05-25T16:07:08Z] friday heartbeat -> terminal (sfm/3dgs/compression Completed; inprogress=0; s3 outputs ok; public meta 200; viewer sky/no-sky 200); exact-head gh runs 0 (skip ci) -> next: idle
+[2026-05-25T16:07:39Z] heartbeat-hmc -> verified terminal + viewer/meta 200; GH snapshot; no spend -> commit/push evidence
