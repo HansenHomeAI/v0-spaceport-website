@@ -625,3 +625,4 @@
 [2026-05-25T21:27:04Z] montana-time-capsule heartbeat -> hmc-mtc-20260520T2015Z terminal + viewer/meta HTTP 200 + InProgress 0/0 -> idle
 [2026-05-25T21:29:49Z] postpush gh snapshot -> head 0cc3ed66 -> saved logs/montana-time-capsule/gh-run-list-exact-head-0cc3ed66-postpush-20260525T212947Z.json
 [2026-05-25T21:47:32Z] heartbeat -> ok (git/aws/sm/s3/meta/viewer/gh) -> commit+push ledger
+[2026-05-25T22:05:49Z] heartbeat -> hmc canonical no-spend evidence 20260525T220549Z -> next: update STATE.md + commit/push
