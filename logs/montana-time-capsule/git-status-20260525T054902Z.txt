@@ -1,0 +1,6 @@
+## agent-40136728-montana-time-capsule...origin/agent-40136728-montana-time-capsule
+ M logs/montana-time-capsule/agent-loop.log
+?? logs/montana-time-capsule/curlI-prod-meta-hmc-mtc-20260520T2015Z-postcopy-20260525T054801Z.headers
+?? logs/montana-time-capsule/git-status-20260525T054902Z.txt
+?? logs/montana-time-capsule/s3head-prod-meta-hmc-mtc-20260520T2015Z-postcopy-20260525T054801Z.json
+?? logs/montana-time-capsule/s3ls-prod-compressed-hmc-mtc-20260520T2015Z-20260525T054831Z.txt

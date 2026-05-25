@@ -45,3 +45,4 @@
 [20260525T052956Z] postpush gh snapshot -> branch_runs=20 exact_head_runs=0 (skip ci expected) -> next: idle monitor
 [20260525T054606Z] heartbeat(friday) -> terminal; InProgress=0; viewer+meta 200; no dup -> commit+push
 [20260525T054737Z] postpush(gh) -> snapshot -> done
+[2026-05-25T05:48:36Z] heartbeat -> HMC hmc-mtc-20260520T2015Z public meta published to s3://spaceport-ml-processing/... (200 OK) -> update STATE.md + hmc-state.json; commit+push

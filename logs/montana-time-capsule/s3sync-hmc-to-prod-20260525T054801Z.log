@@ -1,0 +1,15 @@
+src=s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/
+dst=s3://spaceport-ml-processing/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/
+copy: s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/background_manifest.json to s3://spaceport-ml-processing/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/background_manifest.json
+copy: s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/background_skybox.webp to s3://spaceport-ml-processing/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/background_skybox.webp
+copy: s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/scales.webp to s3://spaceport-ml-processing/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/scales.webp
+copy: s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json to s3://spaceport-ml-processing/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json
+copy: s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/export_manifest.json to s3://spaceport-ml-processing/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/export_manifest.json
+copy: s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/settings.json to s3://spaceport-ml-processing/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/settings.json
+copy: s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/sh0.webp to s3://spaceport-ml-processing/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/sh0.webp
+copy: s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/means_u.webp to s3://spaceport-ml-processing/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/means_u.webp
+copy: s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/quats.webp to s3://spaceport-ml-processing/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/quats.webp
+copy: s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/means_l.webp to s3://spaceport-ml-processing/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/means_l.webp
+copy: s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/shN_centroids.webp to s3://spaceport-ml-processing/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/shN_centroids.webp
+copy: s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/training_metadata.json to s3://spaceport-ml-processing/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/training_metadata.json
+copy: s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/shN_labels.webp to s3://spaceport-ml-processing/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/shN_labels.webp

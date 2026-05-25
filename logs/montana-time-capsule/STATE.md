@@ -1,5 +1,24 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-25T05:49:02Z HEARTBEAT monitor (HMC canonical `hmc-mtc-20260520T2015Z`): terminal; published bundle to public S3; public meta now HTTP 200
+
+- Git: agent-40136728-montana-time-capsule @ 47e6d2dd6616c1c9f35ea199cc7502e4b1a15a01 (`chore: postpush gh snapshot 20260525T0547Z [skip ci]`)
+- Evidence stamps:
+  - Terminal SageMaker + viewer reachability (InProgress=0/0; all Completed; viewer base/sky/no-sky 200): 20260525T054606Z
+    - Git status/head: logs/montana-time-capsule/git-status-20260525T054606Z.txt + logs/montana-time-capsule/git-head-20260525T054606Z.txt
+    - AWS identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T054606Z.json
+    - InProgress guardrail: logs/montana-time-capsule/sm-list-processing-inprogress-20260525T054606Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T054606Z.json
+    - SageMaker describes: logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T054606Z.json + logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T054606Z.json + logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T054606Z.json
+    - Viewer HTTP HEAD: logs/montana-time-capsule/curlI-viewer-base-20260525T054606Z.headers + logs/montana-time-capsule/curlI-viewer-sky-20260525T054606Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-20260525T054606Z.headers + logs/montana-time-capsule/curlI-elevation-proxy-20260525T054606Z.headers
+  - Public bundle reachability gate (copied staging bundle -> `spaceport-ml-processing`; meta.json now reachable): 20260525T054801Z
+    - Copy log: logs/montana-time-capsule/s3sync-hmc-to-prod-20260525T054801Z.log
+    - Public meta head-object + HTTP HEAD (200): logs/montana-time-capsule/s3head-prod-meta-hmc-mtc-20260520T2015Z-postcopy-20260525T054801Z.json + logs/montana-time-capsule/curlI-prod-meta-hmc-mtc-20260520T2015Z-postcopy-20260525T054801Z.headers
+    - Public prefix listing (13 objects; 6.8 MiB): logs/montana-time-capsule/s3ls-prod-compressed-hmc-mtc-20260520T2015Z-20260525T054831Z.txt
+  - Exact-head GitHub workflows + git proof on current head: 20260525T054902Z
+    - Git head detail: logs/montana-time-capsule/git-head-detail-20260525T054902Z.txt
+    - Exact-head runs snapshot (empty; expected for `[skip ci]` head): logs/montana-time-capsule/gh-run-list-exact-head-47e6d2dd-20260525T054902Z.json
+  - Summary JSON updated: logs/montana-time-capsule/hmc-state.json
+
 ## 2026-05-25T05:29:56Z postpush GitHub snapshot (current head `ece5b71e` is `[skip ci]` so exact-head runs are expected empty)
 
 - Git: agent-40136728-montana-time-capsule @ ece5b71e54f0eb1b07b96f63ac908835dad9113e (`chore: hmc heartbeat 20260525T052620Z [skip ci]`)
