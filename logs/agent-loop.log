@@ -565,3 +565,5 @@
 [2026-05-25T13:31:01Z] postpush -> recorded gh runs for head 38d2435be908858a25cc6ccdecc853eac3c03e3a -> idle
 [2026-05-25T13:45:22Z] friday heartbeat -> verified terminal SageMaker + S3 outputs; inprogress=0; exact-head=0 expected for [skip ci]; CDK Deploy run 26402909276 success -> next: passive monitor
 [2026-05-25T13:48:14Z] postpush ci -> CDK Deploy rerun success run=26402909276 head=7a2c8e6e; Pages not triggered
+[20260525T134844Z] postpush -> recorded gh runs for head 3420518f -> head=3420518f exact_head_runs=0
+[2026-05-25T13:49:33Z] postpush gh snapshot head=3420518f -> recorded (exact-head runs expected 0 for [skip ci])
