@@ -1,0 +1,27 @@
+stamp=20260525T040421Z
+agent-40136728-montana-time-capsule
+6c70a77c36ac38b60301cc5b5cc38a23d6068103
+On branch agent-40136728-montana-time-capsule
+Your branch is up to date with 'origin/agent-40136728-montana-time-capsule'.
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	logs/montana-time-capsule/aws-config-region-20260525T040421Z.txt
+	logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T040421Z.json
+	logs/montana-time-capsule/aws-version-20260525T040421Z.txt
+	logs/montana-time-capsule/curlI-hmc-viewer-20260525T040421Z.headers
+	logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T040421Z.json
+	logs/montana-time-capsule/gh-run-list-exact-head-6c70a77c-20260525T040421Z.json
+	logs/montana-time-capsule/git-proof-20260525T040421Z.txt
+	logs/montana-time-capsule/s3head-public-meta-hmc-mtc-20260520T2015Z-20260525T040421Z.err
+	logs/montana-time-capsule/s3head-public-meta-hmc-mtc-20260520T2015Z-20260525T040421Z.json
+	logs/montana-time-capsule/s3head-staging-meta-hmc-mtc-20260520T2015Z-20260525T040421Z.json
+	logs/montana-time-capsule/s3ls-staging-compressed-hmc-mtc-20260520T2015Z-20260525T040421Z.txt
+	logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T040421Z.json
+	logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T040421Z.json
+	logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T040421Z.json
+	logs/montana-time-capsule/sm-list-processing-inprogress-20260525T040421Z.json
+	logs/montana-time-capsule/sm-list-training-inprogress-20260525T040421Z.json
+	logs/montana-time-capsule/viewer-alias-url-20260525T040421Z.txt
+
+nothing added to commit but untracked files present (use "git add" to track)
