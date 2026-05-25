@@ -2,11 +2,11 @@
 
 ## 2026-05-25T00:30:02Z postpush - refreshed exact-head GitHub snapshot on current head (expected empty on `[skip ci]` head)
 
-- Git: agent-40136728-montana-time-capsule @ dc9fc33c8dbefd0bc8c267d2ef48dbb8c0211e44
+- Git: agent-40136728-montana-time-capsule @ 228ef98f3570e99eb50686a589b14a563525c36c
 - Evidence stamp: 20260525T003002Z
   - GitHub Actions (`/opt/homebrew/bin/gh`):
     - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T003002Z.json
-    - exact-head runs snapshot (empty; expected for `[skip ci]` head): logs/montana-time-capsule/gh-run-list-exact-head-dc9fc33c-20260525T003002Z.json
+    - exact-head runs snapshot (empty; expected for `[skip ci]` head): logs/montana-time-capsule/gh-run-list-exact-head-228ef98f-20260525T003002Z.json
   - State snapshot refreshed: logs/montana-time-capsule/hmc-state.json
 
 ## 2026-05-25T00:28:08Z postpush - refreshed exact-head GitHub snapshot on new head (expected empty on `[skip ci]` head)
