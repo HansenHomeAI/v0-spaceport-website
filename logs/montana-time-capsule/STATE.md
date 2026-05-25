@@ -11163,3 +11163,25 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
 - Viewer: base/sky/nosky=200; elevation-proxy meta=404 (evidence: logs/montana-time-capsule/hmc-http-status-20260524T234730Z.txt)
 - Public bundle meta.json: still 404 (evidence: logs/montana-time-capsule/s3head-public-meta-hmc-mtc-20260520T2015Z-20260524T234730Z.err)
 - State snapshot refreshed: logs/montana-time-capsule/hmc-state.json
+
+## 20260525T000743Z HEARTBEAT monitor - no-spend re-verify (terminal SageMaker; staging bundle present; public meta.json still 404; viewer base/sky/nosky 200; exact-head GH runs=0 due [skip ci])
+
+- Git: agent-40136728-montana-time-capsule @ a6d51321a41b6accc48510486e375846c53b8d4a (chore: exact-head gh snapshot 20260525T000700Z [skip ci])
+- AWS (us-west-2; /opt/homebrew/bin/aws; no spend):
+  - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T000743Z.json (region: logs/montana-time-capsule/aws-config-region-20260525T000743Z.txt)
+  - InProgress guardrail: logs/montana-time-capsule/sm-list-processing-inprogress-20260525T000743Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T000743Z.json (counts: 0/0)
+  - canonical HMC run describes (all Completed):
+    - logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T000743Z.json
+    - logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T000743Z.json
+    - logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T000743Z.json
+- S3 outputs (canonical HMC compressed supersplat bundle):
+  - listing: logs/montana-time-capsule/s3ls-staging-compressed-hmc-mtc-20260520T2015Z-20260525T000743Z.txt
+  - staging meta head (OK): logs/montana-time-capsule/s3head-staging-meta-hmc-mtc-20260520T2015Z-20260525T000743Z.json
+  - public meta head (still 404): logs/montana-time-capsule/s3head-public-meta-hmc-mtc-20260520T2015Z-20260525T000743Z.err
+- Hosted viewer reachability (HTTP):
+  - urls: logs/montana-time-capsule/viewer-urls-hmc-20260525T000743Z.txt
+  - status summary: logs/montana-time-capsule/hmc-viewer-http-status-20260525T000743Z.txt
+- GitHub Actions (`/opt/homebrew/bin/gh`):
+  - branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T000743Z.json
+  - exact-head runs (0 expected due `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-a6d51321-20260525T000743Z.json
+- State snapshot refreshed: logs/montana-time-capsule/hmc-state.json (updated_at=20260525T000743Z)

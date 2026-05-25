@@ -1,0 +1,5 @@
+200 https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev
+200 https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/?scene=hmc
+200 https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/?scene=hmc&sky=1
+200 https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/?scene=hmc&sky=0
+404 https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/api/hmc/elevation/meta.json
