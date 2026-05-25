@@ -1,4 +1,0 @@
-https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev
-https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev?skybox=1
-https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev?skybox=0
-https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/api/elevation_proxy?run_id=hmc-mtc-20260520T2015Z

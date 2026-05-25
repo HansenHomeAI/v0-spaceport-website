@@ -41,3 +41,4 @@
 [20260525T045114Z] hmc heartbeat -> repinned state to head=8e358543; viewer 200/200/200; public meta 404 -> next: idle
 [20260525T050454Z] friday heartbeat -> verified terminal (sfm/3dgs/compression Completed; inprogress 0/0); s3 outputs present; gh snapshots refreshed -> next: idle monitor (avoid duplicate launch)
 [20260525T050710Z] postpush gh snapshot -> exact-head count 0 (skip ci) -> next: idle
+[20260525T052620Z] hmc heartbeat -> verified terminal (Completed/Completed/Completed; inprogress 0/0); viewer base/sky/nosky 200/200/200; public meta 404 -> next: wait for public bundle gate

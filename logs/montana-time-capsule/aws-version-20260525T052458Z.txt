@@ -1,1 +1,0 @@
-zsh:23: command not found: aws
