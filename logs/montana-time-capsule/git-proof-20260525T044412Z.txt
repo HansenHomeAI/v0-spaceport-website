@@ -1,0 +1,14 @@
+# git
+ts=20260525T044412Z
+agent-40136728-montana-time-capsule
+04ebc75b4b607f023d235b7cd6cf20c6ebcd1f93
+?? logs/montana-time-capsule/gh-run-list-branch-postpush-20260525T042907Z.txt
+?? logs/montana-time-capsule/gh-run-list-exact-head-postpush-20260525T042907Z.txt
+?? logs/montana-time-capsule/git-proof-20260525T044412Z.txt
+commit 04ebc75b4b607f023d235b7cd6cf20c6ebcd1f93
+Author:     Gabriel Hansen <gbhbyu@gmail.com>
+AuthorDate: Sun May 24 22:29:13 2026 -0600
+Commit:     Gabriel Hansen <gbhbyu@gmail.com>
+CommitDate: Sun May 24 22:29:13 2026 -0600
+
+    chore: postpush gh snapshot 20260525T042907Z [skip ci]
