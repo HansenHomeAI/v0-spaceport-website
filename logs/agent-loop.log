@@ -482,3 +482,4 @@
 [2026-05-25T03:07:33Z] postpush-gh-snapshot -> ok -> next: wait
 [20260525T034522Z] heartbeat hmc-mtc-20260520T2015Z -> terminal+viewer ok; public meta 404 persists -> next: wait for public bundle gate / visual screenshots
 [20260525T034759Z] postpush refresh -> proofs captured on new head -> next: wait
+[20260525T034950Z] heartbeat -> full refresh incl s3 listing -> next: wait

@@ -11818,3 +11818,10 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
   - S3 meta heads: logs/montana-time-capsule/s3head-staging-meta-hmc-mtc-20260520T2015Z-20260525T034759Z.json + logs/montana-time-capsule/s3head-public-meta-hmc-mtc-20260520T2015Z-20260525T034759Z.err
   - Viewer HEAD: logs/montana-time-capsule/curlI-hmc-viewer-alias-20260525T034759Z.headers + logs/montana-time-capsule/curlI-hmc-viewer-sky-20260525T034759Z.headers + logs/montana-time-capsule/curlI-hmc-viewer-nosky-20260525T034759Z.headers + logs/montana-time-capsule/curlI-hmc-viewer-proxy-20260525T034759Z.headers
   - GH snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T034759Z.json + logs/montana-time-capsule/gh-run-list-exact-head-6d10e5f8-20260525T034759Z.json
+
+## 20260525T034950Z HEARTBEAT monitor (HMC canonical hmc-mtc-20260520T2015Z): no-spend re-verify; InProgress=0; S3 staging listing+meta OK; public meta.json still 404; viewer base/sky/no-sky HTTP 200
+
+- Git: agent-40136728-montana-time-capsule @ d33b39b4ae70b66c697255e1d903f43a8fe9b0e2
+- Evidence stamp: 20260525T034950Z
+  - S3 listing: logs/montana-time-capsule/s3ls-staging-compressed-hmc-mtc-20260520T2015Z-20260525T034950Z.txt
+  - State snapshot refreshed: logs/montana-time-capsule/hmc-state.json
