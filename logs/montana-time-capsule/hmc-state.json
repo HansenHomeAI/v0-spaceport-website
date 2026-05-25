@@ -54,6 +54,12 @@
   "updated_at": "20260525T143055Z",
   "viewer": {
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
+    "screenshot_dir": "logs/montana-time-capsule/screenshots-20260525T143209Z",
+    "screenshot_nosky_log": "logs/montana-time-capsule/screenshots-20260525T143209Z/nosky.log.txt",
+    "screenshot_nosky_png": "logs/montana-time-capsule/screenshots-20260525T143209Z/nosky.png",
+    "screenshot_sky_log": "logs/montana-time-capsule/screenshots-20260525T143209Z/sky.log.txt",
+    "screenshot_sky_png": "logs/montana-time-capsule/screenshots-20260525T143209Z/sky.png",
+    "screenshot_stamp": "20260525T143209Z",
     "viewer_base_head": "logs/montana-time-capsule/curlI-viewer-base-20260525T143055Z.headers",
     "viewer_default_head": "logs/montana-time-capsule/curlI-viewer-default-correct-20260525T132956.headers",
     "viewer_nosky_head": "logs/montana-time-capsule/curlI-viewer-nosky-20260525T143055Z.headers",

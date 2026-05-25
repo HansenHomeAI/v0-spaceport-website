@@ -1,0 +1,8 @@
+readyState=### Result
+"complete"
+### Ran Playwright code
+```js
+await page.evaluate('() => document.readyState');
+```
+screenshot=logs/montana-time-capsule/screenshots-20260525T143209Z/sky.png
+snapshot_head=### Page - Page URL: https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/?bundle=hmc-mtc-20260520T2015Z&skybox=on - Page Title: Spaceport ### Snapshot ```yaml - generic [active] [ref=e1]: - banner [ref=e2]: - generic [ref=e3]: - link "Spaceport Home" [ref=e5] [cursor=pointer]: - /url: /landing - img "Spaceport" [ref=e6] - generic [ref=e7]: 

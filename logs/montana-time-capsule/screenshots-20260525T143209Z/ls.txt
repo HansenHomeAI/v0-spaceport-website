@@ -1,0 +1,8 @@
+total 2888
+-rw-r--r--@ 1 gabrielhansen  staff     0B May 25 08:34 ls.txt
+-rw-r--r--@ 1 gabrielhansen  staff   574B May 25 08:34 nosky.log.txt
+-rw-r--r--@ 1 gabrielhansen  staff   714K May 25 08:34 nosky.png
+-rw-r--r--@ 1 gabrielhansen  staff   118B May 25 08:32 nosky_url.txt
+-rw-r--r--@ 1 gabrielhansen  staff   572B May 25 08:33 sky.log.txt
+-rw-r--r--@ 1 gabrielhansen  staff   708K May 25 08:33 sky.png
+-rw-r--r--@ 1 gabrielhansen  staff   117B May 25 08:32 sky_url.txt

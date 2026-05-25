@@ -13195,3 +13195,9 @@ LEARN MORE
   - Viewer reachability: logs/montana-time-capsule/curlI-viewer-base-20260525T143055Z.headers + logs/montana-time-capsule/curlI-viewer-sky-20260525T143055Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-20260525T143055Z.headers
   - GitHub Actions snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T143055Z.json + logs/montana-time-capsule/gh-run-list-exact-head-906bf9ec-20260525T143055Z.json
   - Summary JSON updated: logs/montana-time-capsule/hmc-state.json
+
+## 2026-05-25T14:34:37Z ACCEPTANCE gate - viewer screenshots captured (skybox on/off)
+
+- Screenshot stamp: 20260525T143209Z
+  - Sky: logs/montana-time-capsule/screenshots-20260525T143209Z/sky.png (log: logs/montana-time-capsule/screenshots-20260525T143209Z/sky.log.txt)
+  - No-sky: logs/montana-time-capsule/screenshots-20260525T143209Z/nosky.png (log: logs/montana-time-capsule/screenshots-20260525T143209Z/nosky.log.txt)
