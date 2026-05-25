@@ -1,0 +1,6 @@
+--- git proof
+agent-40136728-montana-time-capsule
+e20a4b3d2f9cb07bbc1271f2c23cafbb03d8c6c4
+?? logs/montana-time-capsule/git-proof-20260525T030531Z.txt
+?? logs/montana-time-capsule/heartbeat-20260525T030531Z.txt
+e20a4b3d chore: postpush gh snapshot 20260525T024748Z [skip ci]

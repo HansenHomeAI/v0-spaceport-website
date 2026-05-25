@@ -1,0 +1,5 @@
+alias_url=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev
+base=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev
+sky=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/?mode=sky
+nosky=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/?mode=nosky
+proxy=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/api/elevation-proxy?probe=1
