@@ -12301,3 +12301,25 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
 - Evidence stamp: 20260525T064803Z
   - GitHub Actions branch snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-exacthead-20260525T064803Z.json
   - GitHub Actions exact-head snapshot: logs/montana-time-capsule/gh-run-list-exact-head-d163d425-20260525T064803Z.json
+
+## 2026-05-25T06:49:58Z HEARTBEAT monitor (FRIDAY canonical friday-mtc-20260524T0001Z): no-spend re-verify; SageMaker terminal; public bundle + hosted viewer HTTP 200; new Playwright screenshots captured
+
+- Git: agent-40136728-montana-time-capsule @ e9f2b28e834d1afbe8002d023c22bebb2baef5c7
+- Evidence stamp: 20260525T064502Z
+  - AWS identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T064502Z.json
+  - InProgress guardrail: logs/montana-time-capsule/sm-list-processing-inprogress-20260525T064502Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T064502Z.json (counts 0/0)
+  - Describes (Completed):
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T064502Z.json
+    - logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T064502Z.json
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T064502Z.json
+  - S3 listings: logs/montana-time-capsule/s3ls-friday-sfm-20260525T064502Z.txt + logs/montana-time-capsule/s3ls-friday-3dgs-20260525T064502Z.txt + logs/montana-time-capsule/s3ls-friday-compressed-20260525T064502Z.txt
+  - Public reachability headers:
+    - meta: logs/montana-time-capsule/curlD-friday-meta-public-20260525T064502Z.headers
+    - viewer sky: logs/montana-time-capsule/curlD-friday-viewer-sky-20260525T064502Z.headers
+    - viewer no-sky: logs/montana-time-capsule/curlD-friday-viewer-nosky-20260525T064502Z.headers
+  - Viewer visual proof (Playwright MCP):
+    - sky: logs/montana-time-capsule/friday-viewer-sky-20260525T064502Z.png + logs/montana-time-capsule/heartbeat-friday-viewer-sky-20260525T064502Z.log
+    - no-sky: logs/montana-time-capsule/friday-viewer-nosky-20260525T064502Z.png + logs/montana-time-capsule/heartbeat-friday-viewer-nosky-20260525T064502Z.log
+  - GitHub Actions snapshots:
+    - branch runs: logs/montana-time-capsule/gh-run-list-branch-20260525T064502Z.json
+    - exact-head runs: logs/montana-time-capsule/gh-run-list-exact-head-e9f2b28e-20260525T064502Z.json (expected empty on [skip ci] head)

@@ -497,3 +497,4 @@
 [2026-05-25T05:26:52Z] postpush-gh-snapshot -> head=ffc1c81e runs_exact=0 -> next: idle monitor
 [2026-05-25T06:06:21Z] friday heartbeat -> sfm/3dgs/compression Completed; inprogress=0; guarded launch executed (no-op) -> commit+push
 [20260525T064611Z] heartbeat(HMC) -> inprogress=0/0 meta=200 viewer=200/200/200 -> next=wait
+[2026-05-25T06:49:58Z] friday heartbeat -> terminal jobs; viewer 200 + screenshots 20260525T064502Z -> commit+push

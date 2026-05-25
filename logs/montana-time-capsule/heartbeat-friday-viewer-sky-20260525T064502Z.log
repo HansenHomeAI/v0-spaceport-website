@@ -1,0 +1,8 @@
+readyState=### Result
+"complete"
+### Ran Playwright code
+```js
+await page.evaluate('() => document.readyState');
+```
+screenshot=logs/montana-time-capsule/friday-viewer-sky-20260525T064502Z.png
+snapshot_head=### Page - Page URL: https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing.s3.us-west-2.amazonaws.com%2Fcompressed%2Ffriday-mtc-20260524T0001Z%2Fsupersplat_bundle%2Fmeta.json&skybox=background_skybox.webp - Page Title: sogs-migrated-viewer ### Snapshot ```yaml - generic [active] [ref=e1]: - main [ref=e2]: - 

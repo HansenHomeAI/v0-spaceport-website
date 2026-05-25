@@ -285,5 +285,15 @@
   "viewer_public_meta_head_public": "logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-compressed_friday-mtc-20260524T0001Z_supersplat_bundle_meta.json-20260525T010550Z.json",
   "viewer_public_nosky_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing.s3.us-west-2.amazonaws.com%2Fcompressed%2Ffriday-mtc-20260524T0001Z%2Fsupersplat_bundle%2Fmeta.json&skybox=off",
   "viewer_public_sky_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing.s3.us-west-2.amazonaws.com%2Fcompressed%2Ffriday-mtc-20260524T0001Z%2Fsupersplat_bundle%2Fmeta.json&skybox=background_skybox.webp",
-  "zip_entries": 1776
+  "zip_entries": 1776,
+  "heartbeat_last_check_utc": "2026-05-25T06:49:41.408710Z",
+  "viewer_heartbeat_sky_screenshot": "logs/montana-time-capsule/friday-viewer-sky-20260525T064502Z.png",
+  "viewer_heartbeat_sky_log": "logs/montana-time-capsule/heartbeat-friday-viewer-sky-20260525T064502Z.log",
+  "viewer_heartbeat_nosky_screenshot": "logs/montana-time-capsule/friday-viewer-nosky-20260525T064502Z.png",
+  "viewer_heartbeat_nosky_log": "logs/montana-time-capsule/heartbeat-friday-viewer-nosky-20260525T064502Z.log",
+  "viewer_heartbeat_meta_public_headers": "logs/montana-time-capsule/curlD-friday-meta-public-20260525T064502Z.headers",
+  "viewer_heartbeat_viewer_sky_headers": "logs/montana-time-capsule/curlD-friday-viewer-sky-20260525T064502Z.headers",
+  "viewer_heartbeat_viewer_nosky_headers": "logs/montana-time-capsule/curlD-friday-viewer-nosky-20260525T064502Z.headers",
+  "gh_run_list_branch_heartbeat": "logs/montana-time-capsule/gh-run-list-branch-20260525T064502Z.json",
+  "gh_run_list_exact_head_heartbeat": "logs/montana-time-capsule/gh-run-list-exact-head-751d17f1-20260525T064502Z.json"
 }
