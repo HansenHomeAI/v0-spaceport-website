@@ -13056,3 +13056,77 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
 - Evidence stamp: 20260525T133059
   - GitHub Actions snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T133059.json + logs/montana-time-capsule/gh-run-list-exact-head-38d2435b-postpush-20260525T133059.json
   - Summary JSON updated: logs/montana-time-capsule/hmc-state.json
+
+## 20260525T135342Z HEARTBEAT monitor (HMC canonical hmc-mtc-20260520T2015Z): no-spend re-verify; InProgress=0/0; SageMaker terminal; S3 staging+prod bundle present; public meta HTTP 200; hosted viewer base/sky/nosky HTTP 200; GH exact-head runs snapshot (expect 0 on [skip ci])
+
+- Evidence stamp: 20260525T135342Z
+  - Git head/detail/status: logs/montana-time-capsule/git-branch-20260525T135342Z.txt + logs/montana-time-capsule/git-head-20260525T135342Z.txt + logs/montana-time-capsule/git-head-detail-20260525T135342Z.txt + logs/montana-time-capsule/git-status-20260525T135342Z.txt + logs/montana-time-capsule/git-log1-20260525T135342Z.txt
+  - AWS identity/region/version (; us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T135342Z.json + logs/montana-time-capsule/aws-config-region-20260525T135342Z.txt + logs/montana-time-capsule/aws-version-20260525T135342Z.txt
+  - InProgress guardrail: logs/montana-time-capsule/sm-list-processing-inprogress-20260525T135342Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T135342Z.json
+  - Canonical HMC describes: logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T135342Z.json + logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T135342Z.json + logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T135342Z.json
+  - S3 outputs + prod meta head: logs/montana-time-capsule/s3ls-staging-supersplat-bundle-hmc-20260525T135342Z.txt + logs/montana-time-capsule/s3ls-prod-supersplat-bundle-hmc-20260525T135342Z.txt + logs/montana-time-capsule/s3head-prod-meta-hmc-hmc-mtc-20260520T2015Z-20260525T135342Z.json
+  - Public meta reachability (HTTP HEAD): logs/montana-time-capsule/curlI-prod-meta-hmc-20260525T135342Z.headers
+  - Hosted viewer reachability (HTTP HEAD): logs/montana-time-capsule/viewer-urls-correct-20260525T135342Z.txt + logs/montana-time-capsule/curlI-viewer-base-correct-20260525T135342Z.headers + logs/montana-time-capsule/curlI-viewer-sky-correct-20260525T135342Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-correct-20260525T135342Z.headers
+  - GitHub Actions snapshots (Work seamlessly with GitHub from the command line.
+
+USAGE
+  gh <command> <subcommand> [flags]
+
+CORE COMMANDS
+  auth:        Authenticate gh and git with GitHub
+  browse:      Open repositories, issues, pull requests, and more in the browser
+  codespace:   Connect to and manage codespaces
+  gist:        Manage gists
+  issue:       Manage issues
+  org:         Manage organizations
+  pr:          Manage pull requests
+  project:     Work with GitHub Projects.
+  release:     Manage releases
+  repo:        Manage repositories
+
+GITHUB ACTIONS COMMANDS
+  cache:       Manage GitHub Actions caches
+  run:         View details about workflow runs
+  workflow:    View details about GitHub Actions workflows
+
+ALIAS COMMANDS
+  co:          Alias for "pr checkout"
+
+ADDITIONAL COMMANDS
+  alias:       Create command shortcuts
+  api:         Make an authenticated GitHub API request
+  attestation: Work with artifact attestations
+  completion:  Generate shell completion scripts
+  config:      Manage configuration for gh
+  extension:   Manage gh extensions
+  gpg-key:     Manage GPG keys
+  label:       Manage labels
+  ruleset:     View info about repo rulesets
+  search:      Search for repositories, issues, and pull requests
+  secret:      Manage GitHub secrets
+  ssh-key:     Manage SSH keys
+  status:      Print information about relevant issues, pull requests, and notifications across repositories
+  variable:    Manage GitHub Actions variables
+
+HELP TOPICS
+  actions:     Learn about working with GitHub Actions
+  environment: Environment variables that can be used with gh
+  exit-codes:  Exit codes used by gh
+  formatting:  Formatting options for JSON data exported from gh
+  mintty:      Information about using gh with MinTTY
+  reference:   A comprehensive reference of all gh commands
+
+FLAGS
+  --help      Show help for command
+  --version   Show gh version
+
+EXAMPLES
+  $ gh issue create
+  $ gh repo clone cli/cli
+  $ gh pr checkout 321
+
+LEARN MORE
+  Use `gh <command> <subcommand> --help` for more information about a command.
+  Read the manual at https://cli.github.com/manual
+  Learn about exit codes using `gh help exit-codes`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T135342Z.json + logs/montana-time-capsule/gh-run-list-exact-head-09a1188f-20260525T135342Z.json
+  - Summary JSON updated: logs/montana-time-capsule/hmc-state.json
