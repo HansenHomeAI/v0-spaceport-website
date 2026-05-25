@@ -11497,3 +11497,10 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
   - Hosted viewer reachability:
     - urls: logs/montana-time-capsule/viewer-urls-20260525T014702Z.txt
     - headers/codes: logs/montana-time-capsule/curl-headers-viewer-sky-20260525T014702Z.txt + logs/montana-time-capsule/curl-code-viewer-sky-20260525T014702Z.txt; logs/montana-time-capsule/curl-headers-viewer-nosky-20260525T014702Z.txt + logs/montana-time-capsule/curl-code-viewer-nosky-20260525T014702Z.txt
+
+### Post-push GitHub Actions check 2026-05-25T01:51:14Z
+
+- Git: agent-40136728-montana-time-capsule @ ec7898167b2009cf9b538bce684e1642926bab28 (`chore: friday mtc heartbeat proof 20260525T014600Z [skip ci]`)
+- Evidence stamp: 20260525T015114Z
+- Branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T015114Z.json (count=23)
+- Exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-ec789816-postpush-20260525T015114Z.json (count=0; expected 0 for [skip ci] head)
