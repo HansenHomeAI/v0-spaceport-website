@@ -1,0 +1,4 @@
+## evidence_stamp=20260525T100418Z
+git_branch=agent-40136728-montana-time-capsule
+git_head=dffc6506359d7281f4bd40bac2681b176e9bc2f5
+git_head_short=dffc6506

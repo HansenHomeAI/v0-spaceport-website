@@ -1,0 +1,15 @@
+{
+  "compression_status": "Completed",
+  "dgs_status": "Completed",
+  "evidence_stamp": "20260525T100418Z",
+  "inprogress_processing_count": 0,
+  "inprogress_training_count": 0,
+  "prod_meta_content_length": 1359,
+  "prod_meta_etag": "\"89e1a1d12752cd0887f1a74230971cca\"",
+  "prod_meta_last_modified": "2026-05-25T05:48:03+00:00",
+  "public_meta_http": 200,
+  "sfm_status": "Completed",
+  "viewer_base_http": 200,
+  "viewer_nosky_http": 200,
+  "viewer_sky_http": 200
+}

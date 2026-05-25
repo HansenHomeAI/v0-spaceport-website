@@ -1,0 +1,5 @@
+stamp=20260525T100418Z
+InProgress processing=0 training=0
+SageMaker sfm=Completed 3dgs=Completed compression=Completed
+Public meta HTTP=200 ETag="89e1a1d12752cd0887f1a74230971cca" bytes=1359
+Viewer HTTP base=200 sky=200 nosky=200

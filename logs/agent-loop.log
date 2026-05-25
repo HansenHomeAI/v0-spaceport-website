@@ -526,3 +526,5 @@
 [2026-05-25T09:46:21Z] heartbeat(hmc-mtc-20260520T2015Z) -> all gates passing (InProgress=0, meta/viewer 200) -> commit+push ledger
 [2026-05-25T09:46:55Z] postpush gh snapshot -> exact-head expected empty ([skip ci]) -> commit+push ledger
 [2026-05-25T09:51:38Z] friday heartbeat -> terminal (SfM/3DGS/compression Completed; HTTP 200; GH ok) -> next: idle/poll later
+[2026-05-25T10:04:18Z] hmc heartbeat -> all terminal+200s -> next: keep monitoring acceptance gates
+[2026-05-25T10:07:34Z] friday heartbeat -> terminal confirmed (sfm/3dgs/compress completed; http200; gh ok) -> no action

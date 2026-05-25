@@ -1,0 +1,4 @@
+heartbeat_utc=20260525T100503Z
+input_zip: ETag="8484b9ad1089adb721f1b31dfc85fc23-896" ContentLength=7514816344 LastModified=2026-05-23T23:59:09+00:00
+colmap_database.db: ETag="4a391432d9f6266c514fd16c38a29870-529" ContentLength=2770214912 LastModified=2026-05-24T08:33:13+00:00
+public_meta.json: ETag="6db972a5b06efb831cee42e4aad4443c" ContentLength=1372 LastModified=2026-05-24T17:08:06+00:00 ContentType=application/json
