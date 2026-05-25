@@ -11724,3 +11724,17 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
     - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T030731Z.json
     - exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-d97b6157-20260525T030731Z.json
   - State snapshot refreshed: logs/montana-time-capsule/hmc-state.json
+
+## 20260525T032605Z HEARTBEAT monitor (Friday canonical friday-mtc-20260524T0001Z): no-spend re-verify; InProgress=0/0; SageMaker terminal; S3 outputs present; public meta.json reachable; exact-head GH runs snapshot refreshed (expected empty on [skip ci] head)
+
+- Git: agent-40136728-montana-time-capsule @ b709d33f0498de2127228fda8ce328caad94a532
+- Evidence stamp: 20260525T032605Z
+  - Git proof: logs/montana-time-capsule/git-proof-20260525T032605Z.txt
+  - AWS identity/region/version (/opt/homebrew/bin/aws; us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T032605Z.json + logs/montana-time-capsule/aws-config-region-20260525T032605Z.txt + logs/montana-time-capsule/aws-version-20260525T032605Z.txt
+  - InProgress guardrail (max-results=50): logs/montana-time-capsule/sm-list-processing-inprogress-20260525T032605Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T032605Z.json (counts: 0/0)
+  - Friday canonical describes (all Completed): logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T032605Z.json + logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T032605Z.json + logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T032605Z.json
+  - S3 outputs (tail listings): logs/montana-time-capsule/s3ls-friday-colmap-20260525T032605Z.txt + logs/montana-time-capsule/s3ls-friday-3dgs-20260525T032605Z.txt + logs/montana-time-capsule/s3ls-friday-compressed-20260525T032605Z.txt
+  - Public meta head (S3): logs/montana-time-capsule/s3head-public-meta-friday-20260525T032605Z.json
+  - Public reachability (HTTP HEAD): logs/montana-time-capsule/curlI-friday-public-meta-20260525T032605Z.headers
+  - Viewer URLs snapshot: logs/montana-time-capsule/viewer-urls-friday-20260525T032605Z.txt
+  - GitHub Actions (/opt/homebrew/bin/gh): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T032605Z.json + logs/montana-time-capsule/gh-run-list-exact-head-b709d33f-20260525T032605Z.json

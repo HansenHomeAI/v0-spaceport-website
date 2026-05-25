@@ -1,0 +1,26 @@
+branch=agent-40136728-montana-time-capsule
+head=b709d33f0498de2127228fda8ce328caad94a532
+ M logs/montana-time-capsule/_last_heartbeat_ts.txt
+?? logs/montana-time-capsule/_heartbeat_branch_20260525T032605Z.txt
+?? logs/montana-time-capsule/_heartbeat_head_sha_20260525T032605Z.txt
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T032522Z.json
+?? logs/montana-time-capsule/curlI-.20260525T032522Z.headers
+?? logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T032522Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-b709d33f-20260525T032522Z.json
+?? logs/montana-time-capsule/gh-version-20260525T032522Z.txt
+?? logs/montana-time-capsule/git-aws-proof-20260525T032522Z.txt
+?? logs/montana-time-capsule/git-proof-20260525T032605Z.txt
+?? logs/montana-time-capsule/s3head-public-meta-hmc-mtc-20260520T2015Z-20260525T032522Z.err
+?? logs/montana-time-capsule/s3head-public-meta-hmc-mtc-20260520T2015Z-20260525T032522Z.json
+?? logs/montana-time-capsule/s3head-staging-meta-hmc-mtc-20260520T2015Z-20260525T032522Z.err
+?? logs/montana-time-capsule/s3head-staging-meta-hmc-mtc-20260520T2015Z-20260525T032522Z.json
+?? logs/montana-time-capsule/s3ls-public-compressed-hmc-mtc-20260520T2015Z-20260525T032522Z.err
+?? logs/montana-time-capsule/s3ls-public-compressed-hmc-mtc-20260520T2015Z-20260525T032522Z.txt
+?? logs/montana-time-capsule/s3ls-staging-compressed-hmc-mtc-20260520T2015Z-20260525T032522Z.txt
+?? logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T032522Z.json
+?? logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T032522Z.json
+?? logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T032522Z.json
+?? logs/montana-time-capsule/sm-list-processing-inprogress-20260525T032522Z.json
+?? logs/montana-time-capsule/sm-list-training-inprogress-20260525T032522Z.json
+?? logs/montana-time-capsule/viewer-http-status-20260525T032522Z.txt
+b709d33f chore: postpush gh snapshot 20260525T030731Z [skip ci]
