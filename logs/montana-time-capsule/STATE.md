@@ -14,13 +14,19 @@
   - GitHub Actions snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T080549Z.json + logs/montana-time-capsule/gh-run-list-exact-head-26f1cd15-20260525T080549Z.json
   - Summary JSON updated: logs/montana-time-capsule/hmc-state.json
 
-## 2026-05-25T08:08:32Z postpush - refreshed branch + exact-head GitHub snapshots on current head (expected empty on `[skip ci]` head)
+## 2026-05-25T08:11:08Z postpush - refreshed branch + exact-head GitHub snapshots on current head (expected empty on `[skip ci]` head)
 
-- Git: agent-40136728-montana-time-capsule @ b2312d08806f7acd93c9048257ca46c820754450 (`chore: friday heartbeat verify 20260525T080549Z [skip ci]`)
-- Evidence stamp: 20260525T080832Z
-  - Git head: logs/montana-time-capsule/git-head-postpush-20260525T080832Z.txt
-  - GitHub Actions branch snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T080832Z.json
-  - GitHub Actions exact-head snapshot (empty; expected for `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-b2312d08-postpush-20260525T080832Z.json
+- Git: agent-40136728-montana-time-capsule @ a853f230f02f2f2c030d8e1f0dcf0fd8f2e6c03a (`chore: montana postpush gh snapshot 20260525T0808Z [skip ci]`)
+- Evidence stamp: 20260525T081108Z
+  - Git head: logs/montana-time-capsule/git-head-postpush-20260525T081108Z.txt
+  - GitHub Actions branch snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T081108Z.json
+  - GitHub Actions exact-head snapshot (empty; expected for `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-a853f230-postpush-20260525T081108Z.json
+
+## 2026-05-25T08:10:07Z viewer screenshot proof - hosted viewer renders (base/sky/no-sky)
+
+- Viewer alias: https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev
+- Evidence stamp: 20260525T081007Z
+  - Screenshots: logs/montana-time-capsule/screenshots/20260525T081007Z/base.png + logs/montana-time-capsule/screenshots/20260525T081007Z/sky.png + logs/montana-time-capsule/screenshots/20260525T081007Z/nosky.png
 
 ## 2026-05-25T07:26:10Z HEARTBEAT monitor (HMC canonical `hmc-mtc-20260520T2015Z`): terminal; no-spend; InProgress=0; public meta HTTP 200; hosted viewer base/sky/no-sky HTTP 200
 

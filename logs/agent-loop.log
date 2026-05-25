@@ -511,3 +511,5 @@
 [2026-05-25T08:06:34Z] friday heartbeat -> verified terminal (InProgress=0; Completed SfM/3DGS/compression; public meta 200) -> commit+push ledger
 [2026-05-25T08:07:20Z] heartbeat(hmc-mtc-20260520T2015Z) -> terminal/inprogress=0/meta=200/viewer=200 -> ledger+commit
 [2026-05-25T08:08:38Z] postpush -> exact-head runs=0 (skip ci) head=b2312d08
+[2026-05-25T08:10:47Z] viewer-screenshots -> captured base/sky/nosky (20260525T081007Z)
+[2026-05-25T08:11:36Z] postpush -> exact-head runs=0 (skip ci) head=a853f230
