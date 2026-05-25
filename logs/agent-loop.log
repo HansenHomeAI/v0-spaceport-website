@@ -532,3 +532,4 @@
 [2026-05-25T10:27:33Z] heartbeat Friday -> terminal verified (SfM/3DGS/compression Completed; InProgress=0; HTTP 200) -> commit+push ledger
 [2026-05-25T10:30:14Z] postpush gh snapshot head=01a21bf3 -> recorded
 [2026-05-25T10:46:50Z] friday heartbeat -> terminal/no-spend -> next: continue heartbeat
+[2026-05-25T10:50:07Z] hmc heartbeat -> terminal+meta200+viewer200+exact-head0 -> next: passive monitor

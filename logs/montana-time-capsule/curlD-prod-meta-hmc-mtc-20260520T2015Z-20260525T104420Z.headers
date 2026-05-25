@@ -1,0 +1,14 @@
+URL: https://spaceport-ml-processing.s3.us-west-2.amazonaws.com/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json
+HTTP/1.1 200 OK
+x-amz-id-2: ucY7DwcXFJq8iTStX1jsT4PvdquuczIExFz7w5TCaos66aGOXka7Qwqo40faIhS7aYuAiBI2J7w=
+x-amz-request-id: 8B56WC8BJET7N4SA
+Date: Mon, 25 May 2026 10:47:50 GMT
+Last-Modified: Mon, 25 May 2026 05:48:03 GMT
+ETag: "89e1a1d12752cd0887f1a74230971cca"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: Wl0EpNyXeO9s.DNwKgvsPatc4.iNVIpk
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1359
+Server: AmazonS3
+

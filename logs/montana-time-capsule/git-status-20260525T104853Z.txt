@@ -1,0 +1,14 @@
+On branch agent-40136728-montana-time-capsule
+Your branch is up to date with 'origin/agent-40136728-montana-time-capsule'.
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	logs/montana-time-capsule/curlD-prod-meta-hmc-mtc-20260520T2015Z-20260525T104420Z.headers
+	logs/montana-time-capsule/curlD-viewer-default-20260525T104420Z.headers
+	logs/montana-time-capsule/curlD-viewer-nosky-20260525T104420Z.headers
+	logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T104420Z.json
+	logs/montana-time-capsule/gh-run-list-exact-head-027170e7-20260525T104420Z.json
+	logs/montana-time-capsule/git-status-20260525T104853Z.txt
+	logs/montana-time-capsule/viewer-urls-hmc-20260525T104420Z.txt
+
+nothing added to commit but untracked files present (use "git add" to track)
