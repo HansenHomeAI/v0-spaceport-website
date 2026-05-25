@@ -508,3 +508,5 @@
 [2026-05-25T07:46:13Z] friday heartbeat -> terminal verified via boto3 (sfm/3dgs/compression Completed; InProgress=0); S3 outputs present; GH exact-head empty (expected for [skip ci]) -> no action
 [2026-05-25T07:48:15Z] postpush-gh-snapshot -> head=bf6e80dd branch=agent-40136728-montana-time-capsule sha_total expected 0 ([skip ci])
 [2026-05-25T07:49:28Z] heartbeat evidence=20260525T074916Z branch=agent-40136728-montana-time-capsule head=4c38ad86 viewer=200 meta=200 -> next: idle monitor
+[2026-05-25T08:06:34Z] friday heartbeat -> verified terminal (InProgress=0; Completed SfM/3DGS/compression; public meta 200) -> commit+push ledger
+[2026-05-25T08:07:20Z] heartbeat(hmc-mtc-20260520T2015Z) -> terminal/inprogress=0/meta=200/viewer=200 -> ledger+commit
