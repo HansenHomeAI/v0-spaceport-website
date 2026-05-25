@@ -14,15 +14,15 @@
     "branch": "logs/montana-time-capsule/git-branch-20260525T180423Z.txt",
     "git_head_detail": "logs/montana-time-capsule/git-head-detail-20260525T180423Z.txt",
     "git_status": "logs/montana-time-capsule/git-status-20260525T180423Z.txt",
-    "head": "1abfc1a275bca0f0627ee51e52debeeae220299d"
+    "head": "b988994d59af279434aeae5e353a8469f2e71817"
   },
   "postpush": {
-    "gh_branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T174833Z.json",
-    "gh_exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-67647a42-postpush-20260525T174833Z.json",
-    "gh_version": "logs/montana-time-capsule/gh-version-postpush-20260525T174833Z.txt",
-    "head_short": "67647a42",
-    "stamp": "20260525T174833Z",
-    "updated_at": "20260525T174833Z"
+    "gh_branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T180755Z.json",
+    "gh_exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-b988994d-postpush-20260525T180755Z.json",
+    "gh_version": "logs/montana-time-capsule/gh-version-postpush-20260525T180755Z.txt",
+    "head_short": "b988994d",
+    "stamp": "20260525T180755Z",
+    "updated_at": "20260525T180755Z"
   },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
