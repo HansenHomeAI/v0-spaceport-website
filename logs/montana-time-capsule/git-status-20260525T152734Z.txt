@@ -1,0 +1,36 @@
+## agent-40136728-montana-time-capsule...origin/agent-40136728-montana-time-capsule
+ M logs/montana-time-capsule/LAST_HEARTBEAT_STAMP.txt
+ M logs/montana-time-capsule/STATE.md
+ M logs/montana-time-capsule/friday-20260522-state.json
+?? logs/montana-time-capsule/_heartbeat_branch_20260525T152443Z.txt
+?? logs/montana-time-capsule/_heartbeat_branch_20260525T152734Z.txt
+?? logs/montana-time-capsule/_heartbeat_head_sha_20260525T152443Z.txt
+?? logs/montana-time-capsule/_heartbeat_head_sha_20260525T152734Z.txt
+?? logs/montana-time-capsule/_heartbeat_ts_20260525T152734Z.txt
+?? logs/montana-time-capsule/aws-config-region-20260525T152443Z.txt
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T152443Z.json
+?? logs/montana-time-capsule/aws-version-20260525T152443Z.txt
+?? logs/montana-time-capsule/curlI-friday-meta-public-20260525T152443Z.headers
+?? logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T152443Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-f606d256-20260525T152443Z.json
+?? logs/montana-time-capsule/git-branch-20260525T152443Z.txt
+?? logs/montana-time-capsule/git-branch-20260525T152734Z.txt
+?? logs/montana-time-capsule/git-head-20260525T152443Z.txt
+?? logs/montana-time-capsule/git-head-20260525T152734Z.txt
+?? logs/montana-time-capsule/git-head-detail-20260525T152443Z.txt
+?? logs/montana-time-capsule/git-head-detail-20260525T152734Z.txt
+?? logs/montana-time-capsule/git-log1-20260525T152443Z.txt
+?? logs/montana-time-capsule/git-status-20260525T152443Z.txt
+?? logs/montana-time-capsule/git-status-20260525T152734Z.txt
+?? logs/montana-time-capsule/s3head-input-zip-friday-20260525T152443Z.json
+?? logs/montana-time-capsule/s3head-public-meta-friday-20260525T152443Z.json
+?? logs/montana-time-capsule/s3ls-colmap-friday-20260525T152443Z.txt
+?? logs/montana-time-capsule/s3ls-compressed-friday-20260525T152443Z.txt
+?? logs/montana-time-capsule/s3ls-compressed-public-friday-20260525T152443Z.err
+?? logs/montana-time-capsule/s3ls-compressed-public-friday-20260525T152443Z.txt
+?? logs/montana-time-capsule/s3ls-public-bundle-friday-20260525T152443Z.txt
+?? logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T152443Z.json
+?? logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T152443Z.json
+?? logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T152443Z.json
+?? logs/montana-time-capsule/sm-list-processing-inprogress-20260525T152443Z.json
+?? logs/montana-time-capsule/sm-list-training-inprogress-20260525T152443Z.json
