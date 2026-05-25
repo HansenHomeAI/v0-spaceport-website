@@ -1,0 +1,22 @@
+ M logs/montana-time-capsule/_last_heartbeat_ts.txt
+ M logs/montana-time-capsule/hmc-state.json
+?? logs/montana-time-capsule/_heartbeat_branch_20260525T034515Z.txt
+?? logs/montana-time-capsule/_heartbeat_head_sha_20260525T034515Z.txt
+?? logs/montana-time-capsule/_heartbeat_ts_20260525T034515Z.txt
+?? logs/montana-time-capsule/curlI-hmc-viewer-alias-20260525T034429Z.headers
+?? logs/montana-time-capsule/curlI-hmc-viewer-nosky-20260525T034429Z.headers
+?? logs/montana-time-capsule/curlI-hmc-viewer-proxy-20260525T034429Z.headers
+?? logs/montana-time-capsule/curlI-hmc-viewer-sky-20260525T034429Z.headers
+?? logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T033004Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-f4129452-20260525T033004Z.json
+?? logs/montana-time-capsule/git-proof-20260525T034429Z.txt
+?? logs/montana-time-capsule/git-status-20260525T034515Z.txt
+?? logs/montana-time-capsule/s3head-public-meta-hmc-mtc-20260520T2015Z-20260525T034429Z.err
+?? logs/montana-time-capsule/s3head-public-meta-hmc-mtc-20260520T2015Z-20260525T034429Z.json
+?? logs/montana-time-capsule/s3head-staging-meta-hmc-mtc-20260520T2015Z-20260525T034429Z.json
+?? logs/montana-time-capsule/s3ls-staging-compressed-hmc-mtc-20260520T2015Z-20260525T034429Z.txt
+?? logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T034429Z.json
+?? logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T034429Z.json
+?? logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T034429Z.json
+?? logs/montana-time-capsule/sm-list-training-inprogress-20260525T034429Z.json
+?? logs/montana-time-capsule/viewer-alias-20260525T034429Z.txt

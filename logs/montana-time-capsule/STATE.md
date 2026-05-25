@@ -11765,3 +11765,15 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
     - logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T032640Z.json
     - logs/montana-time-capsule/gh-run-list-exact-head-b709d33f-20260525T032640Z.json
   - State snapshot refreshed: logs/montana-time-capsule/hmc-state.json
+
+## 20260525T034515Z HEARTBEAT monitor (Friday canonical friday-mtc-20260524T0001Z): no-spend re-verify; InProgress guardrail refreshed; SageMaker terminal; S3 outputs present; public meta.json reachable; exact-head GH runs snapshot refreshed
+
+- Git: agent-40136728-montana-time-capsule @ f412945293093e90e3babdc019433718156b2f17
+- Evidence stamp: 20260525T034515Z
+  - Git proof: logs/montana-time-capsule/git-proof-20260525T034515Z.txt
+  - AWS identity/region/version: logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T034515Z.json + logs/montana-time-capsule/aws-config-region-20260525T034515Z.txt + logs/montana-time-capsule/aws-version-20260525T034515Z.txt
+  - InProgress guardrail: logs/montana-time-capsule/sm-list-processing-inprogress-20260525T034515Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T034515Z.json
+  - Friday describes: logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T034515Z.json + logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T034515Z.json + logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T034515Z.json
+  - S3 outputs: logs/montana-time-capsule/s3ls-friday-colmap-20260525T034515Z.txt + logs/montana-time-capsule/s3ls-friday-3dgs-20260525T034515Z.txt + logs/montana-time-capsule/s3ls-friday-compressed-20260525T034515Z.txt
+  - Public reachability: logs/montana-time-capsule/s3head-public-meta-friday-20260525T034515Z.json + logs/montana-time-capsule/curlI-friday-public-meta-20260525T034515Z.headers
+  - GitHub Actions: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T034515Z.json + logs/montana-time-capsule/gh-run-list-exact-head-f4129452-20260525T034515Z.json
