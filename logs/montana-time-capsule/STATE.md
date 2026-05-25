@@ -24,6 +24,14 @@
   - GitHub Actions snapshots (`/opt/homebrew/bin/gh`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T062458Z.json + logs/montana-time-capsule/gh-run-list-exact-head-9527e35a-20260525T062458Z.json
   - Guarded stage launcher (executed once; re-emitted/updated state; no duplicate Friday jobs launched): logs/montana-time-capsule/cv-hr-time-capsule-launch-20260525T062537Z.log
 
+## 2026-05-25T06:27:32Z postpush - refreshed branch + exact-head GitHub snapshots on current head (expected empty on `[skip ci]` head)
+
+- Git: agent-40136728-montana-time-capsule @ f146d814 (`chore: heartbeat montana snapshots 20260525T0625Z [skip ci]`)
+- Evidence stamp: 20260525T062732Z
+  - Git head: logs/montana-time-capsule/git-head-postpush-20260525T062732Z.txt
+  - GitHub Actions branch snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T062732Z.json
+  - GitHub Actions exact-head snapshot: logs/montana-time-capsule/gh-run-list-exact-head-f146d814-postpush-20260525T062732Z.json
+
 ## 2026-05-25T06:06:20Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical `friday-mtc-20260524T0001Z`: no-spend; verified SageMaker Completed; InProgress=0; S3 outputs present; guarded launch cmd executed (no new jobs)
 
 - Evidence stamp: 20260525T060459Z (git/AWS/SageMaker/S3/GitHub snapshots) + 20260525T060545Z (guarded `--launch` run)
