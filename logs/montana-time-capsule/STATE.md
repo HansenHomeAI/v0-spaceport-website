@@ -10,6 +10,7 @@
   - S3 outputs: logs/montana-time-capsule/s3ls-input-zip-20260525T060459Z.txt + logs/montana-time-capsule/s3ls-colmap-friday-mtc-20260524T0001Z-20260525T060459Z.txt
   - GitHub Actions snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T060459Z.json + logs/montana-time-capsule/gh-run-list-exact-head-d51a1427-20260525T060459Z.json
   - Postpush exact-head snapshot on current head `2f2ad525` (expected empty on `[skip ci]`): logs/montana-time-capsule/git-head-postpush-20260525T060729Z.txt + logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T060729Z.json + logs/montana-time-capsule/gh-run-list-exact-head-2f2ad525-postpush-20260525T060729Z.json
+  - Exact-head snapshot on latest head `570a1579` (expected empty on `[skip ci]`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush2-20260525T060820Z.json + logs/montana-time-capsule/gh-run-list-exact-head-570a1579-postpush2-20260525T060820Z.json
   - Guarded stage launcher (executed once; state re-emitted/updated; no duplicate Friday jobs launched): logs/montana-time-capsule/cv-hr-time-capsule-launch-20260525T060545Z.log
 
 ## 2026-05-25T06:04:21Z HEARTBEAT monitor (HMC canonical `hmc-mtc-20260520T2015Z`): terminal; no-spend; InProgress=0; public meta HTTP 200; hosted viewer base/sky/no-sky HTTP 200
