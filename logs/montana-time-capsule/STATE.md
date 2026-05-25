@@ -12836,6 +12836,13 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
   - GitHub Actions snapshots (/opt/homebrew/bin/gh): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T114635Z.json + logs/montana-time-capsule/gh-run-list-exact-head-14ae5ecc-20260525T114635Z.json
   - Summary JSON updated: logs/montana-time-capsule/hmc-state.json (updated_at=20260525T114635Z)
 
+### Post-push GitHub Actions check 20260525T115105Z
+
+- Git: agent-40136728-montana-time-capsule @ ce8a9660ce981770495ca4059228fa2a668a8b74 (ce8a9660 chore: hmc heartbeat verify 20260525T1146Z [skip ci])
+- Evidence:
+  - Branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T115105Z.json
+  - Exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-ce8a9660-postpush-20260525T115105Z.json (expected 0 for skip-ci head)
+
 ## 2026-05-25T11:48:19Z postpush - refreshed branch + exact-head GitHub snapshots on new head (expected empty on `[skip ci]` head)
 
 - Git: agent-40136728-montana-time-capsule @ af376b43 (`chore: friday heartbeat monitor 20260525T1146Z [skip ci]`)
