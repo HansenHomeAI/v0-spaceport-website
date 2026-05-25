@@ -467,3 +467,4 @@
 [20260525T005056Z] postpush gh -> branch_runs 23 exact_head 0 -> done
 [2026-05-25T01:04:57Z] hmc heartbeat -> sfm/3dgs/compression Completed; staging meta OK; public meta 404; viewer 200/200/200; inprogress 0/0 -> next: idle monitor
 [2026-05-25T01:08:37Z] postpush gh -> exact-head runs 0 ([skip ci]); state refreshed -> next: idle monitor
+[2026-05-25T01:27:46Z] friday heartbeat -> verified terminal (sfm/3dgs/compression completed; meta+viewer 200; gh exact-head empty on skip-ci) -> next: commit/push logs

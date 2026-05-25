@@ -1,0 +1,46 @@
+# https://spaceport-ml-processing.s3.us-west-2.amazonaws.com/compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json
+HTTP/1.1 200 OK
+x-amz-id-2: in2iHMiwCAFd6dct0VobG8ejTSiBIMHRu2Hb0vm++K5cjJpj9COA8trYnIoTe1AYRKJ23pHo0Uk=
+x-amz-request-id: XEKBNBVFSGVHBRQC
+Date: Mon, 25 May 2026 01:26:20 GMT
+Last-Modified: Sun, 24 May 2026 17:08:06 GMT
+ETag: "6db972a5b06efb831cee42e4aad4443c"
+x-amz-server-side-encryption: AES256
+Cache-Control: public, max-age=31536000, s-maxage=31536000, immutable
+x-amz-version-id: a5q2Msf.yBUYKQ_i.R696mQq1XSlvosb
+Accept-Ranges: bytes
+Content-Type: application/json
+Content-Length: 1372
+Server: AmazonS3
+
+
+# https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing.s3.us-west-2.amazonaws.com%2Fcompressed%2Ffriday-mtc-20260524T0001Z%2Fsupersplat_bundle%2Fmeta.json&skybox=background_skybox.webp
+HTTP/2 200 
+date: Mon, 25 May 2026 01:26:20 GMT
+content-type: text/html; charset=utf-8
+vary: RSC, Next-Router-State-Tree, Next-Router-Prefetch
+x-edge-runtime: 1
+x-matched-path: /sogs-migrated-viewer
+x-powered-by: Next.js
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=a4e3FT9WRGjEinafrXJW9ptM6tHAKHr1uQktdM3zD%2B3UGkM%2BO9NXoYV1TKtMf7wOoCltTFsfxbZRM35gDZ4O3HQGeM9ye%2FsDQWbEeMipn0QANYmN2HMugqQjqGyT2oNOgsZoFvhNWMzjCIJS7DJNor1Yv38jnGvPUea68bGnmR3cac3JchMWUWq6yAb7XLIUf4bbWfaez7lbGDiiT0mNAdUK"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: a010c057bc81328e-SLC
+alt-svc: h3=":443"; ma=86400
+
+
+# https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/sogs-migrated-viewer?url=https%3A%2F%2Fspaceport-ml-processing.s3.us-west-2.amazonaws.com%2Fcompressed%2Ffriday-mtc-20260524T0001Z%2Fsupersplat_bundle%2Fmeta.json&skybox=off
+HTTP/2 200 
+date: Mon, 25 May 2026 01:26:20 GMT
+content-type: text/html; charset=utf-8
+vary: RSC, Next-Router-State-Tree, Next-Router-Prefetch
+x-edge-runtime: 1
+x-matched-path: /sogs-migrated-viewer
+x-powered-by: Next.js
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=%2B6oXlrIGLFzIH32lNLWhCd5SUTkICrBvUUE21P%2F7OB8DU5axqrVxsXcHtz%2Bs6pAyrbYUgqQQr%2Bs9u3BXfTS6c8O6KP%2BmQ%2FlFJMXiKKQbYCvFUiQQ%2BUnEFQ3qGXUJ6a%2ByLexAwbo%2B%2Bb8dd6GHbgSPIPYGeR%2B6URwc5C6YTMS7Y9YAOfEs57gfl%2Bj0uxPjY1ftTG85uHNVBYrIHiuP16eVRq9t"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: a010c0584f6a13ed-SLC
+alt-svc: h3=":443"; ma=86400
+
+

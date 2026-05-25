@@ -1,0 +1,19 @@
+# git-proof 20260525T012500Z
+/Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule
+agent-40136728-montana-time-capsule
+91c2fd0acb9653eaf08e1404a1e3e6ea4dc8abb4
+91c2fd0acb9653eaf08e1404a1e3e6ea4dc8abb4 chore: postpush gh snapshot 20260525T010837Z [skip ci]
+?? logs/montana-time-capsule/aws-region-20260525T012433Z.txt
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T012433Z.json
+?? logs/montana-time-capsule/gh-repo-20260525T012424Z.json
+?? logs/montana-time-capsule/gh-repo-20260525T012433Z.json
+?? logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T012433Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-91c2fd0a-20260525T012433Z.json
+?? logs/montana-time-capsule/git-proof-20260525T012424Z.txt
+?? logs/montana-time-capsule/git-proof-20260525T012433Z.txt
+?? logs/montana-time-capsule/git-proof-20260525T012500Z.txt
+?? logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T012433Z.json
+?? logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T012433Z.json
+?? logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T012433Z.json
+?? logs/montana-time-capsule/sm-list-processing-inprogress-20260525T012433Z.json
+?? logs/montana-time-capsule/sm-list-training-inprogress-20260525T012433Z.json
