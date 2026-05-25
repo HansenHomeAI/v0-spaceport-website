@@ -13321,3 +13321,10 @@ Evidence snapshot: logs/montana-time-capsule/hmc-state.json (evidence_stamp=2026
   - GitHub Actions: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T154529Z.json + logs/montana-time-capsule/gh-run-list-exact-head-ae52c258-20260525T154529Z.json (exact-head empty because HEAD is [skip ci])
 
 - Machine-readable state refreshed: logs/montana-time-capsule/friday-20260522-state.json (heartbeat_evidence_stamp=20260525T154529Z)
+
+---
+### Postpush 20260525T155137Z (2026-05-25T15:51:37Z)
+
+- pushed heartbeat commit `af789257` ([skip ci]); exact-head workflows expected empty by design
+- postpush branch run list: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T155137Z.json
+- postpush exact-head run list: logs/montana-time-capsule/gh-run-list-exact-head-af789257-postpush-20260525T155137Z.json
