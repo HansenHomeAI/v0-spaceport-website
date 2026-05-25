@@ -630,3 +630,4 @@
 [2026-05-25T23:10:20Z] montana-time-capsule heartbeat -> hmc canonical verified (git/aws/sm/s3/meta/viewer) head 32b249d6; exact-head GH empty (skip ci) -> next: commit+push ledger
 [2026-05-25T23:11:58Z] postpush gh snapshot -> head 7da49a88 -> saved logs/montana-time-capsule/gh-run-list-exact-head-7da49a88-postpush-20260525T231127Z.json
 [2026-05-25T23:26:43Z] heartbeat -> verified terminal (0 inprogress, bundle+viewer 200) -> next: await new acceptance gate
+[2026-05-25T23:46:14Z] heartbeat -> verified terminal (0/0 inprogress; S3/meta/viewer HTTP200; exact-head GH empty due to skip ci) (stamp=20260525T234614Z) -> next: commit+push ledger

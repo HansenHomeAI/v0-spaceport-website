@@ -1,5 +1,17 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-25T23:46:14Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: AWS identity ok, SageMaker terminal (SfM/3DGS/compression Completed), InProgress=0/0, S3 supersplat bundle/meta still present (staging+prod), prod meta HTTP 200, hosted preview viewer base/sky/no-sky URLs HTTP 200; GitHub Actions captured (branch has runs, exact-head empty due to `[skip ci]` head); no new jobs launched (no-spend checks only)
+
+- Evidence stamp: 20260525T234614Z
+  - Git head/detail/status: logs/montana-time-capsule/git-branch-20260525T234614Z.txt + logs/montana-time-capsule/git-head-20260525T234614Z.txt + logs/montana-time-capsule/git-head-detail-20260525T234614Z.txt + logs/montana-time-capsule/git-status-20260525T234614Z.txt + logs/montana-time-capsule/git-log1-20260525T234614Z.txt
+  - AWS identity/region/version (`/opt/homebrew/bin/aws`; us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T234614Z.json + logs/montana-time-capsule/aws-config-region-20260525T234614Z.txt + logs/montana-time-capsule/aws-version-20260525T234614Z.txt
+  - InProgress guardrail (max-results=50): logs/montana-time-capsule/sm-list-processing-inprogress-20260525T234614Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T234614Z.json (counts: 0/0)
+  - Canonical HMC describes (all Completed): logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T234614Z.json + logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T234614Z.json + logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T234614Z.json
+  - S3 outputs + compressed meta reachability: logs/montana-time-capsule/s3ls-staging-supersplat-bundle-hmc-mtc-20260520T2015Z-20260525T234614Z.txt + logs/montana-time-capsule/s3ls-prod-supersplat-bundle-hmc-mtc-20260520T2015Z-20260525T234614Z.txt + logs/montana-time-capsule/s3head-prod-meta-hmc-mtc-20260520T2015Z-20260525T234614Z.json + logs/montana-time-capsule/curlI-prod-meta-hmc-mtc-20260520T2015Z-20260525T234614Z.headers
+  - Hosted viewer reachability (HTTP 200 for base + sky/no-sky): logs/montana-time-capsule/viewer-urls-20260525T234614Z.txt + logs/montana-time-capsule/curlI-viewer-base-20260525T234614Z.headers + logs/montana-time-capsule/curlI-viewer-sky-hmc-mtc-20260520T2015Z-20260525T234614Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-hmc-mtc-20260520T2015Z-20260525T234614Z.headers
+  - GitHub Actions snapshots (`/opt/homebrew/bin/gh`; exact-head empty for `[skip ci]` head): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T234614Z.json + logs/montana-time-capsule/gh-run-list-exact-head-f4209150-20260525T234614Z.json + logs/montana-time-capsule/gh-version-20260525T234614Z.txt
+  - Machine-readable state: logs/montana-time-capsule/hmc-state.json
+
 ## 2026-05-25T23:25:52Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: verified git/head/status clean, AWS identity ok, SageMaker terminal (SfM/3DGS/compression Completed), InProgress=0/0, S3 supersplat bundle/meta still present (staging+prod), prod meta HTTP 200, hosted preview viewer base/sky/no-sky URLs HTTP 200; no new jobs launched (no-spend checks only)
 
 - Evidence stamp: 20260525T232552Z
