@@ -1,0 +1,13 @@
+HTTP/1.1 200 OK
+x-amz-id-2: wfm05a2/GboJ/z1DJeLcz5rVajXmPyR7a5OExtecvQd5PIeZxpOJfuV4hNGIRorSRXsw5zgkvwM=
+x-amz-request-id: 4NDB2NZKSM37RJ5S
+Date: Mon, 25 May 2026 12:46:24 GMT
+Last-Modified: Mon, 25 May 2026 05:48:03 GMT
+ETag: "89e1a1d12752cd0887f1a74230971cca"
+x-amz-server-side-encryption: AES256
+x-amz-version-id: Wl0EpNyXeO9s.DNwKgvsPatc4.iNVIpk
+Accept-Ranges: bytes
+Content-Type: application/octet-stream
+Content-Length: 1359
+Server: AmazonS3
+

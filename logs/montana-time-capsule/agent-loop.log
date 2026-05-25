@@ -50,3 +50,4 @@
 [2026-05-25T06:25:56Z] heartbeat(friday) -> verified sm InProgress=0, sfm/3dgs/compression Completed; guarded --launch executed (idempotent) -> commit+push
 [2026-05-25T06:26:37Z] hmc heartbeat verify -> ok (terminal, http 200, inprogress 0/0) -> next: idle
 [2026-05-25T06:27:34Z] postpush -> gh snapshots recorded (20260525T062732Z)
+[2026-05-25T12:46:26Z] heartbeat evidence captured (20260525T124613Z)
