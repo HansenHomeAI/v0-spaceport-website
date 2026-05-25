@@ -11777,3 +11777,10 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
   - S3 outputs: logs/montana-time-capsule/s3ls-friday-colmap-20260525T034515Z.txt + logs/montana-time-capsule/s3ls-friday-3dgs-20260525T034515Z.txt + logs/montana-time-capsule/s3ls-friday-compressed-20260525T034515Z.txt
   - Public reachability: logs/montana-time-capsule/s3head-public-meta-friday-20260525T034515Z.json + logs/montana-time-capsule/curlI-friday-public-meta-20260525T034515Z.headers
   - GitHub Actions: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T034515Z.json + logs/montana-time-capsule/gh-run-list-exact-head-f4129452-20260525T034515Z.json
+
+### Post-push GitHub Actions check 20260525T034627Z
+
+- Git: agent-40136728-montana-time-capsule @ 20229143b9b99337131c74abbc41355bfcd835ef (chore: friday mtc heartbeat tick 20260525T034515Z [skip ci])
+- Evidence stamp: 20260525T034627Z
+- Branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T034627Z.json
+- Exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-20229143-postpush-20260525T034627Z.json
