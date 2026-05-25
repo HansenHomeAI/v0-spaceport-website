@@ -1,0 +1,15 @@
+== git proof ==
+/Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule
+agent-40136728-montana-time-capsule
+608229b6e89522435c1dbd92d1d06aa2baf7e2c9
+608229b6 chore: postpush gh snapshot 20260525T005056Z [skip ci]
+?? logs/montana-time-capsule/git-aws-proof-20260525T010457Z.txt
+
+== aws proof ==
+aws-cli/2.22.26 Python/3.12.8 Darwin/25.4.0 source/arm64
+us-west-2
+{
+    "UserId": "975050048887",
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root"
+}
