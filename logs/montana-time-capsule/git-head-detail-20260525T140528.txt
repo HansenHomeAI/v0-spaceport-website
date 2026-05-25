@@ -1,0 +1,1 @@
+HEAD=653294bf40e0f71f960eb03b3d864bd5009e740f\nDATE=2026-05-25T07:54:54-06:00\nSUBJECT=chore: hmc heartbeat postpush gh snapshot 20260525T135452Z [skip ci]

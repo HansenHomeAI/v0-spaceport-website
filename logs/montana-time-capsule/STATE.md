@@ -13130,3 +13130,22 @@ LEARN MORE
   Read the manual at https://cli.github.com/manual
   Learn about exit codes using `gh help exit-codes`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T135342Z.json + logs/montana-time-capsule/gh-run-list-exact-head-09a1188f-20260525T135342Z.json
   - Summary JSON updated: logs/montana-time-capsule/hmc-state.json
+
+## Heartbeat 20260525T140528
+- git: branch=agent-40136728-montana-time-capsule head=653294bf
+- aws sts: logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T140528.json
+- sagemaker: sfm/3dgs/compression Completed; inprogress=0
+  - logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T140528.json
+  - logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T140528.json
+  - logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T140528.json
+- s3 meta: HTTP 200 + S3 head
+  - logs/montana-time-capsule/curlI-prod-meta-hmc-20260525T140528.headers
+  - logs/montana-time-capsule/s3head-prod-meta-hmc-hmc-mtc-20260520T2015Z-20260525T140528.json
+- viewer: HTTP 200 (base/sky/nosky)
+  - logs/montana-time-capsule/curlI-viewer-base-20260525T140528.headers
+  - logs/montana-time-capsule/curlI-viewer-sky-20260525T140528.headers
+  - logs/montana-time-capsule/curlI-viewer-nosky-20260525T140528.headers
+- gh: snapshots
+  - logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T140528.json
+  - logs/montana-time-capsule/gh-run-list-exact-head-653294bf-20260525T140528.json
+- summary json: logs/montana-time-capsule/hmc-state.json
