@@ -26,15 +26,15 @@
     "branch": "agent-40136728-montana-time-capsule",
     "gh_branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T214529Z.json",
     "gh_exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-762c77dd-20260525T214529Z.json",
-    "gh_run_list_branch_postpush": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T220959Z.json",
-    "gh_run_list_exact_head_postpush": "logs/montana-time-capsule/gh-run-list-exact-head-b8afd296-postpush-20260525T220959Z.json",
-    "gh_version_postpush": "logs/montana-time-capsule/gh-version-postpush-20260525T220959Z.txt",
-    "git_head_postpush": "logs/montana-time-capsule/git-head-postpush-20260525T220959Z.txt",
-    "head": "b8afd29651b06ca5f7f5b2b6efabca4bd7709092",
-    "head_short": "b8afd296",
-    "stamp": "20260525T220959Z"
+    "gh_run_list_branch_postpush": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T222943Z.json",
+    "gh_run_list_exact_head_postpush": "logs/montana-time-capsule/gh-run-list-exact-head-76287b54-postpush-20260525T222943Z.json",
+    "gh_version_postpush": "logs/montana-time-capsule/gh-version-postpush-20260525T222943Z.txt",
+    "git_head_postpush": "logs/montana-time-capsule/git-head-postpush-20260525T222943Z.txt",
+    "head": "76287b540eeb54dba8bd512b23a4b6bd654ea06b",
+    "head_short": "76287b54",
+    "stamp": "20260525T222943Z"
   },
-  "postpush_updated_at": "20260525T220959Z",
+  "postpush_updated_at": "20260525T222943Z",
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
     "compressed_prefix": "s3://spaceport-ml-processing-staging/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/",
