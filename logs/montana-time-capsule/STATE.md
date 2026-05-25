@@ -1,5 +1,23 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-25T01:05:50Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: terminal re-verify (no spend); SageMaker InProgress=0; public meta + hosted viewer (sky/no-sky) HTTP 200; no duplicate jobs launched
+
+- Git: agent-40136728-montana-time-capsule @ 608229b6e89522435c1dbd92d1d06aa2baf7e2c9 (`chore: postpush gh snapshot 20260525T005056Z [skip ci]`)
+- Evidence stamp: 20260525T010550Z
+  - AWS identity: logs/montana-time-capsule/aws-sts-20260525T010550Z.json
+  - InProgress guardrail (max-results=50): logs/montana-time-capsule/sm-list-processing-inprogress-20260525T010550Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T010550Z.json
+  - Friday canonical describes (all Completed):
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T010550Z.json
+    - logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T010550Z.json
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T010550Z.json
+  - S3 outputs:
+    - SfM/colmap listing: logs/montana-time-capsule/s3ls-manual-validations-friday-mtc-20260524T0001Z-20260525T010550Z.txt
+    - compressed bundle listing: logs/montana-time-capsule/s3ls-compressed-friday-mtc-20260524T0001Z-20260525T010550Z.txt
+  - Public reachability:
+    - meta.json head-object: logs/montana-time-capsule/s3api-head-object-spaceport-ml-processing-compressed_friday-mtc-20260524T0001Z_supersplat_bundle_meta.json-20260525T010550Z.json
+    - meta + viewer HTTP status: logs/montana-time-capsule/friday-http-status-20260525T010550Z.txt
+  - GitHub Actions branch snapshot: logs/montana-time-capsule/gh-run-list-20260525T010550Z.txt
+
 ## 2026-05-25T01:04:57Z HEARTBEAT monitor (HMC canonical hmc-mtc-20260520T2015Z): no-spend re-verify; terminal SageMaker; staging bundle present; public meta.json still 404; hosted viewer base/sky/no-sky HTTP 200; exact-head GH runs empty (expected for `[skip ci]`)
 
 - Git: agent-40136728-montana-time-capsule @ 608229b6e89522435c1dbd92d1d06aa2baf7e2c9 (`chore: postpush gh snapshot 20260525T005056Z [skip ci]`)
