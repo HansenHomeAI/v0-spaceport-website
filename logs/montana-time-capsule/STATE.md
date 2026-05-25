@@ -12294,3 +12294,10 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
   - Git head: logs/montana-time-capsule/git-head-postpush-20260525T064746Z.txt
   - GitHub Actions branch snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T064746Z.json
   - GitHub Actions exact-head snapshot: logs/montana-time-capsule/gh-run-list-exact-head-94bb952d-postpush-20260525T064746Z.json
+
+## 2026-05-25T06:48:05Z exact-head refresh - recorded branch + exact-head GitHub snapshots on current head (expected empty on `[skip ci]` head)
+
+- Git: agent-40136728-montana-time-capsule @ d163d425 (d163d425 chore: postpush gh snapshot 20260525T064746Z [skip ci])
+- Evidence stamp: 20260525T064803Z
+  - GitHub Actions branch snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-exacthead-20260525T064803Z.json
+  - GitHub Actions exact-head snapshot: logs/montana-time-capsule/gh-run-list-exact-head-d163d425-20260525T064803Z.json
