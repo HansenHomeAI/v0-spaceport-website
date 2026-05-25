@@ -14,13 +14,13 @@
   - GitHub Actions snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T080549Z.json + logs/montana-time-capsule/gh-run-list-exact-head-26f1cd15-20260525T080549Z.json
   - Summary JSON updated: logs/montana-time-capsule/hmc-state.json
 
-## 2026-05-25T08:11:08Z postpush - refreshed branch + exact-head GitHub snapshots on current head (expected empty on `[skip ci]` head)
+## 2026-05-25T08:11:59Z postpush - refreshed branch + exact-head GitHub snapshots on current head (expected empty on `[skip ci]` head)
 
-- Git: agent-40136728-montana-time-capsule @ a853f230f02f2f2c030d8e1f0dcf0fd8f2e6c03a (`chore: montana postpush gh snapshot 20260525T0808Z [skip ci]`)
-- Evidence stamp: 20260525T081108Z
-  - Git head: logs/montana-time-capsule/git-head-postpush-20260525T081108Z.txt
-  - GitHub Actions branch snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T081108Z.json
-  - GitHub Actions exact-head snapshot (empty; expected for `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-a853f230-postpush-20260525T081108Z.json
+- Git: agent-40136728-montana-time-capsule @ 795419bf57f6c7fb82b0cc07bdc3a27e15f55d52 (`chore: montana viewer screenshots 20260525T0810Z [skip ci]`)
+- Evidence stamp: 20260525T081159Z
+  - Git head: logs/montana-time-capsule/git-head-postpush-20260525T081159Z.txt
+  - GitHub Actions branch snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T081159Z.json
+  - GitHub Actions exact-head snapshot (empty; expected for `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-795419bf-postpush-20260525T081159Z.json
 
 ## 2026-05-25T08:10:07Z viewer screenshot proof - hosted viewer renders (base/sky/no-sky)
 

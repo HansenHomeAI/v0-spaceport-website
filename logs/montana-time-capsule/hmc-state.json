@@ -1,10 +1,10 @@
 {
   "run_id": "hmc-mtc-20260520T2015Z",
   "evidence_stamp": "20260525T080549",
-  "updated_at": "20260525T081108",
+  "updated_at": "20260525T081159",
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "a853f23082faef31b3434ba263b0d4ea0daf2525"
+    "head": "795419bf8643ea316b65506db1ed54b0c524facf"
   },
   "aws": {
     "region": "logs/montana-time-capsule/aws-config-region-20260525T080549Z.txt",
@@ -51,8 +51,8 @@
     "screenshot_nosky": "logs/montana-time-capsule/screenshots/20260525T081007Z/nosky.png"
   },
   "gh": {
-    "branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T081108Z.json",
-    "exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-a853f230-postpush-20260525T081108Z.json",
+    "branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T081159Z.json",
+    "exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-795419bf-postpush-20260525T081159Z.json",
     "pages_run_id": "26362313633"
   }
 }
