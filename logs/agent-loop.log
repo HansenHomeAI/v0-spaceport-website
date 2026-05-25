@@ -480,3 +480,4 @@
 [20260525T024810Z] exact-head gh snapshot -> exact_head_runs=0 -> next: idle
 [2026-05-25T03:07:00Z] heartbeat-hmc -> ok(no-spend) -> next: wait
 [2026-05-25T03:07:33Z] postpush-gh-snapshot -> ok -> next: wait
+[20260525T034522Z] heartbeat hmc-mtc-20260520T2015Z -> terminal+viewer ok; public meta 404 persists -> next: wait for public bundle gate / visual screenshots
