@@ -34,3 +34,4 @@ next_unblocked_step: no compute to launch; optional deeper viewer QA (camera/sky
 [2026-05-25T13:06:54Z] heartbeat -> friday-mtc terminal reconfirm (no spend); InProgress=0/0; S3 present; exact-head GH snapshot -> commit/push ledger
 [2026-05-25T13:29:56Z] heartbeat -> hmc-mtc terminal reconfirm (no spend); InProgress=0/0; public meta HTTP200; hosted viewer bundle URLs HTTP200; latest Pages+CDK green -> commit/push ledger
 [2026-05-25T17:45:42Z] heartbeat -> hmc-mtc terminal reconfirm (no spend); InProgress=0/0; S3 present; prod meta+viewer HTTP200; gh branch+exact-head snapshots -> next: idle
+[2026-05-25T17:48:33Z] postpush -> recorded gh runs for new head (67647a42; skip ci); exact-head workflows 0 -> next: idle

@@ -609,3 +609,4 @@
 [2026-05-25T17:27:02Z] heartbeat(hmc-mtc-20260520T2015Z) -> verified terminal + viewer/meta HTTP200 -> next: wait for new acceptance gate
 [2026-05-25T17:27:41Z] postpush gh snapshot 20260525T172730Z (head=40a7d1df) -> exact-head workflows 0 (skip ci) -> next: idle
 [2026-05-25T17:47:40Z] heartbeat(hmc-mtc-20260520T2015Z) -> verified terminal + S3/meta/viewer HTTP200 (stamp=20260525T174542Z); inprogress 0/0; gh snapshots captured -> next: idle
+[2026-05-25T17:49:12Z] postpush gh snapshot 20260525T174833Z (head=67647a42) -> exact-head workflows 0 (skip ci) -> next: idle
