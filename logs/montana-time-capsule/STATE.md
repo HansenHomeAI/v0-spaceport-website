@@ -12402,3 +12402,15 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
   - Git head: logs/montana-time-capsule/git-head-postpush-20260525T071327Z.txt
   - Branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T071327Z.json
   - Exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-ef1d4f2c-postpush-20260525T071327Z.json (expected 0 for `[skip ci]` head)
+
+## 20260525T074613Z HEARTBEAT monitor (Friday canonical `friday-mtc-20260524T0001Z`): terminal; no-spend; InProgress=0; SageMaker jobs Completed; S3 outputs present; exact-head runs empty (expected for `[skip ci]` head)
+
+- Git: agent-40136728-montana-time-capsule @ e8614ced32d865614f99a02298704999e2ee4da3
+- Evidence stamp: 20260525T074613Z
+  - Git status/head: logs/montana-time-capsule/git-status-20260525T074613Z.txt + logs/montana-time-capsule/git-head-20260525T074613Z.txt + logs/montana-time-capsule/git-head-detail-20260525T074613Z.txt
+  - AWS identity + region (boto3; `aws` CLI missing): logs/montana-time-capsule/sts-get-caller-identity-20260525T074613Z.json + logs/montana-time-capsule/aws-session-region-20260525T074613Z.txt
+  - SageMaker heartbeat (boto3): logs/montana-time-capsule/sm-heartbeat-20260525T074613Z.json (SfM/3DGS/Compression all Completed; InProgress lists empty)
+  - S3 heartbeat (boto3): logs/montana-time-capsule/s3-heartbeat-20260525T074613Z.json (input zip head + colmap prefix + compressed prefix + meta head)
+  - GitHub Actions snapshot (unauth GitHub API; no `gh`/token): logs/montana-time-capsule/gh-actions-runs-unauth-20260525T074613Z.json (branch history present; sha runs empty for this head)
+
+- Action: no further launches (pipeline already completed; guardrail against duplicate Friday jobs).

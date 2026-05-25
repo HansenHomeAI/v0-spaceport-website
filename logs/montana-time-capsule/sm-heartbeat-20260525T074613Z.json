@@ -1,0 +1,299 @@
+{
+  "list_processing_inprogress": {
+    "ProcessingJobSummaries": [],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTRGCBLNKUVSVxIu5oUBdDotAtaJLC+wBFm7pWR98Uv83L3qIwLQKRhWE0Cxm93c6jp3K017vRME6Hv2BBAIVIsj/fvgk6fCyi1HlqhYFqE4zA6X8DCYgpba8zgm8HLNqk2ByI6u2trx6euUYChY3wbD7AP/ztvoPBWwlltiBCxKGPvU6Duqx69eaL9txt+uge5QaouGOFbh4bZSJAzI3zczEroVdbqrIBEntjasr2vdL6yypOA4Xv0a4Zmdq/osjXJW/26FmpPXvCqS871I/VibdY9CX6qpkPhpoScDy8C3Tzz01awdaoQnD8uDImNuRzBmzIHPykG4EScMrXtVUeKICcyPmj7pboVAhGN/waPp/rXaZVmFTq9D+iI3Bko+9HvDl0u33Rd5pC5pKUb9mluXv6CrRd5f+soMGlHjyR2EaRSHMCKUIXeH3BGN/6qu9pF+YhELikABel1t8ukaR5SQXvHT9sAIb4o0rQCKxvj6YW/W5JYvNsZP8//ucW+IeIkA==",
+    "ResponseMetadata": {
+      "RequestId": "c2e5b0d9-db16-4fd9-b995-a7a39234c431",
+      "HTTPStatusCode": 200,
+      "RetryAttempts": 0
+    }
+  },
+  "list_training_inprogress": {
+    "TrainingJobSummaries": [],
+    "NextToken": "cIws2QhTXUIa8bi8VL/JT1dLRjlE2kCRa1t1y4nMUHDeiynHoMEfj5snTJufeUpUQ9qTRGCBLNKUVSVxIu5oUBdDotAtaJLC+wBFm7pWR98Uv83L3qIwLQKRhWE0Cxm93c6jp3K017vRME6Hv2BBAIVIsj/fvgk6fCyi1HlqhYFqE4zA6X8DCYgpba8zgm8HLNqk2ByI6u2trx6euUYChY3wbD7AP/ztvoPBWwlltiBCxKGPvU6Duqx69eaL9txt+uge5QaouGOFbh4bZSJAzI3zczEroVdbqrIBEntjasr2vdL6yypOA4Xv0a4Zmdq/osjXJW/26FmpPXvCqS871I/VibdY9CX6qpkPhpoScDy8C3Tzz01awdaoQnD8uDImNuRzBmzIHPykG4EScMrXtVUeJYjwgqeBnlmB0tgzSupZ+9gHnwtMkgTV6C+6H28BURdAOMi5pgVNVu54huS7meRJ/U4iYYEX2ZioPY2yocNs5wOCL3BnabMV/7Ly7uG8u27tAE//IX3ZrMeIfUvSGYU/PPorFMkNsWSV920E9kmmAOfdJ5L8U7U371qmt/2BHCNUQg==",
+    "ResponseMetadata": {
+      "RequestId": "13ec17fe-b544-43e7-99a0-07b3a43acda9",
+      "HTTPStatusCode": 200,
+      "RetryAttempts": 0
+    }
+  },
+  "describe_sfm": {
+    "ProcessingInputs": [
+      {
+        "InputName": "sfm-input",
+        "AppManaged": false,
+        "S3Input": {
+          "S3Uri": "s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.zip",
+          "LocalPath": "/opt/ml/processing/input",
+          "S3DataType": "S3Prefix",
+          "S3InputMode": "File",
+          "S3DataDistributionType": "FullyReplicated",
+          "S3CompressionType": "None"
+        }
+      }
+    ],
+    "ProcessingOutputConfig": {
+      "Outputs": [
+        {
+          "OutputName": "colmap-output",
+          "S3Output": {
+            "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/friday-mtc-20260524T0001Z/colmap",
+            "LocalPath": "/opt/ml/processing/output",
+            "S3UploadMode": "EndOfJob"
+          },
+          "AppManaged": false
+        }
+      ]
+    },
+    "ProcessingJobName": "friday-mtc-20260524T0001Z-sfm",
+    "ProcessingResources": {
+      "ClusterConfig": {
+        "InstanceCount": 1,
+        "InstanceType": "ml.g4dn.xlarge",
+        "VolumeSizeInGB": 100
+      }
+    },
+    "StoppingCondition": {
+      "MaxRuntimeInSeconds": 86400
+    },
+    "AppSpecification": {
+      "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm@sha256:8fe38e3413e09954dcad77b8436c2a04defd20a39bdae1b3df573c504ef98811",
+      "ContainerEntrypoint": [
+        "/opt/ml/code/run_sfm.sh"
+      ]
+    },
+    "Environment": {
+      "AWS_DEFAULT_REGION": "us-west-2",
+      "COLMAP_CHUNK_MIN_CORE_REGISTERED_RATIO": "0.90",
+      "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+      "PYTHONUNBUFFERED": "1",
+      "SFM_BENCHMARK_SUBSET_STRATEGY": "friday_20260522_full_1776_montana_time_capsule",
+      "SFM_BRANCH_NAME": "agent-40136728-montana-time-capsule",
+      "SFM_GIT_HEAD": "0e3f3e57759cd2bf65effc60064bc2874fa97eb7",
+      "SFM_INPUT_URI": "s3://spaceport-uploads-staging/1779580731329-friday-20260522-new-property-flat.zip",
+      "SFM_JOB_NAME": "friday-mtc-20260524T0001Z-sfm",
+      "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/friday-mtc-20260524T0001Z/colmap"
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/friday-mtc-20260524T0001Z-sfm",
+    "ProcessingJobStatus": "Completed",
+    "ProcessingEndTime": "2026-05-24 02:33:44.726000-06:00",
+    "ProcessingStartTime": "2026-05-23 18:03:51.397000-06:00",
+    "LastModifiedTime": "2026-05-24 03:03:21.631000-06:00",
+    "CreationTime": "2026-05-23 18:03:05.148000-06:00",
+    "ResponseMetadata": {
+      "RequestId": "3d49f7b9-dd4b-41a5-8d08-f8b4a6a4c5f5",
+      "HTTPStatusCode": 200,
+      "RetryAttempts": 0
+    }
+  },
+  "describe_compression": {
+    "ProcessingInputs": [
+      {
+        "InputName": "gaussian-model",
+        "AppManaged": false,
+        "S3Input": {
+          "S3Uri": "s3://spaceport-ml-processing-staging/3dgs/friday-mtc-20260524T0001Z/friday-mtc-20260524T0001Z-3dgs/output/model.tar.gz",
+          "LocalPath": "/opt/ml/processing/input",
+          "S3DataType": "S3Prefix",
+          "S3InputMode": "File",
+          "S3DataDistributionType": "FullyReplicated",
+          "S3CompressionType": "None"
+        }
+      }
+    ],
+    "ProcessingOutputConfig": {
+      "Outputs": [
+        {
+          "OutputName": "compressed-model",
+          "S3Output": {
+            "S3Uri": "s3://spaceport-ml-processing-staging/compressed/friday-mtc-20260524T0001Z/",
+            "LocalPath": "/opt/ml/processing/output",
+            "S3UploadMode": "EndOfJob"
+          },
+          "AppManaged": false
+        }
+      ]
+    },
+    "ProcessingJobName": "friday-mtc-20260524T0001Z-compression",
+    "ProcessingResources": {
+      "ClusterConfig": {
+        "InstanceCount": 1,
+        "InstanceType": "ml.g4dn.xlarge",
+        "VolumeSizeInGB": 50
+      }
+    },
+    "StoppingCondition": {
+      "MaxRuntimeInSeconds": 86400
+    },
+    "AppSpecification": {
+      "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/compressor@sha256:a0784727da1870ce9caa4774dc831a32fb96cd1574df389cf9093fbf18f4f4ab",
+      "ContainerEntrypoint": [
+        "python3",
+        "compress.py"
+      ]
+    },
+    "Environment": {
+      "AWS_DEFAULT_REGION": "us-west-2",
+      "PYTHONUNBUFFERED": "1"
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/friday-mtc-20260524T0001Z-compression",
+    "ProcessingJobStatus": "Completed",
+    "ProcessingEndTime": "2026-05-24 07:14:56.355000-06:00",
+    "ProcessingStartTime": "2026-05-24 07:08:01.169000-06:00",
+    "LastModifiedTime": "2026-05-24 07:17:25.335000-06:00",
+    "CreationTime": "2026-05-24 07:07:23.510000-06:00",
+    "ResponseMetadata": {
+      "RequestId": "13081937-e1d1-457b-840d-d51ac940a9e3",
+      "HTTPStatusCode": 200,
+      "RetryAttempts": 0
+    }
+  },
+  "describe_3dgs": {
+    "TrainingJobName": "friday-mtc-20260524T0001Z-3dgs",
+    "TrainingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:training-job/friday-mtc-20260524T0001Z-3dgs",
+    "ModelArtifacts": {
+      "S3ModelArtifacts": "s3://spaceport-ml-processing-staging/3dgs/friday-mtc-20260524T0001Z/friday-mtc-20260524T0001Z-3dgs/output/model.tar.gz"
+    },
+    "TrainingJobStatus": "Completed",
+    "SecondaryStatus": "Completed",
+    "AlgorithmSpecification": {
+      "TrainingImage": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:482c1789b2d885beccf351b68d50e4b8135c43d5921c2379b0ba5fb152ed15db",
+      "TrainingInputMode": "File",
+      "EnableSageMakerMetricsTimeSeries": false
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "InputDataConfig": [
+      {
+        "ChannelName": "training",
+        "DataSource": {
+          "S3DataSource": {
+            "S3DataType": "S3Prefix",
+            "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/friday-mtc-20260524T0001Z/colmap",
+            "S3DataDistributionType": "FullyReplicated"
+          }
+        },
+        "CompressionType": "None",
+        "RecordWrapperType": "None"
+      }
+    ],
+    "OutputDataConfig": {
+      "KmsKeyId": "",
+      "S3OutputPath": "s3://spaceport-ml-processing-staging/3dgs/friday-mtc-20260524T0001Z/",
+      "CompressionType": "GZIP"
+    },
+    "ResourceConfig": {
+      "InstanceType": "ml.g5.2xlarge",
+      "InstanceCount": 1,
+      "VolumeSizeInGB": 100
+    },
+    "StoppingCondition": {
+      "MaxRuntimeInSeconds": 14400
+    },
+    "CreationTime": "2026-05-24 03:05:56.570000-06:00",
+    "TrainingStartTime": "2026-05-24 03:06:51.507000-06:00",
+    "TrainingEndTime": "2026-05-24 06:54:13.818000-06:00",
+    "LastModifiedTime": "2026-05-24 06:54:14.387000-06:00",
+    "SecondaryStatusTransitions": [
+      {
+        "Status": "Starting",
+        "StartTime": "2026-05-24 03:05:56.570000-06:00",
+        "EndTime": "2026-05-24 03:05:58.194000-06:00",
+        "StatusMessage": "Starting the training job"
+      },
+      {
+        "Status": "Pending",
+        "StartTime": "2026-05-24 03:05:58.194000-06:00",
+        "EndTime": "2026-05-24 03:06:51.507000-06:00",
+        "StatusMessage": "Preparing the instances for training"
+      },
+      {
+        "Status": "Downloading",
+        "StartTime": "2026-05-24 03:06:51.507000-06:00",
+        "EndTime": "2026-05-24 03:08:52.971000-06:00",
+        "StatusMessage": "Downloading the training image"
+      },
+      {
+        "Status": "Training",
+        "StartTime": "2026-05-24 03:08:52.971000-06:00",
+        "EndTime": "2026-05-24 06:54:01.310000-06:00",
+        "StatusMessage": "Training image download completed. Training in progress."
+      },
+      {
+        "Status": "Uploading",
+        "StartTime": "2026-05-24 06:54:01.310000-06:00",
+        "EndTime": "2026-05-24 06:54:13.818000-06:00",
+        "StatusMessage": "Uploading generated training model"
+      },
+      {
+        "Status": "Completed",
+        "StartTime": "2026-05-24 06:54:13.818000-06:00",
+        "EndTime": "2026-05-24 06:54:13.818000-06:00",
+        "StatusMessage": "Training job completed"
+      }
+    ],
+    "EnableNetworkIsolation": false,
+    "EnableInterContainerTrafficEncryption": false,
+    "EnableManagedSpotTraining": false,
+    "TrainingTimeInSeconds": 13642,
+    "BillableTimeInSeconds": 13642,
+    "ProfilingStatus": "Disabled",
+    "Environment": {
+      "APPEARANCE_EMBED_DIM": "64",
+      "AWS_DEFAULT_REGION": "us-west-2",
+      "BACKGROUND_APPEARANCE_MODE": "auto_camera",
+      "BACKGROUND_SELECTION_MAX_FRAMES": "32",
+      "BACKGROUND_SELECTION_STRIDE": "5",
+      "BACKGROUND_SKYBOX_HEIGHT": "1024",
+      "BACKGROUND_SKYBOX_QUALITY": "95",
+      "BACKGROUND_SKYBOX_WIDTH": "2048",
+      "BG_SH_DEGREE": "8",
+      "BILATERAL_PROCESSING": "false",
+      "COMMERCIAL_LICENSE": "true",
+      "CUDA_HOME": "/usr/local/cuda",
+      "CULL_ALPHA_THRESH": "0.12",
+      "CULL_SCALE_THRESH": "0.35",
+      "ENABLE_ALPHA_LOSS": "true",
+      "ENABLE_BG_MODEL": "true",
+      "ENABLE_ROBUST_MASK": "true",
+      "FLOATER_PRUNING_ENABLED": "true",
+      "FLOATER_PRUNING_MAX_COLOR_DISTANCE": "0.18",
+      "FLOATER_PRUNING_MAX_OPACITY": "0.75",
+      "FLOATER_PRUNING_MIN_EDGE_SUPPORT": "1",
+      "FLOATER_PRUNING_MIN_SKY_VIEWS": "2",
+      "FLOATER_PRUNING_MIN_VIEWS": "6",
+      "FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN": "0.02",
+      "FLOATER_PRUNING_SKY_MIN_LUMINANCE": "0.3",
+      "FLOATER_PRUNING_SKY_MIN_SATURATION": "0.08",
+      "FLOATER_PRUNING_TOP_REGION_RATIO": "0.35",
+      "FLOATER_PRUNING_TOP_VIEW_FRACTION": "0.9",
+      "FRAMEWORK": "nerfstudio",
+      "LD_LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+      "LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib",
+      "LICENSE": "apache_2_0",
+      "LOG_INTERVAL": "100",
+      "MAX_ITERATIONS": "30000",
+      "MAX_NUM_GAUSSIANS": "1500000",
+      "MEMORY_OPTIMIZATION": "true",
+      "METHODOLOGY": "spaceport_splatfacto_w_light_skybox",
+      "MODEL_VARIANT": "splatfacto-w-light",
+      "NEVER_MASK_UPPER": "0.4",
+      "OUTPUT_FORMAT": "ply",
+      "PYTHONUNBUFFERED": "1",
+      "RASTERIZE_MODE": "classic",
+      "SAGEMAKER_PROGRAM": "train.py",
+      "SH_DEGREE": "3",
+      "SOGS_COMPATIBLE": "true",
+      "TARGET_PSNR": "35.0",
+      "TORCH_CUDA_ARCH_LIST": "8.0 8.6",
+      "TRAINING_TIMEOUT_SECONDS": "14400",
+      "USE_SCALE_REGULARIZATION": "true"
+    },
+    "ResponseMetadata": {
+      "RequestId": "9f109da6-aab7-40b2-ba77-f05c362b87d5",
+      "HTTPStatusCode": 200,
+      "RetryAttempts": 0
+    }
+  }
+}

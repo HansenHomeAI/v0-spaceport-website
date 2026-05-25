@@ -505,3 +505,4 @@
 [2026-05-25T07:28:02Z] heartbeat HMC -> terminal verified (SageMaker Completed; meta/viewer 200; inprogress=0) -> update ledger
 [2026-05-25T07:31:42Z] friday heartbeat -> terminal (sfm/3dgs/compression Completed; InProgress=0) -> ledger updated
 [2026-05-25T07:32:39Z] postpush-gh-snapshot -> head=e15e9f5a branch=agent-40136728-montana-time-capsule exact-head runs recorded (expect 0 if [skip ci])
+[2026-05-25T07:46:13Z] friday heartbeat -> terminal verified via boto3 (sfm/3dgs/compression Completed; InProgress=0); S3 outputs present; GH exact-head empty (expected for [skip ci]) -> no action

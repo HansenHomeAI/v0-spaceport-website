@@ -1,0 +1,2493 @@
+{
+  "input_zip": {
+    "AcceptRanges": "bytes",
+    "LastModified": "2026-05-23 23:59:09+00:00",
+    "ContentLength": 7514816344,
+    "ETag": "\"8484b9ad1089adb721f1b31dfc85fc23-896\"",
+    "VersionId": "S40o1XkkyZIVsucOPKiGUCJKCDNN1JDT",
+    "ContentType": "application/zip",
+    "ServerSideEncryption": "AES256",
+    "Metadata": {
+      "dataset": "friday-20260522-new-property",
+      "source": "dji-sd",
+      "local-manifest-sha256": "7f51cea7071db67de00462c2d84b768073563311f20654dc476dd300fcd4a051",
+      "shot-local-date": "2026-05-22",
+      "photo-count": "1776",
+      "file-list-sha256": "6ff99179ed1c7fc3fa1f38206187a73a965d9fc7737c14386fdf39f1a78f914c"
+    }
+  },
+  "colmap_list": {
+    "IsTruncated": true,
+    "Contents": [
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/database.db",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"4a391432d9f6266c514fd16c38a29870-529\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "COMPOSITE",
+        "Size": 2770214912,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0797.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"855361c718caa224ee0da864d1b563a3\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4330525,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0798.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"60dd542d3a9bad513cf04c55df50a892\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4302805,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0799.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"09f307d5fa8a31027d3542a4640427b9\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4333522,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0800.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"1a21cd79a0cc41b0be5e8105af49b4f4\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4324942,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0801.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"170bdc4e315d48bdb43cb61f61c35d66\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4379961,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0802.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"1b7825c573e7db0720c9f44d5f751d8a\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4142034,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0803.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"41c9cb4fc3e77b1ebd6a9fa762649681\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4159605,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0804.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"d096540315afdc3f54062733e7a82fa6\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4101072,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0805.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"92efbd9e884d7626457bf5f319558206\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4075507,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0806.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"8590a717a5e0e447f233faab68334478\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4398350,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0807.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"acc906d8e87b9b1999b31478d7ecb544\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4387366,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0808.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"7f70a8ea44f941f2e858230e5bf16528\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4308214,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0809.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"2565eff2fb7a14c98d787b25c5a0b942\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4240567,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0810.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"762f6730f7df1491543008db5f123474\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4241755,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0811.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"45d731b4c8115377ec90cb0666e79e19\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4237144,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0812.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"7a4dbbb58cfc6840956a1fb9f0e409dd\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4227305,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0813.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"4a8562755eea53902a34929651e49130\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4214763,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0814.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"3e191d479e95c40c0388ce0a954d15cf\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4215670,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0815.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"1330b62102e34b9c8ac20fe051390347\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4209693,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0816.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"e44e65106a2c81eb84eb185d24affdef\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4271865,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0817.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"37b3081f3ded0a0969e850be853be4c3\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4296434,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0818.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"27f68ff042a8b0a7a87ec00dee77c895\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4355629,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0819.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"2df6396c8cfbf0fbddb343bec3ed5237\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4350683,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0820.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"1ab19bf99bdf3e9dce163735958adab8\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4342358,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0821.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"de1c8fd3305b56164c4544e0174dc39a\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4356708,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0822.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"f534bad4339c4fad5c93edb376648fce\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4360011,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0823.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"d42528a13bc94bc81d10e2196ce597af\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4337929,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0824.JPG",
+        "LastModified": "2026-05-24 08:33:13+00:00",
+        "ETag": "\"a7fec4ffcacf9911bb80db12d7824674\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4287041,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0825.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"fd18095eafb22b240b39e9a3482796da\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4229101,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0826.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"b6179434e70bedacebeaf571b4f579f3\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4182595,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0827.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"3ed2d08d3112a0ca9e310dd301928c0e\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4151710,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0828.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"b7b668f28d12fc21f0d5df78b2182111\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4106427,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0829.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"a6c5544e7b0a356848283bf8d6f924c8\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4099437,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0830.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"e69baf0b3c8d01fb09a537fffe46984d\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4445844,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0831.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"64344c0fe1bcf2e289e9be20cd2de927\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4122642,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0832.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"be308334e82a7ef30abc0b79bd259c0b\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4132609,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0833.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"ba33bd8aef80d0cb40a52255f34e64f3\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4170650,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0834.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"c8c421f8430d4f69e0d3cd58c7a3a19f\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4179707,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0835.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"2dd4a45a3891daf54a6d61df929a8f6e\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4189868,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0836.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"23564f6534254638397497a020dc8ee1\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4199035,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0837.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"ed44b251a715fb279644bd310d953aa9\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4260553,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0838.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"0dffd486f107366160f9ae8ce00acc89\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4267514,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0839.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"a81ab460ec1dc8977bcd09946a48fd5b\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4283203,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0840.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"00dfcd05ea5f8cdbb91fb23183fe1070\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4280994,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0841.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"7565f34d0e831be2145f763af6436850\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4308855,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0842.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"728971b4f743065901f4536d8a3e032a\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4351457,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0843.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"211019e2b76373c5be047acd0d78a7d1\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4388755,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0844.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"0a30139b409f74d0da39b93ea1c6a644\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4402317,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0845.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"9e4db37d275fe562bb53c334d85b9c5d\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4084318,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0846.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"1105ec7cb5f7d4f3ba8c26a7a6625f4a\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4108392,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0847.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"254e354fb33d2203ff1e269eda1f584d\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4123917,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0848.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"bc8cfd91c3ad8a61a554fd5383d19d53\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4132261,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0849.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"336fc2fcc1799693a62e8cf0a054aabc\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4143654,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0850.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"4e5b82d16a59e5c8ea3d6ef8a009d12a\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4149089,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0851.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"bbd2c5439156eb3af9d82e0249198803\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4142168,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0852.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"3d691249ddbfb1a7122b6c4ba072f1d0\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4161111,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0853.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"afe20dadcfed6502bedacda6ee6a75c6\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4164359,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0854.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"ae71b967faa7a1028b0e9712c296f388\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4155755,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0855.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"dfac04419da4278118bdc17961d5bb7f\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4136631,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0856.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"4ad7dae4a90adab3ffb9fcc96233050a\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4121468,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0857.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"81c838fc3c434fac6c0488fcec6fa9ee\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4115819,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0858.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"b4d458f3a15af24e3178561657527da6\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4117473,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0859.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"30f59e677c53b3c975159ff5c5f63e5c\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4104150,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0860.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"2ea5af23458db78e6c499cfa5425a36e\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4406013,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0861.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"7bf7cbd807ff5dbb90200522aa30ffa0\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4403676,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0862.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"a1a824a17ebfd46a899f11dc17beb7e4\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4397551,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0863.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"6dafe71f64a4a519fb915b0d2d9cd9b7\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4371528,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0864.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"3acf8dda8c2c71b157e5d7297271517a\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4354012,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0865.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"e502b663f605615653e9de249cabc974\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4328773,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0866.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"3321a5d8abfabd912045a5ad3d94be95\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4306142,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0867.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"c327af1c1834d31baa772fb0d81a5dd6\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4311814,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0868.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"0bac788787fe61527fb80d07f3b620e5\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4310024,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0869.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"84c3fa8baad381c3bb656fca6e0c9d72\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4339202,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0870.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"5d38ba090a2ab2e0662398d0928e9259\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4340721,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0871.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"cd1237781b54cc645fc4f220f1fdfa97\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4369610,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0872.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"b679fd5ec12ac5a6aec91dbc436f6300\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4388822,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0873.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"3daeb2ea7216e3c6ac98d200bd6a35a3\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4085800,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0874.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"1ee5f3fea2729b3310d0f6c2e1d82b73\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4094633,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0875.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"7640e9bb52c820a1c227e17d4e79d386\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4096450,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0876.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"72416815cd5b7e52a730ba56e90d112e\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4095737,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0877.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"73643b421cdd1a053f65c265ec8e6af0\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4111257,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0878.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"bda5b2eb2c7ad1a875e39b1a49010894\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4135475,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0879.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"6f19d412736bb976d2d4f0f0682451e0\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4124826,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0880.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"9bbc3a529f1400c9fe31c35d2f6ed0b0\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4153132,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0881.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"4a409604947be537fce52114e2bcce4c\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4185676,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0882.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"1fc29ba7984dca7485b2cd5755be7366\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4201795,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0883.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"ca615b40c53a2a58187794705eac619b\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4214654,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0884.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"c993ba9e6fa50da556e1005cfb2b2c20\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4223627,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0885.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"2cd1a9beda513907f24baa9fcefcb0b7\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4183623,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0886.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"90394bc15ed4a80696ec3b7ec17cdd13\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4154646,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0887.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"7819607c70b1dc465f9ad01170760ce7\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4156931,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0888.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"fbd5e3f1d5992aec509ff0c0d67b76eb\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4160092,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0889.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"aa9692aefc3f0678927df882923e7ed7\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4162090,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0890.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"bfad4ae31f6df0ec8929014f2ac3530e\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4154927,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0891.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"9da6d161bd4b86e1b6b0001eb7b97dc1\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4172190,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0892.JPG",
+        "LastModified": "2026-05-24 08:33:14+00:00",
+        "ETag": "\"7dc0d235939b55833b1f2a59ea56ab09\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4174685,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0893.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"86f8dd5fb2514d2c24ee156fa8d79a09\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4170211,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0894.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"67637465bd77008879e2fc83f8bf86cc\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4154444,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0895.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"6fe9dbaa47d168154b0009b35bd3bd42\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4154142,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0896.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"7957e2fd51d3d3bc90ce1d9bea6ae946\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4159602,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0897.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"661ae42c6247864d3b9c25c054007378\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4155301,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0898.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"3cb2f5d8060a1ad5f535375462330b6a\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4160495,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0899.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"1d240e9da4e9388291f07fb5b8e06805\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4151565,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0900.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"595918fbbd1543eb4d1edd18d50cd897\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4159154,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0901.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"b1c80de739ce00c0c4c6d0a7829e30af\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4167953,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0902.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"6d11ddae7904819a4c69c2cfb6471f10\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4158081,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0903.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"a61a16a542c607388368c56b85b30199\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4129567,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0904.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"f92f89dc510472401d4b6ea40f1b03c4\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4085405,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0905.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"be87552c8bdf7a3c0f66aa5619215b4b\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4370505,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0906.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"8d2d82d03f43e28573b9e0f0ac6301dc\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4381816,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0907.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"a7f0aa7d4fa279d39a8f5c1191c9bb34\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4367189,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0908.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"0ee3c0e0816f77650afba1b82e14cedd\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4350031,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0909.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"d456fcd0b925f374e4717e2fcdfd5fce\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4353362,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0910.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"ed97afd59d0e0feec925177b881919a9\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4345865,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0911.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"e4dda26cfdd27376e8aff84fdb94fbe2\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4338113,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0912.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"f70065eaae4f75f0768dd46defccb0f8\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4308620,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0913.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"9a11d28cb552c0562c1f07a354c83b73\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4283164,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0914.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"bd312ff8dc5a838a31ed0ba1ff2bd836\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4263351,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0915.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"9ef506965096fb70a9b7f9b238b4cebc\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4281197,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0916.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"65c9e115be8d984763789caee978ed78\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4283577,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0917.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"da2730cc310507afe59b0ffdae0b0c16\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4275067,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0918.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"fe55a2d4988a48127dfca2bbcbc7f7c9\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4270913,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0919.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"0be0dc808ab2b89e58481f0ad90a6cdd\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4283600,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0920.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"6fdfd414d75fe73689f464fd2e0d70e3\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4281990,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0921.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"a3d0e974028ade20a78a572f6d3450fc\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4284666,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0922.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"92679d12016dbfc7775f8e0eaa08034e\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4281262,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0923.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"fdcb286fdceaa6de692d5db290c9961c\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4275573,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0924.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"3c051bfe2ceb00091b4ef099299198d0\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4256434,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0925.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"d9ddc637236674aa24c87a220fbba6c0\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4238703,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0926.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"e4ae9543cc94f13574dd08487689737e\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4237734,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0927.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"cc8dd24c933ee9e414fabf92a56c9445\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4231553,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0928.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"43a655e84cc469178424ad79d0fc5587\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4228781,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0929.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"ec091075f24673787def14f2e54b0f2d\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4276547,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0930.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"e4522e1bed01f621eebcff5a5e84a971\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4258389,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0931.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"5a57fdc288b04a26ab051bc3fbef3aeb\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4266862,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0932.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"7fa98f94a5cd7c42f8d067e53aefb034\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4276020,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0933.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"e9df0e7ec6507d5ee44f170845058ba9\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4278991,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0934.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"6a399abe4d92d7ccd292d0c104b0fe51\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4266120,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0935.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"5ec09c8a11fa2e0992735220fc00d0fb\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4259821,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0936.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"2da1a0962c22c0ccdfd97251049bbb81\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4253383,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0937.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"dc8cd9f9bac6e61b685a979dfface84a\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4268871,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0938.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"839364070a6070dd151aafb224f6562f\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4288610,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0939.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"d27abca9b72a894971f8921035f64957\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4299348,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0940.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"4b411df4a522b5ecacf81e8be69f0da4\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4288250,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0941.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"115d10f10fe4b5f3ec4772f023ace873\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4290969,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0942.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"b2d8c98a7362ad67b84f6410e6ef3aa3\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4280782,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0943.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"00c71a9dd96b65e55ef25de2da139e10\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4293220,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0944.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"96a7683aedff085df2e6bb0138941d9f\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4324040,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0945.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"96c9ce152a69c799391799ba49396531\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4323233,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0946.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"251c58e9e1d9dbad5653aa11af3caca4\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4332961,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0947.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"88869463a28d570ab30f3e5e92cf66da\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4347747,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0948.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"fd660aa5538fddf53fc3007da2a4f43d\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4071208,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0949.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"f341f87d870482f72149d16cf287ef89\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4414612,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0950.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"b8d98341aff2c8db7e850358e0275696\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4615563,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0951.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"8201b415673e81d07b23115a51a1c6af\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4337073,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0952.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"c14011d1f449c43eade5595d58d10962\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4034261,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0953.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"e5a1ccb82269df0d56f955b7039cad8c\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4244896,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0954.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"de2c4559292cf549b64ee612c851de0c\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4140373,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0955.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"ab7638061574d454e8c37594a7f4b6be\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4292885,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0956.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"8e9cd8fa27e96c6ecfcc08e413658892\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4329486,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0957.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"a3daa47569c00b6991027efdcffd98a6\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4340249,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0958.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"13de5133440b5340fe0c47e954630b68\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4346742,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0959.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"1432c477b5959234ea98ad6b59581b93\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4335206,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0960.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"3501376b9157f7ad0a8b05a74d47e0de\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4318828,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0961.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"c587bbef9f9d6a89a29e8754ce19204c\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4315418,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0962.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"d30b9fd2ead36e4ea79b8664460a2430\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4282866,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0963.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"9d237e70f6b80c9397888c0b18ef8a3c\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4286408,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0964.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"5b16abdfcabf0e79542cff72dc62bbc9\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4285112,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0965.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"25c95516e4c09c3d7b7cb37b0ae887f2\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4283101,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0966.JPG",
+        "LastModified": "2026-05-24 08:33:15+00:00",
+        "ETag": "\"8d4b2f77916a2b00e4b4bd31e4ec989c\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4264832,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0967.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"6094ad35d5658d77c09f7a42f1e5c33c\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4301825,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0968.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"2d4f05c679154567fd14bb3ee0ee997c\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4030196,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0969.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"8d680ffb953da868305b277517495e3f\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4316539,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0970.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"19e259899d15d5ed767a004b4c6e9582\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4290083,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0971.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"93f82d7042c315b48a8802eec1ed5d1f\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4283444,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0972.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"66494980b5103a07244db373b012d64d\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4276106,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0973.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"c7b7628a85833d010699ac955b039179\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4241064,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0974.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"a180a8832c3489ad23ea020afe61e54c\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4205621,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0975.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"3902e0b0705e0deaeb31c9f156c90494\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4162176,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0976.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"26e3d6a94e3279da072920734ebcffab\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4162041,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0977.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"113152fe234b27ce56ff4b0eecf6cc5d\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4161010,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0978.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"cb36072187d6101a0e3adcba85e24013\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4151156,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0979.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"e7fced91e8f2469efbfb350569e0424b\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4123416,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0980.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"9d51728365b7ab4f919d0473a56674f3\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4099625,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0981.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"570a1efdd017175d99dffc4763dc70d7\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4080743,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0982.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"23dc535176a8eda3b56c27fa404ae386\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4056726,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0983.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"18bfcbe5afdabca896441f39fb64fe27\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4025611,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0984.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"4b75d6a3b13e0d43542b04e3e2a9f994\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4014607,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0985.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"08e0105efab615d581809121832a1462\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4310456,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0986.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"8f7cfd872a28264c0de8d63c237847a5\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 3991209,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0987.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"7be48637a46d00be10ce49cb3985403d\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4001397,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0988.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"49e10faaae6dde6b9f0fb4d688b79dd6\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4020575,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0989.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"3a70706abee2c8543ad8b8c084aa078d\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4005667,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0990.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"15c4ac90a5b7f48aea23166006198986\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4007266,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0991.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"6bfc70390b7b6b541dc1f57d9ca4f77c\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 3996203,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0992.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"10851943d84f3acd1462e1cd01a032b1\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4310539,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0993.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"eba6040bf1f6442dd193b1a32dd01954\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4278390,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0994.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"c5fa271b529d658d7133bcae837344b0\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4278288,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "manual-validations/friday-mtc-20260524T0001Z/colmap/images/109MEDIA_DJI_0995.JPG",
+        "LastModified": "2026-05-24 08:33:16+00:00",
+        "ETag": "\"692df803fcd9ed2189101e7416ac46e5\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 4265841,
+        "StorageClass": "STANDARD"
+      }
+    ],
+    "Name": "spaceport-ml-processing-staging",
+    "Prefix": "manual-validations/friday-mtc-20260524T0001Z/colmap/",
+    "MaxKeys": 200,
+    "EncodingType": "url",
+    "KeyCount": 200,
+    "NextContinuationToken": "14OG1qPYG+pNhW+P67sarHB5DC6SwsXozRfmKSPenQ7C4PE6A1BD+TOLecSCWdqgfcL3HzjHcsxbP9IZoNkFTTd0cSSCSRwTIH7q+RXqBYxAekACi5zGk0d/QxYJWU/J62vsixZe+WKHIX8piGUvf16V89X/JMCiS+/KoBMdjYWw="
+  },
+  "compressed_list": {
+    "IsTruncated": false,
+    "Contents": [
+      {
+        "Key": "compressed/friday-mtc-20260524T0001Z/compressed_splat/means_l.webp",
+        "LastModified": "2026-05-24 13:14:52+00:00",
+        "ETag": "\"e2a819928850ab205cabba2c2c2dd13f\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 1090906,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "compressed/friday-mtc-20260524T0001Z/compressed_splat/means_u.webp",
+        "LastModified": "2026-05-24 13:14:52+00:00",
+        "ETag": "\"fd781521c196c182a736c2cd500ce019\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 720560,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "compressed/friday-mtc-20260524T0001Z/compressed_splat/meta.json",
+        "LastModified": "2026-05-24 13:14:52+00:00",
+        "ETag": "\"c2b1eec04bf4f54c0294785c2f14693f\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 1372,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "compressed/friday-mtc-20260524T0001Z/compressed_splat/quats.webp",
+        "LastModified": "2026-05-24 13:14:52+00:00",
+        "ETag": "\"09878fdb5bf379b78540a340745cb73f\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 1170110,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "compressed/friday-mtc-20260524T0001Z/compressed_splat/scales.webp",
+        "LastModified": "2026-05-24 13:14:52+00:00",
+        "ETag": "\"7025558ef2f7274d36dfac62a0cba743\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 631730,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "compressed/friday-mtc-20260524T0001Z/compressed_splat/sh0.webp",
+        "LastModified": "2026-05-24 13:14:52+00:00",
+        "ETag": "\"b02d163fa69e7d9751b549aac1d1915f\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 866442,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "compressed/friday-mtc-20260524T0001Z/compressed_splat/shN_centroids.webp",
+        "LastModified": "2026-05-24 13:14:52+00:00",
+        "ETag": "\"d022453704c1cb7457e09982db3308af\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 973572,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "compressed/friday-mtc-20260524T0001Z/compressed_splat/shN_labels.webp",
+        "LastModified": "2026-05-24 13:14:52+00:00",
+        "ETag": "\"2c07da6358c3f3246ec4b05792d01f86\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 697512,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "compressed/friday-mtc-20260524T0001Z/sogs_compression_summary.json",
+        "LastModified": "2026-05-24 13:14:52+00:00",
+        "ETag": "\"3174041d279ebcd2c29cc81dcfa28a30\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 2309,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/background_manifest.json",
+        "LastModified": "2026-05-24 13:14:52+00:00",
+        "ETag": "\"a33a0db4637fa74aaa1c51d1b7460c27\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 978,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/background_skybox.webp",
+        "LastModified": "2026-05-24 13:14:52+00:00",
+        "ETag": "\"76c01e550a2ee1340185b7a8073f2340\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 37848,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/export_manifest.json",
+        "LastModified": "2026-05-24 13:14:52+00:00",
+        "ETag": "\"003785186592e8ff73297b9247f94580\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 951,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/means_l.webp",
+        "LastModified": "2026-05-24 13:14:52+00:00",
+        "ETag": "\"7c11a7a548e17470b68b5fb030b11d29\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 1090906,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/means_u.webp",
+        "LastModified": "2026-05-24 13:14:52+00:00",
+        "ETag": "\"4ab995b455f80045f1de65ef887a483e\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 720560,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/meta.json",
+        "LastModified": "2026-05-24 13:14:52+00:00",
+        "ETag": "\"8b0dd907e62697907206e6eb5522e796\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 1372,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/quats.webp",
+        "LastModified": "2026-05-24 13:14:52+00:00",
+        "ETag": "\"0cae948cc8c66c89aba21948cae768de\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 1170110,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/scales.webp",
+        "LastModified": "2026-05-24 13:14:52+00:00",
+        "ETag": "\"77ce80392574d733cd560a4f2f479d0e\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 631730,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/settings.json",
+        "LastModified": "2026-05-24 13:14:52+00:00",
+        "ETag": "\"62604158a604ff3b8f1022882884e4e6\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 242,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/sh0.webp",
+        "LastModified": "2026-05-24 13:14:52+00:00",
+        "ETag": "\"1e313b1e283d76634bdc238bc3a8737c\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 866442,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/shN_centroids.webp",
+        "LastModified": "2026-05-24 13:14:52+00:00",
+        "ETag": "\"9efb1a8665ae51a258a1027f927c779c\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 973572,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/shN_labels.webp",
+        "LastModified": "2026-05-24 13:14:52+00:00",
+        "ETag": "\"ad8b38cc89c154ff1c7a192902b2ed54\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 697512,
+        "StorageClass": "STANDARD"
+      },
+      {
+        "Key": "compressed/friday-mtc-20260524T0001Z/supersplat_bundle/training_metadata.json",
+        "LastModified": "2026-05-24 13:14:52+00:00",
+        "ETag": "\"f59dccf82f61612743d2e34e58ff6a98\"",
+        "ChecksumAlgorithm": [
+          "CRC32C"
+        ],
+        "ChecksumType": "FULL_OBJECT",
+        "Size": 1487,
+        "StorageClass": "STANDARD"
+      }
+    ],
+    "Name": "spaceport-ml-processing-staging",
+    "Prefix": "compressed/friday-mtc-20260524T0001Z/",
+    "MaxKeys": 200,
+    "EncodingType": "url",
+    "KeyCount": 22
+  },
+  "meta_head": {
+    "AcceptRanges": "bytes",
+    "LastModified": "2026-05-24 13:14:52+00:00",
+    "ContentLength": 1372,
+    "ETag": "\"8b0dd907e62697907206e6eb5522e796\"",
+    "VersionId": "kMmC87UOZ9peQMa0hqY2p5i3AzyDs2G3",
+    "ContentType": "application/octet-stream",
+    "ServerSideEncryption": "aws:kms",
+    "Metadata": {},
+    "SSEKMSKeyId": "arn:aws:kms:us-west-2:975050048887:key/e498a88e-6b23-44e3-90bd-f35b25d6e420"
+  }
+}

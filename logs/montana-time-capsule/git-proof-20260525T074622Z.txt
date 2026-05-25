@@ -1,0 +1,4 @@
+timestamp_utc=20260525T074622Z
+branch=agent-40136728-montana-time-capsule
+head=e8614ced32d865614f99a02298704999e2ee4da3
+?? logs/montana-time-capsule/git-proof-20260525T074622Z.txt
