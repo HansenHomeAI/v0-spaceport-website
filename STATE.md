@@ -29,3 +29,4 @@ next_unblocked_step: no compute to launch; optional deeper viewer QA (camera/sky
 [2026-05-25T01:45:20Z] heartbeat -> hmc-mtc terminal reconfirm (no spend); InProgress=0; staging meta + viewer/proxy HTTP200; exact-head CI 0 ([skip ci]) -> commit+push ledger
 [2026-05-25T01:47:31Z] postpush -> recorded gh runs for new head (e0978b91c4fa0ad9139e0d931241c4f1bc40638c) -> idle
 [2026-05-25T01:47:31Z] heartbeat -> friday-mtc terminal reconfirm; public meta+viewer HTTP200; cv_hr_time_capsule --launch ran (no dupes); inprogress 0/0 -> next: optional deeper visual QA
+[2026-05-25T07:11:03Z] heartbeat -> friday-mtc terminal reconfirm (no spend); InProgress=0/0; public meta+viewer HTTP200; new evidence stamp 20260525T071103Z -> next: idle

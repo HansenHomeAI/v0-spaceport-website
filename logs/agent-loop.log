@@ -500,3 +500,4 @@
 [2026-05-25T06:49:58Z] friday heartbeat -> terminal jobs; viewer 200 + screenshots 20260525T064502Z -> commit+push
 [2026-05-25T06:51:34Z] postpush snapshots -> exact-head 0 (skip ci) -> done
 [2026-05-25T07:06:19Z] heartbeat hmc hmc-mtc-20260520T2015Z -> terminal ok (0/0, meta 200, viewer 200/200/200) -> ledger+commit
+[2026-05-25T07:11:03Z] heartbeat-friday -> terminal ok (sfm/3dgs/compression Completed); inprogress 0/0; public meta+viewer HTTP200; evidence stamp 20260525T071103Z -> next: idle
