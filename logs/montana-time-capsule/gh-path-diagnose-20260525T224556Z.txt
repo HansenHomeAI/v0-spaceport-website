@@ -1,0 +1,2 @@
+PATH=/Users/gabrielhansen/.codex/tmp/arg0/codex-arg0Wj3zE1:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/Codex.app/Contents/Resources
+lrwxr-xr-x  1 gabrielhansen  admin  26 Mar 14  2025 /opt/homebrew/bin/gh -> ../Cellar/gh/2.68.1/bin/gh

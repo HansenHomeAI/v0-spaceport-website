@@ -1,0 +1,1 @@
+lrwxr-xr-x  1 gabrielhansen  admin  32 Dec 31  2024 /opt/homebrew/bin/aws -> ../Cellar/awscli/2.22.26/bin/aws
