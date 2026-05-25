@@ -26,6 +26,13 @@
   - GitHub Actions snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T072640Z.json + logs/montana-time-capsule/gh-run-list-exact-head-a79eaa13-20260525T072640Z.json
   - Summary JSON updated: logs/montana-time-capsule/friday-20260522-state.json
 
+## 2026-05-25T07:32:05Z postpush - refreshed branch + exact-head GitHub snapshots on current head (expected empty on `[skip ci]` head)
+
+- Git: agent-40136728-montana-time-capsule @ e15e9f5a (`chore: friday heartbeat snapshots 20260525T0727Z [skip ci]`)
+- Evidence stamp: 20260525T073205Z
+  - GitHub Actions branch snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T073205Z.json
+  - GitHub Actions exact-head snapshot: logs/montana-time-capsule/gh-run-list-exact-head-e15e9f5a-postpush-20260525T073205Z.json
+
 ## 2026-05-25T06:24:30Z HEARTBEAT monitor (HMC canonical `hmc-mtc-20260520T2015Z`): terminal; no-spend; InProgress=0; public meta HTTP 200; hosted viewer base/sky/no-sky HTTP 200
 
 - Evidence stamp: 20260525T062430Z
