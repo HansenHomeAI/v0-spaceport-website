@@ -514,3 +514,4 @@
 [2026-05-25T08:10:47Z] viewer-screenshots -> captured base/sky/nosky (20260525T081007Z)
 [2026-05-25T08:11:36Z] postpush -> exact-head runs=0 (skip ci) head=a853f230
 [2026-05-25T08:12:21Z] postpush -> exact-head runs=0 (skip ci) head=795419bf
+[2026-05-25T08:26:04Z] heartbeat -> hmc-mtc-20260520T2015Z terminal; meta+viewer 200; inprogress 0 -> next: no-spend monitor
