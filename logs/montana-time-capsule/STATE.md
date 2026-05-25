@@ -13019,3 +13019,23 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
   - Public meta + hosted viewer reachability (HTTP HEAD 200): logs/montana-time-capsule/curlI-friday-public-meta-20260525T132606Z.headers + logs/montana-time-capsule/curlI-friday-viewer-sky-20260525T132606Z.headers + logs/montana-time-capsule/curlI-friday-viewer-nosky-20260525T132606Z.headers
   - Guarded pipeline command (script output): logs/montana-time-capsule/heartbeat-friday-cv-hr-time-capsule-20260525T132540Z.log
   - GitHub Actions snapshots (`/opt/homebrew/bin/gh`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T132606Z.json + logs/montana-time-capsule/gh-run-list-exact-head-e25d42be-20260525T132606Z.json
+
+## 20260525T132716Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: verify terminal; InProgress snapshot; prod meta + hosted viewer HEAD checks; GH exact-head snapshot
+
+- Evidence stamp: 20260525T132716
+  - Git head/detail/status: logs/montana-time-capsule/git-branch-20260525T132716.txt + logs/montana-time-capsule/git-head-20260525T132716.txt + logs/montana-time-capsule/git-head-detail-20260525T132716.txt + logs/montana-time-capsule/git-status-20260525T132716.txt + logs/montana-time-capsule/git-log1-20260525T132716.txt
+  - AWS identity/region/version (us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T132716.json + logs/montana-time-capsule/aws-config-region-20260525T132716.txt + logs/montana-time-capsule/aws-version-20260525T132716.txt
+  - InProgress guardrail: logs/montana-time-capsule/sm-list-processing-inprogress-20260525T132716.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T132716.json
+  - Canonical HMC describes: logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T132716.json + logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T132716.json + logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T132716.json
+  - S3 outputs + prod meta head: logs/montana-time-capsule/s3ls-staging-supersplat-bundle-hmc-20260525T132716.txt + logs/montana-time-capsule/s3ls-prod-supersplat-bundle-hmc-20260525T132716.txt + logs/montana-time-capsule/s3head-prod-meta-hmc-hmc-mtc-20260520T2015Z-20260525T132716.json
+  - Public meta reachability (HTTP HEAD): logs/montana-time-capsule/curlI-prod-meta-hmc-20260525T132716.headers
+  - Hosted viewer reachability (HTTP HEAD): logs/montana-time-capsule/curlI-viewer-base-20260525T132716.headers + logs/montana-time-capsule/curlI-viewer-default-20260525T132716.headers + logs/montana-time-capsule/curlI-viewer-sky-20260525T132716.headers + logs/montana-time-capsule/curlI-viewer-nosky-20260525T132716.headers
+  - GitHub Actions snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T132716.json + logs/montana-time-capsule/gh-run-list-exact-head-7a2c8e6e-20260525T132716.json
+  - Summary JSON updated: logs/montana-time-capsule/hmc-state.json
+
+## 20260525T132956Z HEARTBEAT monitor - correction: hosted viewer reachability uses `?bundle=...&skybox=...` query URLs (not /montana-time-capsule paths)
+
+- Evidence stamp: 20260525T132956
+  - Correct viewer URL set: logs/montana-time-capsule/viewer-urls-correct-20260525T132956.txt
+  - Hosted viewer HEAD checks (corrected): logs/montana-time-capsule/curlI-viewer-base-correct-20260525T132956.headers + logs/montana-time-capsule/curlI-viewer-default-correct-20260525T132956.headers + logs/montana-time-capsule/curlI-viewer-sky-correct-20260525T132956.headers + logs/montana-time-capsule/curlI-viewer-nosky-correct-20260525T132956.headers
+  - Summary JSON updated: logs/montana-time-capsule/hmc-state.json

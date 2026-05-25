@@ -1,0 +1,5 @@
+alias=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev
+base=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/montana-time-capsule
+default=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/montana-time-capsule/hmc-mtc-20260520T2015Z
+sky=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/montana-time-capsule/hmc-mtc-20260520T2015Z?sky=1
+nosky=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/montana-time-capsule/hmc-mtc-20260520T2015Z?sky=0
