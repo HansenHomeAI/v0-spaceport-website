@@ -485,3 +485,4 @@
 [20260525T034950Z] heartbeat -> full refresh incl s3 listing -> next: wait
 [2026-05-25T04:05:52Z] heartbeat-hmc -> terminal (0 inprogress); staging ok; public meta 404; viewer ok sky/nosky; gh exact-head empty -> next: wait for new acceptance gate
 [2026-05-25T04:06:31Z] postpush-gh-snapshot -> recorded branch/exact-head -> next: idle monitor
+[2026-05-25T04:07:24Z] heartbeat-friday -> terminal (0 inprogress); public meta 200 -> next: idle monitor

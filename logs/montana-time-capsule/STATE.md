@@ -32,6 +32,23 @@
   - GitHub Actions exact-head snapshot: logs/montana-time-capsule/gh-run-list-exact-head-72e4d62d-20260525T040616Z.json
   - State snapshot refreshed: logs/montana-time-capsule/hmc-state.json
 
+## 2026-05-25T04:11:30Z HEARTBEAT monitor - Friday canonical friday-mtc-20260524T0001Z: no-spend re-verify; SfM/3DGS/compression Completed; InProgress=0; public meta.json HTTP 200; S3 outputs present
+
+- Evidence stamps: 20260525T040700Z (SageMaker) + 20260525T041130Z (S3/HTTP)
+  - AWS identity/region/version: logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T040700Z.json + logs/montana-time-capsule/aws-config-20260525T040700Z.txt + logs/montana-time-capsule/aws-version-20260525T040700Z.txt
+  - InProgress guardrail: logs/montana-time-capsule/sm-list-processing-inprogress-20260525T040700Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T040700Z.json
+  - Friday canonical describes (all Completed):
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T040700Z.json
+    - logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T040700Z.json
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T040700Z.json
+  - S3 outputs:
+    - input zip listing: logs/montana-time-capsule/s3ls-input-zip-20260525T041130Z.txt
+    - SfM COLMAP listing: logs/montana-time-capsule/s3ls-colmap-friday-mtc-20260524T0001Z-20260525T041130Z.txt
+    - 3DGS artifacts listing: logs/montana-time-capsule/s3ls-3dgs-friday-mtc-20260524T0001Z-20260525T041130Z.txt
+    - compressed bundle listing: logs/montana-time-capsule/s3ls-compressed-friday-mtc-20260524T0001Z-20260525T041130Z.txt
+    - public meta head-object: logs/montana-time-capsule/s3head-public-meta-friday-mtc-20260524T0001Z-20260525T041130Z.json
+  - Public reachability (HTTP HEAD): logs/montana-time-capsule/curlI-public-meta-friday-mtc-20260524T0001Z-20260525T041130Z.headers
+
 ## 2026-05-25T02:45:42Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical friday-mtc-20260524T0001Z: no-spend re-verify; SfM/3DGS/compression Completed; InProgress=0; S3 outputs present; public meta + hosted viewer sky/no-sky HEAD 200; exact-head GH runs empty (expected for `[skip ci]`); no duplicate jobs launched
 
 - Git: agent-40136728-montana-time-capsule @ cf6867e7fedfdc51010556fdba907b322c05e99d (`chore: postpush gh snapshot 20260525T022917Z [skip ci]`)
