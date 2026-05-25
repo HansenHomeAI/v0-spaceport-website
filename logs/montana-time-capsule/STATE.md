@@ -11560,3 +11560,10 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
 - Evidence stamp: 20260525T021258Z
 - Branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T021258Z.json (count=23)
 - Exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-87e38ee5-postpush-20260525T021258Z.json (count=0; expected 0 for [skip ci] head)
+
+### Post-push GitHub Actions check 2026-05-25T02:13:36Z
+
+- Git: agent-40136728-montana-time-capsule @ 3666cf4479d5c670eeacd21da61cb4c92e43a241 (chore: postpush gh snapshot 20260525T021258Z [skip ci])
+- Evidence stamp: 20260525T021334Z
+- Branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T021334Z.json (count=23)
+- Exact-head runs snapshot: logs/montana-time-capsule/gh-run-list-exact-head-3666cf44-postpush-20260525T021334Z.json (count=0; expected 0 for [skip ci] head)
