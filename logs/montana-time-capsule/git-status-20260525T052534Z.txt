@@ -1,0 +1,18 @@
+ M logs/montana-time-capsule/LAST_HEARTBEAT_STAMP.txt
+ M logs/montana-time-capsule/_last_heartbeat_ts.txt
+ M logs/montana-time-capsule/friday-20260522-state.json
+?? logs/montana-time-capsule/_heartbeat_branch_20260525T052458Z.txt
+?? logs/montana-time-capsule/_heartbeat_branch_20260525T052534Z.txt
+?? logs/montana-time-capsule/_heartbeat_head_sha_20260525T052458Z.txt
+?? logs/montana-time-capsule/_heartbeat_head_sha_20260525T052534Z.txt
+?? logs/montana-time-capsule/_heartbeat_ts_20260525T052458Z.txt
+?? logs/montana-time-capsule/_heartbeat_ts_20260525T052534Z.txt
+?? logs/montana-time-capsule/aws-bin-20260525T052458Z.txt
+?? logs/montana-time-capsule/aws-config-region-20260525T052458Z.txt
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T052458Z.json
+?? logs/montana-time-capsule/aws-version-20260525T052458Z.txt
+?? logs/montana-time-capsule/gh-bin-20260525T052458Z.txt
+?? logs/montana-time-capsule/git-proof-20260525T052458Z.txt
+?? logs/montana-time-capsule/git-proof-20260525T052534Z.txt
+?? logs/montana-time-capsule/git-status-20260525T052458Z.txt
+?? logs/montana-time-capsule/git-status-20260525T052534Z.txt

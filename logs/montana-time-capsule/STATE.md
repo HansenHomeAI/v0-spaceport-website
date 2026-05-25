@@ -24,6 +24,31 @@
     - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T044543Z.json
     - exact-head runs snapshot (empty; expected for `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-04ebc75b-20260525T044543Z.json
 
+## 2026-05-25T05:25:34Z HEARTBEAT monitor (Friday FRIDAY-20260522 canonical `friday-mtc-20260524T0001Z`): re-verify; SageMaker terminal; guarded `--launch` executed (no duplicate jobs); public meta.json still reachable
+
+- Git: agent-40136728-montana-time-capsule @ 254b1255c5d730c1435d07b045e47f15ddcb10fe (`chore: postpush gh snapshot 20260525T051117Z [skip ci]`)
+- Evidence stamp: 20260525T052534Z
+  - Guarded pipeline command output: logs/montana-time-capsule/cv-hr-time-capsule-launch-20260525T052510Z.log
+  - Git proof: logs/montana-time-capsule/git-proof-20260525T052534Z.txt
+  - AWS identity/region/version (`/opt/homebrew/bin/aws`; us-west-2):
+    - identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T052534Z.json
+    - region: logs/montana-time-capsule/aws-config-region-20260525T052534Z.txt
+    - version: logs/montana-time-capsule/aws-version-20260525T052534Z.txt
+  - InProgress guardrail (max-results=50): logs/montana-time-capsule/sm-list-processing-inprogress-20260525T052534Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T052534Z.json (counts: 0/0)
+  - Canonical Friday SageMaker describes (all Completed):
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T052534Z.json
+    - logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T052534Z.json
+    - logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T052534Z.json
+  - S3 outputs:
+    - SfM colmap tail listing: logs/montana-time-capsule/s3ls-friday-sfm-colmap-tail-20260525T052534Z.txt
+    - 3DGS tail listing: logs/montana-time-capsule/s3ls-friday-3dgs-tail-20260525T052534Z.txt
+    - compressed tail listing: logs/montana-time-capsule/s3ls-friday-compressed-tail-20260525T052534Z.txt
+    - public meta head-object: logs/montana-time-capsule/s3head-friday-public-meta-20260525T052534Z.json
+    - public meta URL HTTP HEAD: logs/montana-time-capsule/curlI-friday-public-meta-20260525T052534Z.headers
+  - GitHub Actions (`/opt/homebrew/bin/gh`):
+    - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T052534Z.json
+    - exact-head runs snapshot (empty; expected for `[skip ci]`): logs/montana-time-capsule/gh-run-list-exact-head-254b1255-20260525T052534Z.json
+
 ## 2026-05-25T04:27:42Z exact-head refresh - recorded branch + exact-head GitHub snapshots on current head (expected empty on `[skip ci]` head)
 
 - Git: agent-40136728-montana-time-capsule @ be64fe74676152ecd6beb25c088a3431f8f30e94 (`chore: postpush gh snapshot 20260525T042649Z [skip ci]`)

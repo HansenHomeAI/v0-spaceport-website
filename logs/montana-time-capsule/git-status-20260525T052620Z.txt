@@ -1,0 +1,50 @@
+ M logs/agent-loop.log
+ M logs/montana-time-capsule/LAST_HEARTBEAT_STAMP.txt
+ M logs/montana-time-capsule/STATE.md
+ M logs/montana-time-capsule/_last_heartbeat_ts.txt
+ M logs/montana-time-capsule/friday-20260522-state.json
+?? logs/montana-time-capsule/_heartbeat_branch_20260525T052458Z.txt
+?? logs/montana-time-capsule/_heartbeat_branch_20260525T052534Z.txt
+?? logs/montana-time-capsule/_heartbeat_branch_20260525T052620Z.txt
+?? logs/montana-time-capsule/_heartbeat_head_sha_20260525T052458Z.txt
+?? logs/montana-time-capsule/_heartbeat_head_sha_20260525T052534Z.txt
+?? logs/montana-time-capsule/_heartbeat_head_sha_20260525T052620Z.txt
+?? logs/montana-time-capsule/_heartbeat_ts_20260525T052458Z.txt
+?? logs/montana-time-capsule/_heartbeat_ts_20260525T052534Z.txt
+?? logs/montana-time-capsule/_heartbeat_ts_20260525T052620Z.txt
+?? logs/montana-time-capsule/aws-bin-20260525T052458Z.txt
+?? logs/montana-time-capsule/aws-bin-20260525T052534Z.txt
+?? logs/montana-time-capsule/aws-config-region-20260525T052458Z.txt
+?? logs/montana-time-capsule/aws-config-region-20260525T052534Z.txt
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T052458Z.json
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T052534Z.json
+?? logs/montana-time-capsule/aws-version-20260525T052458Z.txt
+?? logs/montana-time-capsule/aws-version-20260525T052534Z.txt
+?? logs/montana-time-capsule/curlI-friday-public-meta-20260525T052534Z.headers
+?? logs/montana-time-capsule/gh-bin-20260525T052458Z.txt
+?? logs/montana-time-capsule/gh-bin-20260525T052534Z.txt
+?? logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T052534Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-254b1255-20260525T052534Z.json
+?? logs/montana-time-capsule/git-proof-20260525T052458Z.txt
+?? logs/montana-time-capsule/git-proof-20260525T052534Z.txt
+?? logs/montana-time-capsule/git-status-20260525T052458Z.txt
+?? logs/montana-time-capsule/git-status-20260525T052534Z.txt
+?? logs/montana-time-capsule/git-status-20260525T052620Z.txt
+?? logs/montana-time-capsule/public-meta-rc-hmc-mtc-20260520T2015Z-20260525T052534Z.txt
+?? logs/montana-time-capsule/s3head-friday-public-meta-20260525T052534Z.json
+?? logs/montana-time-capsule/s3head-public-meta-hmc-mtc-20260520T2015Z-20260525T052534Z.err
+?? logs/montana-time-capsule/s3head-public-meta-hmc-mtc-20260520T2015Z-20260525T052534Z.json
+?? logs/montana-time-capsule/s3head-staging-meta-hmc-mtc-20260520T2015Z-20260525T052534Z.json
+?? logs/montana-time-capsule/s3ls-friday-3dgs-tail-20260525T052534Z.txt
+?? logs/montana-time-capsule/s3ls-friday-compressed-tail-20260525T052534Z.txt
+?? logs/montana-time-capsule/s3ls-friday-sfm-colmap-tail-20260525T052534Z.txt
+?? logs/montana-time-capsule/s3ls-staging-compressed-hmc-mtc-20260520T2015Z-20260525T052534Z.txt
+?? logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T052534Z.json
+?? logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T052534Z.json
+?? logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260525T052534Z.json
+?? logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260525T052534Z.json
+?? logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T052534Z.json
+?? logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260525T052534Z.json
+?? logs/montana-time-capsule/sm-list-processing-inprogress-20260525T052534Z.json
+?? logs/montana-time-capsule/sm-list-training-inprogress-20260525T052534Z.json
+?? logs/montana-time-capsule/viewer-urls-hmc-latest-20260525T052534Z.txt

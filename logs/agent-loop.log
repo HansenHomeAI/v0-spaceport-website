@@ -493,3 +493,4 @@
 [2026-05-25T04:25:53Z] heartbeat-friday -> terminal (sfm/3dgs/compression Completed); inprogress 0/0; public meta HEAD captured; gh exact-head 0 ([skip ci]) -> next: idle monitor (avoid duplicate launch)
 [2026-05-25T04:29:09Z] postpush-gh-snapshot -> head=4a17da49 branch=agent-40136728-montana-time-capsule exact-head runs recorded (expect 0 if [skip ci])
 [2026-05-25T05:09:18Z] heartbeat 20260525T050850Z -> hmc terminal + viewer 200 + public meta 404 -> commit/push ledger
+[2026-05-25T05:26:16Z] friday heartbeat -> sfm/3dgs/compression Completed; no inprogress; public meta reachable; no new jobs -> next: idle monitor
