@@ -503,3 +503,4 @@
 [2026-05-25T07:11:03Z] heartbeat-friday -> terminal ok (sfm/3dgs/compression Completed); inprogress 0/0; public meta+viewer HTTP200; evidence stamp 20260525T071103Z -> next: idle
 [2026-05-25T07:13:27Z] postpush-gh-snapshot -> head=ef1d4f2c branch=agent-40136728-montana-time-capsule exact-head runs recorded (expect 0 if [skip ci])
 [2026-05-25T07:28:02Z] heartbeat HMC -> terminal verified (SageMaker Completed; meta/viewer 200; inprogress=0) -> update ledger
+[2026-05-25T07:31:42Z] friday heartbeat -> terminal (sfm/3dgs/compression Completed; InProgress=0) -> ledger updated
