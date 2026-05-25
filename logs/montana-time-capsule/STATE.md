@@ -35,6 +35,8 @@
   - Input + outputs: logs/montana-time-capsule/s3head-input-zip-friday-20260525T110502Z.json + logs/montana-time-capsule/s3ls-colmap-friday-20260525T110502Z.txt + logs/montana-time-capsule/s3ls-compressed-friday-20260525T110502Z.txt
   - GitHub Actions snapshots (`/opt/homebrew/bin/gh`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T110502Z.json + logs/montana-time-capsule/gh-run-list-exact-head-482e00d6-20260525T110502Z.json (exact-head=0 on `[skip ci]` head)
 
+- Postpush GH snapshot (head `88778ea5` is `[skip ci]` so exact-head runs may be empty): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T110650Z.json + logs/montana-time-capsule/gh-run-list-exact-head-88778ea5-postpush-20260525T110650Z.json
+
 ## 2026-05-25T10:26:19Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: still terminal (SfM/3DGS/compression Completed); InProgress=0; S3 outputs present; public meta HTTP 200; hosted viewer sky/no-sky HTTP 200; no new jobs launched
 
 - Evidence stamp: 20260525T102619Z
