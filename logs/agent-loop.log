@@ -586,3 +586,4 @@
 [2026-05-25T15:27:36Z] heartbeat(friday-mtc-20260524T0001Z) -> sfm/3dgs/compress Completed; inprogress=0; public meta 200; no launch -> next: idle monitor
 [2026-05-25T15:27:34Z] heartbeat(hmc-mtc-20260520T2015Z) -> terminal + meta/viewer HTTP 200 -> next: no-spend monitoring only
 [2026-05-25T15:44:38Z] heartbeat(hmc-mtc-20260520T2015Z) 20260525T154438Z -> terminal + meta/viewer HTTP 200 + gh snapshot -> next: idle monitor
+[2026-05-25T15:46:42Z] postpush gh snapshot 20260525T154642Z -> exact-head workflows captured -> next: idle
