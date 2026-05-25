@@ -11,6 +11,7 @@
   - Hosted viewer reachability (HMC dataset; HTTP HEAD 200): logs/montana-time-capsule/curlI-viewer-default-hmc-20260525T151126Z.headers + logs/montana-time-capsule/curlI-viewer-sky-hmc-20260525T151126Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-hmc-20260525T151126Z.headers
   - GitHub Actions snapshots (`/opt/homebrew/bin/gh`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T151126Z.json + logs/montana-time-capsule/gh-run-list-exact-head-5a1b4760-20260525T151126Z.json
   - Summary JSON refreshed: logs/montana-time-capsule/hmc-state.json
+- Postpush GH snapshot (head `3d11fea8` is `[skip ci]` so exact-head runs may be empty): logs/montana-time-capsule/git-head-postpush-20260525T151310Z.txt + logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T151310Z.json + logs/montana-time-capsule/gh-run-list-exact-head-3d11fea8-postpush-20260525T151310Z.json
 
 ## 2026-05-25T14:45:39Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical `friday-mtc-20260524T0001Z`: verified terminal SageMaker (SfM/3DGS/compression Completed); InProgress=0; S3 outputs present; public meta HTTP 200; hosted viewer sky/no-sky HTTP 200; exact-head GH runs snapshot captured (head is `[skip ci]`, so may be empty); no new jobs launched
 
