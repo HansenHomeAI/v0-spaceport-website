@@ -11,6 +11,7 @@
   - Runner (guarded `--launch`, no new jobs): `python3 scripts/montana_time_capsule/cv_hr_time_capsule.py … --launch` at 20260525T164623Z (local log file is gitignored)
   - InProgress guardrail (post): logs/montana-time-capsule/sm-list-processing-inprogress-postlaunch-20260525T164630Z.json + logs/montana-time-capsule/sm-list-training-inprogress-postlaunch-20260525T164630Z.json (counts: 0/0)
   - GitHub Actions snapshots (`/opt/homebrew/bin/gh`; head is `[skip ci]`): logs/montana-time-capsule/gh-version-20260525T164558Z.txt + logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T164558Z.json + logs/montana-time-capsule/gh-run-list-exact-head-7ca173db-20260525T164558Z.json
+  - Post-push GH snapshot (head `0976b9a7`; `[skip ci]`): logs/montana-time-capsule/gh-version-20260525T165143Z.txt + logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T165143Z.json + logs/montana-time-capsule/gh-run-list-exact-head-0976b9a7-20260525T165143Z.json
   - Summary JSON: logs/montana-time-capsule/friday-20260522-state.json
 
 ## 2026-05-25T16:44:50Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: verified git/head (branch `agent-40136728-montana-time-capsule`), AWS identity ok, SageMaker terminal (SfM/3DGS/compression Completed), InProgress=0, S3 supersplat bundle present (staging+prod), public meta HTTP 200, hosted viewer HMC base/sky/no-sky HTTP 200, exact-head GH workflows snapshot captured; no new jobs launched
