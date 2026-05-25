@@ -563,3 +563,5 @@
 [2026-05-25T13:26:56Z] friday heartbeat -> sfm/3dgs/compression Completed; inprogress=0; state refreshed (20260525T132606Z) -> next: passive monitor
 [2026-05-25T13:27:29Z] heartbeat -> verified HMC terminal + HTTP HEADs + GH snapshot -> ledger updated
 [2026-05-25T13:31:01Z] postpush -> recorded gh runs for head 38d2435be908858a25cc6ccdecc853eac3c03e3a -> idle
+[2026-05-25T13:45:22Z] friday heartbeat -> verified terminal SageMaker + S3 outputs; inprogress=0; exact-head=0 expected for [skip ci]; CDK Deploy run 26402909276 success -> next: passive monitor
+[2026-05-25T13:48:14Z] postpush ci -> CDK Deploy rerun success run=26402909276 head=7a2c8e6e; Pages not triggered
