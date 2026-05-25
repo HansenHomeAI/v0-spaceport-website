@@ -11430,3 +11430,9 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
     - urls: logs/montana-time-capsule/viewer-urls-hmc-20260525T013054Z.txt
     - headers: logs/montana-time-capsule/curlI-hmc-viewer-alias-20260525T013054Z.headers + logs/montana-time-capsule/curlI-hmc-viewer-sky-20260525T013054Z.headers + logs/montana-time-capsule/curlI-hmc-viewer-nosky-20260525T013054Z.headers + logs/montana-time-capsule/curlI-hmc-viewer-proxy-20260525T013054Z.headers
   - State snapshot refreshed: logs/montana-time-capsule/hmc-state.json
+
+## 2026-05-25T01:33:39Z postpush - refreshed exact-head GitHub snapshot on current head (expected empty on [skip ci])
+
+- Git: agent-40136728-montana-time-capsule @ 38be8a91438e3c0857480408f5bdf5f553d50bc5 (`chore: hmc mtc heartbeat proof 20260525T013054Z [skip ci]`)
+- Evidence stamp: 20260525T013323Z
+  - GitHub Actions: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T013323Z.json (count=23) + logs/montana-time-capsule/gh-run-list-exact-head-38be8a91-20260525T013323Z.json (count=0)
