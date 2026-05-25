@@ -601,3 +601,4 @@
 [2026-05-25T16:46:25Z] heartbeat(hmc-mtc-20260520T2015Z) -> verified terminal + public reachability ok (stamp=20260525T164450Z) -> next: await new acceptance gate
 [2026-05-25T16:47:46Z] heartbeat(friday-mtc-20260524T0001Z) -> verified terminal (sfm/3dgs/compress Completed; inprogress 0/0); guarded runner no-op (already completed); s3 meta 200; gh snapshot (skip ci head) -> next: idle
 [2026-05-25T16:51:59Z] postpush gh snapshot 20260525T165143Z -> head 0976b9a7 (skip ci) -> next: idle
+[2026-05-25T16:52:33Z] postpush gh snapshot 20260525T165218Z -> head c70e17e5 (skip ci) -> idle
