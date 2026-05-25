@@ -1,0 +1,3 @@
+branch=agent-40136728-montana-time-capsule
+head=d51a142742df6373f87d71e34f93723e55e5d539
+d51a1427 chore: heartbeat gh exact-head proof 20260525T0551Z [skip ci]

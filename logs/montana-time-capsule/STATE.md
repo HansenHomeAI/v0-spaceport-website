@@ -1,5 +1,16 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-25T06:06:20Z HEARTBEAT monitor - Friday FRIDAY-20260522 canonical `friday-mtc-20260524T0001Z`: no-spend; verified SageMaker Completed; InProgress=0; S3 outputs present; guarded launch cmd executed (no new jobs)
+
+- Evidence stamp: 20260525T060459Z (git/AWS/SageMaker/S3/GitHub snapshots) + 20260525T060545Z (guarded `--launch` run)
+  - Git proof: logs/montana-time-capsule/git-head-20260525T060459Z.txt + logs/montana-time-capsule/git-head-detail-20260525T060459Z.txt + logs/montana-time-capsule/git-status-20260525T060459Z.txt
+  - AWS identity/region/version: logs/montana-time-capsule/aws-sts-get-caller-identity-20260525T060459Z.json + logs/montana-time-capsule/aws-config-region-20260525T060459Z.txt + logs/montana-time-capsule/aws-version-20260525T060459Z.txt
+  - InProgress guardrail (max-results=50): logs/montana-time-capsule/sm-list-processing-inprogress-20260525T060459Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260525T060459Z.json (counts: 0/0)
+  - Friday canonical describes (all Completed): logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-sfm-20260525T060459Z.json + logs/montana-time-capsule/sm-describe-training-friday-mtc-20260524T0001Z-3dgs-20260525T060459Z.json + logs/montana-time-capsule/sm-describe-processing-friday-mtc-20260524T0001Z-compression-20260525T060459Z.json
+  - S3 outputs: logs/montana-time-capsule/s3ls-input-zip-20260525T060459Z.txt + logs/montana-time-capsule/s3ls-colmap-friday-mtc-20260524T0001Z-20260525T060459Z.txt
+  - GitHub Actions snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T060459Z.json + logs/montana-time-capsule/gh-run-list-exact-head-d51a1427-20260525T060459Z.json
+  - Guarded stage launcher (executed once; state re-emitted/updated; no duplicate Friday jobs launched): logs/montana-time-capsule/cv-hr-time-capsule-launch-20260525T060545Z.log
+
 ## 2026-05-25T05:49:02Z HEARTBEAT monitor (HMC canonical `hmc-mtc-20260520T2015Z`): terminal; published bundle to public S3; public meta now HTTP 200
 
 - Git: agent-40136728-montana-time-capsule @ 47e6d2dd6616c1c9f35ea199cc7502e4b1a15a01 (`chore: postpush gh snapshot 20260525T0547Z [skip ci]`)
