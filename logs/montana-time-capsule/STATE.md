@@ -1,5 +1,14 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-25T00:30:02Z postpush - refreshed exact-head GitHub snapshot on current head (expected empty on `[skip ci]` head)
+
+- Git: agent-40136728-montana-time-capsule @ dc9fc33c8dbefd0bc8c267d2ef48dbb8c0211e44
+- Evidence stamp: 20260525T003002Z
+  - GitHub Actions (`/opt/homebrew/bin/gh`):
+    - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T003002Z.json
+    - exact-head runs snapshot (empty; expected for `[skip ci]` head): logs/montana-time-capsule/gh-run-list-exact-head-dc9fc33c-20260525T003002Z.json
+  - State snapshot refreshed: logs/montana-time-capsule/hmc-state.json
+
 ## 2026-05-25T00:28:08Z postpush - refreshed exact-head GitHub snapshot on new head (expected empty on `[skip ci]` head)
 
 - Git: agent-40136728-montana-time-capsule @ 01c740d99de7abe94d0b1fdcf48fc19430882492
@@ -11255,3 +11264,8 @@ Next acceptance gate: publish/copy canonical HMC supersplat bundle to intended p
   - no-sky headers: logs/montana-time-capsule/curl-headers-friday-viewer-nosky-20260525T002834Z.txt
 - GitHub Actions (using unauth REST API since `gh` missing in this environment):
   - branch run snapshot (no exact-head runs due `[skip ci]`): logs/montana-time-capsule/gh-actions-runs-agent-40136728-montana-time-capsule-20260525T002832Z.json
+
+## 20260525T0029Z HEARTBEAT monitor - postpush exact-head GH recheck (no spend)
+
+- Git: agent-40136728-montana-time-capsule @ 228ef98f3570e99eb50686a589b14a563525c36c (chore: friday mtc heartbeat 20260525T0028Z [skip ci])
+- GitHub Actions exact-head runs: 0 (expected due `[skip ci]`); snapshot: logs/montana-time-capsule/gh-actions-runs-agent-40136728-montana-time-capsule-20260525T003022Z.json

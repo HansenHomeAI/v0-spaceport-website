@@ -461,3 +461,5 @@
 [2026-05-25T00:07:01Z] postpush -> refreshed exact-head gh snapshot for df3345e -> done
 [2026-05-25T00:25:21Z] heartbeat(hmc-mtc-20260520T2015Z) -> InProgress=0; jobs Completed; staging meta OK; public meta 404; viewer 200/200/200; proxy 404; exact-head gh runs 0 ([skip ci]) -> next: passive monitor
 [2026-05-25T00:28:08Z] postpush -> gh snapshots recorded for 01c740d9 (exact-head runs 0 due to [skip ci]) -> next: idle monitor
+[2026-05-25T00:29:26Z] postpush -> gh exact-head runs 0 for 228ef98f ([skip ci]) -> next: commit+push snapshot
+[2026-05-25T00:30:02Z] postpush -> gh snapshots recorded for dc9fc33c (exact-head runs 0 due to [skip ci]) -> next: idle monitor
