@@ -1,5 +1,14 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-25T00:28:08Z postpush - refreshed exact-head GitHub snapshot on new head (expected empty on `[skip ci]` head)
+
+- Git: agent-40136728-montana-time-capsule @ 01c740d99de7abe94d0b1fdcf48fc19430882492
+- Evidence stamp: 20260525T002808Z
+  - GitHub Actions (`/opt/homebrew/bin/gh`):
+    - branch runs snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T002808Z.json
+    - exact-head runs snapshot (empty; expected for `[skip ci]` head): logs/montana-time-capsule/gh-run-list-exact-head-01c740d9-20260525T002808Z.json
+  - State snapshot refreshed: logs/montana-time-capsule/hmc-state.json
+
 ## 2026-05-25T00:25:21Z HEARTBEAT monitor (HMC canonical hmc-mtc-20260520T2015Z): no-spend re-verify on current head; SageMaker still terminal; viewer still reachable; public bundle still not public
 
 - Git: agent-40136728-montana-time-capsule @ d6420820af052ac09c3194d02216a96ed1982f73 (`chore: postpush heartbeat verify 20260525T001036Z [skip ci]`)

@@ -5,17 +5,17 @@
     "region": "us-west-2",
     "userId": "975050048887"
   },
-  "evidence_stamp": "20260525T002521Z",
+  "evidence_stamp": "20260525T002808Z",
   "gh": {
     "branch_runs_count": 20,
-    "branch_runs_snapshot": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T002521Z.json",
+    "branch_runs_snapshot": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260525T002808Z.json",
     "exact_head_runs_count": 0,
-    "exact_head_snapshot": "logs/montana-time-capsule/gh-run-list-exact-head-d6420820-20260525T002521Z.json"
+    "exact_head_snapshot": "logs/montana-time-capsule/gh-run-list-exact-head-01c740d9-20260525T002808Z.json"
   },
   "git": {
     "branch": "agent-40136728-montana-time-capsule",
-    "head": "d6420820af052ac09c3194d02216a96ed1982f73",
-    "head_checked_at": "20260525T002521Z"
+    "head": "01c740d99de7abe94d0b1fdcf48fc19430882492",
+    "head_checked_at": "20260525T002808Z"
   },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
@@ -46,7 +46,7 @@
       "status": "Completed"
     }
   },
-  "updated_at": "20260525T002521Z",
+  "updated_at": "20260525T002808Z",
   "viewer": {
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
     "base_http": 200,
