@@ -490,3 +490,4 @@
 [2026-05-25T04:24:08Z] heartbeat-hmc -> terminal (0 inprogress); viewer base/sky/nosky 200; public meta 404 persists; elevation 404; gh exact-head 0 ([skip ci]) -> next: commit+push ledger
 [2026-05-25T04:26:49Z] postpush-gh-snapshot -> branch/exact-head snapshots captured on 3bf23964 -> next: idle monitor
 [2026-05-25T04:27:42Z] exact-head gh snapshot -> head=be64fe74 runs=0 ([skip ci]) -> next: commit+push ledger
+[2026-05-25T04:25:53Z] heartbeat-friday -> terminal (sfm/3dgs/compression Completed); inprogress 0/0; public meta HEAD captured; gh exact-head 0 ([skip ci]) -> next: idle monitor (avoid duplicate launch)
