@@ -635,3 +635,4 @@
 [2026-05-26T00:08:46Z] heartbeat -> ok (terminal + S3+viewer reachable) -> next: wait for new acceptance gate
 [2026-05-26T00:28:31Z] heartbeat -> ok (terminal 0/0 + S3 meta 200 + viewer 200) (stamp=20260526T002601Z) -> next: await new acceptance gate
 [2026-05-26T00:28:41Z] heartbeat -> ok (terminal 0/0 + S3 meta 200 + viewer 200) (stamp=20260526T002601Z) -> next: await new acceptance gate
+[2026-05-26T00:47:26Z] heartbeat(20260526T004634Z) -> ok (SageMaker Completed; viewer/meta 200) -> idle

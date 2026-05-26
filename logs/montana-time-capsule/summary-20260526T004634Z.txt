@@ -1,0 +1,3 @@
+InProgress processing/training: 0/0
+Job status sfm=Completed 3dgs=Completed compression=Completed
+HTTP meta=200 viewer base/sky/nosky=200/200/200
