@@ -18,11 +18,11 @@
     "status": "logs/montana-time-capsule/git-status-20260526T150357Z.txt"
   },
   "postpush": {
-    "branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260526T145009Z.json",
-    "exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-42b84b1ab0081b2a4a11f3ff549ee72ee1fcea5b-postpush-20260526T145009Z.json",
-    "head": "42b84b1ab0081b2a4a11f3ff549ee72ee1fcea5b",
-    "head_file": "logs/montana-time-capsule/git-head-postpush-20260526T145009Z.txt",
-    "stamp": "20260526T145009"
+    "branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260526T150609Z.json",
+    "exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-bdf5188689b282b2d0c8a1884e89b0fc2203cf0f-postpush-20260526T150609Z.json",
+    "head": "bdf5188689b282b2d0c8a1884e89b0fc2203cf0f",
+    "head_file": "logs/montana-time-capsule/git-head-postpush-20260526T150609Z.txt",
+    "stamp": "20260526T150609"
   },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
@@ -46,7 +46,7 @@
     "aws_verification_method": "awscli:/opt/homebrew/bin/aws",
     "gh_cli_present": true,
     "gh_verification_method": "gh_cli:/opt/homebrew/bin/gh",
-    "head": "308d7ef87962546b35a694328dcf6f7f11c12aae"
+    "head": "bdf5188689b282b2d0c8a1884e89b0fc2203cf0f"
   },
   "updated_at": "2026-05-26T15:04:35Z",
   "viewer": {

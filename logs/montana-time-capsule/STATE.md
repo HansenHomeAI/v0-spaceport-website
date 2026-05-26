@@ -14,6 +14,12 @@
   - Machine-readable state refreshed: logs/montana-time-capsule/hmc-state.json (evidence_stamp=20260526T150357; updated_at=2026-05-26T15:03:57Z)
 
 
+## 2026-05-26T15:06:09Z POSTPUSH GH snapshot - branch `agent-40136728-montana-time-capsule` (head `bdf51886…`; `[skip ci]` exact-head expected empty)
+
+- Exact-head snapshot: logs/montana-time-capsule/git-head-postpush-20260526T150609Z.txt + logs/montana-time-capsule/gh-run-list-exact-head-bdf5188689b282b2d0c8a1884e89b0fc2203cf0f-postpush-20260526T150609Z.json
+- Branch snapshot: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260526T150609Z.json
+
+
 ## 2026-05-26T14:29:26Z POSTPUSH GH snapshot - branch `agent-40136728-montana-time-capsule` (head `856a943e…`; `[skip ci]` exact-head expected empty)
 
 - Exact-head snapshot: logs/montana-time-capsule/git-head-postpush-20260526T142926Z.txt + logs/montana-time-capsule/gh-run-list-exact-head-856a943e04368b5fac2a5768261663d5cc22881a-postpush-20260526T142926Z.json
