@@ -14153,3 +14153,7 @@ Evidence snapshot: logs/montana-time-capsule/hmc-state.json (evidence_stamp=2026
   - Hosted viewer reachability (HTTP 200 for base + sky/no-sky): logs/montana-time-capsule/viewer-urls-20260526T112526Z.txt + logs/montana-time-capsule/curlI-viewer-base-20260526T112526Z.headers + logs/montana-time-capsule/curlI-viewer-sky-hmc-mtc-20260520T2015Z-20260526T112526Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-hmc-mtc-20260520T2015Z-20260526T112526Z.headers
   - GitHub Actions snapshot: exact-head runs 0; branch latest success still 2026-05-25 (CDK Deploy + Pages). Evidence: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260526T112526Z.json + logs/montana-time-capsule/gh-run-list-exact-head-0e60c7c29be9a42a50928e7e4d5ee4b069872175-20260526T112526Z.json + logs/montana-time-capsule/gh-run-summary-20260526T112526Z.txt
   - Machine-readable state refreshed: logs/montana-time-capsule/hmc-state.json (evidence_stamp=20260526T112526Z)
+
+## 2026-05-26T11:29Z POSTPUSH GH snapshot - branch `agent-40136728-montana-time-capsule` (head `d78111c0…`; exact-head still empty)
+
+- Evidence: logs/montana-time-capsule/git-head-postpush-20260526T112927Z.txt + logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260526T112927Z.json + logs/montana-time-capsule/gh-run-list-exact-head-d78111c08bc661b29dba516d2350f6acda6de515-postpush-20260526T112927Z.json + logs/montana-time-capsule/gh-push-trigger-gap-20260526T112927Z.txt
