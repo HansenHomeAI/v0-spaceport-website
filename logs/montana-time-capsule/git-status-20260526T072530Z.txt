@@ -1,0 +1,3 @@
+?? logs/montana-time-capsule/git-branch-20260526T072530Z.txt
+?? logs/montana-time-capsule/git-head-20260526T072530Z.txt
+?? logs/montana-time-capsule/git-status-20260526T072530Z.txt
