@@ -1,6 +1,11 @@
 # Montana Time Capsule CV-HR State
 
 
+## 2026-05-26T09:30:52Z POSTPUSH GH snapshot - branch `agent-40136728-montana-time-capsule` (head `c7be51fc…`; `[skip ci]` exact-head expected empty)
+
+- Exact-head snapshot: logs/montana-time-capsule/_heartbeat_head_sha_20260526T093052Z.txt + logs/montana-time-capsule/gh-run-list-exact-head-c7be51fc0e63bed27c14ce27ff41febda00d7f10-20260526T093052Z.json
+
+
 ## 2026-05-26T09:29:46Z POSTPUSH GH snapshot - branch `agent-40136728-montana-time-capsule` (head `69fd4410…`; `[skip ci]` exact-head expected empty)
 
 - Exact-head snapshot: logs/montana-time-capsule/_heartbeat_head_sha_20260526T092946Z.txt + logs/montana-time-capsule/gh-run-list-exact-head-69fd4410bf5ac0f3dcae4ab45617d1ddecf0b37c-20260526T092946Z.json
