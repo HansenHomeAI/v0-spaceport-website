@@ -702,3 +702,4 @@
 [2026-05-26T13:11:20Z] postpush 20260526T131047Z -> corrected stamp; exact-head GH runs 0 (skip-ci) -> commit+push
 [2026-05-26T13:29:42Z] heartbeat -> verified terminal sm + s3 meta + viewer 200 + gh green -> next: wait for new acceptance gate
 [2026-05-26T13:47:23Z] heartbeat -> verified aws/sm/s3/viewer/gh -> next: wait for new acceptance gates
+[2026-05-26T13:48:18Z] postpush -> captured gh run snapshots (skip ci) -> next: idle
