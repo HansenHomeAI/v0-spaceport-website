@@ -1,0 +1,9 @@
+[2026-05-26T16:37:27Z] branch -> created agent-52689431-3dgs-sfm-authority from origin/development -> port tiled 3DGS and LOD viewer
+[2026-05-26T16:51:57Z] implement -> source changes and local TS/lint checks complete -> blocked on git/gh/aws/python/docker and Next SWC local build
+[2026-05-26T13:48:00-06:00] corrected execution path -> local Docker removed from validation scope; push will use GitHub connector/remote CodeBuild -> upload missing blobs and create remote branch
+[2026-05-26T20:24:40Z] setup -> installed user-local native git/aws/tmux/python and committed branch -> blocked only on local GitHub authentication for push
+[2026-05-26T21:09:00Z] aws-setup -> GitHub auth/push fixed and CI watch moved to tmux -> blocked on local AWS SSO/profile details for staging/prod accounts
+[2026-05-26T20:48:08Z] push/deploy -> auth restored, branch pushed, CDK and ML trigger green, Cloudflare failed on ML stack rollback-ready output resolution -> committed workflow readiness fix and redeploy
+[2026-05-26T21:48:28Z] aws-setup -> configured spaceport-dev 975050048887 and spaceport-prod 356638455876 via Atlas aws login -> resume remote container build monitoring and AWS validation
+[2026-05-26T22:04:00Z] cvhr-dry-run -> SfM-authority planner fallback patched/tested; CV-HR no-spend plan passes with 9 tiles and ownership bounds -> commit/push and wait for fresh 3DGS image
+[2026-05-26T22:34:00Z] cvhr-canary-r0 -> scaffold failed cheaply: missing training/images; container patched for selected-image roots and targeted tests pass -> commit/push rebuild, stage partial input, rerun canary

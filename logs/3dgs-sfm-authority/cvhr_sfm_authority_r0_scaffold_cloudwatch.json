@@ -1,0 +1,211 @@
+{
+    "events": [
+        {
+            "timestamp": 1779834463784,
+            "message": "✅ sitecustomize: filtered deprecated CUDA arch flags (TORCH_CUDA_ARCH_LIST=8.0 8.6)",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463784,
+            "message": "✅ sitecustomize: patched nerfstudio PIL conversion",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463784,
+            "message": "✅ PyTorch version doesn't have dynamo module",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463784,
+            "message": "✅ TORCH_COMPILE_DISABLE=1 set",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463784,
+            "message": "✅ TORCH_CUDA_ARCH_LIST=8.0 8.6",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463784,
+            "message": "✅ CUDAARCHS=70;80;86",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463784,
+            "message": "✅ LD_LIBRARY_PATH=/opt/conda/lib/python3.10/site-packages/cv2/../../lib64:/usr/local/cuda/lib64:/usr/local/cuda/lib",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463784,
+            "message": "✅ LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463784,
+            "message": "2026-05-26 22:27:43,442 - INFO - 🚀 NerfStudio Production Training Started",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463784,
+            "message": "2026-05-26 22:27:43,442 - INFO - 📦 Framework: NerfStudio with splatfacto-w-light",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463784,
+            "message": "2026-05-26 22:27:43,442 - INFO - 🎯 Goal: high-quality 3D splats with full sky background coverage",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463784,
+            "message": "2026-05-26 22:27:43,462 - INFO - 📝 Override training.max_iterations = 200 (from MAX_ITERATIONS)",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463784,
+            "message": "2026-05-26 22:27:43,463 - INFO - 📝 Override model.bilateral_processing = False (from BILATERAL_PROCESSING)",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463784,
+            "message": "2026-05-26 22:27:43,463 - INFO - 📝 Override training.steps_per_eval_image = 401 (from TRAINING_STEPS_PER_EVAL_IMAGE)",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463784,
+            "message": "2026-05-26 22:27:43,463 - INFO - 📝 Override training.steps_per_eval_all_images = 401 (from TRAINING_STEPS_PER_EVAL_ALL_IMAGES)",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463784,
+            "message": "2026-05-26 22:27:43,463 - INFO - 📝 Override training.steps_per_save = 200 (from TRAINING_STEPS_PER_SAVE)",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463784,
+            "message": "2026-05-26 22:27:43,463 - INFO - 📝 Override model.variant = splatfacto-w-light (from MODEL_VARIANT)",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463784,
+            "message": "2026-05-26 22:27:43,463 - INFO - 📝 Override model.enable_bg_model = True (from ENABLE_BG_MODEL)",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463785,
+            "message": "2026-05-26 22:27:43,463 - INFO - 📝 Override model.enable_alpha_loss = True (from ENABLE_ALPHA_LOSS)",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463785,
+            "message": "2026-05-26 22:27:43,463 - INFO - 📝 Override model.enable_robust_mask = True (from ENABLE_ROBUST_MASK)",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463785,
+            "message": "2026-05-26 22:27:43,464 - INFO - 📝 Override training.downscale_factor = 8 (from TRAINING_DOWNSCALE_FACTOR)",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463785,
+            "message": "2026-05-26 22:27:43,464 - INFO - 📝 Override tiling.training_mode = global_scaffold (from TRAINING_MODE)",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463785,
+            "message": "2026-05-26 22:27:43,464 - INFO - 📝 Override tiling.tile_manifest_path = /opt/ml/input/data/tile-selection/3dgs_tile_manifest.json (from TILE_MANIFEST_PATH)",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463785,
+            "message": "2026-05-26 22:27:43,464 - INFO - 📝 Override tiling.view_bucket_manifest_path = /opt/ml/input/data/tile-selection/3dgs_view_buckets.json (from VIEW_BUCKET_MANIFEST_PATH)",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463785,
+            "message": "2026-05-26 22:27:43,464 - INFO - 📝 Override tiling.require_sfm_authority = True (from REQUIRE_SFM_AUTHORITY)",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463785,
+            "message": "2026-05-26 22:27:43,464 - INFO - 📝 Override tiling.merge.mode = strict_core (from MERGE_MODE)",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463785,
+            "message": "2026-05-26 22:27:43,464 - INFO - 📝 Override tiling.global_scaffold.max_iterations = 200 (from GLOBAL_SCAFFOLD_MAX_ITERATIONS)",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463785,
+            "message": "2026-05-26 22:27:43,464 - INFO - 🚀 NerfStudio Trainer initialized (Spaceport splatfacto-w-light)",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463785,
+            "message": "2026-05-26 22:27:43,464 - INFO - 📁 Input directory: /opt/ml/input/data/training",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463785,
+            "message": "2026-05-26 22:27:43,464 - INFO - 📁 Output directory: /opt/ml/model",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463785,
+            "message": "2026-05-26 22:27:43,464 - INFO - 📁 Temp directory: /tmp/nerfstudio_training",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463785,
+            "message": "2026-05-26 22:27:43,464 - INFO - 📁 Training output directory: /opt/ml/checkpoints/nerfstudio_runs",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463785,
+            "message": "2026-05-26 22:27:43,464 - INFO - 📁 SageMaker checkpoint directory: /opt/ml/checkpoints",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463785,
+            "message": "2026-05-26 22:27:43,464 - INFO - ☁️ Explicit checkpoint S3 URI: s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r0-canary-20260526/checkpoints/cvhr-sfm-auth-r0-canary-1779834023-scaffold",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463785,
+            "message": "2026-05-26 22:27:43,465 - INFO - 🚀 Starting complete NerfStudio training pipeline",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463785,
+            "message": "2026-05-26 22:27:43,465 - INFO - 📅 Timestamp: 2026-05-26 22:27:43",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463785,
+            "message": "2026-05-26 22:27:43,465 - INFO - ================================================================================",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463785,
+            "message": "2026-05-26 22:27:43,465 - INFO - 🔍 Validating COLMAP data format for NerfStudio...",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463785,
+            "message": "2026-05-26 22:27:43,465 - ERROR - ❌ Required file/directory missing: /opt/ml/input/data/training/images",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463785,
+            "message": "2026-05-26 22:27:43,465 - ERROR - ❌ Input data validation failed",
+            "ingestionTime": 1779834469918
+        },
+        {
+            "timestamp": 1779834463785,
+            "message": "2026-05-26 22:27:43,465 - ERROR - ❌ Training pipeline failed",
+            "ingestionTime": 1779834469918
+        }
+    ],
+    "nextForwardToken": "f/39691634872432665011168825138548478583581669135083503656/s",
+    "nextBackwardToken": "b/39691634872410364265970294515406942865309020773577523200/s"
+}

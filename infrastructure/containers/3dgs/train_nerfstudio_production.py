@@ -898,6 +898,14 @@ class NerfStudioTrainer:
                      list(images_dir.glob('*.png')) + list(images_dir.glob('*.JPG')) + \
                      list(images_dir.glob('*.JPEG')) + list(images_dir.glob('*.PNG'))
         image_file_count = len(image_files)
+        selected_image_names = self.resolve_preconversion_selected_image_names()
+        selected_basenames = set(parse_image_name_list(selected_image_names))
+        image_file_by_lower_name = {path.name.lower(): path for path in image_files}
+        missing_selected_images = [
+            image_name
+            for image_name in sorted(selected_basenames)
+            if image_name.lower() not in image_file_by_lower_name
+        ]
         
         logger.info(f"📊 COLMAP Data Validation:")
         logger.info(f"   Cameras: {camera_count}")
@@ -945,7 +953,19 @@ class NerfStudioTrainer:
             logger.error(f"❌ Insufficient 3D points: {point_count} < 1000 (quality check failed)")
             return False
         
-        if image_file_count < image_count * 0.8:
+        if selected_basenames:
+            logger.info(
+                "   Tile-selected images required: %s; available: %s",
+                len(selected_basenames),
+                len(selected_basenames) - len(missing_selected_images),
+            )
+            if missing_selected_images:
+                logger.error(
+                    "❌ Missing selected image files: %s",
+                    missing_selected_images[:20],
+                )
+                return False
+        elif image_file_count < image_count * 0.8:
             logger.error(f"❌ Missing image files: {image_file_count} < {image_count * 0.8}")
             return False
         

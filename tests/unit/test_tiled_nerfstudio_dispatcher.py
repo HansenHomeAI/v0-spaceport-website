@@ -900,6 +900,52 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             self.assertTrue((subset / "images" / "DJI_0002.JPG").exists())
             self.assertTrue((subset / "images" / "DJI_0003.JPG").exists())
 
+    def test_validate_input_data_allows_tile_selected_partial_image_root(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            input_dir = root / "input"
+            sparse = input_dir / "sparse" / "0"
+            images = input_dir / "images"
+            sparse.mkdir(parents=True)
+            images.mkdir(parents=True)
+            (sparse / "cameras.txt").write_text(
+                "1 SIMPLE_RADIAL 4000 2250 3000 2000 1125 0\n",
+                encoding="utf-8",
+            )
+            (sparse / "images.txt").write_text(
+                "\n".join(
+                    [
+                        "# Image list",
+                        "1 1 0 0 0 0 0 0 1 DJI_0001.JPG",
+                        "0 0 1 -1",
+                        "2 1 0 0 0 1 0 0 1 DJI_0002.JPG",
+                        "0 0 2 -1",
+                        "3 1 0 0 0 2 0 0 1 DJI_0003.JPG",
+                        "0 0 3 -1",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            (sparse / "points3D.txt").write_text(
+                "\n".join(f"{idx} 0 0 0 255 255 255 1.0 1 0" for idx in range(1000)) + "\n",
+                encoding="utf-8",
+            )
+            for name in ["DJI_0002.JPG", "DJI_0003.JPG"]:
+                (images / name).write_text("image", encoding="utf-8")
+
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.input_dir = input_dir
+            trainer.resolve_preconversion_selected_image_names = lambda: ["DJI_0002.JPG", "DJI_0003.JPG"]
+            trainer.convert_colmap_to_nerfstudio = lambda: True
+
+            self.assertTrue(trainer.validate_input_data())
+
+            (images / "DJI_0003.JPG").unlink()
+            self.assertFalse(trainer.validate_input_data())
+
     def test_prepare_tiled_stage_dataset_copies_sparse_point_cloud(self):
         module = load_module_with_stubs()
 
