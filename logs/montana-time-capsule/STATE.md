@@ -1,5 +1,17 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-26T04:49:51Z POSTPUSH GH snapshot - branch `agent-40136728-montana-time-capsule`
+
+- Evidence stamp: 20260526T044951Z
+  - Git head: logs/montana-time-capsule/git-head-20260526T044951Z.txt (`b0d5a4a0…`; `[skip ci]` expected to yield exact-head 0)
+  - GitHub Actions snapshot (`/opt/homebrew/bin/gh`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260526T044951Z.json
+
+## 2026-05-26T04:49:51Z POSTPUSH GH snapshot - exact-head check
+
+- Evidence stamp: 20260526T044951Z
+  - Git head: `b0d5a4a0…` (`[skip ci]` expected to yield exact-head 0)
+  - GitHub Actions snapshot (`/opt/homebrew/bin/gh`): logs/montana-time-capsule/gh-run-list-exact-head-b0d5a4a000e9e3c02d306644bd3ead0d8cab2f9e-postpush-20260526T044951Z.json
+
 ## 2026-05-26T04:48:54Z POSTPUSH GH snapshot - branch `agent-40136728-montana-time-capsule`
 
 - Evidence stamp: 20260526T044854Z
