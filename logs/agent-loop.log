@@ -673,3 +673,4 @@
 [2026-05-26T08:08:26Z] postpush exact-head snapshot -> recorded gh run list for 723fe673 (expected empty)
 [2026-05-26T08:09:08Z] postpush exact-head snapshot -> recorded gh run list for 601213ca (expected empty)
 [2026-05-26T08:28:47Z] heartbeat -> refreshed aws/sm/s3/viewer/gh proof -> commit+push
+[2026-05-26T08:50:27Z] heartbeat 20260526T084617Z -> refreshed no-spend evidence (SM 0/0; viewer/meta 200) -> commit+push ledger
