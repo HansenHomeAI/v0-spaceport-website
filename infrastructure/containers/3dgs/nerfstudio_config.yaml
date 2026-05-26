@@ -24,11 +24,43 @@ training:
   max_iterations: 30000              # Vincent's training duration
   target_psnr: 35.0                  # High quality target
   log_interval: 100                  # Frequent logging for monitoring
+  vis_mode: "tensorboard"            # Use viewer for tiny proof runs to skip eval startup cost
+  cache_images: ""                   # Optional NerfStudio datamanager cache target override
+  cache_images_type: ""              # Optional NerfStudio datamanager cache dtype override
+  dataloader_num_workers: null       # Optional NerfStudio datamanager worker override
+  max_selected_images: 0             # Optional proof-run cap after manifest selection
+  selection_stride: 1                # Optional proof-run stride after manifest selection
+  review_images_per_bucket: 4        # Representative frames copied into outputs for seam/horizon review
+  steps_per_eval_image: 100          # NerfStudio eval cadence
+  steps_per_eval_all_images: 1000    # Full-image eval cadence
+  steps_per_save: 2000               # Checkpoint cadence
+  quit_on_train_completion: true     # Always exit cleanly in headless SageMaker jobs
   early_stopping: false             # Complete full training for quality
   
   # Quality thresholds
   min_iterations: 5000               # Minimum training duration
   convergence_patience: 2000         # Patience for convergence detection
+
+# Tile / Scaffold Controls
+tiling:
+  training_mode: "monolithic"        # monolithic, global_scaffold, leaf_tile, or tiled_pipeline
+  tile_manifest_path: ""
+  view_bucket_manifest_path: ""
+  tile_id: ""
+  merge:
+    mode: "strict_core"
+  global_scaffold:
+    max_images: 240
+    frame_stride: 2
+    max_iterations: 4000
+    sh_degree: 1
+    max_gauss_ratio: 4.0
+  pipeline:
+    max_tiles: 4
+    tile_ids: ""
+    include_scaffold: true
+    include_merge: true
+    resume_existing: true
 
 # Hardware Optimization (A10G GPU specific)
 hardware:

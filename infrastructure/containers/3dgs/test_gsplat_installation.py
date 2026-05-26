@@ -37,34 +37,32 @@ def test_gsplat_installation():
         print(f"   ❌ Unexpected error importing gsplat: {e}")
         return False
     
-    # Test 3: Test basic gsplat functionality
-    print("\n3. Testing basic gsplat functionality...")
+    # Test 3: Test gsplat 1.4 API surface used by the production renderer/reviewer
+    print("\n3. Testing gsplat 1.4 API surface...")
     try:
-        # Test if we can import basic gsplat modules
-        from gsplat import GaussianRasterizationSettings
-        
-        print("   ✅ Basic gsplat imports working!")
-        
-        # Test rasterization settings creation
-        settings = GaussianRasterizationSettings(
-            image_height=512,
-            image_width=512,
-            tanfovx=0.5,
-            tanfovy=0.5,
-            bg_color=[0, 0, 0],
-            scale_modifier=1.0,
-            viewmatrix=torch.eye(4, device='cuda' if torch.cuda.is_available() else 'cpu'),
-            projmatrix=torch.eye(4, device='cuda' if torch.cuda.is_available() else 'cpu'),
-            sh_degree=0,
-            campos=torch.tensor([0, 0, 0], device='cuda' if torch.cuda.is_available() else 'cpu'),
-            prefiltered=False,
-            debug=False
-        )
-        
-        print("   ✅ GaussianRasterizationSettings created successfully!")
-        
+        from gsplat import rasterization
+        from gsplat.cuda._wrapper import spherical_harmonics
+
+        print(f"   ✅ rasterization import: {rasterization}")
+        print(f"   ✅ spherical_harmonics import: {spherical_harmonics}")
     except Exception as e:
         print(f"   ❌ Error testing gsplat functionality: {e}")
+        return False
+
+    print("\n4. Testing NerfStudio Splatfacto-W CLI...")
+    try:
+        import subprocess
+
+        subprocess.run(
+            ["ns-train", "splatfacto-w-light", "--help"],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=60,
+        )
+        print("   ✅ ns-train splatfacto-w-light CLI available")
+    except Exception as e:
+        print(f"   ❌ Error testing NerfStudio Splatfacto-W CLI: {e}")
         return False
     
     print("\n🎉 ALL TESTS PASSED!")

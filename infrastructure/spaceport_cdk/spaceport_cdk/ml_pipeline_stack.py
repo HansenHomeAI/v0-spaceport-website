@@ -366,6 +366,8 @@ class MLPipelineStack(Stack):
         sfm_repo_fallback_name = "spaceport/sfm"
         gaussian_repo_fallback_name = "spaceport/3dgs"
         compressor_repo_fallback_name = "spaceport/compressor"
+        container_image_tag = env_config.get("containerImageTag") or suffix
+        require_branch_ecr_tag = "true" if self.deployment_class == "branch-preview" else "false"
         
         start_job_lambda = lambda_.Function(
             self, "StartMLJobFunction",
@@ -386,6 +388,8 @@ class MLPipelineStack(Stack):
                 "SFM_ECR_REPO_FALLBACK": sfm_repo_fallback_name,
                 "GAUSSIAN_ECR_REPO_FALLBACK": gaussian_repo_fallback_name,
                 "COMPRESSOR_ECR_REPO_FALLBACK": compressor_repo_fallback_name,
+                "ECR_IMAGE_TAG": container_image_tag,
+                "REQUIRE_BRANCH_ECR_TAG": require_branch_ecr_tag,
             }
         )
 

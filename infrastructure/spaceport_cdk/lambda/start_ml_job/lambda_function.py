@@ -139,33 +139,68 @@ def lambda_handler(event, context):
         account_id = context.invoked_function_arn.split(':')[4]
         region = context.invoked_function_arn.split(':')[3]
         
-        # Resolve ECR image URIs with fallback logic
-        # Try branch-specific repo first, fallback to shared repo if it doesn't exist
-        def resolve_ecr_uri(repo_name, fallback_repo_name):
-            """Resolve ECR URI, trying branch-specific repo first, then fallback"""
+        image_tag = os.environ.get('ECR_IMAGE_TAG', 'latest').strip() or 'latest'
+        require_branch_image_tag = os.environ.get('REQUIRE_BRANCH_ECR_TAG', 'false').lower() in ('1', 'true', 'yes', 'on')
+
+        # Resolve ECR image URIs with fallback logic.
+        # Branch previews must validate the branch tag/digest, not silently run :latest.
+        def resolve_ecr_uri(repo_name, fallback_repo_name, image_tag=image_tag):
+            """Resolve ECR URI, trying branch-specific repo/tag first, then fallback."""
             ecr_client = boto3.client('ecr', region_name=region)
+
+            def image_exists(repository_name, tag):
+                try:
+                    ecr_client.describe_images(repositoryName=repository_name, imageIds=[{'imageTag': tag}])
+                    return True
+                except Exception as image_error:
+                    code = image_error.response.get('Error', {}).get('Code', '') if hasattr(image_error, 'response') else ''
+                    if code in ('ImageNotFoundException', 'RepositoryNotFoundException'):
+                        return False
+                    raise
+
+            def image_uri(repository_name, tag):
+                return f"{account_id}.dkr.ecr.{region}.amazonaws.com/{repository_name}:{tag}"
+
             # Try branch-specific repo first
             try:
                 ecr_client.describe_repositories(repositoryNames=[repo_name])
-                print(f"Using branch-specific ECR repo: {repo_name}")
-                return f"{account_id}.dkr.ecr.{region}.amazonaws.com/{repo_name}:latest"
+                if image_exists(repo_name, image_tag):
+                    print(f"Using branch-specific ECR image: {repo_name}:{image_tag}")
+                    return image_uri(repo_name, image_tag)
+                if require_branch_image_tag:
+                    raise RuntimeError(f"Required branch ECR image tag missing: {repo_name}:{image_tag}")
+                print(f"Branch-specific repo {repo_name} lacks tag {image_tag}, falling back to latest")
+                return image_uri(repo_name, 'latest')
             except Exception as e:
                 # Check if it's a repository not found error
                 error_code = e.response.get('Error', {}).get('Code', '') if hasattr(e, 'response') else ''
+                if require_branch_image_tag and error_code != 'RepositoryNotFoundException':
+                    raise
                 if error_code == 'RepositoryNotFoundException':
                     # Fallback to shared repo
                     try:
                         ecr_client.describe_repositories(repositoryNames=[fallback_repo_name])
-                        print(f"Branch-specific repo {repo_name} not found, using fallback: {fallback_repo_name}")
-                        return f"{account_id}.dkr.ecr.{region}.amazonaws.com/{fallback_repo_name}:latest"
+                        if image_exists(fallback_repo_name, image_tag):
+                            print(f"Using fallback repo with branch tag: {fallback_repo_name}:{image_tag}")
+                            return image_uri(fallback_repo_name, image_tag)
+                        if require_branch_image_tag:
+                            raise RuntimeError(
+                                f"Required branch ECR image tag missing in fallback repo: {fallback_repo_name}:{image_tag}"
+                            )
+                        print(f"Branch-specific repo {repo_name} not found, using fallback latest: {fallback_repo_name}")
+                        return image_uri(fallback_repo_name, 'latest')
                     except Exception as e2:
                         # If fallback also doesn't exist, use it anyway (will fail at runtime with clear error)
+                        if require_branch_image_tag:
+                            raise
                         print(f"Warning: Neither {repo_name} nor {fallback_repo_name} found, using fallback")
-                        return f"{account_id}.dkr.ecr.{region}.amazonaws.com/{fallback_repo_name}:latest"
+                        return image_uri(fallback_repo_name, 'latest')
                 else:
                     # On any other error, use fallback
+                    if require_branch_image_tag:
+                        raise
                     print(f"Error checking repo {repo_name}: {str(e)}, using fallback: {fallback_repo_name}")
-                    return f"{account_id}.dkr.ecr.{region}.amazonaws.com/{fallback_repo_name}:latest"
+                    return image_uri(fallback_repo_name, 'latest')
         
         sfm_image_uri = resolve_ecr_uri(sfm_repo, sfm_repo_fallback)
         gaussian_image_uri = resolve_ecr_uri(gaussian_repo, gaussian_repo_fallback)
@@ -252,10 +287,10 @@ def lambda_handler(event, context):
             "OUTPUT_FORMAT": "ply",             # SOGS-compatible format
             "SOGS_COMPATIBLE": "true",          # Enable SOGS export
             
-            # GPU Optimization for A10G (16GB)
+            # GPU Optimization for A10G (24GB on G5)
             "MAX_NUM_GAUSSIANS": "1500000",     # Conservative limit for A10G
             "MEMORY_OPTIMIZATION": "true",      # Enable memory optimization
-            "TORCH_CUDA_ARCH_LIST": "8.0 8.6",  # Limit gsplat JIT targets to Ampere+
+            "TORCH_CUDA_ARCH_LIST": "7.0;8.0;8.6+PTX",  # Match 3DGS Dockerfile CUDA targets
             
             # Legacy G-Splat parameters for backward compatibility (will be ignored by NerfStudio)
             "max_iterations": 30000,

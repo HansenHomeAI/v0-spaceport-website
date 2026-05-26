@@ -37,6 +37,11 @@ def extract_model_artifact(model_tarball: Path, extract_dir: Path) -> Path:
     extract_dir.mkdir(parents=True, exist_ok=True)
 
     with tarfile.open(model_tarball, "r:gz") as tar:
+        dest_root = extract_dir.resolve()
+        for member in tar.getmembers():
+            member_path = (extract_dir / member.name).resolve()
+            if not str(member_path).startswith(str(dest_root)):
+                raise RuntimeError(f"Refusing unsafe artifact member: {member.name}")
         tar.extractall(extract_dir)
     return extract_dir
 

@@ -1,5 +1,5 @@
-reason: executing phase 2 branch sync by merging origin/development into codex/agent-72759001-sync-development-into-ml and validating the integrated branch
-last_step: completed the phase 2 baseline checks, merged origin/development into the phase 2 branch, and started resolving the expected workflow and web content conflicts
-next_unblocked_step: finish conflict resolution, audit the auto-merged infra files for branch-aware naming and R2/payment settings, push the branch, and monitor Pages/CDK/container checks to green
-owner_action_needed: none
-updated: 2026-03-06T02:16:00Z
+reason: blocked at remote validation and production run because local GitHub/AWS/Python/Docker tooling is unavailable or broken
+last_step: implemented SfM-authority 3DGS tiled manifest contract, ported tiled 3DGS/quality/LOD viewer code, hardened container pins/skybox propagation/branch ECR tag resolution, and verified TypeScript/lint locally
+next_unblocked_step: restore working git/gh/aws/python3/docker tooling, push branch agent-52689431-3dgs-sfm-authority, monitor Cloudflare Pages/CDK/container workflows, then run CV-HR no-spend manifest audit followed by the two-tile seam canary with --require-sfm-authority and budget cap
+owner_action_needed: install or repair macOS Command Line Tools so /usr/bin/git and /usr/bin/python3 work, install/configure gh and aws CLIs with repo/AWS access, and provide Docker or CI container build access
+updated: 2026-05-26T10:58:00Z

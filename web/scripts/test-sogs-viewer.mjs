@@ -6,7 +6,7 @@
  *
  * Env:
  *   SOGS_VIEWER_URL   — base URL (default: Cloudflare preview in repo)
- *   SOGS_BUNDLE_URL   — HTTPS meta.json or bundle folder URL
+ *   SOGS_BUNDLE_URL   — HTTPS lod-meta.json/meta.json or bundle folder URL
  *   SOGS_SCENARIOS    — comma list: chromium-desktop, webkit-mobile
  */
 
@@ -22,7 +22,7 @@ const logsDir = path.join(repoRoot, "logs");
 
 const DEFAULT_PREVIEW = "https://agent-48291037-sogs-viewer.v0-spaceport-website-preview2.pages.dev";
 const DEFAULT_BUNDLE =
-  "https://spaceport-ml-processing.s3.amazonaws.com/compressed/sogs-test-1763664401/supersplat_bundle/meta.json";
+  "https://spaceport-ml-processing.s3.amazonaws.com/compressed/md1-r5-v18-splattransform-lod-nosingle-public-1777575472/supersplat_bundle/lod-meta.json";
 
 const previewUrl = (process.env.SOGS_VIEWER_URL ?? DEFAULT_PREVIEW).replace(/\/$/, "");
 const bundleUrl = process.env.SOGS_BUNDLE_URL ?? DEFAULT_BUNDLE;
@@ -93,29 +93,31 @@ async function runScenario({ launcher, name, options }) {
     // Prefilled default bundle + auto-load on mount
     await expectInputHasBundle(page);
     await page.waitForSelector(iframeSelector, { timeout: 60000 });
-    await page.getByText(/Ready —/).waitFor({ state: "visible", timeout: 360000 });
+    await page.getByText(/Ready [-—]/).waitFor({ state: "visible", timeout: 360000 });
 
-    const splatFrame = page.frames().find((f) => f.url().includes("supersplat-viewer"));
+    const splatFrame = page.frames().find((f) => f.url().includes("supersplat-lod-viewer") || f.url().includes("supersplat-viewer"));
     assert(!!splatFrame, "supersplat iframe frame should exist");
     const xzReady = await splatFrame.evaluate(() => window.__sogsSplatXzDragReady === true);
     assert(xzReady, "sogs-bridge should set __sogsSplatXzDragReady on the viewer canvas");
+    await expectLodMetricsWhenRequested(page);
 
     // Manual reload still works
     await page.click(submitSelector);
     await page.getByText(/Loading bundle/).waitFor({ state: "visible", timeout: 5000 }).catch(() => {});
-    await page.getByText(/Ready —/).waitFor({ state: "visible", timeout: 360000 });
+    await page.getByText(/Ready [-—]/).waitFor({ state: "visible", timeout: 360000 });
 
     // ?url= override (encoded)
     const encoded = encodeURIComponent(bundleUrl);
     await page.goto(`${previewUrl}/sogs-viewer?url=${encoded}`, { waitUntil: "domcontentloaded", timeout: 60000 });
     await page.waitForSelector(iframeSelector, { timeout: 60000 });
-    await expectInputHasBundle(page);
-    await page.getByText(/Ready —/).waitFor({ state: "visible", timeout: 360000 });
+    await expectInputHasBundle(page, new URL(bundleUrl).host);
+    await page.getByText(/Ready [-—]/).waitFor({ state: "visible", timeout: 360000 });
+    await expectLodMetricsWhenRequested(page);
 
     // Non-HTTP URL is rejected — wait for auto-load to finish first or the mount effect overwrites the field
     await page.goto(`${previewUrl}/sogs-viewer`, { waitUntil: "domcontentloaded", timeout: 60000 });
     await page.waitForSelector(iframeSelector, { timeout: 120000 });
-    await page.getByText(/Ready —/).waitFor({ state: "visible", timeout: 360000 });
+    await page.getByText(/Ready [-—]/).waitFor({ state: "visible", timeout: 360000 });
     await page.fill(inputSelector, "ftp://example.com/bundle/");
     await page.click(submitSelector);
     await page.getByText(/Enter a valid HTTPS URL/).waitFor({ state: "visible", timeout: 30000 });
@@ -136,9 +138,29 @@ async function runScenario({ launcher, name, options }) {
   }
 }
 
-async function expectInputHasBundle(page) {
+async function expectInputHasBundle(page, expectedHost = "spaceport-ml-processing.s3.amazonaws.com") {
   const val = await page.inputValue(inputSelector);
-  assert(val.includes("spaceport-ml-processing.s3.amazonaws.com"), "expected prefilled S3 test bundle URL");
+  assert(val.includes(expectedHost), `expected prefilled S3 bundle URL from ${expectedHost}`);
+}
+
+async function expectLodMetricsWhenRequested(page) {
+  if (!bundleUrl.includes("lod-meta.json")) {
+    return;
+  }
+  const metrics = page.getByTestId("sogs-bundle-metrics");
+  await metrics.waitFor({ state: "attached", timeout: 30000 });
+  const attrs = await metrics.evaluate((node) => ({
+    kind: node.getAttribute("data-bundle-kind"),
+    rootFile: node.getAttribute("data-root-file"),
+    chunkFiles: Number(node.getAttribute("data-chunk-files") || "0"),
+    loadedNodes: Number(node.getAttribute("data-loaded-nodes") || "0"),
+    firstFrameMs: node.getAttribute("data-first-frame-ms"),
+  }));
+  assert(attrs.kind === "lod-streaming", `expected lod-streaming bundle, got ${attrs.kind}`);
+  assert(attrs.rootFile === "lod-meta.json", `expected lod-meta.json root, got ${attrs.rootFile}`);
+  assert(attrs.chunkFiles > 0, "expected LOD chunk files");
+  assert(attrs.loadedNodes > 0, "expected loaded LOD nodes");
+  assert(Boolean(attrs.firstFrameMs), "expected first frame telemetry");
 }
 
 (async () => {

@@ -10,7 +10,7 @@ FROM 763104351884.dkr.ecr.us-west-2.amazonaws.com/pytorch-training:2.0.1-gpu-py3
 
 LABEL maintainer="Spaceport ML Team"
 LABEL version="3.0"
-LABEL description="3D Gaussian Splatting training with gsplat JIT compilation for AWS ml.g5.xlarge"
+LABEL description="3D Gaussian Splatting training with pinned NerfStudio/Splatfacto-W and gsplat CUDA kernels"
 
 # Set working directory
 WORKDIR /opt/ml/code
@@ -34,18 +34,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends wget gnupg && \
         cmake \
         ninja-build \
         git \
+        libglm-dev \
     && rm -rf /var/lib/apt/lists/*
 
 ENV CUDA_HOME=/usr/local/cuda
 ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib
 ENV LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib
 ENV PATH=/usr/local/cuda/bin:/opt/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV TORCH_CUDA_ARCH_LIST="7.0;8.0;8.6+PTX"
+ENV CUDAARCHS="70;80;86"
 
 # CRITICAL: Limit build parallelism globally to prevent OOM during pip installs
 # BUILD_GENERAL1_LARGE has 15GB RAM, parallel builds (cmake/ninja) need ~8-12GB each
 # Set globally so all build systems respect these limits
 ENV MAX_JOBS=1
 ENV CMAKE_BUILD_PARALLEL_LEVEL=1
+ARG NERFSTUDIO_COMMIT=50e0e3c70c775e89333256213363badbf074f29d
+ARG SPLATFACTO_W_COMMIT=119a3bfb3aa03669278e174ff11c4dfdcbcf97d7
 
 # ---------------------------------------------------------------
 # 2. Install NerfStudio with gsplat JIT Compilation (Vincent Woo's Approach)
@@ -54,19 +59,25 @@ ENV CMAKE_BUILD_PARALLEL_LEVEL=1
 # Ensure latest pybind11 to satisfy fpsample build requirements
 RUN pip install --no-cache-dir "pybind11>=2.13.0"
 
-# Install the latest NerfStudio mainline plus the Splatfacto-W plugin.
+# Install pinned NerfStudio mainline plus the Splatfacto-W plugin.
 # The plugin provides splatfacto-w-light, which adds the learned background
 # model we bake into a lightweight skybox for the final viewer.
-RUN git clone --depth 1 https://github.com/nerfstudio-project/nerfstudio.git /tmp/nerfstudio && \
+RUN git clone https://github.com/nerfstudio-project/nerfstudio.git /tmp/nerfstudio && \
+    cd /tmp/nerfstudio && git checkout "${NERFSTUDIO_COMMIT}" && \
     pip install --no-cache-dir /tmp/nerfstudio && \
     rm -rf /tmp/nerfstudio
 
-RUN pip install --no-cache-dir git+https://github.com/KevinXu02/splatfacto-w.git && \
+RUN pip install --no-cache-dir git+https://github.com/KevinXu02/splatfacto-w.git@${SPLATFACTO_W_COMMIT} && \
     ns-install-cli
+
+# Force gsplat to compile CUDA kernels during the image build so fresh
+# SageMaker jobs do not stall on first-use JIT compilation.
+# Keep NerfStudio's pinned dependency set intact while rebuilding gsplat from source.
+RUN pip install --no-cache-dir --force-reinstall --no-binary=gsplat --no-deps gsplat==1.4.0
 
 # Verify installations
 RUN python -c "import nerfstudio; print('✅ NerfStudio installed successfully')"
-RUN python -c "import gsplat; print('✅ gsplat backend available (will JIT compile on first use)')"
+RUN python -c "import gsplat; print('✅ gsplat backend available with build-time CUDA compilation')"
 RUN ns-install-cli --help > /dev/null && echo "✅ NerfStudio CLI available"
 RUN ns-train splatfacto-w-light --help > /dev/null && echo "✅ splatfacto-w-light CLI available"
 
@@ -79,7 +90,9 @@ RUN pip install --no-cache-dir \
     psutil>=5.9.0 \
     plyfile>=0.7.4 \
     Pillow>=10.0.0 \
-    opencv-python-headless>=4.10.0
+    opencv-python-headless>=4.10.0 \
+    scikit-image>=0.22.0 \
+    lpips>=0.1.4
 
 # ---------------------------------------------------------------
 # 3. Copy Training Code and Configuration
@@ -87,7 +100,12 @@ RUN pip install --no-cache-dir \
 
 COPY train_nerfstudio_production.py /opt/ml/code/
 COPY export_splatfacto_w_assets.py /opt/ml/code/
+COPY tile_pipeline.py /opt/ml/code/
+COPY merge_gaussian_tiles.py /opt/ml/code/
+COPY run_tiled_merge_packaging.py /opt/ml/code/
 COPY run_export_quality_pass.py /opt/ml/code/
+COPY run_tiled_quality_review.py /opt/ml/code/
+COPY geometry_review.py /opt/ml/code/
 COPY sky_quality.py /opt/ml/code/
 COPY nerfstudio_config.yaml /opt/ml/code/
 COPY sitecustomize.py /opt/ml/code/
