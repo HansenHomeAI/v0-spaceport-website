@@ -1,0 +1,106 @@
+{
+  "artifact_kind": "md1_sg6_leaf_camera_drift_probe",
+  "created_at": "2026-05-26T20:30Z",
+  "leaves": [
+    4,
+    9,
+    10,
+    11,
+    14,
+    15,
+    16,
+    0,
+    1
+  ],
+  "leaf_prior_residual_m": {
+    "4": {
+      "count": 360,
+      "p50": 2.08898,
+      "p95": 3.639871,
+      "max": 5.464741
+    },
+    "9": {
+      "count": 360,
+      "p50": 1.878696,
+      "p95": 3.247805,
+      "max": 5.195413
+    },
+    "10": {
+      "count": 360,
+      "p50": 1.724596,
+      "p95": 3.319791,
+      "max": 9.936924
+    },
+    "11": {
+      "count": 298,
+      "p50": 1.41019,
+      "p95": 3.293443,
+      "max": 4.647839
+    },
+    "14": {
+      "count": 137,
+      "p50": 263.114763,
+      "p95": 263.945407,
+      "max": 264.487027
+    },
+    "15": {
+      "count": 360,
+      "p50": 1.362197,
+      "p95": 3.07668,
+      "max": 5.006067
+    },
+    "16": {
+      "count": 360,
+      "p50": 1.791468,
+      "p95": 3.700785,
+      "max": 5.677992
+    },
+    "0": {
+      "count": 329,
+      "p50": 2.2642,
+      "p95": 3.905483,
+      "max": 5.543775
+    },
+    "1": {
+      "count": 360,
+      "p50": 2.343919,
+      "p95": 4.785621,
+      "max": 6.842013
+    }
+  },
+  "pair_raw_shared_camera_center_delta_m": {
+    "4-9": {
+      "count": 67,
+      "p50": 1.359161,
+      "p95": 1.940547,
+      "max": 2.219334
+    },
+    "9-10": {
+      "count": 68,
+      "p50": 0.709097,
+      "p95": 1.277064,
+      "max": 1.333493
+    },
+    "11-14": {
+      "count": 120,
+      "p50": 262.993471,
+      "p95": 263.48444,
+      "max": 263.640995
+    },
+    "0-1": {
+      "count": 50,
+      "p50": 2.474352,
+      "p95": 4.163539,
+      "max": 4.622486
+    },
+    "15-16": {
+      "count": 139,
+      "p50": 1.134224,
+      "p95": 1.896262,
+      "max": 2.430832
+    },
+    "6-8": null,
+    "2-3": null
+  },
+  "interpretation": "GPS/model_aligner places each leaf in planner coordinates only to meter-level p95 for many leaves; strict reducer camera-center seam gate at 0.25m rejects these independently solved leaves before any merge."
+}

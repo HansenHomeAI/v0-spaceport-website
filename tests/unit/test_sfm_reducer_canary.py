@@ -178,6 +178,101 @@ class SfmReducerCanaryTest(unittest.TestCase):
         self.assertEqual(role_report["top_outlier_images"][0]["role_pair"], "overlap|overlap")
         self.assertEqual(report["planner_leaf_mapping"]["leaf_to_chunk_index"], {"0": 2, "1": 6})
 
+    def test_mixed_shared_camera_tail_passes_only_with_strong_inlier_support(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            names = [f"IMG_{index:04d}.JPG" for index in range(30)]
+            inlier_names = names[:22]
+            tail_names = names[22:]
+            base_positions = self.grid_positions(names)
+            mixed_positions = {
+                **{name: base_positions[name] for name in inlier_names},
+                **{
+                    name: (
+                        base_positions[name][0] + 5.0 + float(index),
+                        base_positions[name][1] - 3.0,
+                        base_positions[name][2] + 1.0,
+                    )
+                    for index, name in enumerate(tail_names)
+                },
+            }
+            self.write_model(root / "leaf0", names, [(names[0], names[1])], camera_positions=base_positions)
+            self.write_model(root / "leaf1", names, [(names[2], names[3])], camera_positions=mixed_positions)
+
+            report = reducer_canary.build_seam_merge_graph(
+                normalized_dirs=[root / "leaf0", root / "leaf1"],
+                thresholds=reducer_canary.SeamThresholds(
+                    min_shared_images=20,
+                    max_scale_delta=0.15,
+                    max_sim3_p95_residual_m=0.25,
+                    max_baseline_normalized_residual=0.01,
+                    strict_production_gates=True,
+                ),
+                planner_manifest={
+                    "chunks": [
+                        {"index": 0, "image_names": names, "core_names": names, "overlap_names": []},
+                        {"index": 1, "image_names": names, "core_names": names, "overlap_names": []},
+                    ]
+                },
+            )
+
+        edge = report["candidate_edges"][0]
+        inlier_support = edge["seam_inlier_support"]
+        self.assertEqual(report["decision"], "pass")
+        self.assertEqual(edge["decision"], "accept")
+        self.assertIn("shared_camera_residual_tail_quarantined_by_inlier_support", edge["warnings"])
+        self.assertGreater(edge["sim3_residual_m"]["p95"], 0.25)
+        self.assertGreaterEqual(inlier_support["inlier_count"], 20)
+        self.assertGreaterEqual(inlier_support["trusted_core_involved_inlier_count"], 20)
+        self.assertGreaterEqual(inlier_support["inlier_ratio"], 0.5)
+        self.assertEqual(len(inlier_support["sample_outlier_images"]), 8)
+
+    def test_scattered_shared_camera_tail_fails_without_enough_inlier_support(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            names = [f"IMG_{index:04d}.JPG" for index in range(30)]
+            inlier_names = names[:10]
+            tail_names = names[10:]
+            base_positions = self.grid_positions(names)
+            scattered_positions = {
+                **{name: base_positions[name] for name in inlier_names},
+                **{
+                    name: (
+                        base_positions[name][0] + 6.0 + float(index % 5) * 3.0,
+                        base_positions[name][1] - 4.0 - float(index // 5) * 2.0,
+                        base_positions[name][2] + float(index % 4),
+                    )
+                    for index, name in enumerate(tail_names)
+                },
+            }
+            self.write_model(root / "leaf0", names, [(names[0], names[1])], camera_positions=base_positions)
+            self.write_model(root / "leaf1", names, [(names[2], names[3])], camera_positions=scattered_positions)
+
+            report = reducer_canary.build_seam_merge_graph(
+                normalized_dirs=[root / "leaf0", root / "leaf1"],
+                thresholds=reducer_canary.SeamThresholds(
+                    min_shared_images=20,
+                    max_scale_delta=0.15,
+                    max_sim3_p95_residual_m=0.25,
+                    max_baseline_normalized_residual=0.01,
+                    strict_production_gates=True,
+                ),
+                planner_manifest={
+                    "chunks": [
+                        {"index": 0, "image_names": names, "core_names": names, "overlap_names": []},
+                        {"index": 1, "image_names": names, "core_names": names, "overlap_names": []},
+                    ]
+                },
+            )
+
+        edge = report["candidate_edges"][0]
+        inlier_support = edge["seam_inlier_support"]
+        self.assertEqual(report["decision"], "fail")
+        self.assertEqual(edge["decision"], "reject")
+        self.assertIn("sim3_p95_residual_exceeds_gate", edge["blockers"])
+        self.assertLess(inlier_support["inlier_count"], 20)
+        self.assertNotIn("shared_camera_residual_tail_quarantined_by_inlier_support", edge["warnings"])
+
     def test_scaled_duplicate_wall_fails_strict_seam_gate(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

@@ -340,7 +340,9 @@ def estimate_robust_similarity(source: np.ndarray, target: np.ndarray) -> Simila
         for left, right in zip(transform_points(source, initial), target)
     ]
     median = float(np.median(initial_residuals))
-    inlier_cutoff = max(0.05, median * 2.5, float(percentile(initial_residuals, 0.75) or median) * 1.5)
+    median_abs_deviation = float(np.median([abs(value - median) for value in initial_residuals]))
+    robust_sigma = 1.4826 * median_abs_deviation
+    inlier_cutoff = max(0.05, median + max(0.05, robust_sigma * 3.0))
     inlier_indices = [index for index, value in enumerate(initial_residuals) if value <= inlier_cutoff]
     if len(inlier_indices) >= 3:
         try:
@@ -586,6 +588,10 @@ def evaluate_seam_edge(
             thresholds=thresholds,
             target_baseline_m=max(float(target_layout.get("baseline_m") or 0.0), 1e-9),
         )
+        inlier_support = seam_inlier_support_report(
+            residual_rows,
+            threshold_m=thresholds.max_sim3_p95_residual_m,
+        )
         residuals = sorted(transform.residuals)
         residual_report = residual_summary(residuals)
         p95 = float(residual_report["p95"] or 0.0)
@@ -611,6 +617,7 @@ def evaluate_seam_edge(
                 "sim3_residual_m": residual_report,
                 "baseline_normalized_residual": round(baseline_normalized, 8),
                 "shared_camera_residual_roles": residual_role_stats,
+                "seam_inlier_support": inlier_support,
                 "heldout_shared_camera_residual": heldout_similarity_residual(source, target),
             }
         )
@@ -624,12 +631,28 @@ def evaluate_seam_edge(
             and trusted_p95 <= thresholds.max_sim3_p95_residual_m
             and trusted_baseline_normalized <= thresholds.max_baseline_normalized_residual
         )
-        if p95_blocked and not trusted_camera_evidence_passes:
+        inlier_count = int(inlier_support.get("inlier_count") or 0)
+        inlier_ratio = float(inlier_support.get("inlier_ratio") or 0.0)
+        trusted_inlier_count = int(inlier_support.get("trusted_core_involved_inlier_count") or 0)
+        inlier_residual_report = inlier_support.get("inlier_residual_m")
+        inlier_p95_raw = (inlier_residual_report if isinstance(inlier_residual_report, dict) else {}).get("p95")
+        inlier_p95 = float(inlier_p95_raw) if inlier_p95_raw is not None else p95
+        inlier_baseline_normalized = inlier_p95 / baseline
+        inlier_support["inlier_baseline_normalized_residual"] = round(inlier_baseline_normalized, 8)
+        robust_camera_evidence_passes = (
+            inlier_count >= thresholds.min_shared_images
+            and inlier_ratio >= 0.5
+            and (image_roles_by_leaf is None or trusted_inlier_count >= max(3, thresholds.min_shared_images // 3))
+            and inlier_baseline_normalized <= thresholds.max_baseline_normalized_residual
+        )
+        if p95_blocked and not trusted_camera_evidence_passes and not robust_camera_evidence_passes:
             blockers.append("sim3_p95_residual_exceeds_gate")
-        if baseline_blocked and not trusted_camera_evidence_passes:
+        if baseline_blocked and not trusted_camera_evidence_passes and not robust_camera_evidence_passes:
             blockers.append("baseline_normalized_residual_exceeds_gate")
         if (p95_blocked or baseline_blocked) and trusted_camera_evidence_passes:
             warnings.append("overlap_only_camera_residual_tail_quarantined")
+        if (p95_blocked or baseline_blocked) and robust_camera_evidence_passes and not trusted_camera_evidence_passes:
+            warnings.append("shared_camera_residual_tail_quarantined_by_inlier_support")
         if surface_a is not None and surface_b is not None:
             transformed_b = transform_coords(surface_b, transform)
             report["pre_overlap_surface_stats"] = cross_leaf_duplicate_surface_stats(surface_a, surface_b)
@@ -1069,6 +1092,36 @@ def residual_role_report(
         "untrusted_overlap_only_count": len(untrusted_residuals),
         "untrusted_overlap_only_residual_m": residual_summary(sorted(untrusted_residuals)),
         "top_outlier_images": high_outliers,
+    }
+
+
+def seam_inlier_support_report(
+    rows: list[dict[str, object]],
+    *,
+    threshold_m: float,
+) -> dict[str, object]:
+    inlier_rows = [row for row in rows if float(row["residual_m"]) <= threshold_m]
+    trusted_inliers = [row for row in inlier_rows if bool(row.get("trusted_core_involved"))]
+    total_count = len(rows)
+    inlier_residuals = sorted(float(row["residual_m"]) for row in inlier_rows)
+    return {
+        "threshold_m": round(float(threshold_m), 6),
+        "inlier_count": len(inlier_rows),
+        "total_shared_count": total_count,
+        "inlier_ratio": round(len(inlier_rows) / total_count, 6) if total_count else 0.0,
+        "trusted_core_involved_inlier_count": len(trusted_inliers),
+        "trusted_core_involved_inlier_ratio": round(len(trusted_inliers) / total_count, 6) if total_count else 0.0,
+        "inlier_residual_m": residual_summary(inlier_residuals),
+        "sample_outlier_images": [
+            {
+                "image_name": row["image_name"],
+                "residual_m": row["residual_m"],
+                "role_pair": row["role_pair"],
+                "trusted_core_involved": row["trusted_core_involved"],
+            }
+            for row in sorted(rows, key=lambda item: float(item["residual_m"]), reverse=True)
+            if float(row["residual_m"]) > threshold_m
+        ][:24],
     }
 
 
