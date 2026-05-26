@@ -1,6 +1,6 @@
-IN_PROGRESS: GitHub authentication restored and branch deployment loop resumed
-reason: `gh` is authenticated as `HansenHomeAI`; branch `agent-52689431-3dgs-sfm-authority` was pushed and branch workflows started. CDK Deploy and Trigger ML Container Build passed, but Cloudflare Pages failed while resolving outputs because `SpaceportMLPipelineStagingStack` is in `UPDATE_ROLLBACK_COMPLETE`.
-last_step: aligned `.github/workflows/deploy-cloudflare-pages.yml` stack readiness handling with CDK output publishing so `UPDATE_ROLLBACK_COMPLETE` stacks can still provide existing outputs.
-next_unblocked_step: commit and push the Cloudflare workflow fix, monitor the new Cloudflare Pages and CDK Deploy runs to completion, resolve `PREVIEW_URL`, then continue preview validation.
+ACTIVE: CV-HR SfM-authority 3DGS proof is ready for the first bounded AWS canary once the fresh image lands
+reason: Local AWS CLI access is configured and verified for `spaceport-dev` account `975050048887` and `spaceport-prod` account `356638455876`. The CV-HR final SfM reducer artifact now resolves through reducer metadata to the authoritative planner manifest; no-spend planning passes with `--require-sfm-authority`, 9 synthesized tiles, ownership bounds available, and seam authority available. CDK and Pages are green for branch `agent-52689431-3dgs-sfm-authority`; GitHub run `26474755407` / CodeBuild `spaceport-ml-containers:f467ec5a-ac19-4540-9779-b9ba27288bc9` is still building the fresh 3DGS image from commit `8f22b700`.
+last_step: patched `scripts/3dgs/run_tiled_3dgs_benchmark.py` to follow reducer metadata references for final SfM reducer artifacts, added a unit test, ran targeted unit tests, and generated `logs/3dgs-sfm-authority/cvhr_sfm_authority_r0_dry_run.json`
+next_unblocked_step: commit/push the launcher fallback fix, wait for the fresh branch-tagged 3DGS image `975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent526894313dgssfmauthority`, then submit a tightly bounded CV-HR two-tile fanout canary using the dry-run plan
 owner_action_needed: none
-updated: 2026-05-26T20:53:00Z
+updated: 2026-05-26T22:04:00Z

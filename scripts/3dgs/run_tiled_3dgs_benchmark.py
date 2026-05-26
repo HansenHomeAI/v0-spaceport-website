@@ -168,6 +168,26 @@ def s3_json_or_none(s3_uri: str) -> dict | None:
     return json.loads(result.stdout)
 
 
+def nested_string(payload: dict | None, path: Sequence[str]) -> str:
+    value: object = payload or {}
+    for key in path:
+        if not isinstance(value, dict):
+            return ""
+        value = value.get(key)
+    return value.strip() if isinstance(value, str) else ""
+
+
+def s3_json_from_metadata_uri(payload: dict | None, *paths: Sequence[str]) -> dict | None:
+    for path in paths:
+        s3_uri = nested_string(payload, path)
+        if not s3_uri.startswith("s3://"):
+            continue
+        resolved = s3_json_or_none(s3_uri)
+        if resolved is not None:
+            return resolved
+    return None
+
+
 def checkpoint_step_from_path(path: str) -> int | None:
     match = re.search(r"(?:^|/)step-(\d+)\.ckpt$", str(path))
     if not match:
@@ -3128,6 +3148,20 @@ def main() -> int:
     sfm_metadata_payload = s3_json_or_none(sfm_metadata_s3_uri)
     reducer_metadata_payload = s3_json_or_none(reducer_metadata_s3_uri)
     seam_merge_report_payload = s3_json_or_none(seam_merge_report_s3_uri)
+    if seam_merge_report_payload is None:
+        seam_merge_report_payload = s3_json_from_metadata_uri(
+            reducer_metadata_payload,
+            ("seam_merge_report_uri",),
+            ("seam_merge_report", "source"),
+            ("seam_merge_report", "s3_uri"),
+        )
+    if chunk_planner_payload is None:
+        chunk_planner_payload = s3_json_from_metadata_uri(
+            reducer_metadata_payload,
+            ("planner_manifest", "source"),
+            ("planner_manifest", "s3_uri"),
+            ("chunk_planner_manifest_uri",),
+        )
     sparse_support_dir = None
     if chunk_planner_payload is not None and (tile_manifest_payload is None or view_bucket_payload is None):
         sparse_support_dir = download_sparse_support_dir(
