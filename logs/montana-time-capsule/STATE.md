@@ -14128,3 +14128,4 @@ Evidence snapshot: logs/montana-time-capsule/hmc-state.json (evidence_stamp=2026
 - prod bundle meta.json: 200 + ACAO:*; see logs/montana-time-capsule/curlI-prod-meta-origin-hmc-mtc-20260520T2015Z-20260526T104712Z.headers
 - viewer: sky/nosky 200; see logs/montana-time-capsule/curlI-viewer-sky-hmc-mtc-20260520T2015Z-20260526T104712Z.headers
 - CI note (20260526T104913Z): exact-head workflows empty because current HEAD is logs-only [skip ci] (9b245c5b…); last successful Pages+CDK evidence is in logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260526T104539Z.json.
+- CI anomaly (20260526T105513Z): GitHub shows PushEvent(s) for ef730ba9… but no new Actions runs were created (no CDK Deploy / Pages runs since 2026-05-25T14:07Z). Evidence: logs/montana-time-capsule/gh-push-trigger-gap-20260526T105505Z.txt. Needs maintainer investigation (why push->workflow dispatch stopped).

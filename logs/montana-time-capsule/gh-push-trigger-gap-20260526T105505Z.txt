@@ -1,0 +1,28 @@
+stamp=20260526T105505Z
+branch=agent-40136728-montana-time-capsule
+head=ef730ba94be609b27d3d9d2dbd5426f9e326bc83
+
+## latest push events (GitHub events API)
+{"commits":0,"created_at":"2026-05-26T10:50:02Z","head":"ef730ba94be609b27d3d9d2dbd5426f9e326bc83","ref":"refs/heads/agent-40136728-montana-time-capsule","size":null}
+{"commits":0,"created_at":"2026-05-26T10:49:31Z","head":"8afecb183946cabc1d03e26fb454b010659651e5","ref":"refs/heads/agent-40136728-montana-time-capsule","size":null}
+{"commits":0,"created_at":"2026-05-26T10:31:24Z","head":"9b245c5bedbed85776c0bf96a438ae34ad998488","ref":"refs/heads/agent-40136728-montana-time-capsule","size":null}
+{"commits":0,"created_at":"2026-05-26T10:30:30Z","head":"f4b63cf6fdea66e8b72aa2755af51c542a53b214","ref":"refs/heads/agent-40136728-montana-time-capsule","size":null}
+{"commits":0,"created_at":"2026-05-26T10:12:28Z","head":"982fa4387b28deac1665bcdef93873c035896b81","ref":"refs/heads/agent-40136728-montana-time-capsule","size":null}
+{"commits":0,"created_at":"2026-05-26T10:11:29Z","head":"cee20e4ebac15170a5bfe3c247785866f6fc6463","ref":"refs/heads/agent-40136728-montana-time-capsule","size":null}
+{"commits":0,"created_at":"2026-05-26T09:32:28Z","head":"e8a5a4df117b494f0da8c2529a2008ec5a17b790","ref":"refs/heads/agent-40136728-montana-time-capsule","size":null}
+{"commits":0,"created_at":"2026-05-26T09:31:33Z","head":"1dbc1abc13e34b60ea4788cd2398775f405e8d04","ref":"refs/heads/agent-40136728-montana-time-capsule","size":null}
+{"commits":0,"created_at":"2026-05-26T09:30:45Z","head":"c7be51fc0e63bed27c14ce27ff41febda00d7f10","ref":"refs/heads/agent-40136728-montana-time-capsule","size":null}
+{"commits":0,"created_at":"2026-05-26T09:29:42Z","head":"69fd4410bf5ac0f3dcae4ab45617d1ddecf0b37c","ref":"refs/heads/agent-40136728-montana-time-capsule","size":null}
+
+## gh run list (push events)
+completed	success	chore: HMC Montana heartbeat evidence 20260525T140528	CDK Deploy	agent-40136728-montana-time-capsule	push	26404616422	4m23s	2026-05-25T14:07:12Z
+completed	success	chore: friday heartbeat refresh 20260525T132606Z	CDK Deploy	agent-40136728-montana-time-capsule	push	26402909276	4m32s	2026-05-25T13:42:44Z
+completed	success	chore: trigger Pages build 20260525T125155Z	CDK Deploy	agent-40136728-montana-time-capsule	push	26401435610	4m15s	2026-05-25T12:51:28Z
+completed	success	chore: trigger Pages build 20260525T125155Z	Deploy Next.js to Cloudflare Pages	agent-40136728-montana-time-capsule	push	26401435613	8m1s	2026-05-25T12:51:28Z
+completed	success	chore: HMC heartbeat evidence 20260525T124613Z	CDK Deploy	agent-40136728-montana-time-capsule	push	26401262451	3m57s	2026-05-25T12:47:11Z
+
+## cdk-deploy runs for head_sha (expect >0 if triggered)
+0
+
+## compare prev..head
+{"ahead_by":2,"status":"ahead","total_commits":2}
