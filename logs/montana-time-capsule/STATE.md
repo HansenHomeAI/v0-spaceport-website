@@ -14084,3 +14084,12 @@ Evidence snapshot: logs/montana-time-capsule/hmc-state.json (evidence_stamp=2026
 - Viewer: alias base/sky/no-sky HTTP 200 (logs/montana-time-capsule/curlI-viewer-base-20260526T074757Z.headers + logs/montana-time-capsule/curlI-viewer-sky-hmc-mtc-20260520T2015Z-20260526T074757Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-hmc-mtc-20260520T2015Z-20260526T074757Z.headers)
 - GitHub Actions (branch): Pages + CDK latest success; exact-head runs 0 on [skip ci] head (snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260526T074528Z.json + logs/montana-time-capsule/gh-run-list-exact-head-fce42b8c09b4a9a13f47de7f7516d019e87e3d08-20260526T074528Z.json)
 - Machine-readable state updated: logs/montana-time-capsule/hmc-state.json (evidence_stamp=20260526T074757Z)
+
+## Heartbeat 2026-05-26T10:08:18Z (20260526T100818Z)
+- Git: branch agent-40136728-montana-time-capsule head e8a5a4df117b494f0da8c2529a2008ec5a17b790 (HEAD uses [skip ci]; exact-head workflows may be empty)
+- AWS: sts identity logs/montana-time-capsule/aws-sts-get-caller-identity-20260526T100818Z.json (region us-west-2; aws via /opt/homebrew/bin/aws)
+- SageMaker: InProgress 0/0; canonical hmc-mtc-20260520T2015Z-sfm/3dgs/compression all Completed (describes: logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260526T100818Z.json + logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260526T100818Z.json + logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260526T100818Z.json)
+- S3: staging+prod supersplat bundle listings captured; prod meta HTTP 200 (logs/montana-time-capsule/curlI-prod-meta-hmc-mtc-20260520T2015Z-20260526T100818Z.headers)
+- Viewer: alias base/sky/no-sky HTTP 200 (logs/montana-time-capsule/curlI-viewer-base-20260526T100818Z.headers + logs/montana-time-capsule/curlI-viewer-sky-hmc-mtc-20260520T2015Z-20260526T100818Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-hmc-mtc-20260520T2015Z-20260526T100818Z.headers)
+- GitHub Actions: branch snapshots captured (logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260526T100818Z.json + logs/montana-time-capsule/gh-run-list-exact-head-e8a5a4df117b494f0da8c2529a2008ec5a17b790-20260526T100818Z.json)
+- Machine-readable state updated: logs/montana-time-capsule/hmc-state.json (evidence_stamp=20260526T100818Z)

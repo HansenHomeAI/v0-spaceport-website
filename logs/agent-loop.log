@@ -681,3 +681,5 @@
 [2026-05-26T09:29:46Z] postpush 20260526T092946Z -> snap exact-head runs for 69fd4410 (expected empty; skip-ci) -> commit+push
 [2026-05-26T09:30:52Z] postpush 20260526T093052Z -> snap exact-head runs for c7be51fc (expected empty; skip-ci) -> commit+push
 [2026-05-26T09:31:45Z] postpush 20260526T093145Z -> snap exact-head runs for 1dbc1abc (expected empty; skip-ci) -> commit+push
+[20260526T094721Z] heartbeat -> verified terminal pipeline + S3 + viewer + CI logs (aws/gh CLIs missing) -> next: continue monitoring
+[2026-05-26T10:11:06Z] heartbeat evidence -> ok (Completed/Completed/Completed; S3+viewer 200) -> commit+push
