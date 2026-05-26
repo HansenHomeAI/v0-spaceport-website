@@ -13672,3 +13672,7 @@ Evidence snapshot: logs/montana-time-capsule/hmc-state.json (evidence_stamp=2026
   - Hosted viewer reachability (HTTP 200 for base + sky/no-sky): logs/montana-time-capsule/viewer-urls-20260526T004634Z.txt + logs/montana-time-capsule/curlI-viewer-base-20260526T004634Z.headers + logs/montana-time-capsule/curlI-viewer-sky-hmc-mtc-20260520T2015Z-20260526T004634Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-hmc-mtc-20260520T2015Z-20260526T004634Z.headers
   - GitHub Actions snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260526T004634Z.json + logs/montana-time-capsule/gh-run-list-exact-head-6441ef42-20260526T004634Z.json
   - Machine-readable state: logs/montana-time-capsule/hmc-state.json
+
+### 20260526T004836Z post-push check
+- Pushed head: f73d7310
+- GH runs (branch + exact head): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260526T004836Z.json + logs/montana-time-capsule/gh-run-list-exact-head-f73d7310-postpush-20260526T004836Z.json
