@@ -698,3 +698,5 @@
 [2026-05-26T12:31:41Z] postpush 20260526T123128Z -> exact-head GH runs 0 (skip ci) -> next monitor
 [2026-05-26T12:33:28Z] postpush 20260526T123317Z -> exact-head GH runs 0 (skip ci) -> idle
 [2026-05-26T13:10:03Z] heartbeat 20260526T130830Z -> SM idle 0/0; canonical Completed; S3 meta HTTP200 (+Origin); viewer base/sky/nosky 200; GH exact-head runs 0 ([skip ci]) -> commit+push
+[2026-05-26T13:11:00Z] postpush 20260526T131049Z -> snap exact-head GH runs for 5d9148d3 (expected empty; skip-ci) -> commit+push
+[2026-05-26T13:11:20Z] postpush 20260526T131047Z -> corrected stamp; exact-head GH runs 0 (skip-ci) -> commit+push

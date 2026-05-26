@@ -14214,3 +14214,9 @@ Evidence snapshot: logs/montana-time-capsule/hmc-state.json (evidence_stamp=2026
   - Hosted viewer reachability (HTTP 200 for base + sky/no-sky): logs/montana-time-capsule/viewer-urls-20260526T130830Z.txt + logs/montana-time-capsule/curlI-viewer-base-20260526T130830Z.headers + logs/montana-time-capsule/curlI-viewer-sky-hmc-mtc-20260520T2015Z-20260526T130830Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-hmc-mtc-20260520T2015Z-20260526T130830Z.headers
   - GitHub Actions snapshots (`/opt/homebrew/bin/gh`; exact-head expected empty on `[skip ci]` head): logs/montana-time-capsule/gh-run-list-branch-20260526T130830Z.json + logs/montana-time-capsule/gh-run-list-exact-head-20260526T130830Z.json + logs/montana-time-capsule/gh-version-20260526T130830Z.txt
   - Machine-readable state refreshed: logs/montana-time-capsule/hmc-state.json (evidence_stamp=20260526T130830Z)
+
+### Postpush 20260526T131047Z (gh snapshot)
+- pushed head=5d9148d30d850d083f861d25c5c8944562591d05 ([skip ci]); exact-head workflows expected empty by design
+- postpush git head: logs/montana-time-capsule/git-head-postpush-20260526T131047Z.txt
+- postpush branch runs: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260526T131047Z.json
+- postpush exact-head run list: logs/montana-time-capsule/gh-run-list-exact-head-5d9148d3abc95cf40b90ce36d0266b8a23e5ea28-postpush-20260526T131047Z.json (total_count=0)
