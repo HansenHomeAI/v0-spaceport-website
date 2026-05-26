@@ -1,5 +1,5 @@
 reason: Montana time capsule monitor (SfM -> 3DGS -> compress -> viewer gates)
-last_step: 2026-05-26T09:25:23Z HMC canonical run re-verified terminal (SfM/3DGS/compression Completed); SageMaker InProgress=0/0; S3 outputs present (staging+prod); prod meta HTTP 200 (+Origin); hosted preview viewer base/sky/no-sky HTTP 200; GH branch snapshot shows latest Pages+CDK green; exact-head runs=0 (head [skip ci]); evidence stamp 20260526T092523Z recorded in logs/montana-time-capsule/.
+last_step: 2026-05-26T14:26:31Z HMC canonical run re-verified terminal (SfM/3DGS/compression Completed); SageMaker InProgress=0/0; S3 outputs present (staging+prod); prod meta HTTP 200 (+Origin); hosted preview viewer base/sky/no-sky HTTP 200; GH branch snapshot shows latest Pages+CDK green; exact-head runs=0 (head [skip ci]); evidence stamp 20260526T142631Z recorded in logs/montana-time-capsule/.
 next_unblocked_step: no compute to launch; optional deeper viewer QA (camera/sky artifacts + input-vs-render checks) before PR/closeout; otherwise idle monitor.
 [2026-05-22T15:36:42Z] heartbeat -> terminal reconfirmed (no spend) -> idle
 [2026-05-22T15:37:51Z] heartbeat -> fresh reconfirmed (no spend) -> commit+push evidence
@@ -41,3 +41,4 @@ next_unblocked_step: no compute to launch; optional deeper viewer QA (camera/sky
 [2026-05-26T09:29:46Z] postpush -> recorded exact-head GH runs for 69fd4410 (expected empty; [skip ci]) -> idle
 [2026-05-26T09:30:52Z] postpush -> recorded exact-head GH runs for c7be51fc (expected empty; [skip ci]) -> idle
 [2026-05-26T09:31:45Z] postpush -> recorded exact-head GH runs for 1dbc1abc (expected empty; [skip ci]) -> idle
+[2026-05-26T14:26:31Z] heartbeat -> hmc-mtc terminal reconfirm (no spend); InProgress=0/0; S3 present; prod meta HTTP200 (+Origin); viewer base/sky/no-sky HTTP200; gh snapshot -> next: idle
