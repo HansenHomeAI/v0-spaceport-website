@@ -687,3 +687,4 @@
 [2026-05-26T10:29:56Z] heartbeat evidence -> terminal pipeline + S3+viewer 200 + CI snapshots (skip-ci head) -> idle
 [2026-05-26T10:31:00Z] postpush snapshot -> snap exact-head runs for f4b63cf6 (expected empty; skip-ci) -> commit+push
 [20260526T104843Z] heartbeat -> verified terminal sm=0inprog, prod meta 200 + ACAO*, viewer sky/nosky 200 -> next: commit+push ledger
+[2026-05-26T11:08:09Z] heartbeat -> refreshed evidence (20260526T110706Z) -> next: commit+push ledger

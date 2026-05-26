@@ -1,0 +1,1 @@
+cc960a6e (HEAD -> agent-40136728-montana-time-capsule, origin/agent-40136728-montana-time-capsule) chore: record CI trigger gap 20260526T1055Z
