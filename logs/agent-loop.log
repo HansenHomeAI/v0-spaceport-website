@@ -644,3 +644,4 @@
 [2026-05-26T02:06:59Z] heartbeat(20260526T020659Z) -> ok (SageMaker Completed; InProgress 0/0; S3 meta 200; viewer base/sky/nosky 200; GH snapshots captured) -> next: commit+push ledger
 [2026-05-26T02:08:08Z] postpush gh snapshot -> head ade5af71 -> saved logs/montana-time-capsule/gh-run-list-exact-head-ade5af715f0ccc18bea5b211f812134b4c1c5cc8-postpush-20260526T020807Z.json
 [2026-05-26T02:28:29Z] heartbeat -> verified terminal HMC + S3 meta 200 + viewer 200 + exact-head GH runs 0 (skip ci) -> next: idle
+[2026-05-26T02:29:19Z] postpush gh snapshot -> head c6eac292 -> saved logs/montana-time-capsule/gh-run-list-exact-head-c6eac2920a87e06af70f640535606da6bb818c36-postpush-20260526T022918Z.json
