@@ -1,7 +1,7 @@
 {
   "run_id": "md1-seamgraph-sixgpu-20260526T1620Z",
   "created_at": "2026-05-26T16:26:26Z",
-  "updated_at": "2026-05-26T16:28:44Z",
+  "updated_at": "2026-05-26T16:43:58Z",
   "scope": "SfM-only latest seam_graph_sim3_v1 MD1 six-GPU timing and quality proof",
   "branch": "agent-29861473-md1-sixgpu-sfm",
   "head": "da43372f9d18d4b11348d429360f850002d4e3f4",
@@ -20,15 +20,201 @@
     "job_name": "md1-sg6-plan-1779812400",
     "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/planner/colmap",
     "manifest_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/planner/colmap/chunk_planner_manifest.json",
-    "status": "InProgress",
+    "status": "Completed",
     "launched_at": "2026-05-26T16:27:03Z",
     "failure_reason": "",
     "creation_time": "2026-05-26T10:27:02.802000-06:00",
-    "start_time": "",
-    "end_time": "",
-    "max_runtime_seconds": 21600
+    "start_time": "2026-05-26T10:27:42.868000-06:00",
+    "end_time": "2026-05-26T10:35:30.358000-06:00",
+    "max_runtime_seconds": 21600,
+    "validation": {
+      "checked_at": "2026-05-26T16:37:20Z",
+      "manifest_local_path": "/Users/gabrielhansen/worktrees/agent-29861473-md1-sixgpu-sfm/logs/sfm-production-spine/md1_sg6_planner_manifest_20260526T1620Z.json",
+      "planner": "visibility_cell_v1",
+      "pipeline_mode": "distributed_chunked_v1",
+      "chunk_count": 17,
+      "has_image_pose_priors_local": true,
+      "image_pose_priors_local_count": 3076,
+      "jurisdiction_count": 17,
+      "weak_core_chunks": [],
+      "passes_leaf_fanout_contract": true,
+      "blockers": []
+    }
   },
-  "leaves": [],
+  "leaves": [
+    {
+      "chunk_index": 0,
+      "job_name": "md1-sg6-l00-1779812400",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-00/colmap",
+      "core_image_count": 91,
+      "image_count": 329,
+      "status": "InProgress",
+      "launched_at": "2026-05-26T16:37:38Z",
+      "failure_reason": "",
+      "creation_time": "2026-05-26T10:37:37.899000-06:00",
+      "start_time": "2026-05-26T10:38:22.633000-06:00",
+      "end_time": "",
+      "max_runtime_seconds": 21600
+    },
+    {
+      "chunk_index": 1,
+      "job_name": "md1-sg6-l01-1779812400",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-01/colmap",
+      "core_image_count": 279,
+      "image_count": 360,
+      "status": "InProgress",
+      "launched_at": "2026-05-26T16:37:42Z",
+      "failure_reason": "",
+      "creation_time": "2026-05-26T10:37:41.881000-06:00",
+      "start_time": "2026-05-26T10:38:23.984000-06:00",
+      "end_time": "",
+      "max_runtime_seconds": 21600
+    },
+    {
+      "chunk_index": 2,
+      "job_name": "md1-sg6-l02-1779812400",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-02/colmap",
+      "core_image_count": 250,
+      "image_count": 360,
+      "status": "InProgress",
+      "launched_at": "2026-05-26T16:37:46Z",
+      "failure_reason": "",
+      "creation_time": "2026-05-26T10:37:45.825000-06:00",
+      "start_time": "2026-05-26T10:38:26.628000-06:00",
+      "end_time": "",
+      "max_runtime_seconds": 21600
+    },
+    {
+      "chunk_index": 3,
+      "job_name": "md1-sg6-l03-1779812400",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-03/colmap",
+      "core_image_count": 48,
+      "image_count": 196,
+      "status": "InProgress",
+      "launched_at": "2026-05-26T16:37:50Z",
+      "failure_reason": "",
+      "creation_time": "2026-05-26T10:37:49.833000-06:00",
+      "start_time": "2026-05-26T10:38:32.464000-06:00",
+      "end_time": "",
+      "max_runtime_seconds": 21600
+    },
+    {
+      "chunk_index": 4,
+      "job_name": "md1-sg6-l04-1779812400",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-04/colmap",
+      "core_image_count": 181,
+      "image_count": 360,
+      "status": "InProgress",
+      "launched_at": "2026-05-26T16:37:54Z",
+      "failure_reason": "",
+      "creation_time": "2026-05-26T10:37:53.777000-06:00",
+      "start_time": "2026-05-26T10:38:53.464000-06:00",
+      "end_time": "",
+      "max_runtime_seconds": 21600
+    },
+    {
+      "chunk_index": 5,
+      "job_name": "md1-sg6-l05-1779812400",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-05/colmap",
+      "core_image_count": 220,
+      "image_count": 360,
+      "status": "InProgress",
+      "launched_at": "2026-05-26T16:37:58Z",
+      "failure_reason": "",
+      "creation_time": "2026-05-26T10:37:57.871000-06:00",
+      "start_time": "2026-05-26T10:38:40.633000-06:00",
+      "end_time": "",
+      "max_runtime_seconds": 21600
+    },
+    {
+      "chunk_index": 6,
+      "job_name": "md1-sg6-l06-1779812400",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-06/colmap",
+      "core_image_count": 181,
+      "image_count": 360,
+      "status": "not_launched"
+    },
+    {
+      "chunk_index": 7,
+      "job_name": "md1-sg6-l07-1779812400",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-07/colmap",
+      "core_image_count": 220,
+      "image_count": 360,
+      "status": "not_launched"
+    },
+    {
+      "chunk_index": 8,
+      "job_name": "md1-sg6-l08-1779812400",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-08/colmap",
+      "core_image_count": 116,
+      "image_count": 360,
+      "status": "not_launched"
+    },
+    {
+      "chunk_index": 9,
+      "job_name": "md1-sg6-l09-1779812400",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-09/colmap",
+      "core_image_count": 273,
+      "image_count": 360,
+      "status": "not_launched"
+    },
+    {
+      "chunk_index": 10,
+      "job_name": "md1-sg6-l10-1779812400",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-10/colmap",
+      "core_image_count": 272,
+      "image_count": 360,
+      "status": "not_launched"
+    },
+    {
+      "chunk_index": 11,
+      "job_name": "md1-sg6-l11-1779812400",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-11/colmap",
+      "core_image_count": 78,
+      "image_count": 298,
+      "status": "not_launched"
+    },
+    {
+      "chunk_index": 12,
+      "job_name": "md1-sg6-l12-1779812400",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-12/colmap",
+      "core_image_count": 309,
+      "image_count": 360,
+      "status": "not_launched"
+    },
+    {
+      "chunk_index": 13,
+      "job_name": "md1-sg6-l13-1779812400",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-13/colmap",
+      "core_image_count": 167,
+      "image_count": 360,
+      "status": "not_launched"
+    },
+    {
+      "chunk_index": 14,
+      "job_name": "md1-sg6-l14-1779812400",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-14/colmap",
+      "core_image_count": 21,
+      "image_count": 137,
+      "status": "not_launched"
+    },
+    {
+      "chunk_index": 15,
+      "job_name": "md1-sg6-l15-1779812400",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-15/colmap",
+      "core_image_count": 166,
+      "image_count": 360,
+      "status": "not_launched"
+    },
+    {
+      "chunk_index": 16,
+      "job_name": "md1-sg6-l16-1779812400",
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-16/colmap",
+      "core_image_count": 204,
+      "image_count": 360,
+      "status": "not_launched"
+    }
+  ],
   "reducer": {
     "status": "not_started"
   },

@@ -3226,16 +3226,37 @@
   "md1_sixgpu_latest_sfm_run": {
     "artifact_kind": "md1_sixgpu_latest_sfm_run_status",
     "scope": "SfM-only latest seam_graph_sim3_v1 MD1 timing and quality proof",
-    "status": "planner_running",
+    "status": "six_leaf_jobs_running",
     "branch": "agent-29861473-md1-sixgpu-sfm",
     "head": "da43372f9d18d4b11348d429360f850002d4e3f4",
-    "source_image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine",
     "run_status": "logs/sfm-production-spine/md1_sg6_status_20260526T1620Z.json",
     "run_root": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z",
     "planner_job": "md1-sg6-plan-1779812400",
-    "planner_manifest_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/planner/colmap/chunk_planner_manifest.json",
+    "planner_validation": {
+      "checked_at": "2026-05-26T16:37:20Z",
+      "manifest_local_path": "/Users/gabrielhansen/worktrees/agent-29861473-md1-sixgpu-sfm/logs/sfm-production-spine/md1_sg6_planner_manifest_20260526T1620Z.json",
+      "planner": "visibility_cell_v1",
+      "pipeline_mode": "distributed_chunked_v1",
+      "chunk_count": 17,
+      "has_image_pose_priors_local": true,
+      "image_pose_priors_local_count": 3076,
+      "jurisdiction_count": 17,
+      "weak_core_chunks": [],
+      "passes_leaf_fanout_contract": true,
+      "blockers": []
+    },
+    "active_leaf_jobs": [
+      "md1-sg6-l00-1779812400",
+      "md1-sg6-l01-1779812400",
+      "md1-sg6-l02-1779812400",
+      "md1-sg6-l03-1779812400",
+      "md1-sg6-l04-1779812400",
+      "md1-sg6-l05-1779812400"
+    ],
+    "pending_leaf_count": 11,
+    "completed_leaf_count": 0,
     "max_concurrency": 6,
-    "quota_decision": "No quota raise needed: SageMaker quota L-2F1EB012 ml.g4dn.xlarge processing job usage is 6.0 and active jobs were empty before launch.",
-    "next_step": "Monitor planner terminal, validate manifest contract, then launch pending MD1 leaves up to six concurrent ml.g4dn.xlarge jobs."
+    "quota_decision": "No quota raise needed: SageMaker quota L-2F1EB012 ml.g4dn.xlarge processing job usage is 6.0.",
+    "next_step": "Monitor active leaves to terminal and launch pending leaves up to six concurrent jobs; then run strict seam_graph_sim3_v1 reducer and quality/viewer proof."
   }
 }
