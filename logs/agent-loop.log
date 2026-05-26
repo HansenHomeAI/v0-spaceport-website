@@ -636,3 +636,4 @@
 [2026-05-26T00:28:31Z] heartbeat -> ok (terminal 0/0 + S3 meta 200 + viewer 200) (stamp=20260526T002601Z) -> next: await new acceptance gate
 [2026-05-26T00:28:41Z] heartbeat -> ok (terminal 0/0 + S3 meta 200 + viewer 200) (stamp=20260526T002601Z) -> next: await new acceptance gate
 [2026-05-26T00:47:26Z] heartbeat(20260526T004634Z) -> ok (SageMaker Completed; viewer/meta 200) -> idle
+[2026-05-26T01:09:43Z] heartbeat -> verified HMC terminal + S3/meta + viewer reachability + GH snapshots (exact-head empty on skip ci) -> next: continue periodic no-spend monitoring

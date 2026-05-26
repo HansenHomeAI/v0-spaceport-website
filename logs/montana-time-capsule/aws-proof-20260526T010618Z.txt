@@ -1,0 +1,8 @@
+/opt/homebrew/bin/aws
+aws-cli/2.22.26 Python/3.12.8 Darwin/25.4.0 source/arm64
+us-west-2
+{
+    "UserId": "975050048887",
+    "Account": "975050048887",
+    "Arn": "arn:aws:iam::975050048887:root"
+}
