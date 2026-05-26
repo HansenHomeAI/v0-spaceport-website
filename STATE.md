@@ -1,17 +1,17 @@
-reason: SfM-only seam_graph_sim3_v1 hardening is production-ready for this proof scope. MD1 strict real-leaf replay passed, CV-HR full 9-leaf replay passed after the leaf03 expanded-support repair, the strict SfM-only quality report promoted, duplicate-surface risk is eliminated by audited post-merge culling, pipeline-viewer debugSeams rendered nonblank, active CV-HR jobs are empty, and exact-head CDK Deploy succeeded. Downstream 3DGS/SOGS remain explicitly out of scope.
-last_step: 2026-05-24T03:25:15Z: exact-head CDK Deploy run 26350519862 completed success for code commit e7aee0f28601208b87d6b4fb7ed08858c340d268. Local unit tests passed, CV-HR strict reducer replay passed with 1702/1710 registered images (0.9953), 624046 points, 8 accepted seam tree edges, cycle_consistency=pass, promotion_blockers=[], cross_leaf flagged overlap ratio 0.0, global double-surface flagged ratio 0.0, sparse reprojection p95=1.7977/p99=1.9498, viewer API 200 and nonblank screenshot stats max=0.745098.
-next_unblocked_step: Retire/delete the sfm-seam-graph-production-proof automation; next work should be a separate downstream 3DGS/SOGS or production rollout task if desired.
+reason: MD1 latest seam_graph_sim3_v1 SfM six-GPU timing and quality proof is active. This is SfM-only; no downstream 3DGS/SOGS quality claim is in scope.
+last_step: 2026-05-26T16:27:03Z launched planner-only SageMaker processing job md1-sg6-plan-1779812400 using image 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine. Output prefix is s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/planner/colmap.
+next_unblocked_step: Monitor planner to terminal. Only launch MD1 leaf jobs after chunk_planner_manifest.json validates with visibility_cell_v1, image_pose_priors_local, no weak-core chunks below 20 core images, and jurisdiction data for every chunk. Then launch pending leaves up to six concurrent ml.g4dn.xlarge processing jobs.
 owner_action_needed: none
-active_jobs: []
-completed_jobs_cvhr: ["cvhr-globalprior-l03r3x6-1779580401", "cvhr strict seam_graph_sim3_v1 full replay"]
-completed_jobs: ["md1 strict seam_graph_sim3_v1 sparse replay", "cvhr strict seam_graph_sim3_v1 full replay"]
-failed_jobs: []
-held_jobs: []
-unrelated_active_jobs: []
-branch: agent-73948216-sfm-production-spine
-head: e7aee0f28601208b87d6b4fb7ed08858c340d268
-current_rung: SFM_SEAM_GRAPH_SIM3_V1_PRODUCTION_READY_SFM_ONLY
-project_final_decision: production_ready_sfm_only
-project_level_unresolved_caveats: ["Downstream 3DGS/SOGS render and AI visual gates are separate from this SfM-only deliverable"]
-latest_proof: logs/sfm-production-spine/seam_graph_sim3_v1_cvhr_md1_final_proof_20260524T0310Z.json
-exact_head_cdk_run: logs/sfm-production-spine/seam_graph_sim3_v1_exact_head_cdk_run_20260524T0325Z.json
+active_jobs: ["md1-sg6-plan-1779812400"]
+branch: agent-29861473-md1-sixgpu-sfm
+head: da43372f9d18d4b11348d429360f850002d4e3f4
+source_branch_artifact: agent-73948216-sfm-production-spine
+source_image_uri: 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine
+aws_account: "975050048887"
+quota_decision: No quota raise needed for exactly six concurrent ml.g4dn.xlarge processing jobs; SageMaker quota L-2F1EB012 is 6.0 and active processing/training jobs were empty before planner launch.
+run_status: logs/sfm-production-spine/md1_sg6_status_20260526T1620Z.json
+run_root: s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z
+planner_manifest_uri: s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/planner/colmap/chunk_planner_manifest.json
+max_concurrency: 6
+current_rung: MD1_SG6_PLANNER_RUNNING
+project_final_decision: pending

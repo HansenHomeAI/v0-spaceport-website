@@ -1,0 +1,93 @@
+{
+  "ProcessingJobName": "md1-sg6-plan-1779812400",
+  "AppSpecification": {
+    "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine",
+    "ContainerEntrypoint": [
+      "/opt/ml/code/run_sfm.sh"
+    ]
+  },
+  "ProcessingResources": {
+    "ClusterConfig": {
+      "InstanceCount": 1,
+      "InstanceType": "ml.g4dn.xlarge",
+      "VolumeSizeInGB": 120
+    }
+  },
+  "ProcessingInputs": [
+    {
+      "InputName": "sfm-input",
+      "S3Input": {
+        "S3Uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+        "LocalPath": "/opt/ml/processing/input",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3DataDistributionType": "FullyReplicated",
+        "S3CompressionType": "None"
+      }
+    }
+  ],
+  "ProcessingOutputConfig": {
+    "Outputs": [
+      {
+        "OutputName": "colmap-output",
+        "S3Output": {
+          "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/planner/colmap",
+          "LocalPath": "/opt/ml/processing/output",
+          "S3UploadMode": "EndOfJob"
+        },
+        "AppManaged": false
+      }
+    ]
+  },
+  "Environment": {
+    "AWS_DEFAULT_REGION": "us-west-2",
+    "PYTHONUNBUFFERED": "1",
+    "COLMAP_ENABLE_SPATIAL_CHUNKING": "1",
+    "COLMAP_PIPELINE_MODE": "distributed_chunked_v1",
+    "COLMAP_CHUNK_PLANNER": "visibility_cell_v1",
+    "COLMAP_CHUNK_TARGET_IMAGES": "220",
+    "COLMAP_CHUNK_MIN_IMAGES": "120",
+    "COLMAP_CHUNK_HARD_MAX_IMAGES": "360",
+    "COLMAP_LEAF_TARGET_IMAGES": "220",
+    "COLMAP_LEAF_HARD_CAP": "360",
+    "COLMAP_MATCH_PROFILE": "P3",
+    "COLMAP_PAIR_CAP_LOCAL": "28",
+    "COLMAP_PAIR_CAP_REVISIT": "12",
+    "COLMAP_PAIR_CAP_SEAM": "14",
+    "COLMAP_GRAPH_XY_NEIGHBOR_LIMIT": "80",
+    "COLMAP_CHUNK_OVERLAP_ANCHOR_COUNT": "20",
+    "COLMAP_VISIBILITY_CELL_OVERLAP_RATIO": "0.15",
+    "COLMAP_VISIBILITY_CELL_MAX_OVERLAP_CELLS": "4",
+    "COLMAP_VISIBILITY_CELL_MIN_SCORE": "0.08",
+    "COLMAP_VISIBILITY_CELL_MIN_CORE_IMAGES": "20",
+    "SFM_PLANNER_REPORT_ONLY": "1",
+    "SFM_BENCHMARK_SUBSET_STRATEGY": "md1_seamgraph_sixgpu_planner",
+    "SFM_BRANCH_NAME": "agent-29861473-md1-sixgpu-sfm",
+    "SFM_GIT_HEAD": "da43372f9d18d4b11348d429360f850002d4e3f4",
+    "SFM_INPUT_URI": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
+    "SFM_OUTPUT_URI": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/planner/colmap",
+    "SFM_JOB_NAME": "md1-sg6-plan-1779812400"
+  },
+  "Tags": [
+    {
+      "Key": "Project",
+      "Value": "Spaceport"
+    },
+    {
+      "Key": "Component",
+      "Value": "SfM"
+    },
+    {
+      "Key": "Branch",
+      "Value": "agent-29861473-md1-sixgpu-sfm"
+    },
+    {
+      "Key": "ProofRun",
+      "Value": "md1-seamgraph-sixgpu-20260526T1620Z"
+    }
+  ],
+  "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+  "StoppingCondition": {
+    "MaxRuntimeInSeconds": 21600
+  }
+}

@@ -1855,5 +1855,20 @@
     "CV-HR prior 11-leaf output passed older gates but fails new seam_graph_sim3_v1 strict replay because accepted seam graph is disconnected; weak-core leaves 00/10 and scale-blocked leaves 02/10 require patched planner replay before production promotion"
   ],
   "updated": "2026-05-24T03:25:15Z",
-  "updated_at": "2026-05-24T03:25:15Z"
+  "updated_at": "2026-05-24T03:25:15Z",
+  "md1_sixgpu_latest_sfm_run": {
+    "artifact_kind": "md1_sixgpu_latest_sfm_run_status",
+    "scope": "SfM-only latest seam_graph_sim3_v1 MD1 timing and quality proof",
+    "status": "planner_running",
+    "branch": "agent-29861473-md1-sixgpu-sfm",
+    "head": "da43372f9d18d4b11348d429360f850002d4e3f4",
+    "source_image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine",
+    "run_status": "logs/sfm-production-spine/md1_sg6_status_20260526T1620Z.json",
+    "run_root": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z",
+    "planner_job": "md1-sg6-plan-1779812400",
+    "planner_manifest_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/planner/colmap/chunk_planner_manifest.json",
+    "max_concurrency": 6,
+    "quota_decision": "No quota raise needed: SageMaker quota L-2F1EB012 ml.g4dn.xlarge processing job usage is 6.0 and active jobs were empty before launch.",
+    "next_step": "Monitor planner terminal, validate manifest contract, then launch pending MD1 leaves up to six concurrent ml.g4dn.xlarge jobs."
+  }
 }
