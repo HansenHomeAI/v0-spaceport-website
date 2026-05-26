@@ -678,3 +678,4 @@
 [2026-05-26T09:11:25Z] heartbeat 20260526T090607Z -> refreshed no-spend evidence (SM 0/0; viewer/meta 200; gh exact-head empty due skip-ci) -> commit+push ledger
 [2026-05-26T09:12:33Z] postpush 20260526T091212Z -> snap exact-head runs for bfe8db3e (expected empty; skip-ci) -> commit+push
 [2026-05-26T09:25:23Z] heartbeat 20260526T092523Z -> SM idle 0/0; canonical Completed; S3 meta HTTP200 (+Origin); viewer base/sky/nosky 200; GH Pages+CDK latest green; exact-head runs 0 ([skip ci]) -> commit+push
+[2026-05-26T09:29:46Z] postpush 20260526T092946Z -> snap exact-head runs for 69fd4410 (expected empty; skip-ci) -> commit+push
