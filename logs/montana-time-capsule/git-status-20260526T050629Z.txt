@@ -1,0 +1,8 @@
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260526T050544Z.json
+?? logs/montana-time-capsule/git-branch-20260526T050544Z.txt
+?? logs/montana-time-capsule/git-branch-20260526T050629Z.txt
+?? logs/montana-time-capsule/git-head-20260526T050544Z.txt
+?? logs/montana-time-capsule/git-head-20260526T050629Z.txt
+?? logs/montana-time-capsule/git-log1-20260526T050544Z.txt
+?? logs/montana-time-capsule/git-status-20260526T050544Z.txt
+?? logs/montana-time-capsule/git-status-20260526T050629Z.txt

@@ -13860,3 +13860,12 @@ Evidence snapshot: logs/montana-time-capsule/hmc-state.json (evidence_stamp=2026
 - Viewer: alias + sky/no-sky HTTP 200 (logs/montana-time-capsule/curlI-viewer-*-hmc-mtc-20260520T2015Z-20260526T034559Z.headers)
 - GitHub Actions (branch): Pages + CDK latest success; exact-head runs 0 on [skip ci] head (snapshots in logs/montana-time-capsule/gh-run-list-*- 20260526T034559Z.json)
 - Machine-readable state updated: logs/montana-time-capsule/hmc-state.json
+
+## Heartbeat 2026-05-26T05:06:38Z (20260526T050629Z)
+- Git: branch agent-40136728-montana-time-capsule head 8597f253a8211926235031ee421bf4f6c6cec391 status dirty (evidence packet + hmc-state refresh)
+- AWS: sts identity logs/montana-time-capsule/aws-sts-get-caller-identity-20260526T050629Z.json (region us-west-2)
+- SageMaker: InProgress 0/0; canonical hmc-mtc-20260520T2015Z-sfm/3dgs/compression all Completed (describes: logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260526T050629Z.json + logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260526T050629Z.json + logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260526T050629Z.json)
+- S3: prod meta HTTP 200 (logs/montana-time-capsule/curlI-prod-meta-hmc-mtc-20260520T2015Z-20260526T050629Z.headers); prod+staging bundle listings captured
+- Viewer: alias + sky/no-sky HTTP 200 (logs/montana-time-capsule/curlI-viewer-base-20260526T050629Z.headers + logs/montana-time-capsule/curlI-viewer-sky-hmc-mtc-20260520T2015Z-20260526T050629Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-hmc-mtc-20260520T2015Z-20260526T050629Z.headers)
+- GitHub Actions (branch): Pages + CDK latest success; exact-head runs 0 (snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260526T050629Z.json + logs/montana-time-capsule/gh-run-list-exact-head-8597f253a8211926235031ee421bf4f6c6cec391-20260526T050629Z.json)
+- Machine-readable state updated: logs/montana-time-capsule/hmc-state.json (evidence_stamp=20260526T050629Z)
