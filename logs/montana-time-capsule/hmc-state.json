@@ -19,10 +19,10 @@
     "status": "logs/montana-time-capsule/git-status-20260526T100818Z.txt"
   },
   "postpush": {
-    "exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-1dbc1abc13e34b60ea4788cd2398775f405e8d04-20260526T093145Z.json",
-    "head": "1dbc1abc13e34b60ea4788cd2398775f405e8d04",
-    "head_file": "logs/montana-time-capsule/_heartbeat_head_sha_20260526T093145Z.txt",
-    "stamp": "20260526T093145Z"
+    "exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-cee20e4ebac15170a5bfe3c247785866f6fc6463-postpush-20260526T101145Z.json",
+    "head": "cee20e4ebac15170a5bfe3c247785866f6fc6463",
+    "head_file": "logs/montana-time-capsule/git-head-postpush-20260526T101145Z.txt",
+    "stamp": "20260526T101145Z"
   },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
@@ -45,7 +45,7 @@
     "sfm_describe": "logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260526T100818Z.json",
     "training_inprogress": "logs/montana-time-capsule/sm-list-training-inprogress-20260526T100818Z.json"
   },
-  "updated_at": "2026-05-26T10:10:37Z",
+  "updated_at": "2026-05-26T10:11:56Z",
   "viewer": {
     "alias_file": "logs/montana-time-capsule/viewer-alias-20260526T100818Z.txt",
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
