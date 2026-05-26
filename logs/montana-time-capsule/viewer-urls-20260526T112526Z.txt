@@ -1,0 +1,3 @@
+alias_url=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev
+sky_url=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/?mode=sky&bundle=hmc-mtc-20260520T2015Z
+nosky_url=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/?mode=nosky&bundle=hmc-mtc-20260520T2015Z

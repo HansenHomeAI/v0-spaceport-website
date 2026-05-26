@@ -1,0 +1,4 @@
+stamp=20260526T112526Z
+cwd=/Users/gabrielhansen/worktrees/md1-baseline-montana-time-capsule
+true
+branch=agent-40136728-montana-time-capsule

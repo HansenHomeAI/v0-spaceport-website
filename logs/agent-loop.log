@@ -689,3 +689,4 @@
 [20260526T104843Z] heartbeat -> verified terminal sm=0inprog, prod meta 200 + ACAO*, viewer sky/nosky 200 -> next: commit+push ledger
 [2026-05-26T11:08:09Z] heartbeat -> refreshed evidence (20260526T110706Z) -> next: commit+push ledger
 [2026-05-26T11:11:11Z] postpush -> no workflows for head 29c55dfa -> next: commit+push evidence
+[2026-05-26T11:27:19Z] heartbeat 20260526T112526Z -> ok -> next monitor
