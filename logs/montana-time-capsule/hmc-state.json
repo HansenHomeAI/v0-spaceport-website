@@ -17,10 +17,10 @@
     "status": "logs/montana-time-capsule/git-status-20260526T072530Z.txt"
   },
   "postpush": {
-    "exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-aedbae08de7b16a01614b96d4ca6fdd3b433cd92-20260526T072733Z.json",
-    "head": "aedbae08de7b16a01614b96d4ca6fdd3b433cd92",
-    "head_file": "logs/montana-time-capsule/git-head-20260526T072733Z.txt",
-    "stamp": "20260526T072733Z"
+    "exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-c3f04ac53439bc489167f4f2bac97709eeab27e1-20260526T072834Z.json",
+    "head": "c3f04ac53439bc489167f4f2bac97709eeab27e1",
+    "head_file": "logs/montana-time-capsule/git-head-20260526T072834Z.txt",
+    "stamp": "20260526T072834Z"
   },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
