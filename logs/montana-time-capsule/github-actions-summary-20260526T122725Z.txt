@@ -1,0 +1,7 @@
+branch=agent-40136728-montana-time-capsule
+head=1e0c87cffc5a4802c93644ca439f9a7b8af9c9ca
+branch_total=29
+exact_head_total=0
+latest_success_name=CDK Deploy
+latest_success_updated_at=2026-05-25T14:11:35Z
+latest_success_html_url=https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26404616422

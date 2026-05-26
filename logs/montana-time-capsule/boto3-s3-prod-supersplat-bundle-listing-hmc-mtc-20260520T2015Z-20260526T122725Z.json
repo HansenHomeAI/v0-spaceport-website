@@ -1,0 +1,168 @@
+{
+  "Contents": [
+    {
+      "ChecksumAlgorithm": [
+        "CRC32C"
+      ],
+      "ChecksumType": "FULL_OBJECT",
+      "ETag": "\"1c35fd6dcf9eabc2e80ff11c142cb0b6\"",
+      "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/background_manifest.json",
+      "LastModified": "2026-05-25 05:48:03+00:00",
+      "Size": 975,
+      "StorageClass": "STANDARD"
+    },
+    {
+      "ChecksumAlgorithm": [
+        "CRC32C"
+      ],
+      "ChecksumType": "FULL_OBJECT",
+      "ETag": "\"2f14bb1b234a9f7b3806da620ac5665b\"",
+      "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/background_skybox.webp",
+      "LastModified": "2026-05-25 05:48:03+00:00",
+      "Size": 47786,
+      "StorageClass": "STANDARD"
+    },
+    {
+      "ChecksumAlgorithm": [
+        "CRC32C"
+      ],
+      "ChecksumType": "FULL_OBJECT",
+      "ETag": "\"5278889ab18a0fec46664fba3f64b7b0\"",
+      "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/export_manifest.json",
+      "LastModified": "2026-05-25 05:48:03+00:00",
+      "Size": 948,
+      "StorageClass": "STANDARD"
+    },
+    {
+      "ChecksumAlgorithm": [
+        "CRC32C"
+      ],
+      "ChecksumType": "FULL_OBJECT",
+      "ETag": "\"a8e86a60926b7e99316ce37d61349c0b\"",
+      "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/means_l.webp",
+      "LastModified": "2026-05-25 05:48:03+00:00",
+      "Size": 1287154,
+      "StorageClass": "STANDARD"
+    },
+    {
+      "ChecksumAlgorithm": [
+        "CRC32C"
+      ],
+      "ChecksumType": "FULL_OBJECT",
+      "ETag": "\"e6fd721c75341cb78a4dce4d3f693365\"",
+      "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/means_u.webp",
+      "LastModified": "2026-05-25 05:48:03+00:00",
+      "Size": 872990,
+      "StorageClass": "STANDARD"
+    },
+    {
+      "ChecksumAlgorithm": [
+        "CRC32C"
+      ],
+      "ChecksumType": "FULL_OBJECT",
+      "ETag": "\"89e1a1d12752cd0887f1a74230971cca\"",
+      "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json",
+      "LastModified": "2026-05-25 05:48:03+00:00",
+      "Size": 1359,
+      "StorageClass": "STANDARD"
+    },
+    {
+      "ChecksumAlgorithm": [
+        "CRC32C"
+      ],
+      "ChecksumType": "FULL_OBJECT",
+      "ETag": "\"dfdb93409597aa243376825a8ecc77c4\"",
+      "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/quats.webp",
+      "LastModified": "2026-05-25 05:48:03+00:00",
+      "Size": 1370528,
+      "StorageClass": "STANDARD"
+    },
+    {
+      "ChecksumAlgorithm": [
+        "CRC32C"
+      ],
+      "ChecksumType": "FULL_OBJECT",
+      "ETag": "\"c76905fc50bd8a96761d83305c0de160\"",
+      "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/scales.webp",
+      "LastModified": "2026-05-25 05:48:03+00:00",
+      "Size": 806836,
+      "StorageClass": "STANDARD"
+    },
+    {
+      "ChecksumAlgorithm": [
+        "CRC32C"
+      ],
+      "ChecksumType": "FULL_OBJECT",
+      "ETag": "\"a6d4f30e88e343235131f53317d8d747\"",
+      "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/settings.json",
+      "LastModified": "2026-05-25 05:48:03+00:00",
+      "Size": 242,
+      "StorageClass": "STANDARD"
+    },
+    {
+      "ChecksumAlgorithm": [
+        "CRC32C"
+      ],
+      "ChecksumType": "FULL_OBJECT",
+      "ETag": "\"0afaf5cf65c61521d21621c93223beae\"",
+      "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/sh0.webp",
+      "LastModified": "2026-05-25 05:48:03+00:00",
+      "Size": 1085118,
+      "StorageClass": "STANDARD"
+    },
+    {
+      "ChecksumAlgorithm": [
+        "CRC32C"
+      ],
+      "ChecksumType": "FULL_OBJECT",
+      "ETag": "\"cde72c97080edb1d2be7db1114cca4a0\"",
+      "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/shN_centroids.webp",
+      "LastModified": "2026-05-25 05:48:03+00:00",
+      "Size": 807922,
+      "StorageClass": "STANDARD"
+    },
+    {
+      "ChecksumAlgorithm": [
+        "CRC32C"
+      ],
+      "ChecksumType": "FULL_OBJECT",
+      "ETag": "\"49abd35d05f34331fa38407f9594d2cf\"",
+      "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/shN_labels.webp",
+      "LastModified": "2026-05-25 05:48:04+00:00",
+      "Size": 841400,
+      "StorageClass": "STANDARD"
+    },
+    {
+      "ChecksumAlgorithm": [
+        "CRC32C"
+      ],
+      "ChecksumType": "FULL_OBJECT",
+      "ETag": "\"72a30c465675c17dd7853ff19e8c4439\"",
+      "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/training_metadata.json",
+      "LastModified": "2026-05-25 05:48:04+00:00",
+      "Size": 1487,
+      "StorageClass": "STANDARD"
+    }
+  ],
+  "EncodingType": "url",
+  "IsTruncated": false,
+  "KeyCount": 13,
+  "MaxKeys": 1000,
+  "Name": "spaceport-ml-processing",
+  "Prefix": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/",
+  "ResponseMetadata": {
+    "HTTPHeaders": {
+      "content-type": "application/xml",
+      "date": "Tue, 26 May 2026 12:27:28 GMT",
+      "server": "AmazonS3",
+      "transfer-encoding": "chunked",
+      "x-amz-bucket-region": "us-west-2",
+      "x-amz-id-2": "F5sg4YF8IqHF1szTifiEzEsJXwb+0itOIzYXpofWA7s1ZFUdO6dkKxFCZk2FRgsz50G0WlndX5U=",
+      "x-amz-request-id": "8WD6YRXQ28RYGAAN"
+    },
+    "HTTPStatusCode": 200,
+    "HostId": "F5sg4YF8IqHF1szTifiEzEsJXwb+0itOIzYXpofWA7s1ZFUdO6dkKxFCZk2FRgsz50G0WlndX5U=",
+    "RequestId": "8WD6YRXQ28RYGAAN",
+    "RetryAttempts": 0
+  }
+}
