@@ -1,0 +1,1 @@
+5a247939 2026-05-25 chore: refresh HMC heartbeat pointers 20260526T024601Z [skip ci]

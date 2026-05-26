@@ -648,3 +648,4 @@
 [2026-05-26T02:49:23Z] heartbeat -> HMC no-spend checks ok (SageMaker Completed; meta/viewer 200; exact-head runs 0 on skip-ci head) -> next: wait
 [2026-05-26T02:50:14Z] heartbeat -> HMC no-spend checks ok (SageMaker Completed; meta/viewer 200; exact-head runs 0 on skip-ci head) -> next: wait
 [2026-05-26T02:51:07Z] postpush -> captured GH exact-head snapshot for 6a4ac9ae2722ff521a725d5d8662eff2360913cb -> next: idle
+[2026-05-26T03:06:51Z] heartbeat -> HMC no-spend checks ok (InProgress 0/0; SageMaker Completed; prod meta 200; viewer base/sky/nosky 200; exact-head runs 0 on skip-ci head) -> next: wait
