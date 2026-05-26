@@ -1,0 +1,6 @@
+prod_meta_url=https://spaceport-ml-processing.s3.us-west-2.amazonaws.com/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json
+staging_listing=logs/montana-time-capsule/s3ls-staging-supersplat-bundle-hmc-mtc-20260520T2015Z-20260526T104712Z.txt
+prod_listing=logs/montana-time-capsule/s3ls-prod-supersplat-bundle-hmc-mtc-20260520T2015Z-20260526T104712Z.txt
+prod_meta_http=logs/montana-time-capsule/curlI-prod-meta-hmc-mtc-20260520T2015Z-20260526T104712Z.headers
+prod_meta_http_origin=logs/montana-time-capsule/curlI-prod-meta-origin-hmc-mtc-20260520T2015Z-20260526T104712Z.headers
+viewer_urls=logs/montana-time-capsule/viewer-urls-20260526T104712Z.txt

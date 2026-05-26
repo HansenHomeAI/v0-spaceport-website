@@ -14120,3 +14120,11 @@ Evidence snapshot: logs/montana-time-capsule/hmc-state.json (evidence_stamp=2026
 - postpush branch run list: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260526T101145Z.json
 - postpush exact-head run list: logs/montana-time-capsule/gh-run-list-exact-head-cee20e4ebac15170a5bfe3c247785866f6fc6463-postpush-20260526T101145Z.json
 - postpush gh version: logs/montana-time-capsule/gh-version-postpush-20260526T101145Z.txt
+
+## Heartbeat 20260526T104843Z
+- branch: agent-40136728-montana-time-capsule
+- head: 9b245c5bedbed85776c0bf96a438ae34ad998488
+- sagemaker: Completed (0 in-progress); see logs/montana-time-capsule/sagemaker-summary-20260526T104635Z.txt
+- prod bundle meta.json: 200 + ACAO:*; see logs/montana-time-capsule/curlI-prod-meta-origin-hmc-mtc-20260520T2015Z-20260526T104712Z.headers
+- viewer: sky/nosky 200; see logs/montana-time-capsule/curlI-viewer-sky-hmc-mtc-20260520T2015Z-20260526T104712Z.headers
+- CI note (20260526T104913Z): exact-head workflows empty because current HEAD is logs-only [skip ci] (9b245c5b…); last successful Pages+CDK evidence is in logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260526T104539Z.json.

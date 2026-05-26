@@ -1,0 +1,5 @@
+processing_inprogress_count 0
+training_inprogress_count 0
+sfm status Completed end 2026-05-21T10:03:13.740000-06:00
+3dgs status Completed end 2026-05-21T14:12:00.258000-06:00
+compression status Completed end 2026-05-21T14:25:14.447000-06:00
