@@ -14157,3 +14157,14 @@ Evidence snapshot: logs/montana-time-capsule/hmc-state.json (evidence_stamp=2026
 ## 2026-05-26T11:29Z POSTPUSH GH snapshot - branch `agent-40136728-montana-time-capsule` (head `d78111c0…`; exact-head still empty)
 
 - Evidence: logs/montana-time-capsule/git-head-postpush-20260526T112927Z.txt + logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260526T112927Z.json + logs/montana-time-capsule/gh-run-list-exact-head-d78111c08bc661b29dba516d2350f6acda6de515-postpush-20260526T112927Z.json + logs/montana-time-capsule/gh-push-trigger-gap-20260526T112927Z.txt
+
+## 20260526T114605Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: no-spend verification refresh
+
+- branch: agent-40136728-montana-time-capsule
+- head: 37ffab5c9f740a70ec21391dd13fbffd2d52e07d
+- AWS identity: logs/montana-time-capsule/aws-sts-get-caller-identity-20260526T114605Z.json
+- SageMaker: 0 InProgress; canonical describe statuses Completed; see logs/montana-time-capsule/sm-describe-*-*-20260526T114605Z.json
+- S3 prod meta.json: HTTP 200 + ACAO:* (Origin test); see logs/montana-time-capsule/curlI-prod-meta-origin-hmc-mtc-20260520T2015Z-20260526T114605Z.headers
+- Hosted viewer: base/sky/nosky HTTP 200; see logs/montana-time-capsule/curlI-viewer-sky-hmc-mtc-20260520T2015Z-20260526T114605Z.headers
+- GitHub Actions: exact-head runs count = 0; latest branch success still 2026-05-25T14:07:12Z CDK Deploy success
+- Machine-readable state refreshed: logs/montana-time-capsule/hmc-state.json (evidence_stamp=20260526T114605Z)
