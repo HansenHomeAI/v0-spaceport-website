@@ -652,3 +652,4 @@
 [2026-05-26T03:27:45Z] heartbeat-no-spend -> all green (SM idle, S3 meta 200, viewer 200, GH branch runs green) -> continue monitoring
 [2026-05-26T03:48:05Z] montana-time-capsule heartbeat-no-spend -> SM idle 0/0 + canonical Completed + S3 meta 200 + viewer base/sky/nosky 200 + GH Pages+CDK success (exact-head 0 due to [skip ci]) -> continue monitoring
 [2026-05-26T03:49:02Z] postpush-gh -> head db5952c92ed2d7d2e48d3de38c991e0262ea41d4 -> exact-head runs=0 (skip-ci expected) -> idle
+[2026-05-26T04:07:41Z] heartbeat-no-spend -> SM idle 0/0 + canonical Completed + S3 meta 200 + viewer base/sky/nosky 200 + GH Pages+CDK success (exact-head 0 due to [skip ci]) -> continue monitoring
