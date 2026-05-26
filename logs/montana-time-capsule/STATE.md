@@ -13642,3 +13642,21 @@ Evidence snapshot: logs/montana-time-capsule/hmc-state.json (evidence_stamp=2026
   - Public meta HTTP reachability (expect 200): logs/montana-time-capsule/curlI-prod-meta-hmc-mtc-20260520T2015Z-20260526T000749Z.headers
   - Hosted viewer reachability (expect 200): logs/montana-time-capsule/curlI-viewer-base-20260526T000749Z.headers + logs/montana-time-capsule/curlI-viewer-sky-hmc-mtc-20260520T2015Z-20260526T000749Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-hmc-mtc-20260520T2015Z-20260526T000749Z.headers
   - GitHub Actions snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260526T000749Z.json + logs/montana-time-capsule/gh-run-list-exact-head-a6a78687-20260526T000749Z.json (note: head is `[skip ci]`, so exact-head may be empty)
+
+## 20260526T002601Z HEARTBEAT monitor - canonical  (no-spend)
+
+- Git: branch=agent-40136728-montana-time-capsule head=63913148 (exact-head workflows may be empty on )
+- SageMaker: hmc-mtc-20260520T2015Z-sfm=Completed, hmc-mtc-20260520T2015Z-3dgs=Completed, hmc-mtc-20260520T2015Z-compression=Completed; InProgress=0/0
+- S3: prod meta HTTP 200: https://spaceport-ml-processing.s3.us-west-2.amazonaws.com/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json
+- Viewer: HTTP 200 base + sky/no-sky alias: https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev
+- Machine-readable state refreshed: logs/montana-time-capsule/hmc-state.json (evidence_stamp=20260526T002601Z)
+
+
+## 20260526T002601Z HEARTBEAT monitor - canonical hmc-mtc-20260520T2015Z (no-spend)
+
+- Git: branch=agent-40136728-montana-time-capsule head=63913148 (exact-head workflows may be empty when head commit uses [skip ci])
+- SageMaker: hmc-mtc-20260520T2015Z-sfm=Completed, hmc-mtc-20260520T2015Z-3dgs=Completed, hmc-mtc-20260520T2015Z-compression=Completed; InProgress=0/0
+- S3: prod meta HTTP 200: https://spaceport-ml-processing.s3.us-west-2.amazonaws.com/compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json
+- Viewer: HTTP 200 base + sky/no-sky alias: https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev
+- Machine-readable state refreshed: logs/montana-time-capsule/hmc-state.json (evidence_stamp=20260526T002601Z)
+
