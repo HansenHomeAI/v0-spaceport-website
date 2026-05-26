@@ -676,3 +676,4 @@
 [2026-05-26T08:50:27Z] heartbeat 20260526T084617Z -> refreshed no-spend evidence (SM 0/0; viewer/meta 200) -> commit+push ledger
 [2026-05-26T08:51:22Z] postpush 20260526T085055Z -> snap exact-head runs (expected empty; skip-ci) -> commit+push
 [2026-05-26T09:11:25Z] heartbeat 20260526T090607Z -> refreshed no-spend evidence (SM 0/0; viewer/meta 200; gh exact-head empty due skip-ci) -> commit+push ledger
+[2026-05-26T09:12:33Z] postpush 20260526T091212Z -> snap exact-head runs for bfe8db3e (expected empty; skip-ci) -> commit+push

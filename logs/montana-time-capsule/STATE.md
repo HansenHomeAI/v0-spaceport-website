@@ -1,6 +1,11 @@
 # Montana Time Capsule CV-HR State
 
 
+## 2026-05-26T09:12:12Z POSTPUSH GH snapshot - branch `agent-40136728-montana-time-capsule` (head `bfe8db3e…`; `[skip ci]` exact-head expected empty)
+
+- Exact-head snapshot: logs/montana-time-capsule/_heartbeat_head_sha_20260526T091212Z.txt + logs/montana-time-capsule/gh-run-list-exact-head-bfe8db3e4823407e847ee9372ba8afeda4e0e911-20260526T091212Z.json
+
+
 ## 2026-05-26T09:06:07Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: no-spend verification refresh
 
 - Evidence stamp: 20260526T090607Z
