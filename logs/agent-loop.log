@@ -665,3 +665,4 @@
 [2026-05-26T06:08:45Z] heartbeat-no-spend -> verified terminal jobs + s3 meta + viewer 200 + gh snapshot -> commit
 [2026-05-26T06:28:15Z] heartbeat -> verified terminal + bundle + viewer 200s (stamp 20260526T062712) -> commit/push ledger
 [2026-05-26T06:48:51Z] montana-time-capsule heartbeat-no-spend -> ok (SM idle 0/0; canonical Completed; S3 meta reachable; viewer base/sky/nosky 200; GH snapshots captured) (stamp=20260526T064552Z) -> next: idle
+[2026-05-26T06:49:37Z] postpush-gh -> head cb94ebdf -> exact-head runs=0 (skip-ci expected) -> idle
