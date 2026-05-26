@@ -1,0 +1,1 @@
+[20260526T123128Z] postpush check: branch=agent-40136728-montana-time-capsule head=647ab9279aef384f1bba011d8322da4681534087 exact_head_runs=0 (expected 0 for [skip ci] heads; if non-zero, investigate)

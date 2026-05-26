@@ -14190,3 +14190,10 @@ Evidence snapshot: logs/montana-time-capsule/hmc-state.json (evidence_stamp=2026
 - Viewer: alias base/sky/no-sky HTTP 200 (logs/montana-time-capsule/curlI-viewer-base-20260526T122725Z.headers + logs/montana-time-capsule/curlI-viewer-sky-hmc-mtc-20260520T2015Z-20260526T122725Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-hmc-mtc-20260520T2015Z-20260526T122725Z.headers)
 - GitHub Actions (unauth REST): exact-head runs = 0; latest branch success recorded in logs/montana-time-capsule/github-actions-summary-20260526T122725Z.txt
 - Machine-readable state refreshed: logs/montana-time-capsule/hmc-state.json (evidence_stamp=20260526T122725Z)
+
+### Postpush 20260526T123128Z (unauth REST snapshot)
+- pushed head=647ab9279aef384f1bba011d8322da4681534087 ([skip ci]); exact-head workflows expected empty by design
+- postpush git head: logs/montana-time-capsule/git-head-postpush-20260526T123128Z.txt
+- postpush branch runs: logs/montana-time-capsule/gh-api-actions-runs-branch-agent-40136728-montana-time-capsule-postpush-20260526T123128Z.json
+- postpush exact-head run list: logs/montana-time-capsule/gh-run-list-exact-head-647ab9279aef384f1bba011d8322da4681534087-postpush-20260526T123128Z.json
+- trigger note: logs/montana-time-capsule/gh-push-trigger-gap-20260526T123128Z.txt
