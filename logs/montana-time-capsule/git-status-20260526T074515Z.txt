@@ -1,0 +1,5 @@
+?? logs/montana-time-capsule/_heartbeat_branch_20260526T074515Z.txt
+?? logs/montana-time-capsule/git-branch-20260526T074515Z.txt
+?? logs/montana-time-capsule/git-head-20260526T074515Z.txt
+?? logs/montana-time-capsule/git-log1-20260526T074515Z.txt
+?? logs/montana-time-capsule/git-status-20260526T074515Z.txt

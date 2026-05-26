@@ -668,3 +668,4 @@
 [2026-05-26T06:49:37Z] postpush-gh -> head cb94ebdf -> exact-head runs=0 (skip-ci expected) -> idle
 [2026-05-26T07:07:14Z] heartbeat 20260526T070543Z -> verified terminal + reachability (200) -> commit+push ledger
 [2026-05-26T07:27:11Z] heartbeat 20260526T072530Z -> evidence refreshed -> next: commit+push [skip ci]
+[2026-05-26T07:47:57Z] heartbeat 20260526T074757Z -> SM idle 0/0; canonical Completed; prod meta HTTP200; viewer base/sky/no-sky HTTP200; GH snapshots captured -> commit+push ledger
