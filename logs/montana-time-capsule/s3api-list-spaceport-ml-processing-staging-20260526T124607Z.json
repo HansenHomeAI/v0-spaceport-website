@@ -1,0 +1,140 @@
+{
+    "IsTruncated": false,
+    "Contents": [
+        {
+            "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/background_manifest.json",
+            "LastModified": "2026-05-21T20:25:10+00:00",
+            "ETag": "\"8a1e6ae59e67c358ad3f5b41e08fa168\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 975,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/background_skybox.webp",
+            "LastModified": "2026-05-21T20:25:10+00:00",
+            "ETag": "\"fadaadb85f15b1b04091ecd20b2935c9\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 47786,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/export_manifest.json",
+            "LastModified": "2026-05-21T20:25:10+00:00",
+            "ETag": "\"b20f4a21ac5ec2e2dc57b4a12a03399d\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 948,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/means_l.webp",
+            "LastModified": "2026-05-21T20:25:10+00:00",
+            "ETag": "\"eac4c58b03ba5a9848b01309f2069c98\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 1287154,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/means_u.webp",
+            "LastModified": "2026-05-21T20:25:10+00:00",
+            "ETag": "\"8f3bf9b2e9c7558d73870c09a8e909f9\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 872990,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json",
+            "LastModified": "2026-05-21T20:25:10+00:00",
+            "ETag": "\"994e5d57f052e552b8cce2e05d4debf4\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 1359,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/quats.webp",
+            "LastModified": "2026-05-21T20:25:10+00:00",
+            "ETag": "\"bc58dfc87e60211bf237080db7aa4a08\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 1370528,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/scales.webp",
+            "LastModified": "2026-05-21T20:25:10+00:00",
+            "ETag": "\"78f578dd20e93625b373cf98365add75\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 806836,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/settings.json",
+            "LastModified": "2026-05-21T20:25:10+00:00",
+            "ETag": "\"963b7cec6959d97306e2b618b5d9bc69\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 242,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/sh0.webp",
+            "LastModified": "2026-05-21T20:25:10+00:00",
+            "ETag": "\"6686e441b6ca73afb09b8696f1c29689\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 1085118,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/shN_centroids.webp",
+            "LastModified": "2026-05-21T20:25:10+00:00",
+            "ETag": "\"b928955dd550501346160189c79381d1\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 807922,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/shN_labels.webp",
+            "LastModified": "2026-05-21T20:25:10+00:00",
+            "ETag": "\"f837ff4ab40b22f3e685cc79c984f985\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 841400,
+            "StorageClass": "STANDARD"
+        },
+        {
+            "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/training_metadata.json",
+            "LastModified": "2026-05-21T20:25:10+00:00",
+            "ETag": "\"11e336e1e24a5c3e076156c057693522\"",
+            "ChecksumAlgorithm": [
+                "CRC32C"
+            ],
+            "Size": 1487,
+            "StorageClass": "STANDARD"
+        }
+    ],
+    "Name": "spaceport-ml-processing-staging",
+    "Prefix": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/",
+    "MaxKeys": 200,
+    "EncodingType": "url",
+    "KeyCount": 13
+}
