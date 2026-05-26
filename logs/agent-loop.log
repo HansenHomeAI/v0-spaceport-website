@@ -639,3 +639,4 @@
 [2026-05-26T01:09:43Z] heartbeat -> verified HMC terminal + S3/meta + viewer reachability + GH snapshots (exact-head empty on skip ci) -> next: continue periodic no-spend monitoring
 [2026-05-26T01:26:53Z] heartbeat(20260526T012653Z) -> ok (SageMaker Completed; InProgress 0/0; S3 meta 200; viewer 200; GH exact-head empty on skip ci) -> next: await new acceptance gate
 [2026-05-26T01:45:09Z] heartbeat(20260526T014509Z) -> ok (SageMaker Completed; InProgress 0/0; S3 meta 200; viewer 200; GH snapshots captured) -> next: await new acceptance gate
+[2026-05-26T01:47:27Z] postpush gh snapshot -> head d318e3b2 -> saved logs/montana-time-capsule/gh-run-list-exact-head-d318e3b25a2a27ab0af97e4d909b06555e371a5a-postpush-20260526T014727Z.json
