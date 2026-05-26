@@ -661,3 +661,4 @@
 [2026-05-26T05:06:38Z] montana-time-capsule heartbeat-no-spend -> SM idle 0/0 + canonical Completed + S3 meta 200 + viewer base/sky/nosky 200 + GH Pages+CDK success (exact-head 0 due to [skip ci]) -> continue monitoring
 [2026-05-26T05:28:25Z] heartbeat no-spend verify -> terminal+bundle+viewer OK; aws/gh via /opt/homebrew/bin; exact-head empty on [skip ci] -> next: continue monitoring
 [2026-05-26T05:49:30Z] heartbeat no-spend verify -> SM idle 0/0 + canonical Completed + S3 meta 200 + viewer base/sky/nosky 200 + viewer screenshots captured + GH snapshot (exact-head 0 due to [skip ci]) -> continue monitoring
+[2026-05-26T05:50:38Z] postpush-gh -> head 7c21cc5a550d718203768f6969a5d4f3019db11a -> exact-head runs=0 (skip-ci expected) -> idle

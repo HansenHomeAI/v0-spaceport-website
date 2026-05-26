@@ -12,6 +12,13 @@
   - GitHub Actions snapshots (`/opt/homebrew/bin/gh`; exact-head empty for `[skip ci]` head): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260526T054748Z.json + logs/montana-time-capsule/gh-run-list-exact-head-5b9d6b3109e84f34cae0c7b1c13281ae161650cb-20260526T054748Z.json + logs/montana-time-capsule/gh-version-20260526T054748Z.txt
   - Machine-readable state refreshed: logs/montana-time-capsule/hmc-state.json (evidence_stamp=20260526T054748Z)
 
+## 2026-05-26T05:50:13Z POSTPUSH GH snapshot - branch `agent-40136728-montana-time-capsule` (head `7c21cc5a…`; `[skip ci]` exact-head expected empty)
+
+- Evidence stamp: 20260526T055013Z
+  - Git head: logs/montana-time-capsule/git-head-postpush-20260526T055013Z.txt (`7c21cc5a…`)
+  - GitHub Actions snapshot (`/opt/homebrew/bin/gh`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260526T055013Z.json
+  - GitHub Actions snapshot - exact-head (`7c21cc5a…`): logs/montana-time-capsule/gh-run-list-exact-head-7c21cc5abdb23be17f8c0fe32cc9a75e8afcd4ef-postpush-20260526T055013Z.json
+
 ## 2026-05-26T05:29:34Z POSTPUSH GH snapshot - branch `agent-40136728-montana-time-capsule` (head `05ebf058…`; `[skip ci]` exact-head expected empty)
 
 - Evidence stamp: 20260526T052934Z
