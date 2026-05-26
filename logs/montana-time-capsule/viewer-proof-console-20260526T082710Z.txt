@@ -1,0 +1,13 @@
+Total messages: 5 (Errors: 0, Warnings: 0)
+Returning 10 messages for level "info"
+
+[LOG] %cLumaSplatsThree git version #43db0c3 color: magenta @ https://unpkg.com/@lumaai/luma-web@0.2.0/dist/library/luma-web.module.js:71
+[LOG] %cDecoder: worker starting. color: #00ff00 @ https://unpkg.com/@lumaai/luma-web@0.2.0/dist/library/luma-web.module.js:71
+[LOG] %cDecoder ready. color: #00ff00 @ https://unpkg.com/@lumaai/luma-web@0.2.0/dist/library/luma-web.module.js:71
+[LOG] %cSorter: Worker starting. color: #ff00ff @ https://unpkg.com/@lumaai/luma-web@0.2.0/dist/library/luma-web.module.js:68
+[LOG] %cSorter ready. color: #ff00ff @ https://unpkg.com/@lumaai/luma-web@0.2.0/dist/library/luma-web.module.js:68
+[LOG] %cLumaSplatsThree git version #43db0c3 color: magenta @ https://unpkg.com/@lumaai/luma-web@0.2.0/dist/library/luma-web.module.js:71
+[LOG] %cDecoder: worker starting. color: #00ff00 @ https://unpkg.com/@lumaai/luma-web@0.2.0/dist/library/luma-web.module.js:71
+[LOG] %cDecoder ready. color: #00ff00 @ https://unpkg.com/@lumaai/luma-web@0.2.0/dist/library/luma-web.module.js:71
+[LOG] %cSorter: Worker starting. color: #ff00ff @ https://unpkg.com/@lumaai/luma-web@0.2.0/dist/library/luma-web.module.js:68
+[LOG] %cSorter ready. color: #ff00ff @ https://unpkg.com/@lumaai/luma-web@0.2.0/dist/library/luma-web.module.js:68
