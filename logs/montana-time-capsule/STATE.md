@@ -12,6 +12,13 @@
   - GitHub Actions snapshots (`/opt/homebrew/bin/gh`; exact-head empty expected on `[skip ci]` head): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260526T010618Z.json + logs/montana-time-capsule/gh-run-list-exact-head-36bd663e3cf4f2351f8fbb7d2104ff221558f797-20260526T010618Z.json + logs/montana-time-capsule/gh-version-20260526T010618Z.txt
   - Machine-readable state refreshed: logs/montana-time-capsule/hmc-state.json (evidence_stamp=20260526T010618Z)
 
+## 2026-05-26T01:10:22Z POSTPUSH snapshot - head `7a9b7abd` (`[skip ci]`), no-spend
+
+- Evidence stamp: 20260526T011022Z
+  - Git head: logs/montana-time-capsule/git-head-postpush-20260526T011022Z.txt
+  - GitHub Actions snapshots (`/opt/homebrew/bin/gh`; exact-head empty expected on `[skip ci]` head): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260526T011022Z.json + logs/montana-time-capsule/gh-run-list-exact-head-7a9b7abd4262ed948035d5d3f5bb70a1dc5a774c-postpush-20260526T011022Z.json + logs/montana-time-capsule/gh-version-postpush-20260526T011022Z.txt
+  - Machine-readable state updated: logs/montana-time-capsule/hmc-state.json (postpush.head_short=7a9b7abd)
+
 ## 2026-05-25T23:46:14Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: AWS identity ok, SageMaker terminal (SfM/3DGS/compression Completed), InProgress=0/0, S3 supersplat bundle/meta still present (staging+prod), prod meta HTTP 200, hosted preview viewer base/sky/no-sky URLs HTTP 200; GitHub Actions captured (branch has runs, exact-head empty due to `[skip ci]` head); no new jobs launched (no-spend checks only)
 
 - Evidence stamp: 20260525T234614Z
