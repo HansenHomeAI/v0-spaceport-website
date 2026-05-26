@@ -155,7 +155,7 @@ jobs:
             local status="$1"
             local extra_ready_regex="${2:-}"
 
-            if [[ "$status" == "CREATE_COMPLETE" || "$status" == "UPDATE_COMPLETE" || "$status" == "IMPORT_COMPLETE" || "$status" == "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" ]]; then
+            if [[ "$status" == "CREATE_COMPLETE" || "$status" == "UPDATE_COMPLETE" || "$status" == "IMPORT_COMPLETE" || "$status" == "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS" || "$status" == "UPDATE_ROLLBACK_COMPLETE" ]]; then
               return 0
             fi
 
