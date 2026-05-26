@@ -1,0 +1,6 @@
+## agent-40136728-montana-time-capsule...origin/agent-40136728-montana-time-capsule
+?? logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260526T044854Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-655acd3aa1c4f7985bd57cf7049f5ceccbb05be8-postpush-20260526T044854Z.json
+?? logs/montana-time-capsule/git-head-20260526T044854Z.txt
+?? logs/montana-time-capsule/git-status-20260526T044854Z.txt
+?? logs/montana-time-capsule/postpush-stamp-20260526T044854Z.txt
