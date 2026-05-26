@@ -1,0 +1,31 @@
+branch=agent-40136728-montana-time-capsule
+head=05f3f0b067db7ddac85d222bd70029e64d0fbc00
+ M logs/montana-time-capsule/LAST_HEARTBEAT_STAMP.txt
+ M logs/montana-time-capsule/hmc-state.json
+?? logs/montana-time-capsule/aws-config-region-20260526T060539Z.txt
+?? logs/montana-time-capsule/aws-identity-20260526T060539Z.txt
+?? logs/montana-time-capsule/aws-sts-get-caller-identity-20260526T060539Z.json
+?? logs/montana-time-capsule/aws-version-20260526T060539Z.txt
+?? logs/montana-time-capsule/curlI-prod-meta-hmc-mtc-20260520T2015Z-20260526T060600Z.headers
+?? logs/montana-time-capsule/curlI-viewer-base-20260526T060619Z.headers
+?? logs/montana-time-capsule/curlI-viewer-nosky-hmc-mtc-20260520T2015Z-20260526T060619Z.headers
+?? logs/montana-time-capsule/curlI-viewer-sky-hmc-mtc-20260520T2015Z-20260526T060619Z.headers
+?? logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260526T060632Z.json
+?? logs/montana-time-capsule/gh-run-list-exact-head-05f3f0b067db7ddac85d222bd70029e64d0fbc00-20260526T060632Z.json
+?? logs/montana-time-capsule/gh-version-20260526T060632Z.txt
+?? logs/montana-time-capsule/git-branch-20260526T060525Z.txt
+?? logs/montana-time-capsule/git-head-20260526T060525Z.txt
+?? logs/montana-time-capsule/git-log1-20260526T060525Z.txt
+?? logs/montana-time-capsule/git-status-20260526T060525Z.txt
+?? logs/montana-time-capsule/git-status-20260526T060739Z.txt
+?? logs/montana-time-capsule/s3head-prod-meta-hmc-mtc-20260520T2015Z-20260526T060600Z.json
+?? logs/montana-time-capsule/s3head-prod-rep-asset-hmc-mtc-20260520T2015Z-20260526T060600Z.json
+?? logs/montana-time-capsule/s3ls-prod-supersplat-bundle-hmc-mtc-20260520T2015Z-20260526T060600Z.txt
+?? logs/montana-time-capsule/s3ls-staging-supersplat-bundle-hmc-mtc-20260520T2015Z-20260526T060600Z.txt
+?? logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260526T060539Z.json
+?? logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260526T060539Z.json
+?? logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260526T060539Z.json
+?? logs/montana-time-capsule/sm-list-processing-inprogress-20260526T060539Z.json
+?? logs/montana-time-capsule/sm-list-training-inprogress-20260526T060539Z.json
+?? logs/montana-time-capsule/viewer-alias-url-20260526T060619Z.txt
+?? logs/montana-time-capsule/viewer-urls-20260526T060619Z.txt
