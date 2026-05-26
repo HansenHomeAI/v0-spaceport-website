@@ -645,3 +645,6 @@
 [2026-05-26T02:08:08Z] postpush gh snapshot -> head ade5af71 -> saved logs/montana-time-capsule/gh-run-list-exact-head-ade5af715f0ccc18bea5b211f812134b4c1c5cc8-postpush-20260526T020807Z.json
 [2026-05-26T02:28:29Z] heartbeat -> verified terminal HMC + S3 meta 200 + viewer 200 + exact-head GH runs 0 (skip ci) -> next: idle
 [2026-05-26T02:29:19Z] postpush gh snapshot -> head c6eac292 -> saved logs/montana-time-capsule/gh-run-list-exact-head-c6eac2920a87e06af70f640535606da6bb818c36-postpush-20260526T022918Z.json
+[2026-05-26T02:49:23Z] heartbeat -> HMC no-spend checks ok (SageMaker Completed; meta/viewer 200; exact-head runs 0 on skip-ci head) -> next: wait
+[2026-05-26T02:50:14Z] heartbeat -> HMC no-spend checks ok (SageMaker Completed; meta/viewer 200; exact-head runs 0 on skip-ci head) -> next: wait
+[2026-05-26T02:51:07Z] postpush -> captured GH exact-head snapshot for 6a4ac9ae2722ff521a725d5d8662eff2360913cb -> next: idle
