@@ -1,0 +1,5 @@
+agent-40136728-montana-time-capsule
+6efb6500fee004bb5b777772beca0b0455c31e94
+ M logs/montana-time-capsule/LAST_HEARTBEAT_STAMP.txt
+?? logs/montana-time-capsule/heartbeat-git-proof-20260526T134713Z.txt
+6efb6500 chore: montana heartbeat 20260526T132801Z [skip ci]
