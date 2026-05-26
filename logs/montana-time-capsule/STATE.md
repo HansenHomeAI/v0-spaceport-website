@@ -11,6 +11,7 @@
   - Hosted viewer reachability (HTTP 200 for base + sky/no-sky): logs/montana-time-capsule/viewer-urls-20260526T070543Z.txt + logs/montana-time-capsule/curlI-viewer-base-20260526T070543Z.headers + logs/montana-time-capsule/curlI-viewer-sky-hmc-mtc-20260520T2015Z-20260526T070543Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-hmc-mtc-20260520T2015Z-20260526T070543Z.headers
   - GitHub Actions snapshots (`/opt/homebrew/bin/gh`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260526T070543Z.json + logs/montana-time-capsule/gh-run-list-exact-head-30b02e5ddf81dcc504397d4eac9311cc9f00cd35-20260526T070543Z.json + logs/montana-time-capsule/gh-version-20260526T070543Z.txt
   - Machine-readable state refreshed: logs/montana-time-capsule/hmc-state.json (evidence_stamp=20260526T070543Z)
+  - Post-push exact-head snapshot (new head `af9020c1…`; exact-head runs=0 expected due `[skip ci]`): logs/montana-time-capsule/git-head-20260526T070737Z.txt + logs/montana-time-capsule/gh-run-list-exact-head-af9020c130fd5a7993c11eea20c0d483d1ac9804-20260526T070737Z.json
 
 ## 2026-05-26T06:45:52Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: no-spend verification refresh (unified evidence stamp)
 

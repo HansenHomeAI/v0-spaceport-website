@@ -17,16 +17,16 @@
   },
   "postpush": {
     "gh": {
-      "exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-cb94ebdf3c969635441e7b29176955f46f5050aa-20260526T064913Z.json"
+      "exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-af9020c130fd5a7993c11eea20c0d483d1ac9804-20260526T070737Z.json"
     },
     "git": {
-      "branch": "logs/montana-time-capsule/git-branch-20260526T064913Z.txt",
-      "head": "logs/montana-time-capsule/git-head-20260526T064913Z.txt",
-      "log1": "logs/montana-time-capsule/git-log1-20260526T064913Z.txt",
-      "status": "logs/montana-time-capsule/git-status-20260526T064913Z.txt"
+      "branch": "logs/montana-time-capsule/git-branch-20260526T070737Z.txt",
+      "head": "logs/montana-time-capsule/git-head-20260526T070737Z.txt",
+      "log1": "logs/montana-time-capsule/git-log1-20260526T070737Z.txt",
+      "status": "logs/montana-time-capsule/git-status-20260526T070737Z.txt"
     },
     "note": "Post-push verification; exact-head runs empty expected on [skip ci].",
-    "stamp": "20260526T064913"
+    "stamp": "20260526T070737"
   },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
