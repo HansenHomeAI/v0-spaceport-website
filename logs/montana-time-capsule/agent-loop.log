@@ -54,3 +54,4 @@
 [2026-05-25T13:00:51Z] post-deploy heartbeat evidence captured (20260525T130038Z)
 [2026-05-26T13:29:42Z] heartbeat -> verified terminal sm + s3 meta + viewer 200 + gh green -> next: wait for new acceptance gate
 [2026-05-26T14:47:51Z] heartbeat:hmc-mtc-20260520T2015Z:20260526T144751Z -> refreshed evidence -> next:no-spend idle
+[2026-05-26T14:50:09Z] postpush:42b84b1a -> gh snapshots recorded (20260526T145009Z)
