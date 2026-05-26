@@ -14197,3 +14197,8 @@ Evidence snapshot: logs/montana-time-capsule/hmc-state.json (evidence_stamp=2026
 - postpush branch runs: logs/montana-time-capsule/gh-api-actions-runs-branch-agent-40136728-montana-time-capsule-postpush-20260526T123128Z.json
 - postpush exact-head run list: logs/montana-time-capsule/gh-run-list-exact-head-647ab9279aef384f1bba011d8322da4681534087-postpush-20260526T123128Z.json
 - trigger note: logs/montana-time-capsule/gh-push-trigger-gap-20260526T123128Z.txt
+
+### Postpush 20260526T123317Z (unauth REST snapshot)
+- pushed head=0dfff537422388a24ee7e8ff0f71150f32700033 ([skip ci])
+- postpush branch runs: logs/montana-time-capsule/gh-api-actions-runs-branch-agent-40136728-montana-time-capsule-postpush-20260526T123317Z.json
+- postpush exact-head run list: logs/montana-time-capsule/gh-run-list-exact-head-0dfff537422388a24ee7e8ff0f71150f32700033-postpush-20260526T123317Z.json (total_count=0)

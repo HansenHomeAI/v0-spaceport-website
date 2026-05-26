@@ -696,3 +696,4 @@
 [2026-05-26T06:12:45-0600] postpush 20260526T121219Z -> exact-head GH runs still 0 (head=75cf74a9) -> next: continue no-spend monitoring
 [2026-05-26T12:29:06Z] heartbeat 20260526T122725Z -> ok (no-spend) -> next monitor
 [2026-05-26T12:31:41Z] postpush 20260526T123128Z -> exact-head GH runs 0 (skip ci) -> next monitor
+[2026-05-26T12:33:28Z] postpush 20260526T123317Z -> exact-head GH runs 0 (skip ci) -> idle
