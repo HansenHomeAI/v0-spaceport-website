@@ -670,3 +670,4 @@
 [2026-05-26T07:27:11Z] heartbeat 20260526T072530Z -> evidence refreshed -> next: commit+push [skip ci]
 [2026-05-26T07:47:57Z] heartbeat 20260526T074757Z -> SM idle 0/0; canonical Completed; prod meta HTTP200; viewer base/sky/no-sky HTTP200; GH snapshots captured -> commit+push ledger
 [2026-05-26T08:07:40Z] heartbeat no-spend verify -> SM 0/0 InProgress; canonical Completed; meta/viewer HTTP 200; exact-head runs 0 (skip ci) -> commit+push logs
+[2026-05-26T08:08:26Z] postpush exact-head snapshot -> recorded gh run list for 723fe673 (expected empty)
