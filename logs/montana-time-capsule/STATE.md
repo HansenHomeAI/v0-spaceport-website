@@ -1,5 +1,17 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-26T02:27:57Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: no-spend verification
+
+- Evidence stamp: 20260526T022534Z
+  - Git head/status: logs/montana-time-capsule/git-branch-20260526T022534.txt + logs/montana-time-capsule/git-head-20260526T022534.txt + logs/montana-time-capsule/git-status-20260526T022534.txt + logs/montana-time-capsule/git-log1-20260526T022534.txt
+  - AWS identity/region/version (`/opt/homebrew/bin/aws`; us-west-2): logs/montana-time-capsule/aws-sts-get-caller-identity-20260526T022534.json + logs/montana-time-capsule/aws-config-region-20260526T022534.txt + logs/montana-time-capsule/aws-version-20260526T022534.txt
+  - InProgress guardrail (max-results=50): logs/montana-time-capsule/sm-list-processing-inprogress-20260526T022534.json + logs/montana-time-capsule/sm-list-training-inprogress-20260526T022534.json (counts: 0/0)
+  - Canonical HMC describes (all Completed): logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260526T022534.json + logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260526T022534.json + logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260526T022534.json
+  - S3 outputs + prod meta reachability (HTTP 200): logs/montana-time-capsule/s3ls-staging-supersplat-bundle-hmc-mtc-20260520T2015Z-20260526T022534.txt + logs/montana-time-capsule/s3ls-prod-supersplat-bundle-hmc-mtc-20260520T2015Z-20260526T022534.txt + logs/montana-time-capsule/curlI-prod-meta-hmc-mtc-20260520T2015Z-20260526T022534.headers
+  - Hosted viewer reachability (HTTP 200 for base + sky/no-sky): logs/montana-time-capsule/viewer-urls-20260526T022534.txt + logs/montana-time-capsule/curlI-viewer-base-20260526T022534.headers + logs/montana-time-capsule/curlI-viewer-sky-hmc-mtc-20260520T2015Z-20260526T022534.headers + logs/montana-time-capsule/curlI-viewer-nosky-hmc-mtc-20260520T2015Z-20260526T022534.headers
+  - GitHub Actions snapshots (`/opt/homebrew/bin/gh`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260526T022534.json + logs/montana-time-capsule/gh-run-list-exact-head-9a943b4f8a5aa127e50a9975b378c806115122f1-20260526T022534.json + logs/montana-time-capsule/gh-version-20260526T022534.txt
+  - Machine-readable state refreshed: logs/montana-time-capsule/hmc-state.json (evidence_stamp=20260526T022534Z)
+
 ## 2026-05-26T02:06:59Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: no-spend verification
 
 - Evidence stamp: 20260526T020659Z
