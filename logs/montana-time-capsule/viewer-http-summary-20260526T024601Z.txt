@@ -1,0 +1,3 @@
+base_http=200
+sky_http=200
+nosky_http=200
