@@ -14172,3 +14172,9 @@ Evidence snapshot: logs/montana-time-capsule/hmc-state.json (evidence_stamp=2026
 ## 20260526T114944Z POSTPUSH GH snapshot - branch `agent-40136728-montana-time-capsule` (head `f0bec3efc731`; exact-head still empty)
 
 - Evidence: logs/montana-time-capsule/git-head-postpush-20260526T114944Z.txt + logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260526T114944Z.json + logs/montana-time-capsule/gh-run-list-exact-head-f0bec3efc73112823e2e04c9d9e0afdedb08d680-postpush-20260526T114944Z.json + logs/montana-time-capsule/gh-push-trigger-gap-20260526T114944Z.txt
+# Heartbeat 20260526T120922Z (no-spend)
+- git: head=66c466b7f9d18962d8df29bb2679146f7bb73ab7 branch=agent-40136728-montana-time-capsule (evidence: logs/montana-time-capsule/git-head-20260526T120922Z.txt)
+- sagemaker: 0 InProgress; hmc-mtc-20260520T2015Z-{sfm,3dgs,compression} Completed (boto3 evidence: logs/montana-time-capsule/boto3-sm-list-processing-inprogress-20260526T120551Z.json)
+- s3 bundle: prod meta.json HTTP 200; Origin CORS allows '*' (evidence: logs/montana-time-capsule/curlI-prod-meta-origin-20260526T120631Z.headers)
+- viewer: base + sky/nosky URLs HTTP 200 (evidence: logs/montana-time-capsule/curlI-viewer-sky-hmc-mtc-20260520T2015Z-20260526T120701Z.headers)
+- github actions: 0 exact-head runs for 66c466b7 (branch latest Pages/CDK successes remain 2026-05-25) (evidence: logs/montana-time-capsule/github-actions-summary-20260526T120908Z.txt)

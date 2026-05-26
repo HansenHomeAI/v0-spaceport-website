@@ -1,0 +1,6 @@
+branch=agent-40136728-montana-time-capsule
+head=66c466b7f9d18962d8df29bb2679146f7bb73ab7
+branch_runs_sampled=29 (from logs/montana-time-capsule/gh-api-actions-runs-branch-agent-40136728-montana-time-capsule-20260526T120729Z.json)
+exact_head_runs_in_branch_list=0
+latest_pages: status=completed conclusion=success head_sha=963518c490a15e6cd93e9fb522ed43a067746476 created_at=2026-05-25T12:51:28Z url=https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26401435613
+latest_cdk: status=completed conclusion=success head_sha=354c69d621273c3190808cb7157f6200d67fa6d4 created_at=2026-05-25T14:07:12Z url=https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26404616422

@@ -1,0 +1,151 @@
+{
+  "staging": {
+    "bucket": "spaceport-ml-processing-staging",
+    "prefix": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/",
+    "objects": [
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/background_manifest.json",
+        "Size": 975,
+        "LastModified": "2026-05-21T20:25:10+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/background_skybox.webp",
+        "Size": 47786,
+        "LastModified": "2026-05-21T20:25:10+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/export_manifest.json",
+        "Size": 948,
+        "LastModified": "2026-05-21T20:25:10+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/means_l.webp",
+        "Size": 1287154,
+        "LastModified": "2026-05-21T20:25:10+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/means_u.webp",
+        "Size": 872990,
+        "LastModified": "2026-05-21T20:25:10+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json",
+        "Size": 1359,
+        "LastModified": "2026-05-21T20:25:10+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/quats.webp",
+        "Size": 1370528,
+        "LastModified": "2026-05-21T20:25:10+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/scales.webp",
+        "Size": 806836,
+        "LastModified": "2026-05-21T20:25:10+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/settings.json",
+        "Size": 242,
+        "LastModified": "2026-05-21T20:25:10+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/sh0.webp",
+        "Size": 1085118,
+        "LastModified": "2026-05-21T20:25:10+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/shN_centroids.webp",
+        "Size": 807922,
+        "LastModified": "2026-05-21T20:25:10+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/shN_labels.webp",
+        "Size": 841400,
+        "LastModified": "2026-05-21T20:25:10+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/training_metadata.json",
+        "Size": 1487,
+        "LastModified": "2026-05-21T20:25:10+00:00"
+      }
+    ]
+  },
+  "prod": {
+    "bucket": "spaceport-ml-processing",
+    "prefix": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/",
+    "objects": [
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/background_manifest.json",
+        "Size": 975,
+        "LastModified": "2026-05-25T05:48:03+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/background_skybox.webp",
+        "Size": 47786,
+        "LastModified": "2026-05-25T05:48:03+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/export_manifest.json",
+        "Size": 948,
+        "LastModified": "2026-05-25T05:48:03+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/means_l.webp",
+        "Size": 1287154,
+        "LastModified": "2026-05-25T05:48:03+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/means_u.webp",
+        "Size": 872990,
+        "LastModified": "2026-05-25T05:48:03+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/meta.json",
+        "Size": 1359,
+        "LastModified": "2026-05-25T05:48:03+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/quats.webp",
+        "Size": 1370528,
+        "LastModified": "2026-05-25T05:48:03+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/scales.webp",
+        "Size": 806836,
+        "LastModified": "2026-05-25T05:48:03+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/settings.json",
+        "Size": 242,
+        "LastModified": "2026-05-25T05:48:03+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/sh0.webp",
+        "Size": 1085118,
+        "LastModified": "2026-05-25T05:48:03+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/shN_centroids.webp",
+        "Size": 807922,
+        "LastModified": "2026-05-25T05:48:03+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/shN_labels.webp",
+        "Size": 841400,
+        "LastModified": "2026-05-25T05:48:04+00:00"
+      },
+      {
+        "Key": "compressed/hmc-mtc-20260520T2015Z/supersplat_bundle/training_metadata.json",
+        "Size": 1487,
+        "LastModified": "2026-05-25T05:48:04+00:00"
+      }
+    ]
+  },
+  "prod_meta_head": {
+    "LastModified": "2026-05-25T05:48:03+00:00",
+    "ContentLength": 1359,
+    "ETag": "\"89e1a1d12752cd0887f1a74230971cca\"",
+    "ContentType": "application/octet-stream",
+    "Metadata": {}
+  }
+}

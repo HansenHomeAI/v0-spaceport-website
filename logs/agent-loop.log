@@ -692,3 +692,4 @@
 [2026-05-26T11:27:19Z] heartbeat 20260526T112526Z -> ok -> next monitor
 [2026-05-26T11:49:12Z] heartbeat 20260526T114605Z -> verified AWS/S3/viewer; GH exact-head still empty -> commit+push
 [2026-05-26T11:51:52Z] postpush 20260526T114944Z -> exact-head GH runs still 0 -> commit+push evidence
+[2026-05-26T06:10:01-0600] heartbeat(no-spend) -> sagemaker idle + s3 meta 200/cors + viewer 200 + gh no exact-head runs -> next: wait for CI trigger gap fix
