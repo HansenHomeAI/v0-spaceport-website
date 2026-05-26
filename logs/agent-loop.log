@@ -7,3 +7,4 @@
 [2026-05-26T21:48:28Z] aws-setup -> configured spaceport-dev 975050048887 and spaceport-prod 356638455876 via Atlas aws login -> resume remote container build monitoring and AWS validation
 [2026-05-26T22:04:00Z] cvhr-dry-run -> SfM-authority planner fallback patched/tested; CV-HR no-spend plan passes with 9 tiles and ownership bounds -> commit/push and wait for fresh 3DGS image
 [2026-05-26T22:34:00Z] cvhr-canary-r0 -> scaffold failed cheaply: missing training/images; container patched for selected-image roots and targeted tests pass -> commit/push rebuild, stage partial input, rerun canary
+[2026-05-26T23:12:00Z] cvhr-canary-r0-selected-input -> scaffold 501s + tile_00 677s completed; leaf preflight passed with 74138 splats and 372 selected images -> commit/push evidence, then harden midrun checkpoint visual-smoke before two-tile seam canary

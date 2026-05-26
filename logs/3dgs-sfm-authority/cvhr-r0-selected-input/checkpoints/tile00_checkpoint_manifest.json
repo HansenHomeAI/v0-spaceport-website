@@ -1,0 +1,15 @@
+{
+  "source_config": "/opt/ml/checkpoints/nerfstudio_runs/converted_data/splatfacto-w-light/2026-05-26_230724/config.yml",
+  "config": "config.yml",
+  "model_dir": "nerfstudio_models",
+  "latest_checkpoint": "nerfstudio_models/step-000000399.ckpt",
+  "checkpoint_count": 1,
+  "checkpoint_files": [
+    {
+      "path": "nerfstudio_models/step-000000399.ckpt",
+      "bytes": 50019671,
+      "modified_time": 1779836919.4292657
+    }
+  ],
+  "created_at": 1779836924.0263464
+}
