@@ -1,0 +1,17 @@
+{
+  "width": 461,
+  "height": 527,
+  "nonblack_ratio": 0.2632,
+  "bright_ratio": 0.0533,
+  "mean_rgb": [
+    12.98,
+    14.08,
+    15.71
+  ],
+  "max_rgb": [
+    178,
+    183,
+    180
+  ],
+  "source": "logs/sfm-production-spine/md1_sg6_seamtree_pipeline_viewer_debugseams_20260526T2145Z.png"
+}

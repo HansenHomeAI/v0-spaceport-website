@@ -1,0 +1,1563 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "sfm_quality_report",
+  "decision": "promote",
+  "inputs": {
+    "sparse_dir": "/tmp/md1_sg6_seamtree_reducer_20260526T2145Z/output_package/sparse/0",
+    "viewer_api_json": "",
+    "sfm_metadata": "",
+    "reducer_metadata": "logs/sfm-production-spine/md1_sg6_seamtree_reducer_20260526T2145Z.json",
+    "heldout_render_json": "",
+    "ai_visual_review_json": "",
+    "panel_diagnostics_json": ""
+  },
+  "summary": {
+    "registered_images": 3076,
+    "expected_images": 3076,
+    "registered_ratio": 1.0,
+    "points": 1318077
+  },
+  "gates": [
+    {
+      "gate": "registration_coverage",
+      "status": "pass",
+      "evidence": "3076/3076 registered (1.0000)"
+    },
+    {
+      "gate": "point_count",
+      "status": "pass",
+      "evidence": "1318077 points, minimum 1000000"
+    },
+    {
+      "gate": "reducer_blockers",
+      "status": "pass",
+      "evidence": "promotion_blockers=[]"
+    },
+    {
+      "gate": "single_component",
+      "status": "pass",
+      "evidence": "merged=1 expected=1"
+    },
+    {
+      "gate": "merge_retention",
+      "status": "pass",
+      "evidence": "pre_merge_retention_ratio=1.0"
+    },
+    {
+      "gate": "seam_overlap",
+      "status": "pass",
+      "evidence": "0 merge nodes are below the seam shared-camera floor"
+    },
+    {
+      "gate": "seam_graph_sim3",
+      "status": "pass",
+      "evidence": "seam_graph={\"accepted_edge_count\": 16, \"candidate_edge_count\": 136, \"failures\": [], \"rejected_edge_count\": 109, \"strategy\": \"seam_graph_sim3_v1\"}"
+    },
+    {
+      "gate": "seam_cycle_consistency",
+      "status": "pass",
+      "evidence": "cycle_status=pass"
+    },
+    {
+      "gate": "post_merge_jurisdiction_culling",
+      "status": "pass",
+      "evidence": "status=pass, removed_point_count=61369"
+    },
+    {
+      "gate": "reprojection_error_sample",
+      "status": "pass",
+      "evidence": "p95=1.7651, max=8.0"
+    },
+    {
+      "gate": "viewer_axis_sanity",
+      "status": "pass",
+      "evidence": "median camera up.y=None"
+    },
+    {
+      "gate": "sparse_cleanliness",
+      "status": "pass",
+      "evidence": "failures=[]"
+    },
+    {
+      "gate": "cross_leaf_surface_overlap",
+      "status": "pass",
+      "evidence": "flagged_overlap_cell_ratio=0.0, max=0.02, overlap_cells=3003"
+    },
+    {
+      "gate": "double_surface_geometry",
+      "status": "pass",
+      "evidence": "flagged_cell_ratio=0.0, max=0.02, flagged=0, cross_leaf_authoritative=True"
+    },
+    {
+      "gate": "heldout_render_metrics",
+      "status": "pass",
+      "evidence": "not applicable: SfM-only proof; downstream splat render gates are separate"
+    },
+    {
+      "gate": "ai_visual_review",
+      "status": "pass",
+      "evidence": "not applicable: SfM-only proof; downstream splat visual review gates are separate"
+    }
+  ],
+  "sparse_images": {
+    "source": "/tmp/md1_sg6_seamtree_reducer_20260526T2145Z/output_package/sparse/0/images.txt",
+    "registered_image_count": 3076,
+    "sample_names": [
+      "DJI_0001.JPG",
+      "DJI_0002.JPG",
+      "DJI_0003.JPG",
+      "DJI_0004.JPG",
+      "DJI_0005.JPG",
+      "DJI_0013.JPG",
+      "DJI_0014.JPG",
+      "DJI_0015.JPG"
+    ]
+  },
+  "sparse_points": {
+    "source": "/tmp/md1_sg6_seamtree_reducer_20260526T2145Z/output_package/sparse/0/points3D.txt",
+    "exact_point_count": 1318077,
+    "reprojection_error": {
+      "count": 1318077,
+      "min": 0.0059,
+      "p10": 0.4872,
+      "median": 1.028,
+      "p90": 1.6193,
+      "p95": 1.7651,
+      "p99": 1.9382,
+      "max": 2.0
+    },
+    "track_length": {
+      "count": 1318077,
+      "min": 3.0,
+      "p10": 3.0,
+      "median": 4.0,
+      "p90": 14.0,
+      "p95": 23.0,
+      "p99": 53.0,
+      "max": 230.0
+    },
+    "low_track_ratio": 0.0,
+    "high_error_ratio": 0.0,
+    "bounds": {
+      "x": {
+        "min": -17780.698,
+        "max": 18615.0756,
+        "span": 36395.7736
+      },
+      "y": {
+        "min": -26537.9813,
+        "max": 25866.6241,
+        "span": 52404.6053
+      },
+      "z": {
+        "min": -1523.1541,
+        "max": 788.388,
+        "span": 2311.5421
+      }
+    },
+    "double_surface": {
+      "occupied_cell_count": 232,
+      "flagged_cell_count": 0,
+      "flagged_cell_ratio": 0.0,
+      "max_mode_separation": 0.0,
+      "cell_size": 1091.7626,
+      "examples": []
+    }
+  },
+  "viewer": {},
+  "merge": {
+    "leaf_count": 17,
+    "passed_leaf_count": 17,
+    "failed_leaf_count": 0,
+    "merged_component_count": 1,
+    "expected_component_count": 1,
+    "promotion_blockers": [],
+    "pre_merge_retention_ratio": 1.0,
+    "final_merged_registered_images": 3076,
+    "merge_node_count": 16,
+    "shared_registered_images": {
+      "count": 16,
+      "min": 67.0,
+      "p10": 68.0,
+      "median": 120.0,
+      "p90": 155.0,
+      "p95": 162.0,
+      "p99": 162.0,
+      "max": 162.0
+    },
+    "cross_edge_count": {
+      "count": 0,
+      "min": null,
+      "p10": null,
+      "median": null,
+      "p90": null,
+      "p95": null,
+      "p99": null,
+      "max": null
+    },
+    "cross_leaf_surface_overlap": {
+      "node_count": 16,
+      "overlap_cell_count": 3003,
+      "flagged_overlap_cell_count": 0,
+      "flagged_overlap_cell_ratio": 0.0,
+      "overlap_cell_count_by_node": {
+        "count": 16,
+        "min": 34.0,
+        "p10": 94.0,
+        "median": 162.0,
+        "p90": 331.0,
+        "p95": 357.0,
+        "p99": 357.0,
+        "max": 357.0
+      },
+      "flagged_overlap_cell_count_by_node": {
+        "count": 16,
+        "min": 0.0,
+        "p10": 0.0,
+        "median": 0.0,
+        "p90": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "max": 0.0
+      },
+      "p95_abs_z_gap_m_by_node": {
+        "count": 16,
+        "min": 18.3683,
+        "p10": 25.3294,
+        "median": 33.1692,
+        "p90": 43.3981,
+        "p95": 47.2757,
+        "p99": 47.2757,
+        "max": 47.2757
+      },
+      "examples": []
+    },
+    "seam_graph": {
+      "present": true,
+      "merge_strategy": "seam_graph_sim3_v1",
+      "decision": "pass",
+      "promotion_blockers": [],
+      "accepted_edge_count": 16,
+      "candidate_edge_count": 136,
+      "rejected_edge_count": 109,
+      "accepted_tree_blockers": [],
+      "accepted_candidate_blockers": [],
+      "cycle_consistency": {
+        "status": "pass",
+        "non_tree_edge_count": 11,
+        "failures": [],
+        "checks": [
+          {
+            "leaf_a": 2,
+            "leaf_b": 3,
+            "measured_scale": 0.99922509,
+            "predicted_scale_from_tree": 0.99881348,
+            "scale_cycle_error": 0.00041161,
+            "decision": "pass"
+          },
+          {
+            "leaf_a": 2,
+            "leaf_b": 8,
+            "measured_scale": 0.9993015,
+            "predicted_scale_from_tree": 0.99877812,
+            "scale_cycle_error": 0.00052338,
+            "decision": "pass"
+          },
+          {
+            "leaf_a": 3,
+            "leaf_b": 6,
+            "measured_scale": 1.00068136,
+            "predicted_scale_from_tree": 1.00080436,
+            "scale_cycle_error": 0.000123,
+            "decision": "pass"
+          },
+          {
+            "leaf_a": 4,
+            "leaf_b": 10,
+            "measured_scale": 0.9986688,
+            "predicted_scale_from_tree": 0.99828897,
+            "scale_cycle_error": 0.00037983,
+            "decision": "pass"
+          },
+          {
+            "leaf_a": 6,
+            "leaf_b": 9,
+            "measured_scale": 0.99884102,
+            "predicted_scale_from_tree": 0.99879197,
+            "scale_cycle_error": 4.905e-05,
+            "decision": "pass"
+          },
+          {
+            "leaf_a": 6,
+            "leaf_b": 10,
+            "measured_scale": 0.99845194,
+            "predicted_scale_from_tree": 0.9983084,
+            "scale_cycle_error": 0.00014354,
+            "decision": "pass"
+          },
+          {
+            "leaf_a": 7,
+            "leaf_b": 12,
+            "measured_scale": 1.00056242,
+            "predicted_scale_from_tree": 0.99907401,
+            "scale_cycle_error": 0.00148841,
+            "decision": "pass"
+          },
+          {
+            "leaf_a": 9,
+            "leaf_b": 12,
+            "measured_scale": 1.00260155,
+            "predicted_scale_from_tree": 0.99912077,
+            "scale_cycle_error": 0.00348078,
+            "decision": "pass"
+          },
+          {
+            "leaf_a": 10,
+            "leaf_b": 16,
+            "measured_scale": 1.00135961,
+            "predicted_scale_from_tree": 1.00064164,
+            "scale_cycle_error": 0.00071797,
+            "decision": "pass"
+          },
+          {
+            "leaf_a": 11,
+            "leaf_b": 15,
+            "measured_scale": 0.99959764,
+            "predicted_scale_from_tree": 0.9996394,
+            "scale_cycle_error": 4.176e-05,
+            "decision": "pass"
+          },
+          {
+            "leaf_a": 12,
+            "leaf_b": 15,
+            "measured_scale": 0.99969185,
+            "predicted_scale_from_tree": 0.99971268,
+            "scale_cycle_error": 2.083e-05,
+            "decision": "pass"
+          }
+        ]
+      },
+      "post_merge_jurisdiction_culling": {
+        "status": "pass",
+        "removed_point_count": 61369,
+        "by_reason": {
+          "no_core_owned_track": 61284,
+          "global_double_surface_low_support_cell": 85
+        },
+        "records": [
+          {
+            "leaf_index": 3,
+            "old_point_id": 5419,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 10679,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 10768,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 10846,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 11058,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 11172,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 11191,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 11382,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 11386,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 11453,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 11586,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 11633,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 11889,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 11942,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 11961,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 12107,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 12266,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 12323,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 12542,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 12590,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 12635,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 12718,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 12726,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 12736,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 12742,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 12817,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 12835,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 12897,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13041,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13083,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13120,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13122,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13144,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13164,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13195,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13200,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13276,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13277,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13289,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13291,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13350,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13351,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13352,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13353,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13441,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13516,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13531,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13534,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13549,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13660,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13711,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13716,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13725,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13737,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13803,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13812,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13815,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13820,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13826,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13853,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13866,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13963,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13974,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13987,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 13991,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 14019,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 14208,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 14238,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 14253,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 14255,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 14321,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 14332,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 14337,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 14348,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 14365,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 14374,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 14502,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 14510,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 14523,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 14579,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 14585,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 14652,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 14720,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 14740,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 14760,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 14806,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 15021,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 15031,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 15105,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 15176,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 15317,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 15490,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 15518,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 15528,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 15538,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 15627,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 15641,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 15755,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 15901,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 15959,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16063,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16195,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16213,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16227,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16234,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16246,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16249,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16274,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16292,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16308,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16311,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16388,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16425,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16524,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16526,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16545,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16547,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16581,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16686,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16694,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16696,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16698,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16702,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16708,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16722,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16761,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16766,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 16827,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17043,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17065,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17069,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17087,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17105,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17114,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17117,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17129,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17262,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17269,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17278,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17291,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17298,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17305,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17306,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17326,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17338,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17397,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17406,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17494,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17495,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17499,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17502,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17507,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17512,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17519,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17523,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17541,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17543,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17554,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17563,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17564,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17570,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17592,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17598,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17620,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17632,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17637,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17642,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17643,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17647,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17670,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17672,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17673,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17676,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17677,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17679,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17683,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17692,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17717,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17722,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17727,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17728,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17731,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17739,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17741,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17748,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17749,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17750,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17751,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17763,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17767,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17792,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17823,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17829,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17831,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17836,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17837,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17838,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17842,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17843,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          },
+          {
+            "leaf_index": 3,
+            "old_point_id": 17846,
+            "reason": "no_core_owned_track",
+            "affected_seam": "leaf_08_to_leaf_03"
+          }
+        ],
+        "blockers": [],
+        "spatial_jurisdiction_rechecked": false,
+        "spatial_jurisdiction_note": "planner cell bounds are not guaranteed to share the root COLMAP coordinate frame; core-track ownership is enforced when a planner manifest is supplied"
+      }
+    },
+    "weak_merge_nodes": []
+  },
+  "heldout_render": {},
+  "ai_visual_review": {},
+  "panel_diagnostics": {},
+  "next_required_gates": [
+    "render held-out images from the splat and compute PSNR/SSIM/LPIPS",
+    "generate fixed proof panels and run AI visual defect review"
+  ]
+}

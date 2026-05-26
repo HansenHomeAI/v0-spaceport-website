@@ -1,0 +1,13 @@
+2026-05-26 15:25:24   10508138 manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/merged-pruned-culled-seamtree-r2/colmap/reducer_metadata.json
+2026-05-26 15:25:24    3615283 manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/merged-pruned-culled-seamtree-r2/colmap/seam_merge_report.json
+2026-05-26 15:25:24       1448 manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/merged-pruned-culled-seamtree-r2/colmap/sparse/0/cameras.txt
+2026-05-26 15:25:24     403708 manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/merged-pruned-culled-seamtree-r2/colmap/sparse/0/frames.txt
+2026-05-26 15:25:24 1271298851 manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/merged-pruned-culled-seamtree-r2/colmap/sparse/0/images.txt
+2026-05-26 15:25:24  204613195 manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/merged-pruned-culled-seamtree-r2/colmap/sparse/0/points3D.txt
+2026-05-26 15:26:09       1448 manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/merged-pruned-culled-seamtree-r2/colmap/sparse_raw/0/cameras.txt
+2026-05-26 15:26:10     403708 manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/merged-pruned-culled-seamtree-r2/colmap/sparse_raw/0/frames.txt
+2026-05-26 15:30:05 1271298851 manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/merged-pruned-culled-seamtree-r2/colmap/sparse_raw/0/images.txt
+2026-05-26 15:31:43  204613195 manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/merged-pruned-culled-seamtree-r2/colmap/sparse_raw/0/points3D.txt
+
+Total Objects: 10
+   Total Size: 2966757825
