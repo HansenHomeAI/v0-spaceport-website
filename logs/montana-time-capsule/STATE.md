@@ -14168,3 +14168,7 @@ Evidence snapshot: logs/montana-time-capsule/hmc-state.json (evidence_stamp=2026
 - Hosted viewer: base/sky/nosky HTTP 200; see logs/montana-time-capsule/curlI-viewer-sky-hmc-mtc-20260520T2015Z-20260526T114605Z.headers
 - GitHub Actions: exact-head runs count = 0; latest branch success still 2026-05-25T14:07:12Z CDK Deploy success
 - Machine-readable state refreshed: logs/montana-time-capsule/hmc-state.json (evidence_stamp=20260526T114605Z)
+
+## 20260526T114944Z POSTPUSH GH snapshot - branch `agent-40136728-montana-time-capsule` (head `f0bec3efc731`; exact-head still empty)
+
+- Evidence: logs/montana-time-capsule/git-head-postpush-20260526T114944Z.txt + logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260526T114944Z.json + logs/montana-time-capsule/gh-run-list-exact-head-f0bec3efc73112823e2e04c9d9e0afdedb08d680-postpush-20260526T114944Z.json + logs/montana-time-capsule/gh-push-trigger-gap-20260526T114944Z.txt
