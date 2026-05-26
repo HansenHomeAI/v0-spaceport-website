@@ -14178,3 +14178,6 @@ Evidence snapshot: logs/montana-time-capsule/hmc-state.json (evidence_stamp=2026
 - s3 bundle: prod meta.json HTTP 200; Origin CORS allows '*' (evidence: logs/montana-time-capsule/curlI-prod-meta-origin-20260526T120631Z.headers)
 - viewer: base + sky/nosky URLs HTTP 200 (evidence: logs/montana-time-capsule/curlI-viewer-sky-hmc-mtc-20260520T2015Z-20260526T120701Z.headers)
 - github actions: 0 exact-head runs for 66c466b7 (branch latest Pages/CDK successes remain 2026-05-25) (evidence: logs/montana-time-capsule/github-actions-summary-20260526T120908Z.txt)
+
+# Postpush check 20260526T121219Z (CI trigger gap)
+- pushed head=75cf74a97f9a272f8ce9934868f25ec7f137161e; after ~60s, exact-head Actions runs still 0 (evidence: logs/montana-time-capsule/gh-push-trigger-gap-20260526T121219Z.txt)

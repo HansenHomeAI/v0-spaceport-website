@@ -1,0 +1,6 @@
+now_utc=2026-05-26T12:12:19Z
+branch=agent-40136728-montana-time-capsule
+head=75cf74a97f9a272f8ce9934868f25ec7f137161e
+branch_runs_sampled=29 file=logs/montana-time-capsule/gh-api-actions-runs-branch-agent-40136728-montana-time-capsule-postpush-20260526T121159Z.json
+exact_head_runs=0
+branch_latest_run: name=CDK Deploy status=completed conclusion=success head_sha=354c69d621273c3190808cb7157f6200d67fa6d4 created_at=2026-05-25T14:07:12Z

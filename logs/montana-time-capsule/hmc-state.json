@@ -23,12 +23,12 @@
     "status": "logs/montana-time-capsule/git-status-20260526T120922Z.txt"
   },
   "postpush": {
-    "branch_runs": "logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260526T114944Z.json",
+    "branch_runs": "logs/montana-time-capsule/gh-api-actions-runs-branch-agent-40136728-montana-time-capsule-postpush-20260526T121159Z.json",
     "exact_head_runs": "logs/montana-time-capsule/gh-run-list-exact-head-f0bec3efc73112823e2e04c9d9e0afdedb08d680-postpush-20260526T114944Z.json",
-    "head": "f0bec3efc73112823e2e04c9d9e0afdedb08d680",
+    "head": "75cf74a97f9a272f8ce9934868f25ec7f137161e",
     "head_file": "logs/montana-time-capsule/git-head-postpush-20260526T114944Z.txt",
-    "stamp": "20260526T114944Z",
-    "trigger_gap_note": "logs/montana-time-capsule/gh-push-trigger-gap-20260526T114944Z.txt"
+    "stamp": "20260526T121219Z",
+    "trigger_gap_note": "logs/montana-time-capsule/gh-push-trigger-gap-20260526T121219Z.txt"
   },
   "run_id": "hmc-mtc-20260520T2015Z",
   "s3": {
@@ -58,7 +58,7 @@
     "gh_cli_present": false,
     "gh_verification_method": "github_rest_unauth"
   },
-  "updated_at": "2026-05-26T12:09:48Z",
+  "updated_at": "2026-05-26T12:12:27Z",
   "viewer": {
     "alias_file": "logs/montana-time-capsule/viewer-alias-20260526T120655Z.txt",
     "alias_url": "https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev",
