@@ -632,3 +632,4 @@
 [2026-05-25T23:26:43Z] heartbeat -> verified terminal (0 inprogress, bundle+viewer 200) -> next: await new acceptance gate
 [2026-05-25T23:46:14Z] heartbeat -> verified terminal (0/0 inprogress; S3/meta/viewer HTTP200; exact-head GH empty due to skip ci) (stamp=20260525T234614Z) -> next: commit+push ledger
 [2026-05-25T23:49:04Z] postpush gh snapshot -> head c8998eb4 -> saved logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T234904Z.json
+[2026-05-26T00:08:46Z] heartbeat -> ok (terminal + S3+viewer reachable) -> next: wait for new acceptance gate

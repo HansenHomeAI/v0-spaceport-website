@@ -13630,3 +13630,15 @@ Evidence snapshot: logs/montana-time-capsule/hmc-state.json (evidence_stamp=2026
 - postpush branch run list: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260525T231127Z.json
 - postpush exact-head run list: logs/montana-time-capsule/gh-run-list-exact-head-7da49a88-postpush-20260525T231127Z.json
 - postpush gh version: logs/montana-time-capsule/gh-version-postpush-20260525T231127Z.txt
+
+## 2026-05-26T00:07:49Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: no-spend verification (terminal SageMaker, S3 bundle, viewer reachability, GH exact-head snapshot)
+
+- Evidence stamp: 20260526T000749Z
+  - Git head/detail/status: logs/montana-time-capsule/git-branch-20260526T000749Z.txt + logs/montana-time-capsule/git-head-20260526T000749Z.txt + logs/montana-time-capsule/git-head-detail-20260526T000749Z.txt + logs/montana-time-capsule/git-status-20260526T000749Z.txt + logs/montana-time-capsule/git-log1-20260526T000749Z.txt
+  - AWS identity/region/version: logs/montana-time-capsule/aws-sts-get-caller-identity-20260526T000749Z.json + logs/montana-time-capsule/aws-config-region-20260526T000749Z.txt + logs/montana-time-capsule/aws-version-20260526T000749Z.txt
+  - SageMaker guardrail (InProgress counts should be 0/0): logs/montana-time-capsule/sm-list-processing-inprogress-20260526T000749Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260526T000749Z.json
+  - Canonical run describes (should be Completed): logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260526T000749Z.json + logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260526T000749Z.json + logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260526T000749Z.json
+  - S3 supersplat bundle present (staging + prod): logs/montana-time-capsule/s3ls-staging-supersplat-bundle-hmc-mtc-20260520T2015Z-20260526T000749Z.txt + logs/montana-time-capsule/s3ls-prod-supersplat-bundle-hmc-mtc-20260520T2015Z-20260526T000749Z.txt
+  - Public meta HTTP reachability (expect 200): logs/montana-time-capsule/curlI-prod-meta-hmc-mtc-20260520T2015Z-20260526T000749Z.headers
+  - Hosted viewer reachability (expect 200): logs/montana-time-capsule/curlI-viewer-base-20260526T000749Z.headers + logs/montana-time-capsule/curlI-viewer-sky-hmc-mtc-20260520T2015Z-20260526T000749Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-hmc-mtc-20260520T2015Z-20260526T000749Z.headers
+  - GitHub Actions snapshots: logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260526T000749Z.json + logs/montana-time-capsule/gh-run-list-exact-head-a6a78687-20260526T000749Z.json (note: head is `[skip ci]`, so exact-head may be empty)
