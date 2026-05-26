@@ -663,3 +663,4 @@
 [2026-05-26T05:49:30Z] heartbeat no-spend verify -> SM idle 0/0 + canonical Completed + S3 meta 200 + viewer base/sky/nosky 200 + viewer screenshots captured + GH snapshot (exact-head 0 due to [skip ci]) -> continue monitoring
 [2026-05-26T05:50:38Z] postpush-gh -> head 7c21cc5a550d718203768f6969a5d4f3019db11a -> exact-head runs=0 (skip-ci expected) -> idle
 [2026-05-26T06:08:45Z] heartbeat-no-spend -> verified terminal jobs + s3 meta + viewer 200 + gh snapshot -> commit
+[2026-05-26T06:28:15Z] heartbeat -> verified terminal + bundle + viewer 200s (stamp 20260526T062712) -> commit/push ledger
