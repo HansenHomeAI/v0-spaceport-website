@@ -1,5 +1,17 @@
 # Montana Time Capsule CV-HR State
 
+## 2026-05-26T03:26:45Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: no-spend verification
+
+- Evidence stamp: 20260526T032515Z
+  - Git head/status: logs/montana-time-capsule/git-branch-20260526T032515Z.txt + logs/montana-time-capsule/git-head-20260526T032515Z.txt + logs/montana-time-capsule/git-status-20260526T032515Z.txt + logs/montana-time-capsule/git-log1-20260526T032515Z.txt
+  - AWS identity/region/version (us-west-2; `python3 -m awscli`): logs/montana-time-capsule/awscli-sts-get-caller-identity-20260526T032515Z.json + logs/montana-time-capsule/awscli-config-region-20260526T032515Z.txt + logs/montana-time-capsule/awscli-version-20260526T032515Z.txt + logs/montana-time-capsule/aws-path-check-20260526T032515Z.txt
+  - InProgress guardrail: logs/montana-time-capsule/sm-list-processing-inprogress-20260526T032515Z.json + logs/montana-time-capsule/sm-list-training-inprogress-20260526T032515Z.json (counts: 0/0)
+  - Canonical HMC describes (all Completed): logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-sfm-20260526T032515Z.json + logs/montana-time-capsule/sm-describe-training-hmc-mtc-20260520T2015Z-3dgs-20260526T032515Z.json + logs/montana-time-capsule/sm-describe-processing-hmc-mtc-20260520T2015Z-compression-20260526T032515Z.json
+  - S3 outputs + prod meta reachability (HTTP 200): logs/montana-time-capsule/s3ls-staging-supersplat-bundle-hmc-mtc-20260520T2015Z-20260526T032515Z.txt + logs/montana-time-capsule/s3ls-prod-supersplat-bundle-hmc-mtc-20260520T2015Z-20260526T032515Z.txt + logs/montana-time-capsule/curlI-prod-meta-hmc-mtc-20260520T2015Z-20260526T032515Z.headers + logs/montana-time-capsule/curl-httpcode-prod-meta-hmc-mtc-20260520T2015Z-20260526T032515Z.txt
+  - Hosted viewer reachability (HTTP 200 for base + sky/no-sky): logs/montana-time-capsule/viewer-urls-20260526T032515Z.txt + logs/montana-time-capsule/curlI-viewer-base-20260526T032515Z.headers + logs/montana-time-capsule/curlI-viewer-sky-hmc-mtc-20260520T2015Z-20260526T032515Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-hmc-mtc-20260520T2015Z-20260526T032515Z.headers
+  - GitHub Actions snapshots (`/opt/homebrew/bin/gh`; exact-head empty on `[skip ci]`): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260526T032515Z.json + logs/montana-time-capsule/gh-run-list-exact-head-acc38864299fda59a6e430614d792c4013d6d666-20260526T032515Z.json + logs/montana-time-capsule/gh-version-20260526T032515Z.txt + logs/montana-time-capsule/gh-path-check-20260526T032515Z.txt
+  - Machine-readable state refreshed: logs/montana-time-capsule/hmc-state.json (evidence_stamp=20260526T032515Z)
+
 ## 2026-05-26T03:06:51Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: no-spend verification
 
 - Evidence stamp: 20260526T030651Z
@@ -13767,3 +13779,12 @@ Evidence snapshot: logs/montana-time-capsule/hmc-state.json (evidence_stamp=2026
 ### 20260526T004836Z post-push check
 - Pushed head: f73d7310
 - GH runs (branch + exact head): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-postpush-20260526T004836Z.json + logs/montana-time-capsule/gh-run-list-exact-head-f73d7310-postpush-20260526T004836Z.json
+
+## Heartbeat 2026-05-26T03:48:05Z (20260526T034559Z)
+- Git: branch agent-40136728-montana-time-capsule head acc38864299fda59a6e430614d792c4013d6d666 status dirty (ledger/log updates only)
+- AWS: sts identity logs/montana-time-capsule/aws-sts-get-caller-identity-20260526T034559Z.json (aws via /opt/homebrew/bin/aws)
+- SageMaker: InProgress 0/0; canonical hmc-mtc-20260520T2015Z-sfm/3dgs/compression all Completed (describes in logs/montana-time-capsule/*-20260526T034559Z.json)
+- S3: prod meta HTTP 200 (logs/montana-time-capsule/curlI-prod-meta-hmc-mtc-20260520T2015Z-20260526T034559Z.headers); prod+staging bundle listings captured
+- Viewer: alias + sky/no-sky HTTP 200 (logs/montana-time-capsule/curlI-viewer-*-hmc-mtc-20260520T2015Z-20260526T034559Z.headers)
+- GitHub Actions (branch): Pages + CDK latest success; exact-head runs 0 on [skip ci] head (snapshots in logs/montana-time-capsule/gh-run-list-*- 20260526T034559Z.json)
+- Machine-readable state updated: logs/montana-time-capsule/hmc-state.json
