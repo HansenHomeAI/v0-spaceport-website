@@ -17,6 +17,10 @@
 
 - Exact-head snapshot: logs/montana-time-capsule/_heartbeat_head_sha_20260526T080803Z.txt + logs/montana-time-capsule/gh-run-list-exact-head-723fe6733d738d230602ab49f86f1797283bde62-20260526T080803Z.json
 
+## 2026-05-26T08:08:48Z POSTPUSH GH snapshot - branch `agent-40136728-montana-time-capsule` (head `601213ca…`; `[skip ci]` exact-head expected empty)
+
+- Exact-head snapshot: logs/montana-time-capsule/_heartbeat_head_sha_20260526T080848Z.txt + logs/montana-time-capsule/gh-run-list-exact-head-601213ca69e7cb4794ba022e3639d34f46f18c75-20260526T080848Z.json
+
 ## 2026-05-26T07:27:11Z HEARTBEAT monitor - HMC canonical `hmc-mtc-20260520T2015Z`: no-spend verification refresh (unified evidence stamp)
 
 - Evidence stamp: 20260526T072530Z
