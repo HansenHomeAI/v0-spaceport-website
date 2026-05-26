@@ -1,10 +1,10 @@
 {
   "run_id": "md1-seamgraph-sixgpu-20260526T1620Z",
   "created_at": "2026-05-26T16:26:26Z",
-  "updated_at": "2026-05-26T21:45:00Z",
+  "updated_at": "2026-05-26T21:58:00Z",
   "scope": "SfM-only latest seam_graph_sim3_v1 MD1 six-GPU timing and quality proof",
   "branch": "agent-29861473-md1-sixgpu-sfm",
-  "head": "6d28788bd58541ad16ef1ed5400b81b08e60c17e",
+  "head": "20cd18ca36710bfa5c3123d9c82923592645a44a",
   "source_image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine",
   "input_uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
   "output_root": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z",
@@ -1719,5 +1719,12 @@
     "max_concurrency": 6,
     "instance_type": "ml.g4dn.xlarge"
   },
-  "final_decision": "promote_sfm_only_md1_sixgpu"
+  "final_decision": "promote_sfm_only_md1_sixgpu",
+  "exact_head_ci": {
+    "workflow": "CDK Deploy",
+    "run_id": 26477013861,
+    "head_sha": "20cd18ca36710bfa5c3123d9c82923592645a44a",
+    "conclusion": "success",
+    "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26477013861"
+  }
 }

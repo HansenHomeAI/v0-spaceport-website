@@ -60,7 +60,7 @@
     "md1-tile04-ds1000-r30-1778869172",
     "md1-tile04-h1i1lod-r41-1778982715"
   ],
-  "current_branch_head": "6d28788bd58541ad16ef1ed5400b81b08e60c17e",
+  "current_branch_head": "20cd18ca36710bfa5c3123d9c82923592645a44a",
   "current_goal": "Production-ready huge-scene tiled SfM: same-MD1 quality, meaningfully faster, restartable, distributed, promotion-safe, and backed by sparse, viewer, render, and AI visual proof.",
   "current_rung": "MD1_SG6_SFM_ONLY_PRODUCTION_PROOF_PASSED",
   "cvhr_globalprior_full_leaf03_failure": {
@@ -1074,7 +1074,7 @@
     "ssim": 0.7207,
     "successful_render_count": 431
   },
-  "last_step": "2026-05-26T21:45Z: MD1 six-GPU seam_graph_sim3_v1 SfM rerun passed after merge hardening. Final output has 3076/3076 registered images, 1,318,077 points, 16 accepted seam-tree edges, cycle_consistency=pass, promotion_blockers=[], cross-leaf flagged overlap ratio=0.0, global double-surface flagged ratio=0.0, sparse reprojection p95=1.7651/p99=1.9382, viewer API loaded 1,318,077 exact points with nonblank debugSeams screenshot. Scope remains SfM-only.",
+  "last_step": "2026-05-26T21:58Z: MD1 six-GPU SfM-only proof is complete and pushed. Exact-head CDK Deploy run 26477013861 succeeded for proof commit 20cd18ca36710bfa5c3123d9c82923592645a44a; reducer/quality/viewer proof remains promote_sfm_only_md1_sixgpu, with downstream 3DGS/SOGS still separate.",
   "latest_artifacts": {
     "ecr_3dgs_r27_poll": "logs/sfm-production-spine/ecr-3dgs-agent73948216-r27-poll-20260515T1203Z.json",
     "github_runs_exact_head_r27_poll": "logs/sfm-production-spine/github-runs-r27-poll-20260515T1203Z.json",
@@ -4513,7 +4513,7 @@
     "created_at": "2026-05-26T21:45:00Z",
     "scope": "SfM-only MD1 six-GPU seam_graph_sim3_v1 merge/quality/viewer proof; no 3DGS/SOGS claim.",
     "branch": "agent-29861473-md1-sixgpu-sfm",
-    "head": "6d28788bd58541ad16ef1ed5400b81b08e60c17e",
+    "head": "20cd18ca36710bfa5c3123d9c82923592645a44a",
     "aws_account": "975050048887",
     "run_root": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z",
     "final_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/merged-pruned-culled-seamtree-r2/colmap",
@@ -5805,10 +5805,10 @@
     },
     "exact_head_ci": {
       "workflow": "CDK Deploy",
-      "run_id": 26475801571,
-      "head_sha": "6d28788bd58541ad16ef1ed5400b81b08e60c17e",
+      "run_id": 26477013861,
+      "head_sha": "20cd18ca36710bfa5c3123d9c82923592645a44a",
       "conclusion": "success",
-      "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26475801571"
+      "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26477013861"
     },
     "remaining_caveats": [
       "SfM-only proof; downstream 3DGS/SOGS training, rendering, compression, and AI visual gates remain separate."

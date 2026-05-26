@@ -4,7 +4,7 @@
   "created_at": "2026-05-26T21:45:00Z",
   "scope": "SfM-only MD1 six-GPU seam_graph_sim3_v1 merge/quality/viewer proof; no 3DGS/SOGS claim.",
   "branch": "agent-29861473-md1-sixgpu-sfm",
-  "head": "6d28788bd58541ad16ef1ed5400b81b08e60c17e",
+  "head": "20cd18ca36710bfa5c3123d9c82923592645a44a",
   "aws_account": "975050048887",
   "run_root": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z",
   "final_output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/merged-pruned-culled-seamtree-r2/colmap",
@@ -1296,10 +1296,10 @@
   },
   "exact_head_ci": {
     "workflow": "CDK Deploy",
-    "run_id": 26475801571,
-    "head_sha": "6d28788bd58541ad16ef1ed5400b81b08e60c17e",
+    "run_id": 26477013861,
+    "head_sha": "20cd18ca36710bfa5c3123d9c82923592645a44a",
     "conclusion": "success",
-    "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26475801571"
+    "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26477013861"
   },
   "remaining_caveats": [
     "SfM-only proof; downstream 3DGS/SOGS training, rendering, compression, and AI visual gates remain separate."

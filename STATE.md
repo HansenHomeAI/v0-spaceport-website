@@ -4,7 +4,7 @@ next_unblocked_step: Hand off the SfM-only artifact and reducer changes to downs
 owner_action_needed: none.
 active_jobs: []
 branch: agent-29861473-md1-sixgpu-sfm
-head: 6d28788bd58541ad16ef1ed5400b81b08e60c17e
+head: 20cd18ca36710bfa5c3123d9c82923592645a44a
 aws_account: "975050048887"
 source_branch_artifact: agent-73948216-sfm-production-spine
 source_image_uri: 975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/sfm:agent73948216sfmproductionspine
@@ -25,6 +25,6 @@ quality_report: logs/sfm-production-spine/md1_sg6_seamtree_sfm_only_quality_2026
 viewer_api_report: logs/sfm-production-spine/md1_sg6_seamtree_pipeline_viewer_api_20260526T2145Z.json
 viewer_screenshot: logs/sfm-production-spine/md1_sg6_seamtree_pipeline_viewer_debugseams_20260526T2145Z.jpg
 final_proof_summary: logs/sfm-production-spine/md1_sg6_seamtree_final_proof_summary_20260526T2145Z.json
-exact_head_ci: CDK Deploy run 26475801571 success for 6d28788bd58541ad16ef1ed5400b81b08e60c17e
+exact_head_ci: CDK Deploy run 26477013861 success for 20cd18ca36710bfa5c3123d9c82923592645a44a
 current_rung: MD1_SG6_SFM_ONLY_PRODUCTION_PROOF_PASSED
 project_final_decision: promote_sfm_only_md1_sixgpu
