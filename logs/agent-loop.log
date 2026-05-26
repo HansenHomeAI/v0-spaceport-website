@@ -703,3 +703,4 @@
 [2026-05-26T13:29:42Z] heartbeat -> verified terminal sm + s3 meta + viewer 200 + gh green -> next: wait for new acceptance gate
 [2026-05-26T13:47:23Z] heartbeat -> verified aws/sm/s3/viewer/gh -> next: wait for new acceptance gates
 [2026-05-26T13:48:18Z] postpush -> captured gh run snapshots (skip ci) -> next: idle
+[2026-05-26T14:07:54Z] heartbeat-no-spend -> verified HMC terminal + viewer/meta 200 -> commit ledger
