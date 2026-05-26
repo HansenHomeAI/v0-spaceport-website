@@ -235,6 +235,21 @@ def identity_similarity() -> SimilarityTransform:
     )
 
 
+def compose_similarity(
+    outer: SimilarityTransform,
+    inner: SimilarityTransform,
+    *,
+    residuals: list[float] | None = None,
+) -> SimilarityTransform:
+    """Return the similarity transform produced by applying inner, then outer."""
+    return SimilarityTransform(
+        scale=outer.scale * inner.scale,
+        rotation=outer.rotation @ inner.rotation,
+        translation=outer.scale * (outer.rotation @ inner.translation) + outer.translation,
+        residuals=residuals or [],
+    )
+
+
 def transform_points(points: np.ndarray, transform: SimilarityTransform) -> np.ndarray:
     if points.size == 0:
         return points
@@ -582,6 +597,7 @@ def evaluate_seam_edge(
             leaf_a=leaf_a,
             leaf_b=leaf_b,
             image_roles_by_leaf=image_roles_by_leaf,
+            target_centers=target,
         )
         residual_role_stats = residual_role_report(
             residual_rows,
@@ -639,9 +655,19 @@ def evaluate_seam_edge(
         inlier_p95 = float(inlier_p95_raw) if inlier_p95_raw is not None else p95
         inlier_baseline_normalized = inlier_p95 / baseline
         inlier_support["inlier_baseline_normalized_residual"] = round(inlier_baseline_normalized, 8)
+        inlier_distribution = inlier_support.get("inlier_camera_distribution")
+        inlier_rank = int((inlier_distribution if isinstance(inlier_distribution, dict) else {}).get("rank") or 0)
+        inlier_baseline = float(
+            (inlier_distribution if isinstance(inlier_distribution, dict) else {}).get("baseline_m") or 0.0
+        )
+        spatially_supported_inliers = (
+            inlier_count >= thresholds.min_shared_images
+            and inlier_rank >= 2
+            and inlier_baseline >= max(50.0, baseline * 0.05)
+        )
         robust_camera_evidence_passes = (
             inlier_count >= thresholds.min_shared_images
-            and inlier_ratio >= 0.5
+            and (inlier_ratio >= 0.5 or spatially_supported_inliers)
             and (image_roles_by_leaf is None or trusted_inlier_count >= max(3, thresholds.min_shared_images // 3))
             and inlier_baseline_normalized <= thresholds.max_baseline_normalized_residual
         )
@@ -653,6 +679,8 @@ def evaluate_seam_edge(
             warnings.append("overlap_only_camera_residual_tail_quarantined")
         if (p95_blocked or baseline_blocked) and robust_camera_evidence_passes and not trusted_camera_evidence_passes:
             warnings.append("shared_camera_residual_tail_quarantined_by_inlier_support")
+            if inlier_ratio < 0.5:
+                warnings.append("low_ratio_tail_quarantined_by_spatial_inlier_support")
         if surface_a is not None and surface_b is not None:
             transformed_b = transform_coords(surface_b, transform)
             report["pre_overlap_surface_stats"] = cross_leaf_duplicate_surface_stats(surface_a, surface_b)
@@ -670,14 +698,22 @@ def evaluate_seam_edge(
             leaf_a_centers = np.array([camera_center(leaf_a_by_name[name][0]) for name in prior_names], dtype=float)
             leaf_b_centers = np.array([camera_center(leaf_b_by_name[name][0]) for name in prior_names], dtype=float)
             leaf_b_transformed = transform_points(leaf_b_centers, transform)
-            leaf_a_residuals = sorted(float(np.linalg.norm(left - right)) for left, right in zip(leaf_a_centers, prior))
-            leaf_b_residuals = sorted(float(np.linalg.norm(left - right)) for left, right in zip(leaf_b_transformed, prior))
+            try:
+                leaf_a_to_prior = estimate_robust_similarity(leaf_a_centers, prior)
+                leaf_a_prior_frame = transform_points(leaf_a_centers, leaf_a_to_prior)
+                leaf_b_prior_frame = transform_points(leaf_b_transformed, leaf_a_to_prior)
+            except Exception:
+                leaf_a_prior_frame = leaf_a_centers
+                leaf_b_prior_frame = leaf_b_transformed
+            leaf_a_residuals = sorted(float(np.linalg.norm(left - right)) for left, right in zip(leaf_a_prior_frame, prior))
+            leaf_b_residuals = sorted(float(np.linalg.norm(left - right)) for left, right in zip(leaf_b_prior_frame, prior))
             gps_p95 = max(
                 float(residual_summary(leaf_a_residuals)["p95"] or 0.0),
                 float(residual_summary(leaf_b_residuals)["p95"] or 0.0),
             )
             report["gps_exif_residual"] = {
                 "status": "evaluated",
+                "frame": "leaf_a_aligned_to_planner_priors",
                 "shared_reference_count": len(prior_names),
                 "leaf_a_camera_to_prior_m": residual_summary(leaf_a_residuals),
                 "leaf_b_transformed_camera_to_prior_m": residual_summary(leaf_b_residuals),
@@ -1038,23 +1074,25 @@ def residual_rows_for_shared_cameras(
     leaf_a: int,
     leaf_b: int,
     image_roles_by_leaf: dict[int, dict[str, str]] | None,
+    target_centers: np.ndarray | None = None,
 ) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
     roles_a = (image_roles_by_leaf or {}).get(leaf_a, {})
     roles_b = (image_roles_by_leaf or {}).get(leaf_b, {})
-    for name, residual in zip(shared_names, residuals):
+    for index, (name, residual) in enumerate(zip(shared_names, residuals)):
         role_a = roles_a.get(name, "unknown")
         role_b = roles_b.get(name, "unknown")
-        rows.append(
-            {
-                "image_name": name,
-                "residual_m": round(float(residual), 6),
-                "leaf_a_role": role_a,
-                "leaf_b_role": role_b,
-                "role_pair": f"{role_a}|{role_b}",
-                "trusted_core_involved": "core" in {role_a, role_b},
-            }
-        )
+        row = {
+            "image_name": name,
+            "residual_m": round(float(residual), 6),
+            "leaf_a_role": role_a,
+            "leaf_b_role": role_b,
+            "role_pair": f"{role_a}|{role_b}",
+            "trusted_core_involved": "core" in {role_a, role_b},
+        }
+        if target_centers is not None and index < len(target_centers):
+            row["target_center_m"] = [float(value) for value in target_centers[index].tolist()]
+        rows.append(row)
     return rows
 
 
@@ -1104,6 +1142,21 @@ def seam_inlier_support_report(
     trusted_inliers = [row for row in inlier_rows if bool(row.get("trusted_core_involved"))]
     total_count = len(rows)
     inlier_residuals = sorted(float(row["residual_m"]) for row in inlier_rows)
+    inlier_centers = [
+        row["target_center_m"]
+        for row in inlier_rows
+        if isinstance(row.get("target_center_m"), list) and len(row.get("target_center_m") or []) == 3
+    ]
+    inlier_distribution = (
+        camera_distribution_stats(np.array(inlier_centers, dtype=float))
+        if len(inlier_centers) >= 2
+        else {
+            "rank": 0,
+            "baseline_m": 0.0,
+            "singular_values": [],
+            "normalized_singular_values": [],
+        }
+    )
     return {
         "threshold_m": round(float(threshold_m), 6),
         "inlier_count": len(inlier_rows),
@@ -1112,6 +1165,7 @@ def seam_inlier_support_report(
         "trusted_core_involved_inlier_count": len(trusted_inliers),
         "trusted_core_involved_inlier_ratio": round(len(trusted_inliers) / total_count, 6) if total_count else 0.0,
         "inlier_residual_m": residual_summary(inlier_residuals),
+        "inlier_camera_distribution": inlier_distribution,
         "sample_outlier_images": [
             {
                 "image_name": row["image_name"],
@@ -1495,18 +1549,31 @@ def write_pose_aligned_merge(
             )
 
     for parent_index, leaf_index in merge_sequence[1:]:
+        if parent_index is None or parent_index not in root_transforms:
+            raise RuntimeError(f"accepted seam tree reached leaf {leaf_index} before its parent transform was known")
+        parent_dir = normalized_dirs[parent_index]
+        parent_pairs = image_record_pairs(parent_dir / "images.txt")
+        parent_by_name = {parts[9]: (parts, points_line) for parts, points_line in parent_pairs}
         leaf_dir = normalized_dirs[leaf_index]
         leaf_pairs = image_record_pairs(leaf_dir / "images.txt")
         leaf_by_name = {parts[9]: (parts, points_line) for parts, points_line in leaf_pairs}
-        shared_names = sorted(set(anchor_by_name).intersection(leaf_by_name))
+        shared_names = sorted(set(parent_by_name).intersection(leaf_by_name))
         if len(shared_names) < min_shared_images:
             raise RuntimeError(
-                f"accepted seam tree reached leaf {leaf_index} but current merged anchor only has "
+                f"accepted seam tree reached leaf {leaf_index} but parent leaf {parent_index} only has "
                 f"{len(shared_names)} shared registered images, minimum is {min_shared_images}"
             )
         source = np.array([camera_center(leaf_by_name[name][0]) for name in shared_names], dtype=float)
-        target = np.array([camera_center(anchor_by_name[name][0]) for name in shared_names], dtype=float)
-        transform = estimate_robust_similarity(source, target)
+        target_parent = np.array([camera_center(parent_by_name[name][0]) for name in shared_names], dtype=float)
+        seam_transform = estimate_robust_similarity(source, target_parent)
+        parent_transform = root_transforms[parent_index]
+        parent_root_centers = transform_points(target_parent, parent_transform)
+        leaf_root_centers = transform_points(source, compose_similarity(parent_transform, seam_transform))
+        root_residuals = [
+            float(np.linalg.norm(left - right))
+            for left, right in zip(leaf_root_centers, parent_root_centers)
+        ]
+        transform = compose_similarity(parent_transform, seam_transform, residuals=root_residuals)
         root_transforms[leaf_index] = transform
         residuals = sorted(transform.residuals)
         point_map: dict[int, int] = {}

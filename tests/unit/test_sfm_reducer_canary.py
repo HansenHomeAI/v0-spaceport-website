@@ -128,6 +128,45 @@ class SfmReducerCanaryTest(unittest.TestCase):
         self.assertEqual(gps["shared_reference_count"], 22)
         self.assertEqual(gps["max_p95_m"], 0.0)
 
+    def test_gps_exif_residual_is_invariant_to_leaf_frame_offset(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            names = [f"IMG_{index:04d}.JPG" for index in range(22)]
+            prior_positions = self.grid_positions(names)
+            shifted_positions = {
+                name: (xyz[0] + 500.0, xyz[1] - 75.0, xyz[2] + 20.0)
+                for name, xyz in prior_positions.items()
+            }
+            self.write_model(root / "leaf0", names, [(names[0], names[1])], camera_positions=shifted_positions)
+            self.write_model(root / "leaf1", names, [(names[2], names[3])], camera_positions=shifted_positions)
+
+            report = reducer_canary.build_seam_merge_graph(
+                normalized_dirs=[root / "leaf0", root / "leaf1"],
+                thresholds=reducer_canary.SeamThresholds(
+                    min_shared_images=20,
+                    max_scale_delta=0.15,
+                    max_sim3_p95_residual_m=0.25,
+                    max_baseline_normalized_residual=0.01,
+                    strict_production_gates=True,
+                ),
+                planner_manifest={
+                    "image_pose_priors_local": {
+                        name: {
+                            "local_x_m": xyz[0],
+                            "local_y_m": xyz[1],
+                            "local_z_m": xyz[2],
+                        }
+                        for name, xyz in prior_positions.items()
+                    }
+                },
+            )
+
+        edge = report["candidate_edges"][0]
+        gps = edge["gps_exif_residual"]
+        self.assertEqual(report["decision"], "pass")
+        self.assertEqual(gps["frame"], "leaf_a_aligned_to_planner_priors")
+        self.assertEqual(gps["max_p95_m"], 0.0)
+
     def test_overlap_only_camera_outlier_tail_is_reported_and_quarantined(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -225,6 +264,7 @@ class SfmReducerCanaryTest(unittest.TestCase):
         self.assertGreaterEqual(inlier_support["inlier_count"], 20)
         self.assertGreaterEqual(inlier_support["trusted_core_involved_inlier_count"], 20)
         self.assertGreaterEqual(inlier_support["inlier_ratio"], 0.5)
+        self.assertGreaterEqual(inlier_support["inlier_camera_distribution"]["rank"], 2)
         self.assertEqual(len(inlier_support["sample_outlier_images"]), 8)
 
     def test_scattered_shared_camera_tail_fails_without_enough_inlier_support(self):
