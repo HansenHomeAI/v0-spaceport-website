@@ -20,9 +20,13 @@
     "status": "ACTIVE"
   },
   "automation_recommendation": "delete after final code/evidence commit and push; downstream 3DGS/SOGS should use a separate monitor if needed",
-  "block_reasons": [],
-  "blockers": [],
-  "branch": "agent-73948216-sfm-production-spine",
+  "block_reasons": [
+    "MD1 six-GPU strict seam_graph_sim3_v1 reducer failed: no >=20-shared-image seam passed max_sim3_p95_residual_m=0.25; all 17 leaves completed and verified but merged output is not promotable."
+  ],
+  "blockers": [
+    "md1_sg6_strict_reducer_disconnected"
+  ],
+  "branch": "agent-29861473-md1-sixgpu-sfm",
   "canonical_md1_sfm_artifact": {
     "filtered_points": 1222473,
     "input_uri": "s3://spaceport-uploads/1775750905123-vg76vr-md1-dji-images.zip",
@@ -121,9 +125,9 @@
       "old_digest": "sha256:aee4976941af8ad3e031f3a79e498a7352e76913905bc962ef27ef131b5a76c9"
     }
   },
-  "current_branch_head": "96f7f2dc9468bccdb569691ab3f5b653beacbadd",
+  "current_branch_head": "0ba362466cfddba03a4f57e82b145be73f8213fd",
   "current_goal": "Production-ready huge-scene tiled SfM: same-MD1 quality, meaningfully faster, restartable, distributed, promotion-safe, and backed by sparse, viewer, render, and AI visual proof.",
-  "current_rung": "SFM_SEAM_GRAPH_SIM3_V1_PRODUCTION_READY_SFM_ONLY",
+  "current_rung": "MD1_SG6_STRICT_REDUCER_BLOCKED",
   "cvhr_globalprior_full_leaf03_failure": {
     "boundary_recovery_triggered": false,
     "cloudwatch_tail": "logs/sfm-production-spine/cvhr-globalprior-full-l03-1779555542_cloudwatch_tail_20260523T1846Z.json",
@@ -434,271 +438,242 @@
   ],
   "final_next_step": "Commit/push GPS-aligned leaf export and reducer GPS/EXIF residual patch, wait for exact-head container/CDK/Pages success, rerun planner-only CV-HR weak-core repair to get image_pose_priors_local, then relaunch only leaves 02/06/08 before any full CV-HR fanout.",
   "final_project_proof": {
-    "schema_version": 1,
     "artifact_kind": "sfm_only_seam_graph_sim3_v1_production_proof_summary",
-    "updated_at": "2026-05-24T03:25:15Z",
-    "decision": "production_ready_sfm_only",
-    "scope": "SfM only; downstream 3DGS/SOGS render quality remains a separate stage",
-    "branch": "agent-73948216-sfm-production-spine",
-    "head": "e7aee0f28601208b87d6b4fb7ed08858c340d268",
-    "md1": {
-      "decision": "pass",
-      "strict_replay_report": "logs/sfm-production-spine/md1_seam_graph_sim3_v1_report_replay_20260521T215008Z.json",
-      "leaf_count": 19,
-      "accepted_tree_edges": 18,
-      "promotion_blockers": [],
-      "note": "Previously verified strict MD1 real-leaf sparse replay remains the MD1 seam_graph_sim3_v1 evidence; no new paid MD1 job was launched."
+    "artifacts": {
+      "active_processing_jobs": "logs/sfm-production-spine/active-cvhr-processing-jobs-globalprior-final-20260524T0310Z.json",
+      "active_training_jobs": "logs/sfm-production-spine/active-cvhr-training-jobs-globalprior-final-20260524T0310Z.json",
+      "quality_report": "logs/sfm-production-spine/cvhr_globalprior_full_r3_sfm_only_quality_20260524T0308Z.json",
+      "reducer_report": "logs/sfm-production-spine/cvhr_globalprior_full_r3_seam_graph_reducer_slim_20260524T0259Z.json",
+      "s3_listing": "logs/sfm-production-spine/cvhr_globalprior_full_r3_s3_reducer_output_20260524T0259Z.txt",
+      "seam_merge_report": "logs/sfm-production-spine/cvhr_globalprior_full_r3_seam_merge_report_slim_20260524T0259Z.json",
+      "viewer_api_json": "logs/sfm-production-spine/cvhr_globalprior_full_r3_viewer_api_slim_20260524T0308Z.json",
+      "viewer_screenshot_png": "logs/sfm-production-spine/cvhr_globalprior_full_r3_pipeline_viewer_debugseams_20260524T0310Z.png"
     },
+    "branch": "agent-73948216-sfm-production-spine",
     "cvhr": {
-      "decision": "pass",
-      "dataset": "CV-HR",
-      "input_uri": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
-      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z/merged-pruned-culled/colmap",
-      "leaf_count": 9,
-      "registered_images": 1702,
-      "expected_images": 1710,
-      "registered_ratio": 0.9953,
-      "points": 624046,
-      "merged_registered_images": 1702,
-      "merged_points3d": 624046,
       "accepted_merge_tree_edges": 8,
-      "rejected_edges": 24,
+      "active_processing_jobs": [],
+      "active_training_jobs": [],
       "cycle_consistency": {
-        "status": "pass",
-        "non_tree_edge_count": 4,
-        "failures": [],
         "checks": [
           {
+            "decision": "pass",
             "leaf_a": 0,
             "leaf_b": 3,
             "measured_scale": 0.99865246,
             "predicted_scale_from_tree": 0.99595702,
-            "scale_cycle_error": 0.00269544,
-            "decision": "pass"
+            "scale_cycle_error": 0.00269544
           },
           {
+            "decision": "pass",
             "leaf_a": 0,
             "leaf_b": 5,
             "measured_scale": 0.99951622,
             "predicted_scale_from_tree": 0.99867783,
-            "scale_cycle_error": 0.00083839,
-            "decision": "pass"
+            "scale_cycle_error": 0.00083839
           },
           {
+            "decision": "pass",
             "leaf_a": 3,
             "leaf_b": 5,
             "measured_scale": 0.99976026,
             "predicted_scale_from_tree": 1.00273185,
-            "scale_cycle_error": 0.00297159,
-            "decision": "pass"
+            "scale_cycle_error": 0.00297159
           },
           {
+            "decision": "pass",
             "leaf_a": 6,
             "leaf_b": 8,
             "measured_scale": 1.0084232,
             "predicted_scale_from_tree": 1.01020684,
-            "scale_cycle_error": 0.00178364,
-            "decision": "pass"
+            "scale_cycle_error": 0.00178364
           }
-        ]
+        ],
+        "failures": [],
+        "non_tree_edge_count": 4,
+        "status": "pass"
       },
-      "post_merge_jurisdiction_culling": {
-        "status": "pass",
-        "removed_point_count": 77114,
-        "by_reason": {
-          "no_core_owned_track": 77060,
-          "global_double_surface_low_support_cell": 54
-        }
-      },
+      "dataset": "CV-HR",
+      "decision": "pass",
+      "expected_images": 1710,
+      "input_uri": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+      "leaf_count": 9,
+      "merged_points3d": 624046,
+      "merged_registered_images": 1702,
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z/merged-pruned-culled/colmap",
+      "points": 624046,
       "post_merge_global_double_surface_culling": {
-        "status": "pass_culled_low_support_cells",
-        "removed_point_count": 54,
-        "removed_cell_count": 5,
-        "flagged_but_retained_cell_count": 0,
         "cell_size_m": 443.2793,
+        "flagged_but_retained_cell_count": 0,
+        "flagged_but_retained_cells": [],
         "max_points_per_cell": 32,
+        "removed_cell_count": 5,
         "removed_cells": [
           {
             "cell": [
               27,
               18
             ],
-            "point_count": 9,
             "mode_separation": 58.2668,
-            "z_min": 184.316,
-            "z_max": 350.5684
+            "point_count": 9,
+            "z_max": 350.5684,
+            "z_min": 184.316
           },
           {
             "cell": [
               25,
               18
             ],
-            "point_count": 8,
             "mode_separation": 15.3404,
-            "z_min": -27.3161,
-            "z_max": 9.8192
+            "point_count": 8,
+            "z_max": 9.8192,
+            "z_min": -27.3161
           },
           {
             "cell": [
               21,
               22
             ],
-            "point_count": 12,
             "mode_separation": 12.7027,
-            "z_min": -46.9325,
-            "z_max": -16.6509
+            "point_count": 12,
+            "z_max": -16.6509,
+            "z_min": -46.9325
           },
           {
             "cell": [
               11,
               18
             ],
-            "point_count": 17,
             "mode_separation": 8.1361,
-            "z_min": -83.1897,
-            "z_max": -60.5256
+            "point_count": 17,
+            "z_max": -60.5256,
+            "z_min": -83.1897
           },
           {
             "cell": [
               21,
               20
             ],
-            "point_count": 8,
             "mode_separation": 3.9834,
-            "z_min": -56.3135,
-            "z_max": -46.9551
+            "point_count": 8,
+            "z_max": -46.9551,
+            "z_min": -56.3135
           }
         ],
-        "flagged_but_retained_cells": []
+        "removed_point_count": 54,
+        "status": "pass_culled_low_support_cells"
+      },
+      "post_merge_jurisdiction_culling": {
+        "by_reason": {
+          "global_double_surface_low_support_cell": 54,
+          "no_core_owned_track": 77060
+        },
+        "removed_point_count": 77114,
+        "status": "pass"
       },
       "quality_decision": "promote",
       "quality_gates": {
-        "registration_coverage": {
-          "status": "pass",
-          "evidence": "1702/1710 registered (0.9953)"
-        },
-        "point_count": {
-          "status": "pass",
-          "evidence": "624046 points, minimum 500000"
-        },
-        "reducer_blockers": {
-          "status": "pass",
-          "evidence": "promotion_blockers=[]"
-        },
-        "single_component": {
-          "status": "pass",
-          "evidence": "merged=1 expected=1"
-        },
-        "merge_retention": {
-          "status": "pass",
-          "evidence": "pre_merge_retention_ratio=1.0"
-        },
-        "seam_overlap": {
-          "status": "pass",
-          "evidence": "0 merge nodes are below the seam shared-camera floor"
-        },
-        "seam_graph_sim3": {
-          "status": "pass",
-          "evidence": "seam_graph={\"accepted_edge_count\": 8, \"candidate_edge_count\": 36, \"failures\": [], \"rejected_edge_count\": 24, \"strategy\": \"seam_graph_sim3_v1\"}"
-        },
-        "seam_cycle_consistency": {
-          "status": "pass",
-          "evidence": "cycle_status=pass"
-        },
-        "post_merge_jurisdiction_culling": {
-          "status": "pass",
-          "evidence": "status=pass, removed_point_count=77114"
-        },
-        "reprojection_error_sample": {
-          "status": "pass",
-          "evidence": "p95=1.7977, max=8.0"
-        },
-        "viewer_axis_sanity": {
-          "status": "pass",
-          "evidence": "median camera up.y=None"
-        },
-        "sparse_cleanliness": {
-          "status": "pass",
-          "evidence": "failures=[]"
+        "ai_visual_review": {
+          "evidence": "not applicable: SfM-only proof; downstream splat visual review gates are separate",
+          "status": "pass"
         },
         "cross_leaf_surface_overlap": {
-          "status": "pass",
-          "evidence": "flagged_overlap_cell_ratio=0.0, max=0.02, overlap_cells=286"
+          "evidence": "flagged_overlap_cell_ratio=0.0, max=0.02, overlap_cells=286",
+          "status": "pass"
         },
         "double_surface_geometry": {
-          "status": "pass",
-          "evidence": "flagged_cell_ratio=0.0, max=0.02, flagged=0, cross_leaf_authoritative=True"
+          "evidence": "flagged_cell_ratio=0.0, max=0.02, flagged=0, cross_leaf_authoritative=True",
+          "status": "pass"
         },
         "heldout_render_metrics": {
-          "status": "pass",
-          "evidence": "not applicable: SfM-only proof; downstream splat render gates are separate"
+          "evidence": "not applicable: SfM-only proof; downstream splat render gates are separate",
+          "status": "pass"
         },
-        "ai_visual_review": {
-          "status": "pass",
-          "evidence": "not applicable: SfM-only proof; downstream splat visual review gates are separate"
+        "merge_retention": {
+          "evidence": "pre_merge_retention_ratio=1.0",
+          "status": "pass"
+        },
+        "point_count": {
+          "evidence": "624046 points, minimum 500000",
+          "status": "pass"
+        },
+        "post_merge_jurisdiction_culling": {
+          "evidence": "status=pass, removed_point_count=77114",
+          "status": "pass"
+        },
+        "reducer_blockers": {
+          "evidence": "promotion_blockers=[]",
+          "status": "pass"
+        },
+        "registration_coverage": {
+          "evidence": "1702/1710 registered (0.9953)",
+          "status": "pass"
+        },
+        "reprojection_error_sample": {
+          "evidence": "p95=1.7977, max=8.0",
+          "status": "pass"
+        },
+        "seam_cycle_consistency": {
+          "evidence": "cycle_status=pass",
+          "status": "pass"
+        },
+        "seam_graph_sim3": {
+          "evidence": "seam_graph={\"accepted_edge_count\": 8, \"candidate_edge_count\": 36, \"failures\": [], \"rejected_edge_count\": 24, \"strategy\": \"seam_graph_sim3_v1\"}",
+          "status": "pass"
+        },
+        "seam_overlap": {
+          "evidence": "0 merge nodes are below the seam shared-camera floor",
+          "status": "pass"
+        },
+        "single_component": {
+          "evidence": "merged=1 expected=1",
+          "status": "pass"
+        },
+        "sparse_cleanliness": {
+          "evidence": "failures=[]",
+          "status": "pass"
+        },
+        "viewer_axis_sanity": {
+          "evidence": "median camera up.y=None",
+          "status": "pass"
         }
       },
+      "registered_images": 1702,
+      "registered_ratio": 0.9953,
+      "rejected_edges": 24,
       "viewer_debug": {
-        "status": "pass",
-        "url": "http://127.0.0.1:3000/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fcvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z%2Fmerged-pruned-culled%2Fcolmap&maxPoints=160000&debugSeams=1",
-        "api_json": "logs/sfm-production-spine/cvhr_globalprior_full_r3_viewer_api_slim_20260524T0308Z.json",
-        "screenshot_png": "logs/sfm-production-spine/cvhr_globalprior_full_r3_pipeline_viewer_debugseams_20260524T0310Z.png",
-        "screenshot_stats": {
-          "width": 1066,
-          "height": 600,
-          "mean": 0.0345176,
-          "stddev": 0.0506397,
-          "min": 0.0,
-          "max": 0.745098
-        },
-        "dom_text": "SFM",
-        "canvas_count": 1,
         "api": {
           "exactPointCount": 624046,
           "registeredImageCount": 1702,
           "sampledPointCount": 160000,
-          "sourceSizeBytes": 95682109,
           "seamDebug": {
-            "strategy": "seam_graph_sim3_v1",
-            "decision": "pass",
             "acceptedEdgeCount": 8,
-            "rejectedEdgeCount": 24,
-            "promotionBlockers": [],
+            "culledPointCount": 77114,
             "cycleStatus": "pass",
-            "culledPointCount": 77114
-          }
-        }
-      },
-      "active_processing_jobs": [],
-      "active_training_jobs": []
+            "decision": "pass",
+            "promotionBlockers": [],
+            "rejectedEdgeCount": 24,
+            "strategy": "seam_graph_sim3_v1"
+          },
+          "sourceSizeBytes": 95682109
+        },
+        "api_json": "logs/sfm-production-spine/cvhr_globalprior_full_r3_viewer_api_slim_20260524T0308Z.json",
+        "canvas_count": 1,
+        "dom_text": "SFM",
+        "screenshot_png": "logs/sfm-production-spine/cvhr_globalprior_full_r3_pipeline_viewer_debugseams_20260524T0310Z.png",
+        "screenshot_stats": {
+          "height": 600,
+          "max": 0.745098,
+          "mean": 0.0345176,
+          "min": 0.0,
+          "stddev": 0.0506397,
+          "width": 1066
+        },
+        "status": "pass",
+        "url": "http://127.0.0.1:3000/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fcvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z%2Fmerged-pruned-culled%2Fcolmap&maxPoints=160000&debugSeams=1"
+      }
     },
-    "implementation": {
-      "strategy": "seam_graph_sim3_v1",
-      "patches": [
-        "strict-mode low-support global double-surface post-merge culling with audit",
-        "explicit SfM-only quality mode so downstream splat render gates do not block SfM acceptance"
-      ],
-      "tests": [
-        "python3 -m py_compile scripts/sfm/run_sfm_reducer_canary.py scripts/sfm/run_sfm_fanout_reducer.py scripts/sfm/evaluate_sfm_quality.py",
-        "python3 -m unittest tests.unit.test_sfm_reducer_canary tests.unit.test_sfm_quality_eval",
-        "local strict CV-HR 9-leaf reducer replay from existing S3 leaf artifacts",
-        "SfM-only sparse quality evaluation",
-        "pipeline-viewer debugSeams browser/API proof with nonblank screenshot stats"
-      ]
-    },
-    "artifacts": {
-      "reducer_report": "logs/sfm-production-spine/cvhr_globalprior_full_r3_seam_graph_reducer_slim_20260524T0259Z.json",
-      "seam_merge_report": "logs/sfm-production-spine/cvhr_globalprior_full_r3_seam_merge_report_slim_20260524T0259Z.json",
-      "quality_report": "logs/sfm-production-spine/cvhr_globalprior_full_r3_sfm_only_quality_20260524T0308Z.json",
-      "viewer_api_json": "logs/sfm-production-spine/cvhr_globalprior_full_r3_viewer_api_slim_20260524T0308Z.json",
-      "viewer_screenshot_png": "logs/sfm-production-spine/cvhr_globalprior_full_r3_pipeline_viewer_debugseams_20260524T0310Z.png",
-      "active_processing_jobs": "logs/sfm-production-spine/active-cvhr-processing-jobs-globalprior-final-20260524T0310Z.json",
-      "active_training_jobs": "logs/sfm-production-spine/active-cvhr-training-jobs-globalprior-final-20260524T0310Z.json",
-      "s3_listing": "logs/sfm-production-spine/cvhr_globalprior_full_r3_s3_reducer_output_20260524T0259Z.txt"
-    },
-    "remaining_caveats": [
-      "This is SfM-only production proof. It does not claim downstream 3DGS/SOGS render quality."
-    ],
+    "decision": "production_ready_sfm_only",
     "exact_head_workflows": {
       "cdk_deploy": {
         "conclusion": "success",
@@ -710,7 +685,36 @@
         "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26350519862",
         "workflowName": "CDK Deploy"
       }
-    }
+    },
+    "head": "e7aee0f28601208b87d6b4fb7ed08858c340d268",
+    "implementation": {
+      "patches": [
+        "strict-mode low-support global double-surface post-merge culling with audit",
+        "explicit SfM-only quality mode so downstream splat render gates do not block SfM acceptance"
+      ],
+      "strategy": "seam_graph_sim3_v1",
+      "tests": [
+        "python3 -m py_compile scripts/sfm/run_sfm_reducer_canary.py scripts/sfm/run_sfm_fanout_reducer.py scripts/sfm/evaluate_sfm_quality.py",
+        "python3 -m unittest tests.unit.test_sfm_reducer_canary tests.unit.test_sfm_quality_eval",
+        "local strict CV-HR 9-leaf reducer replay from existing S3 leaf artifacts",
+        "SfM-only sparse quality evaluation",
+        "pipeline-viewer debugSeams browser/API proof with nonblank screenshot stats"
+      ]
+    },
+    "md1": {
+      "accepted_tree_edges": 18,
+      "decision": "pass",
+      "leaf_count": 19,
+      "note": "Previously verified strict MD1 real-leaf sparse replay remains the MD1 seam_graph_sim3_v1 evidence; no new paid MD1 job was launched.",
+      "promotion_blockers": [],
+      "strict_replay_report": "logs/sfm-production-spine/md1_seam_graph_sim3_v1_report_replay_20260521T215008Z.json"
+    },
+    "remaining_caveats": [
+      "This is SfM-only production proof. It does not claim downstream 3DGS/SOGS render quality."
+    ],
+    "schema_version": 1,
+    "scope": "SfM only; downstream 3DGS/SOGS render quality remains a separate stage",
+    "updated_at": "2026-05-24T03:25:15Z"
   },
   "full447_ds1000_r17_20260514T000230Z": {
     "ai_visual_decision": "pass_with_warnings",
@@ -1333,24 +1337,24 @@
     ]
   },
   "latest_poll": {
-    "job": "cvhr-globalprior-l03r3x6-1779580401",
-    "status": "InProgress",
-    "failure_reason": null,
-    "processing_start_time": "2026-05-23T17:54:12.245000-06:00",
-    "cloudwatch_stage": "chunk_03_mapper_initial_retriangulation_global_ba",
-    "mapper_progress": "num_reg_frames=636",
-    "s3_output": "empty_before_EndOfJob",
     "active_processing_jobs": [
       "cvhr-globalprior-l03r3x6-1779580401"
     ],
     "active_training_jobs": [],
+    "cloudwatch_stage": "chunk_03_mapper_initial_retriangulation_global_ba",
     "evidence": {
-      "describe": "logs/sfm-production-spine/cvhr-globalprior-l03r3x6-1779580401_describe_poll_20260524T0200Z.json",
-      "cloudwatch": "logs/sfm-production-spine/cvhr_globalprior_leaf03_expanded_support_r3_cloudwatch_poll_20260524T0200Z.json",
-      "s3": "logs/sfm-production-spine/cvhr_globalprior_leaf03_expanded_support_r3_s3_poll_20260524T0200Z.txt",
       "active_processing": "logs/sfm-production-spine/active-cvhr-processing-jobs-globalprior-r3-poll-20260524T0200Z.json",
-      "active_training": "logs/sfm-production-spine/active-cvhr-training-jobs-globalprior-r3-poll-20260524T0200Z.json"
-    }
+      "active_training": "logs/sfm-production-spine/active-cvhr-training-jobs-globalprior-r3-poll-20260524T0200Z.json",
+      "cloudwatch": "logs/sfm-production-spine/cvhr_globalprior_leaf03_expanded_support_r3_cloudwatch_poll_20260524T0200Z.json",
+      "describe": "logs/sfm-production-spine/cvhr-globalprior-l03r3x6-1779580401_describe_poll_20260524T0200Z.json",
+      "s3": "logs/sfm-production-spine/cvhr_globalprior_leaf03_expanded_support_r3_s3_poll_20260524T0200Z.txt"
+    },
+    "failure_reason": null,
+    "job": "cvhr-globalprior-l03r3x6-1779580401",
+    "mapper_progress": "num_reg_frames=636",
+    "processing_start_time": "2026-05-23T17:54:12.245000-06:00",
+    "s3_output": "empty_before_EndOfJob",
+    "status": "InProgress"
   },
   "latest_proof": "logs/sfm-production-spine/seam_graph_sim3_v1_cvhr_md1_final_proof_20260524T0310Z.json",
   "latest_quality": {
@@ -1418,6 +1422,174 @@
     "speedup_percent": 26.14
   },
   "md1_sfm_artifact_decision": "promotable_sparse_sfm_artifact_but_not_full_project_proof",
+  "md1_six_gpu_sfm_20260526": {
+    "blocker_summary": "Strict seam graph disconnected because no candidate seam with at least 20 shared registered images passed max_sim3_p95_residual_m=0.25; scale deltas and baseline-normalized residuals are mostly small, so the blocker is shared-camera meter-level drift in independently solved leaves, not SageMaker failure.",
+    "branch": "agent-29861473-md1-sixgpu-sfm",
+    "head": "0ba362466cfddba03a4f57e82b145be73f8213fd",
+    "leaf_terminal_summary": {
+      "completed": 17,
+      "failed": 0,
+      "last_leaf_completed_at": "2026-05-26T13:55:20.707000-06:00",
+      "verified_basic_metadata": 17
+    },
+    "max_concurrency": 6,
+    "next_step": "Inspect leaf mapper/GPS-align configuration and run reducer diagnostics that distinguish GPS-aligned leaf coordinate drift from true bad geometry before any paid relaunch. Candidate fixes are stronger global-prior/rig constraints during leaf solve or a seam-local camera normalization pass; do not loosen strict gate for promotion without a named rationale and quality proof.",
+    "planner_validation": {
+      "blockers": [],
+      "checked_at": "2026-05-26T16:37:20Z",
+      "chunk_count": 17,
+      "has_image_pose_priors_local": true,
+      "image_pose_priors_local_count": 3076,
+      "jurisdiction_count": 17,
+      "manifest_local_path": "/Users/gabrielhansen/worktrees/agent-29861473-md1-sixgpu-sfm/logs/sfm-production-spine/md1_sg6_planner_manifest_20260526T1620Z.json",
+      "passes_leaf_fanout_contract": true,
+      "pipeline_mode": "distributed_chunked_v1",
+      "planner": "visibility_cell_v1",
+      "weak_core_chunks": []
+    },
+    "project_final_decision": "do_not_promote_yet",
+    "quota_increase_needed": false,
+    "run_id": "md1-seamgraph-sixgpu-20260526T1620Z",
+    "run_root": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z",
+    "scope": "SfM-only latest seam_graph_sim3_v1 MD1 six-GPU timing and quality proof",
+    "strict_reducer": {
+      "blocker_isolation": "logs/sfm-production-spine/md1_sg6_strict_reducer_blocker_isolation_20260526T2014Z.json",
+      "decision": "fail",
+      "merged_registered_images": 0,
+      "promotion_blockers": [
+        "model_merge_failed",
+        "pose_aligned_merge_failed",
+        "accepted_seam_graph_is_disconnected",
+        "pose_aligned_model_validation_failed",
+        "leaf_retention_below_gate",
+        "merged_model_lost_dominant_leaf",
+        "missing_sparse0"
+      ],
+      "report": "logs/sfm-production-spine/md1_sg6_seam_graph_reducer_20260526T2004Z.json",
+      "seam_report": "logs/sfm-production-spine/md1_sg6_seam_merge_report_20260526T2004Z.json"
+    }
+  },
+  "md1_sixgpu_latest_sfm_run": {
+    "active_leaf_jobs": [
+      "md1-sg6-l13-1779812400",
+      "md1-sg6-l15-1779812400",
+      "md1-sg6-l16-1779812400"
+    ],
+    "artifact_kind": "md1_sixgpu_latest_sfm_run_status",
+    "branch": "agent-29861473-md1-sixgpu-sfm",
+    "completed_leaf_count": 14,
+    "head": "0ba36246",
+    "latest_completed_leaf_stats": [
+      [
+        0,
+        329,
+        164358,
+        3037.35
+      ],
+      [
+        1,
+        360,
+        182381,
+        3197.11
+      ],
+      [
+        2,
+        360,
+        253219,
+        2865.9
+      ],
+      [
+        3,
+        196,
+        149250,
+        1109.6
+      ],
+      [
+        4,
+        360,
+        234993,
+        2820.9
+      ],
+      [
+        5,
+        360,
+        213705,
+        2936.67
+      ],
+      [
+        6,
+        360,
+        254307,
+        2441.23
+      ],
+      [
+        7,
+        360,
+        190020,
+        3139.16
+      ],
+      [
+        8,
+        360,
+        229003,
+        2319.98
+      ],
+      [
+        9,
+        360,
+        235323,
+        2405.53
+      ],
+      [
+        10,
+        360,
+        253637,
+        2607.75
+      ],
+      [
+        11,
+        298,
+        180702,
+        2155.81
+      ],
+      [
+        12,
+        360,
+        235178,
+        2574.77
+      ],
+      [
+        14,
+        137,
+        110380,
+        878.48
+      ]
+    ],
+    "latest_poll": "2026-05-26T19:30Z leaves 12 and 14 completed/verified; active leaves 13/15/16; no pending leaves; no failures.",
+    "max_concurrency": 6,
+    "next_step": "Monitor final active leaves 13/15/16 to terminal; then run strict seam_graph_sim3_v1 reducer and quality/viewer proof.",
+    "pending_leaf_count": 0,
+    "planner_job": "md1-sg6-plan-1779812400",
+    "planner_validation": {
+      "blockers": [],
+      "checked_at": "2026-05-26T16:37:20Z",
+      "chunk_count": 17,
+      "has_image_pose_priors_local": true,
+      "image_pose_priors_local_count": 3076,
+      "jurisdiction_count": 17,
+      "manifest_local_path": "/Users/gabrielhansen/worktrees/agent-29861473-md1-sixgpu-sfm/logs/sfm-production-spine/md1_sg6_planner_manifest_20260526T1620Z.json",
+      "passes_leaf_fanout_contract": true,
+      "pipeline_mode": "distributed_chunked_v1",
+      "planner": "visibility_cell_v1",
+      "weak_core_chunks": []
+    },
+    "quota_decision": "No quota raise needed: SageMaker quota L-2F1EB012 ml.g4dn.xlarge processing job usage is 6.0.",
+    "run_root": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z",
+    "run_status": "logs/sfm-production-spine/md1_sg6_status_20260526T1620Z.json",
+    "scope": "SfM-only latest seam_graph_sim3_v1 MD1 timing and quality proof",
+    "status": "final_leaves_running_fourteen_completed",
+    "verified_completed_leaf_count": 14
+  },
   "next_unblocked_step": "Retire/delete the sfm-seam-graph-production-proof automation; downstream 3DGS/SOGS is separate.",
   "owner_action_needed": "none",
   "owner_wait_poll": {
@@ -1689,273 +1861,244 @@
     "updated": "2026-05-17T05:28Z"
   },
   "production_ready": true,
-  "project_final_decision": "production_ready_sfm_only",
+  "project_final_decision": "do_not_promote_yet",
   "project_final_proof": {
-    "schema_version": 1,
     "artifact_kind": "sfm_only_seam_graph_sim3_v1_production_proof_summary",
-    "updated_at": "2026-05-24T03:25:15Z",
-    "decision": "production_ready_sfm_only",
-    "scope": "SfM only; downstream 3DGS/SOGS render quality remains a separate stage",
-    "branch": "agent-73948216-sfm-production-spine",
-    "head": "e7aee0f28601208b87d6b4fb7ed08858c340d268",
-    "md1": {
-      "decision": "pass",
-      "strict_replay_report": "logs/sfm-production-spine/md1_seam_graph_sim3_v1_report_replay_20260521T215008Z.json",
-      "leaf_count": 19,
-      "accepted_tree_edges": 18,
-      "promotion_blockers": [],
-      "note": "Previously verified strict MD1 real-leaf sparse replay remains the MD1 seam_graph_sim3_v1 evidence; no new paid MD1 job was launched."
+    "artifacts": {
+      "active_processing_jobs": "logs/sfm-production-spine/active-cvhr-processing-jobs-globalprior-final-20260524T0310Z.json",
+      "active_training_jobs": "logs/sfm-production-spine/active-cvhr-training-jobs-globalprior-final-20260524T0310Z.json",
+      "quality_report": "logs/sfm-production-spine/cvhr_globalprior_full_r3_sfm_only_quality_20260524T0308Z.json",
+      "reducer_report": "logs/sfm-production-spine/cvhr_globalprior_full_r3_seam_graph_reducer_slim_20260524T0259Z.json",
+      "s3_listing": "logs/sfm-production-spine/cvhr_globalprior_full_r3_s3_reducer_output_20260524T0259Z.txt",
+      "seam_merge_report": "logs/sfm-production-spine/cvhr_globalprior_full_r3_seam_merge_report_slim_20260524T0259Z.json",
+      "viewer_api_json": "logs/sfm-production-spine/cvhr_globalprior_full_r3_viewer_api_slim_20260524T0308Z.json",
+      "viewer_screenshot_png": "logs/sfm-production-spine/cvhr_globalprior_full_r3_pipeline_viewer_debugseams_20260524T0310Z.png"
     },
+    "branch": "agent-73948216-sfm-production-spine",
     "cvhr": {
-      "decision": "pass",
-      "dataset": "CV-HR",
-      "input_uri": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
-      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z/merged-pruned-culled/colmap",
-      "leaf_count": 9,
-      "registered_images": 1702,
-      "expected_images": 1710,
-      "registered_ratio": 0.9953,
-      "points": 624046,
-      "merged_registered_images": 1702,
-      "merged_points3d": 624046,
       "accepted_merge_tree_edges": 8,
-      "rejected_edges": 24,
+      "active_processing_jobs": [],
+      "active_training_jobs": [],
       "cycle_consistency": {
-        "status": "pass",
-        "non_tree_edge_count": 4,
-        "failures": [],
         "checks": [
           {
+            "decision": "pass",
             "leaf_a": 0,
             "leaf_b": 3,
             "measured_scale": 0.99865246,
             "predicted_scale_from_tree": 0.99595702,
-            "scale_cycle_error": 0.00269544,
-            "decision": "pass"
+            "scale_cycle_error": 0.00269544
           },
           {
+            "decision": "pass",
             "leaf_a": 0,
             "leaf_b": 5,
             "measured_scale": 0.99951622,
             "predicted_scale_from_tree": 0.99867783,
-            "scale_cycle_error": 0.00083839,
-            "decision": "pass"
+            "scale_cycle_error": 0.00083839
           },
           {
+            "decision": "pass",
             "leaf_a": 3,
             "leaf_b": 5,
             "measured_scale": 0.99976026,
             "predicted_scale_from_tree": 1.00273185,
-            "scale_cycle_error": 0.00297159,
-            "decision": "pass"
+            "scale_cycle_error": 0.00297159
           },
           {
+            "decision": "pass",
             "leaf_a": 6,
             "leaf_b": 8,
             "measured_scale": 1.0084232,
             "predicted_scale_from_tree": 1.01020684,
-            "scale_cycle_error": 0.00178364,
-            "decision": "pass"
+            "scale_cycle_error": 0.00178364
           }
-        ]
+        ],
+        "failures": [],
+        "non_tree_edge_count": 4,
+        "status": "pass"
       },
-      "post_merge_jurisdiction_culling": {
-        "status": "pass",
-        "removed_point_count": 77114,
-        "by_reason": {
-          "no_core_owned_track": 77060,
-          "global_double_surface_low_support_cell": 54
-        }
-      },
+      "dataset": "CV-HR",
+      "decision": "pass",
+      "expected_images": 1710,
+      "input_uri": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+      "leaf_count": 9,
+      "merged_points3d": 624046,
+      "merged_registered_images": 1702,
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z/merged-pruned-culled/colmap",
+      "points": 624046,
       "post_merge_global_double_surface_culling": {
-        "status": "pass_culled_low_support_cells",
-        "removed_point_count": 54,
-        "removed_cell_count": 5,
-        "flagged_but_retained_cell_count": 0,
         "cell_size_m": 443.2793,
+        "flagged_but_retained_cell_count": 0,
+        "flagged_but_retained_cells": [],
         "max_points_per_cell": 32,
+        "removed_cell_count": 5,
         "removed_cells": [
           {
             "cell": [
               27,
               18
             ],
-            "point_count": 9,
             "mode_separation": 58.2668,
-            "z_min": 184.316,
-            "z_max": 350.5684
+            "point_count": 9,
+            "z_max": 350.5684,
+            "z_min": 184.316
           },
           {
             "cell": [
               25,
               18
             ],
-            "point_count": 8,
             "mode_separation": 15.3404,
-            "z_min": -27.3161,
-            "z_max": 9.8192
+            "point_count": 8,
+            "z_max": 9.8192,
+            "z_min": -27.3161
           },
           {
             "cell": [
               21,
               22
             ],
-            "point_count": 12,
             "mode_separation": 12.7027,
-            "z_min": -46.9325,
-            "z_max": -16.6509
+            "point_count": 12,
+            "z_max": -16.6509,
+            "z_min": -46.9325
           },
           {
             "cell": [
               11,
               18
             ],
-            "point_count": 17,
             "mode_separation": 8.1361,
-            "z_min": -83.1897,
-            "z_max": -60.5256
+            "point_count": 17,
+            "z_max": -60.5256,
+            "z_min": -83.1897
           },
           {
             "cell": [
               21,
               20
             ],
-            "point_count": 8,
             "mode_separation": 3.9834,
-            "z_min": -56.3135,
-            "z_max": -46.9551
+            "point_count": 8,
+            "z_max": -46.9551,
+            "z_min": -56.3135
           }
         ],
-        "flagged_but_retained_cells": []
+        "removed_point_count": 54,
+        "status": "pass_culled_low_support_cells"
+      },
+      "post_merge_jurisdiction_culling": {
+        "by_reason": {
+          "global_double_surface_low_support_cell": 54,
+          "no_core_owned_track": 77060
+        },
+        "removed_point_count": 77114,
+        "status": "pass"
       },
       "quality_decision": "promote",
       "quality_gates": {
-        "registration_coverage": {
-          "status": "pass",
-          "evidence": "1702/1710 registered (0.9953)"
-        },
-        "point_count": {
-          "status": "pass",
-          "evidence": "624046 points, minimum 500000"
-        },
-        "reducer_blockers": {
-          "status": "pass",
-          "evidence": "promotion_blockers=[]"
-        },
-        "single_component": {
-          "status": "pass",
-          "evidence": "merged=1 expected=1"
-        },
-        "merge_retention": {
-          "status": "pass",
-          "evidence": "pre_merge_retention_ratio=1.0"
-        },
-        "seam_overlap": {
-          "status": "pass",
-          "evidence": "0 merge nodes are below the seam shared-camera floor"
-        },
-        "seam_graph_sim3": {
-          "status": "pass",
-          "evidence": "seam_graph={\"accepted_edge_count\": 8, \"candidate_edge_count\": 36, \"failures\": [], \"rejected_edge_count\": 24, \"strategy\": \"seam_graph_sim3_v1\"}"
-        },
-        "seam_cycle_consistency": {
-          "status": "pass",
-          "evidence": "cycle_status=pass"
-        },
-        "post_merge_jurisdiction_culling": {
-          "status": "pass",
-          "evidence": "status=pass, removed_point_count=77114"
-        },
-        "reprojection_error_sample": {
-          "status": "pass",
-          "evidence": "p95=1.7977, max=8.0"
-        },
-        "viewer_axis_sanity": {
-          "status": "pass",
-          "evidence": "median camera up.y=None"
-        },
-        "sparse_cleanliness": {
-          "status": "pass",
-          "evidence": "failures=[]"
+        "ai_visual_review": {
+          "evidence": "not applicable: SfM-only proof; downstream splat visual review gates are separate",
+          "status": "pass"
         },
         "cross_leaf_surface_overlap": {
-          "status": "pass",
-          "evidence": "flagged_overlap_cell_ratio=0.0, max=0.02, overlap_cells=286"
+          "evidence": "flagged_overlap_cell_ratio=0.0, max=0.02, overlap_cells=286",
+          "status": "pass"
         },
         "double_surface_geometry": {
-          "status": "pass",
-          "evidence": "flagged_cell_ratio=0.0, max=0.02, flagged=0, cross_leaf_authoritative=True"
+          "evidence": "flagged_cell_ratio=0.0, max=0.02, flagged=0, cross_leaf_authoritative=True",
+          "status": "pass"
         },
         "heldout_render_metrics": {
-          "status": "pass",
-          "evidence": "not applicable: SfM-only proof; downstream splat render gates are separate"
+          "evidence": "not applicable: SfM-only proof; downstream splat render gates are separate",
+          "status": "pass"
         },
-        "ai_visual_review": {
-          "status": "pass",
-          "evidence": "not applicable: SfM-only proof; downstream splat visual review gates are separate"
+        "merge_retention": {
+          "evidence": "pre_merge_retention_ratio=1.0",
+          "status": "pass"
+        },
+        "point_count": {
+          "evidence": "624046 points, minimum 500000",
+          "status": "pass"
+        },
+        "post_merge_jurisdiction_culling": {
+          "evidence": "status=pass, removed_point_count=77114",
+          "status": "pass"
+        },
+        "reducer_blockers": {
+          "evidence": "promotion_blockers=[]",
+          "status": "pass"
+        },
+        "registration_coverage": {
+          "evidence": "1702/1710 registered (0.9953)",
+          "status": "pass"
+        },
+        "reprojection_error_sample": {
+          "evidence": "p95=1.7977, max=8.0",
+          "status": "pass"
+        },
+        "seam_cycle_consistency": {
+          "evidence": "cycle_status=pass",
+          "status": "pass"
+        },
+        "seam_graph_sim3": {
+          "evidence": "seam_graph={\"accepted_edge_count\": 8, \"candidate_edge_count\": 36, \"failures\": [], \"rejected_edge_count\": 24, \"strategy\": \"seam_graph_sim3_v1\"}",
+          "status": "pass"
+        },
+        "seam_overlap": {
+          "evidence": "0 merge nodes are below the seam shared-camera floor",
+          "status": "pass"
+        },
+        "single_component": {
+          "evidence": "merged=1 expected=1",
+          "status": "pass"
+        },
+        "sparse_cleanliness": {
+          "evidence": "failures=[]",
+          "status": "pass"
+        },
+        "viewer_axis_sanity": {
+          "evidence": "median camera up.y=None",
+          "status": "pass"
         }
       },
+      "registered_images": 1702,
+      "registered_ratio": 0.9953,
+      "rejected_edges": 24,
       "viewer_debug": {
-        "status": "pass",
-        "url": "http://127.0.0.1:3000/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fcvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z%2Fmerged-pruned-culled%2Fcolmap&maxPoints=160000&debugSeams=1",
-        "api_json": "logs/sfm-production-spine/cvhr_globalprior_full_r3_viewer_api_slim_20260524T0308Z.json",
-        "screenshot_png": "logs/sfm-production-spine/cvhr_globalprior_full_r3_pipeline_viewer_debugseams_20260524T0310Z.png",
-        "screenshot_stats": {
-          "width": 1066,
-          "height": 600,
-          "mean": 0.0345176,
-          "stddev": 0.0506397,
-          "min": 0.0,
-          "max": 0.745098
-        },
-        "dom_text": "SFM",
-        "canvas_count": 1,
         "api": {
           "exactPointCount": 624046,
           "registeredImageCount": 1702,
           "sampledPointCount": 160000,
-          "sourceSizeBytes": 95682109,
           "seamDebug": {
-            "strategy": "seam_graph_sim3_v1",
-            "decision": "pass",
             "acceptedEdgeCount": 8,
-            "rejectedEdgeCount": 24,
-            "promotionBlockers": [],
+            "culledPointCount": 77114,
             "cycleStatus": "pass",
-            "culledPointCount": 77114
-          }
-        }
-      },
-      "active_processing_jobs": [],
-      "active_training_jobs": []
+            "decision": "pass",
+            "promotionBlockers": [],
+            "rejectedEdgeCount": 24,
+            "strategy": "seam_graph_sim3_v1"
+          },
+          "sourceSizeBytes": 95682109
+        },
+        "api_json": "logs/sfm-production-spine/cvhr_globalprior_full_r3_viewer_api_slim_20260524T0308Z.json",
+        "canvas_count": 1,
+        "dom_text": "SFM",
+        "screenshot_png": "logs/sfm-production-spine/cvhr_globalprior_full_r3_pipeline_viewer_debugseams_20260524T0310Z.png",
+        "screenshot_stats": {
+          "height": 600,
+          "max": 0.745098,
+          "mean": 0.0345176,
+          "min": 0.0,
+          "stddev": 0.0506397,
+          "width": 1066
+        },
+        "status": "pass",
+        "url": "http://127.0.0.1:3000/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fcvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z%2Fmerged-pruned-culled%2Fcolmap&maxPoints=160000&debugSeams=1"
+      }
     },
-    "implementation": {
-      "strategy": "seam_graph_sim3_v1",
-      "patches": [
-        "strict-mode low-support global double-surface post-merge culling with audit",
-        "explicit SfM-only quality mode so downstream splat render gates do not block SfM acceptance"
-      ],
-      "tests": [
-        "python3 -m py_compile scripts/sfm/run_sfm_reducer_canary.py scripts/sfm/run_sfm_fanout_reducer.py scripts/sfm/evaluate_sfm_quality.py",
-        "python3 -m unittest tests.unit.test_sfm_reducer_canary tests.unit.test_sfm_quality_eval",
-        "local strict CV-HR 9-leaf reducer replay from existing S3 leaf artifacts",
-        "SfM-only sparse quality evaluation",
-        "pipeline-viewer debugSeams browser/API proof with nonblank screenshot stats"
-      ]
-    },
-    "artifacts": {
-      "reducer_report": "logs/sfm-production-spine/cvhr_globalprior_full_r3_seam_graph_reducer_slim_20260524T0259Z.json",
-      "seam_merge_report": "logs/sfm-production-spine/cvhr_globalprior_full_r3_seam_merge_report_slim_20260524T0259Z.json",
-      "quality_report": "logs/sfm-production-spine/cvhr_globalprior_full_r3_sfm_only_quality_20260524T0308Z.json",
-      "viewer_api_json": "logs/sfm-production-spine/cvhr_globalprior_full_r3_viewer_api_slim_20260524T0308Z.json",
-      "viewer_screenshot_png": "logs/sfm-production-spine/cvhr_globalprior_full_r3_pipeline_viewer_debugseams_20260524T0310Z.png",
-      "active_processing_jobs": "logs/sfm-production-spine/active-cvhr-processing-jobs-globalprior-final-20260524T0310Z.json",
-      "active_training_jobs": "logs/sfm-production-spine/active-cvhr-training-jobs-globalprior-final-20260524T0310Z.json",
-      "s3_listing": "logs/sfm-production-spine/cvhr_globalprior_full_r3_s3_reducer_output_20260524T0259Z.txt"
-    },
-    "remaining_caveats": [
-      "This is SfM-only production proof. It does not claim downstream 3DGS/SOGS render quality."
-    ],
+    "decision": "production_ready_sfm_only",
     "exact_head_workflows": {
       "cdk_deploy": {
         "conclusion": "success",
@@ -1967,7 +2110,36 @@
         "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26350519862",
         "workflowName": "CDK Deploy"
       }
-    }
+    },
+    "head": "e7aee0f28601208b87d6b4fb7ed08858c340d268",
+    "implementation": {
+      "patches": [
+        "strict-mode low-support global double-surface post-merge culling with audit",
+        "explicit SfM-only quality mode so downstream splat render gates do not block SfM acceptance"
+      ],
+      "strategy": "seam_graph_sim3_v1",
+      "tests": [
+        "python3 -m py_compile scripts/sfm/run_sfm_reducer_canary.py scripts/sfm/run_sfm_fanout_reducer.py scripts/sfm/evaluate_sfm_quality.py",
+        "python3 -m unittest tests.unit.test_sfm_reducer_canary tests.unit.test_sfm_quality_eval",
+        "local strict CV-HR 9-leaf reducer replay from existing S3 leaf artifacts",
+        "SfM-only sparse quality evaluation",
+        "pipeline-viewer debugSeams browser/API proof with nonblank screenshot stats"
+      ]
+    },
+    "md1": {
+      "accepted_tree_edges": 18,
+      "decision": "pass",
+      "leaf_count": 19,
+      "note": "Previously verified strict MD1 real-leaf sparse replay remains the MD1 seam_graph_sim3_v1 evidence; no new paid MD1 job was launched.",
+      "promotion_blockers": [],
+      "strict_replay_report": "logs/sfm-production-spine/md1_seam_graph_sim3_v1_report_replay_20260521T215008Z.json"
+    },
+    "remaining_caveats": [
+      "This is SfM-only production proof. It does not claim downstream 3DGS/SOGS render quality."
+    ],
+    "schema_version": 1,
+    "scope": "SfM only; downstream 3DGS/SOGS render quality remains a separate stage",
+    "updated_at": "2026-05-24T03:25:15Z"
   },
   "project_level_caveats": [],
   "project_level_unresolved_caveats": [
@@ -4820,271 +4992,242 @@
     }
   },
   "seam_graph_sim3_v1_latest_proof": {
-    "schema_version": 1,
     "artifact_kind": "sfm_only_seam_graph_sim3_v1_production_proof_summary",
-    "updated_at": "2026-05-24T03:25:15Z",
-    "decision": "production_ready_sfm_only",
-    "scope": "SfM only; downstream 3DGS/SOGS render quality remains a separate stage",
-    "branch": "agent-73948216-sfm-production-spine",
-    "head": "e7aee0f28601208b87d6b4fb7ed08858c340d268",
-    "md1": {
-      "decision": "pass",
-      "strict_replay_report": "logs/sfm-production-spine/md1_seam_graph_sim3_v1_report_replay_20260521T215008Z.json",
-      "leaf_count": 19,
-      "accepted_tree_edges": 18,
-      "promotion_blockers": [],
-      "note": "Previously verified strict MD1 real-leaf sparse replay remains the MD1 seam_graph_sim3_v1 evidence; no new paid MD1 job was launched."
+    "artifacts": {
+      "active_processing_jobs": "logs/sfm-production-spine/active-cvhr-processing-jobs-globalprior-final-20260524T0310Z.json",
+      "active_training_jobs": "logs/sfm-production-spine/active-cvhr-training-jobs-globalprior-final-20260524T0310Z.json",
+      "quality_report": "logs/sfm-production-spine/cvhr_globalprior_full_r3_sfm_only_quality_20260524T0308Z.json",
+      "reducer_report": "logs/sfm-production-spine/cvhr_globalprior_full_r3_seam_graph_reducer_slim_20260524T0259Z.json",
+      "s3_listing": "logs/sfm-production-spine/cvhr_globalprior_full_r3_s3_reducer_output_20260524T0259Z.txt",
+      "seam_merge_report": "logs/sfm-production-spine/cvhr_globalprior_full_r3_seam_merge_report_slim_20260524T0259Z.json",
+      "viewer_api_json": "logs/sfm-production-spine/cvhr_globalprior_full_r3_viewer_api_slim_20260524T0308Z.json",
+      "viewer_screenshot_png": "logs/sfm-production-spine/cvhr_globalprior_full_r3_pipeline_viewer_debugseams_20260524T0310Z.png"
     },
+    "branch": "agent-73948216-sfm-production-spine",
     "cvhr": {
-      "decision": "pass",
-      "dataset": "CV-HR",
-      "input_uri": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
-      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z/merged-pruned-culled/colmap",
-      "leaf_count": 9,
-      "registered_images": 1702,
-      "expected_images": 1710,
-      "registered_ratio": 0.9953,
-      "points": 624046,
-      "merged_registered_images": 1702,
-      "merged_points3d": 624046,
       "accepted_merge_tree_edges": 8,
-      "rejected_edges": 24,
+      "active_processing_jobs": [],
+      "active_training_jobs": [],
       "cycle_consistency": {
-        "status": "pass",
-        "non_tree_edge_count": 4,
-        "failures": [],
         "checks": [
           {
+            "decision": "pass",
             "leaf_a": 0,
             "leaf_b": 3,
             "measured_scale": 0.99865246,
             "predicted_scale_from_tree": 0.99595702,
-            "scale_cycle_error": 0.00269544,
-            "decision": "pass"
+            "scale_cycle_error": 0.00269544
           },
           {
+            "decision": "pass",
             "leaf_a": 0,
             "leaf_b": 5,
             "measured_scale": 0.99951622,
             "predicted_scale_from_tree": 0.99867783,
-            "scale_cycle_error": 0.00083839,
-            "decision": "pass"
+            "scale_cycle_error": 0.00083839
           },
           {
+            "decision": "pass",
             "leaf_a": 3,
             "leaf_b": 5,
             "measured_scale": 0.99976026,
             "predicted_scale_from_tree": 1.00273185,
-            "scale_cycle_error": 0.00297159,
-            "decision": "pass"
+            "scale_cycle_error": 0.00297159
           },
           {
+            "decision": "pass",
             "leaf_a": 6,
             "leaf_b": 8,
             "measured_scale": 1.0084232,
             "predicted_scale_from_tree": 1.01020684,
-            "scale_cycle_error": 0.00178364,
-            "decision": "pass"
+            "scale_cycle_error": 0.00178364
           }
-        ]
+        ],
+        "failures": [],
+        "non_tree_edge_count": 4,
+        "status": "pass"
       },
-      "post_merge_jurisdiction_culling": {
-        "status": "pass",
-        "removed_point_count": 77114,
-        "by_reason": {
-          "no_core_owned_track": 77060,
-          "global_double_surface_low_support_cell": 54
-        }
-      },
+      "dataset": "CV-HR",
+      "decision": "pass",
+      "expected_images": 1710,
+      "input_uri": "s3://spaceport-uploads-staging/1779123600000-cvhr-Archive.zip",
+      "leaf_count": 9,
+      "merged_points3d": 624046,
+      "merged_registered_images": 1702,
+      "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z/merged-pruned-culled/colmap",
+      "points": 624046,
       "post_merge_global_double_surface_culling": {
-        "status": "pass_culled_low_support_cells",
-        "removed_point_count": 54,
-        "removed_cell_count": 5,
-        "flagged_but_retained_cell_count": 0,
         "cell_size_m": 443.2793,
+        "flagged_but_retained_cell_count": 0,
+        "flagged_but_retained_cells": [],
         "max_points_per_cell": 32,
+        "removed_cell_count": 5,
         "removed_cells": [
           {
             "cell": [
               27,
               18
             ],
-            "point_count": 9,
             "mode_separation": 58.2668,
-            "z_min": 184.316,
-            "z_max": 350.5684
+            "point_count": 9,
+            "z_max": 350.5684,
+            "z_min": 184.316
           },
           {
             "cell": [
               25,
               18
             ],
-            "point_count": 8,
             "mode_separation": 15.3404,
-            "z_min": -27.3161,
-            "z_max": 9.8192
+            "point_count": 8,
+            "z_max": 9.8192,
+            "z_min": -27.3161
           },
           {
             "cell": [
               21,
               22
             ],
-            "point_count": 12,
             "mode_separation": 12.7027,
-            "z_min": -46.9325,
-            "z_max": -16.6509
+            "point_count": 12,
+            "z_max": -16.6509,
+            "z_min": -46.9325
           },
           {
             "cell": [
               11,
               18
             ],
-            "point_count": 17,
             "mode_separation": 8.1361,
-            "z_min": -83.1897,
-            "z_max": -60.5256
+            "point_count": 17,
+            "z_max": -60.5256,
+            "z_min": -83.1897
           },
           {
             "cell": [
               21,
               20
             ],
-            "point_count": 8,
             "mode_separation": 3.9834,
-            "z_min": -56.3135,
-            "z_max": -46.9551
+            "point_count": 8,
+            "z_max": -46.9551,
+            "z_min": -56.3135
           }
         ],
-        "flagged_but_retained_cells": []
+        "removed_point_count": 54,
+        "status": "pass_culled_low_support_cells"
+      },
+      "post_merge_jurisdiction_culling": {
+        "by_reason": {
+          "global_double_surface_low_support_cell": 54,
+          "no_core_owned_track": 77060
+        },
+        "removed_point_count": 77114,
+        "status": "pass"
       },
       "quality_decision": "promote",
       "quality_gates": {
-        "registration_coverage": {
-          "status": "pass",
-          "evidence": "1702/1710 registered (0.9953)"
-        },
-        "point_count": {
-          "status": "pass",
-          "evidence": "624046 points, minimum 500000"
-        },
-        "reducer_blockers": {
-          "status": "pass",
-          "evidence": "promotion_blockers=[]"
-        },
-        "single_component": {
-          "status": "pass",
-          "evidence": "merged=1 expected=1"
-        },
-        "merge_retention": {
-          "status": "pass",
-          "evidence": "pre_merge_retention_ratio=1.0"
-        },
-        "seam_overlap": {
-          "status": "pass",
-          "evidence": "0 merge nodes are below the seam shared-camera floor"
-        },
-        "seam_graph_sim3": {
-          "status": "pass",
-          "evidence": "seam_graph={\"accepted_edge_count\": 8, \"candidate_edge_count\": 36, \"failures\": [], \"rejected_edge_count\": 24, \"strategy\": \"seam_graph_sim3_v1\"}"
-        },
-        "seam_cycle_consistency": {
-          "status": "pass",
-          "evidence": "cycle_status=pass"
-        },
-        "post_merge_jurisdiction_culling": {
-          "status": "pass",
-          "evidence": "status=pass, removed_point_count=77114"
-        },
-        "reprojection_error_sample": {
-          "status": "pass",
-          "evidence": "p95=1.7977, max=8.0"
-        },
-        "viewer_axis_sanity": {
-          "status": "pass",
-          "evidence": "median camera up.y=None"
-        },
-        "sparse_cleanliness": {
-          "status": "pass",
-          "evidence": "failures=[]"
+        "ai_visual_review": {
+          "evidence": "not applicable: SfM-only proof; downstream splat visual review gates are separate",
+          "status": "pass"
         },
         "cross_leaf_surface_overlap": {
-          "status": "pass",
-          "evidence": "flagged_overlap_cell_ratio=0.0, max=0.02, overlap_cells=286"
+          "evidence": "flagged_overlap_cell_ratio=0.0, max=0.02, overlap_cells=286",
+          "status": "pass"
         },
         "double_surface_geometry": {
-          "status": "pass",
-          "evidence": "flagged_cell_ratio=0.0, max=0.02, flagged=0, cross_leaf_authoritative=True"
+          "evidence": "flagged_cell_ratio=0.0, max=0.02, flagged=0, cross_leaf_authoritative=True",
+          "status": "pass"
         },
         "heldout_render_metrics": {
-          "status": "pass",
-          "evidence": "not applicable: SfM-only proof; downstream splat render gates are separate"
+          "evidence": "not applicable: SfM-only proof; downstream splat render gates are separate",
+          "status": "pass"
         },
-        "ai_visual_review": {
-          "status": "pass",
-          "evidence": "not applicable: SfM-only proof; downstream splat visual review gates are separate"
+        "merge_retention": {
+          "evidence": "pre_merge_retention_ratio=1.0",
+          "status": "pass"
+        },
+        "point_count": {
+          "evidence": "624046 points, minimum 500000",
+          "status": "pass"
+        },
+        "post_merge_jurisdiction_culling": {
+          "evidence": "status=pass, removed_point_count=77114",
+          "status": "pass"
+        },
+        "reducer_blockers": {
+          "evidence": "promotion_blockers=[]",
+          "status": "pass"
+        },
+        "registration_coverage": {
+          "evidence": "1702/1710 registered (0.9953)",
+          "status": "pass"
+        },
+        "reprojection_error_sample": {
+          "evidence": "p95=1.7977, max=8.0",
+          "status": "pass"
+        },
+        "seam_cycle_consistency": {
+          "evidence": "cycle_status=pass",
+          "status": "pass"
+        },
+        "seam_graph_sim3": {
+          "evidence": "seam_graph={\"accepted_edge_count\": 8, \"candidate_edge_count\": 36, \"failures\": [], \"rejected_edge_count\": 24, \"strategy\": \"seam_graph_sim3_v1\"}",
+          "status": "pass"
+        },
+        "seam_overlap": {
+          "evidence": "0 merge nodes are below the seam shared-camera floor",
+          "status": "pass"
+        },
+        "single_component": {
+          "evidence": "merged=1 expected=1",
+          "status": "pass"
+        },
+        "sparse_cleanliness": {
+          "evidence": "failures=[]",
+          "status": "pass"
+        },
+        "viewer_axis_sanity": {
+          "evidence": "median camera up.y=None",
+          "status": "pass"
         }
       },
+      "registered_images": 1702,
+      "registered_ratio": 0.9953,
+      "rejected_edges": 24,
       "viewer_debug": {
-        "status": "pass",
-        "url": "http://127.0.0.1:3000/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fcvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z%2Fmerged-pruned-culled%2Fcolmap&maxPoints=160000&debugSeams=1",
-        "api_json": "logs/sfm-production-spine/cvhr_globalprior_full_r3_viewer_api_slim_20260524T0308Z.json",
-        "screenshot_png": "logs/sfm-production-spine/cvhr_globalprior_full_r3_pipeline_viewer_debugseams_20260524T0310Z.png",
-        "screenshot_stats": {
-          "width": 1066,
-          "height": 600,
-          "mean": 0.0345176,
-          "stddev": 0.0506397,
-          "min": 0.0,
-          "max": 0.745098
-        },
-        "dom_text": "SFM",
-        "canvas_count": 1,
         "api": {
           "exactPointCount": 624046,
           "registeredImageCount": 1702,
           "sampledPointCount": 160000,
-          "sourceSizeBytes": 95682109,
           "seamDebug": {
-            "strategy": "seam_graph_sim3_v1",
-            "decision": "pass",
             "acceptedEdgeCount": 8,
-            "rejectedEdgeCount": 24,
-            "promotionBlockers": [],
+            "culledPointCount": 77114,
             "cycleStatus": "pass",
-            "culledPointCount": 77114
-          }
-        }
-      },
-      "active_processing_jobs": [],
-      "active_training_jobs": []
+            "decision": "pass",
+            "promotionBlockers": [],
+            "rejectedEdgeCount": 24,
+            "strategy": "seam_graph_sim3_v1"
+          },
+          "sourceSizeBytes": 95682109
+        },
+        "api_json": "logs/sfm-production-spine/cvhr_globalprior_full_r3_viewer_api_slim_20260524T0308Z.json",
+        "canvas_count": 1,
+        "dom_text": "SFM",
+        "screenshot_png": "logs/sfm-production-spine/cvhr_globalprior_full_r3_pipeline_viewer_debugseams_20260524T0310Z.png",
+        "screenshot_stats": {
+          "height": 600,
+          "max": 0.745098,
+          "mean": 0.0345176,
+          "min": 0.0,
+          "stddev": 0.0506397,
+          "width": 1066
+        },
+        "status": "pass",
+        "url": "http://127.0.0.1:3000/pipeline-viewer?url=s3%3A%2F%2Fspaceport-ml-processing-staging%2Fmanual-validations%2Fcvhr-visibility-cell-v1-globalprior-canary-20260523T1142Z%2Fmerged-pruned-culled%2Fcolmap&maxPoints=160000&debugSeams=1"
+      }
     },
-    "implementation": {
-      "strategy": "seam_graph_sim3_v1",
-      "patches": [
-        "strict-mode low-support global double-surface post-merge culling with audit",
-        "explicit SfM-only quality mode so downstream splat render gates do not block SfM acceptance"
-      ],
-      "tests": [
-        "python3 -m py_compile scripts/sfm/run_sfm_reducer_canary.py scripts/sfm/run_sfm_fanout_reducer.py scripts/sfm/evaluate_sfm_quality.py",
-        "python3 -m unittest tests.unit.test_sfm_reducer_canary tests.unit.test_sfm_quality_eval",
-        "local strict CV-HR 9-leaf reducer replay from existing S3 leaf artifacts",
-        "SfM-only sparse quality evaluation",
-        "pipeline-viewer debugSeams browser/API proof with nonblank screenshot stats"
-      ]
-    },
-    "artifacts": {
-      "reducer_report": "logs/sfm-production-spine/cvhr_globalprior_full_r3_seam_graph_reducer_slim_20260524T0259Z.json",
-      "seam_merge_report": "logs/sfm-production-spine/cvhr_globalprior_full_r3_seam_merge_report_slim_20260524T0259Z.json",
-      "quality_report": "logs/sfm-production-spine/cvhr_globalprior_full_r3_sfm_only_quality_20260524T0308Z.json",
-      "viewer_api_json": "logs/sfm-production-spine/cvhr_globalprior_full_r3_viewer_api_slim_20260524T0308Z.json",
-      "viewer_screenshot_png": "logs/sfm-production-spine/cvhr_globalprior_full_r3_pipeline_viewer_debugseams_20260524T0310Z.png",
-      "active_processing_jobs": "logs/sfm-production-spine/active-cvhr-processing-jobs-globalprior-final-20260524T0310Z.json",
-      "active_training_jobs": "logs/sfm-production-spine/active-cvhr-training-jobs-globalprior-final-20260524T0310Z.json",
-      "s3_listing": "logs/sfm-production-spine/cvhr_globalprior_full_r3_s3_reducer_output_20260524T0259Z.txt"
-    },
-    "remaining_caveats": [
-      "This is SfM-only production proof. It does not claim downstream 3DGS/SOGS render quality."
-    ],
+    "decision": "production_ready_sfm_only",
     "exact_head_workflows": {
       "cdk_deploy": {
         "conclusion": "success",
@@ -5096,7 +5239,36 @@
         "url": "https://github.com/HansenHomeAI/v0-spaceport-website/actions/runs/26350519862",
         "workflowName": "CDK Deploy"
       }
-    }
+    },
+    "head": "e7aee0f28601208b87d6b4fb7ed08858c340d268",
+    "implementation": {
+      "patches": [
+        "strict-mode low-support global double-surface post-merge culling with audit",
+        "explicit SfM-only quality mode so downstream splat render gates do not block SfM acceptance"
+      ],
+      "strategy": "seam_graph_sim3_v1",
+      "tests": [
+        "python3 -m py_compile scripts/sfm/run_sfm_reducer_canary.py scripts/sfm/run_sfm_fanout_reducer.py scripts/sfm/evaluate_sfm_quality.py",
+        "python3 -m unittest tests.unit.test_sfm_reducer_canary tests.unit.test_sfm_quality_eval",
+        "local strict CV-HR 9-leaf reducer replay from existing S3 leaf artifacts",
+        "SfM-only sparse quality evaluation",
+        "pipeline-viewer debugSeams browser/API proof with nonblank screenshot stats"
+      ]
+    },
+    "md1": {
+      "accepted_tree_edges": 18,
+      "decision": "pass",
+      "leaf_count": 19,
+      "note": "Previously verified strict MD1 real-leaf sparse replay remains the MD1 seam_graph_sim3_v1 evidence; no new paid MD1 job was launched.",
+      "promotion_blockers": [],
+      "strict_replay_report": "logs/sfm-production-spine/md1_seam_graph_sim3_v1_report_replay_20260521T215008Z.json"
+    },
+    "remaining_caveats": [
+      "This is SfM-only production proof. It does not claim downstream 3DGS/SOGS render quality."
+    ],
+    "schema_version": 1,
+    "scope": "SfM only; downstream 3DGS/SOGS render quality remains a separate stage",
+    "updated_at": "2026-05-24T03:25:15Z"
   },
   "sfm_scope_only": true,
   "sfm_seam_graph_sim3_v1_hardening": {
@@ -5397,41 +5569,5 @@
     "CV-HR prior 11-leaf output passed older gates but fails new seam_graph_sim3_v1 strict replay because accepted seam graph is disconnected; weak-core leaves 00/10 and scale-blocked leaves 02/10 require patched planner replay before production promotion"
   ],
   "updated": "2026-05-24T03:25:15Z",
-  "updated_at": "2026-05-24T03:25:15Z",
-  "md1_sixgpu_latest_sfm_run": {
-    "artifact_kind": "md1_sixgpu_latest_sfm_run_status",
-    "scope": "SfM-only latest seam_graph_sim3_v1 MD1 timing and quality proof",
-    "status": "six_leaf_jobs_running",
-    "branch": "agent-29861473-md1-sixgpu-sfm",
-    "head": "da43372f9d18d4b11348d429360f850002d4e3f4",
-    "run_status": "logs/sfm-production-spine/md1_sg6_status_20260526T1620Z.json",
-    "run_root": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z",
-    "planner_job": "md1-sg6-plan-1779812400",
-    "planner_validation": {
-      "checked_at": "2026-05-26T16:37:20Z",
-      "manifest_local_path": "/Users/gabrielhansen/worktrees/agent-29861473-md1-sixgpu-sfm/logs/sfm-production-spine/md1_sg6_planner_manifest_20260526T1620Z.json",
-      "planner": "visibility_cell_v1",
-      "pipeline_mode": "distributed_chunked_v1",
-      "chunk_count": 17,
-      "has_image_pose_priors_local": true,
-      "image_pose_priors_local_count": 3076,
-      "jurisdiction_count": 17,
-      "weak_core_chunks": [],
-      "passes_leaf_fanout_contract": true,
-      "blockers": []
-    },
-    "active_leaf_jobs": [
-      "md1-sg6-l00-1779812400",
-      "md1-sg6-l01-1779812400",
-      "md1-sg6-l02-1779812400",
-      "md1-sg6-l03-1779812400",
-      "md1-sg6-l04-1779812400",
-      "md1-sg6-l05-1779812400"
-    ],
-    "pending_leaf_count": 11,
-    "completed_leaf_count": 0,
-    "max_concurrency": 6,
-    "quota_decision": "No quota raise needed: SageMaker quota L-2F1EB012 ml.g4dn.xlarge processing job usage is 6.0.",
-    "next_step": "Monitor active leaves to terminal and launch pending leaves up to six concurrent jobs; then run strict seam_graph_sim3_v1 reducer and quality/viewer proof."
-  }
+  "updated_at": "2026-05-24T03:25:15Z"
 }

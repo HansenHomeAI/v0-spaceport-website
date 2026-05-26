@@ -1,7 +1,7 @@
 {
   "run_id": "md1-seamgraph-sixgpu-20260526T1620Z",
   "created_at": "2026-05-26T16:26:26Z",
-  "updated_at": "2026-05-26T16:43:58Z",
+  "updated_at": "2026-05-26T20:14:00Z",
   "scope": "SfM-only latest seam_graph_sim3_v1 MD1 six-GPU timing and quality proof",
   "branch": "agent-29861473-md1-sixgpu-sfm",
   "head": "da43372f9d18d4b11348d429360f850002d4e3f4",
@@ -48,13 +48,23 @@
       "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-00/colmap",
       "core_image_count": 91,
       "image_count": 329,
-      "status": "InProgress",
+      "status": "Completed",
       "launched_at": "2026-05-26T16:37:38Z",
       "failure_reason": "",
       "creation_time": "2026-05-26T10:37:37.899000-06:00",
       "start_time": "2026-05-26T10:38:22.633000-06:00",
-      "end_time": "",
-      "max_runtime_seconds": 21600
+      "end_time": "2026-05-26T11:34:03.836000-06:00",
+      "max_runtime_seconds": 21600,
+      "artifact_verification": {
+        "checked_at": "2026-05-26T17:59Z",
+        "s3_object_count": 345,
+        "images_registered": 329,
+        "dataset_image_count": 329,
+        "points_3d": 164358,
+        "processing_time_seconds": 3037.35,
+        "input_manifest_pose_priors_applied_count": 329,
+        "decision": "leaf_artifacts_present_basic_metadata_ok"
+      }
     },
     {
       "chunk_index": 1,
@@ -62,13 +72,23 @@
       "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-01/colmap",
       "core_image_count": 279,
       "image_count": 360,
-      "status": "InProgress",
+      "status": "Completed",
       "launched_at": "2026-05-26T16:37:42Z",
       "failure_reason": "",
       "creation_time": "2026-05-26T10:37:41.881000-06:00",
       "start_time": "2026-05-26T10:38:23.984000-06:00",
-      "end_time": "",
-      "max_runtime_seconds": 21600
+      "end_time": "2026-05-26T11:37:20.314000-06:00",
+      "max_runtime_seconds": 21600,
+      "artifact_verification": {
+        "checked_at": "2026-05-26T17:59Z",
+        "s3_object_count": 376,
+        "images_registered": 360,
+        "dataset_image_count": 360,
+        "points_3d": 182381,
+        "processing_time_seconds": 3197.11,
+        "input_manifest_pose_priors_applied_count": 360,
+        "decision": "leaf_artifacts_present_basic_metadata_ok"
+      }
     },
     {
       "chunk_index": 2,
@@ -76,13 +96,23 @@
       "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-02/colmap",
       "core_image_count": 250,
       "image_count": 360,
-      "status": "InProgress",
+      "status": "Completed",
       "launched_at": "2026-05-26T16:37:46Z",
       "failure_reason": "",
       "creation_time": "2026-05-26T10:37:45.825000-06:00",
       "start_time": "2026-05-26T10:38:26.628000-06:00",
-      "end_time": "",
-      "max_runtime_seconds": 21600
+      "end_time": "2026-05-26T11:31:16.326000-06:00",
+      "max_runtime_seconds": 21600,
+      "artifact_verification": {
+        "checked_at": "2026-05-26T17:59Z",
+        "s3_object_count": 376,
+        "images_registered": 360,
+        "dataset_image_count": 360,
+        "points_3d": 253219,
+        "processing_time_seconds": 2865.9,
+        "input_manifest_pose_priors_applied_count": 360,
+        "decision": "leaf_artifacts_present_basic_metadata_ok"
+      }
     },
     {
       "chunk_index": 3,
@@ -90,13 +120,23 @@
       "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-03/colmap",
       "core_image_count": 48,
       "image_count": 196,
-      "status": "InProgress",
+      "status": "Completed",
       "launched_at": "2026-05-26T16:37:50Z",
       "failure_reason": "",
       "creation_time": "2026-05-26T10:37:49.833000-06:00",
       "start_time": "2026-05-26T10:38:32.464000-06:00",
-      "end_time": "",
-      "max_runtime_seconds": 21600
+      "end_time": "2026-05-26T11:01:56.456000-06:00",
+      "max_runtime_seconds": 21600,
+      "artifact_verification": {
+        "checked_at": "2026-05-26T17:29Z",
+        "s3_object_count": 211,
+        "images_registered": 196,
+        "dataset_image_count": 196,
+        "points_3d": 149250,
+        "processing_time_seconds": 1109.6,
+        "input_manifest_pose_priors_applied_count": 196,
+        "decision": "leaf_artifacts_present_basic_metadata_ok"
+      }
     },
     {
       "chunk_index": 4,
@@ -104,13 +144,23 @@
       "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-04/colmap",
       "core_image_count": 181,
       "image_count": 360,
-      "status": "InProgress",
+      "status": "Completed",
       "launched_at": "2026-05-26T16:37:54Z",
       "failure_reason": "",
       "creation_time": "2026-05-26T10:37:53.777000-06:00",
       "start_time": "2026-05-26T10:38:53.464000-06:00",
-      "end_time": "",
-      "max_runtime_seconds": 21600
+      "end_time": "2026-05-26T11:31:17.989000-06:00",
+      "max_runtime_seconds": 21600,
+      "artifact_verification": {
+        "checked_at": "2026-05-26T17:59Z",
+        "s3_object_count": 376,
+        "images_registered": 360,
+        "dataset_image_count": 360,
+        "points_3d": 234993,
+        "processing_time_seconds": 2820.9,
+        "input_manifest_pose_priors_applied_count": 360,
+        "decision": "leaf_artifacts_present_basic_metadata_ok"
+      }
     },
     {
       "chunk_index": 5,
@@ -118,13 +168,23 @@
       "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-05/colmap",
       "core_image_count": 220,
       "image_count": 360,
-      "status": "InProgress",
+      "status": "Completed",
       "launched_at": "2026-05-26T16:37:58Z",
       "failure_reason": "",
       "creation_time": "2026-05-26T10:37:57.871000-06:00",
       "start_time": "2026-05-26T10:38:40.633000-06:00",
-      "end_time": "",
-      "max_runtime_seconds": 21600
+      "end_time": "2026-05-26T11:32:29.990000-06:00",
+      "max_runtime_seconds": 21600,
+      "artifact_verification": {
+        "checked_at": "2026-05-26T17:59Z",
+        "s3_object_count": 376,
+        "images_registered": 360,
+        "dataset_image_count": 360,
+        "points_3d": 213705,
+        "processing_time_seconds": 2936.67,
+        "input_manifest_pose_priors_applied_count": 360,
+        "decision": "leaf_artifacts_present_basic_metadata_ok"
+      }
     },
     {
       "chunk_index": 6,
@@ -132,7 +192,24 @@
       "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-06/colmap",
       "core_image_count": 181,
       "image_count": 360,
-      "status": "not_launched"
+      "status": "Completed",
+      "launched_at": "2026-05-26T17:30:16Z",
+      "failure_reason": "",
+      "creation_time": "2026-05-26T11:30:16.144000-06:00",
+      "start_time": "2026-05-26T11:31:07.436000-06:00",
+      "end_time": "2026-05-26T12:17:40.837000-06:00",
+      "max_runtime_seconds": 21600,
+      "launched_after_leaf03_completed_at": "2026-05-26T17:29Z",
+      "artifact_verification": {
+        "checked_at": "2026-05-26T18:59Z",
+        "s3_object_count": 376,
+        "images_registered": 360,
+        "dataset_image_count": 360,
+        "points_3d": 254307,
+        "processing_time_seconds": 2441.23,
+        "input_manifest_pose_priors_applied_count": 360,
+        "decision": "leaf_artifacts_present_basic_metadata_ok"
+      }
     },
     {
       "chunk_index": 7,
@@ -140,7 +217,23 @@
       "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-07/colmap",
       "core_image_count": 220,
       "image_count": 360,
-      "status": "not_launched"
+      "status": "Completed",
+      "launched_at": "2026-05-26T18:00:31Z",
+      "failure_reason": "",
+      "creation_time": "2026-05-26T12:00:30.884000-06:00",
+      "start_time": "2026-05-26T12:01:56.020000-06:00",
+      "end_time": "2026-05-26T13:00:17.930000-06:00",
+      "max_runtime_seconds": 21600,
+      "artifact_verification": {
+        "checked_at": "2026-05-26T19:00Z",
+        "s3_object_count": 376,
+        "images_registered": 360,
+        "dataset_image_count": 360,
+        "points_3d": 190020,
+        "processing_time_seconds": 3139.16,
+        "input_manifest_pose_priors_applied_count": 360,
+        "decision": "leaf_artifacts_present_basic_metadata_ok"
+      }
     },
     {
       "chunk_index": 8,
@@ -148,7 +241,23 @@
       "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-08/colmap",
       "core_image_count": 116,
       "image_count": 360,
-      "status": "not_launched"
+      "status": "Completed",
+      "launched_at": "2026-05-26T18:00:35Z",
+      "failure_reason": "",
+      "creation_time": "2026-05-26T12:00:34.836000-06:00",
+      "start_time": "2026-05-26T12:01:20.164000-06:00",
+      "end_time": "2026-05-26T12:46:39.119000-06:00",
+      "max_runtime_seconds": 21600,
+      "artifact_verification": {
+        "checked_at": "2026-05-26T18:59Z",
+        "s3_object_count": 376,
+        "images_registered": 360,
+        "dataset_image_count": 360,
+        "points_3d": 229003,
+        "processing_time_seconds": 2319.98,
+        "input_manifest_pose_priors_applied_count": 360,
+        "decision": "leaf_artifacts_present_basic_metadata_ok"
+      }
     },
     {
       "chunk_index": 9,
@@ -156,7 +265,23 @@
       "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-09/colmap",
       "core_image_count": 273,
       "image_count": 360,
-      "status": "not_launched"
+      "status": "Completed",
+      "launched_at": "2026-05-26T18:00:38Z",
+      "failure_reason": "",
+      "creation_time": "2026-05-26T12:00:38.765000-06:00",
+      "start_time": "2026-05-26T12:02:07.722000-06:00",
+      "end_time": "2026-05-26T12:48:20.027000-06:00",
+      "max_runtime_seconds": 21600,
+      "artifact_verification": {
+        "checked_at": "2026-05-26T18:59Z",
+        "s3_object_count": 376,
+        "images_registered": 360,
+        "dataset_image_count": 360,
+        "points_3d": 235323,
+        "processing_time_seconds": 2405.53,
+        "input_manifest_pose_priors_applied_count": 360,
+        "decision": "leaf_artifacts_present_basic_metadata_ok"
+      }
     },
     {
       "chunk_index": 10,
@@ -164,7 +289,23 @@
       "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-10/colmap",
       "core_image_count": 272,
       "image_count": 360,
-      "status": "not_launched"
+      "status": "Completed",
+      "launched_at": "2026-05-26T18:00:42Z",
+      "failure_reason": "",
+      "creation_time": "2026-05-26T12:00:42.736000-06:00",
+      "start_time": "2026-05-26T12:01:30.716000-06:00",
+      "end_time": "2026-05-26T12:51:30.505000-06:00",
+      "max_runtime_seconds": 21600,
+      "artifact_verification": {
+        "checked_at": "2026-05-26T18:59Z",
+        "s3_object_count": 376,
+        "images_registered": 360,
+        "dataset_image_count": 360,
+        "points_3d": 253637,
+        "processing_time_seconds": 2607.75,
+        "input_manifest_pose_priors_applied_count": 360,
+        "decision": "leaf_artifacts_present_basic_metadata_ok"
+      }
     },
     {
       "chunk_index": 11,
@@ -172,7 +313,23 @@
       "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-11/colmap",
       "core_image_count": 78,
       "image_count": 298,
-      "status": "not_launched"
+      "status": "Completed",
+      "launched_at": "2026-05-26T18:00:46Z",
+      "failure_reason": "",
+      "creation_time": "2026-05-26T12:00:46.626000-06:00",
+      "start_time": "2026-05-26T12:02:03.813000-06:00",
+      "end_time": "2026-05-26T12:43:53.223000-06:00",
+      "max_runtime_seconds": 21600,
+      "artifact_verification": {
+        "checked_at": "2026-05-26T18:59Z",
+        "s3_object_count": 314,
+        "images_registered": 298,
+        "dataset_image_count": 298,
+        "points_3d": 180702,
+        "processing_time_seconds": 2155.81,
+        "input_manifest_pose_priors_applied_count": 298,
+        "decision": "leaf_artifacts_present_basic_metadata_ok"
+      }
     },
     {
       "chunk_index": 12,
@@ -180,7 +337,23 @@
       "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-12/colmap",
       "core_image_count": 309,
       "image_count": 360,
-      "status": "not_launched"
+      "status": "Completed",
+      "launched_at": "2026-05-26T18:30:08Z",
+      "failure_reason": "",
+      "creation_time": "2026-05-26T12:30:08.324000-06:00",
+      "start_time": "2026-05-26T12:30:48.977000-06:00",
+      "end_time": "2026-05-26T13:20:08.866000-06:00",
+      "max_runtime_seconds": 21600,
+      "artifact_verification": {
+        "checked_at": "2026-05-26T19:30Z",
+        "s3_object_count": 376,
+        "images_registered": 360,
+        "dataset_image_count": 360,
+        "points_3d": 235178,
+        "processing_time_seconds": 2574.77,
+        "input_manifest_pose_priors_applied_count": 360,
+        "decision": "leaf_artifacts_present_basic_metadata_ok"
+      }
     },
     {
       "chunk_index": 13,
@@ -188,7 +361,23 @@
       "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-13/colmap",
       "core_image_count": 167,
       "image_count": 360,
-      "status": "not_launched"
+      "status": "Completed",
+      "launched_at": "2026-05-26T18:59:48Z",
+      "failure_reason": "",
+      "creation_time": "2026-05-26T12:59:47.977000-06:00",
+      "start_time": "2026-05-26T13:00:26.484000-06:00",
+      "end_time": "2026-05-26T13:55:20.707000-06:00",
+      "max_runtime_seconds": 21600,
+      "artifact_verification": {
+        "checked_at": "2026-05-26T20:02Z",
+        "s3_object_count": 376,
+        "images_registered": 360,
+        "dataset_image_count": 360,
+        "points_3d": 213867,
+        "processing_time_seconds": 2911.63,
+        "input_manifest_pose_priors_applied_count": 360,
+        "decision": "leaf_artifacts_present_basic_metadata_ok"
+      }
     },
     {
       "chunk_index": 14,
@@ -196,7 +385,23 @@
       "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-14/colmap",
       "core_image_count": 21,
       "image_count": 137,
-      "status": "not_launched"
+      "status": "Completed",
+      "launched_at": "2026-05-26T18:59:52Z",
+      "failure_reason": "",
+      "creation_time": "2026-05-26T12:59:51.903000-06:00",
+      "start_time": "2026-05-26T13:00:36.061000-06:00",
+      "end_time": "2026-05-26T13:21:19.073000-06:00",
+      "max_runtime_seconds": 21600,
+      "artifact_verification": {
+        "checked_at": "2026-05-26T19:30Z",
+        "s3_object_count": 152,
+        "images_registered": 137,
+        "dataset_image_count": 137,
+        "points_3d": 110380,
+        "processing_time_seconds": 878.48,
+        "input_manifest_pose_priors_applied_count": 137,
+        "decision": "leaf_artifacts_present_basic_metadata_ok"
+      }
     },
     {
       "chunk_index": 15,
@@ -204,7 +409,23 @@
       "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-15/colmap",
       "core_image_count": 166,
       "image_count": 360,
-      "status": "not_launched"
+      "status": "Completed",
+      "launched_at": "2026-05-26T18:59:55Z",
+      "failure_reason": "",
+      "creation_time": "2026-05-26T12:59:55.819000-06:00",
+      "start_time": "2026-05-26T13:00:34.932000-06:00",
+      "end_time": "2026-05-26T13:50:34.574000-06:00",
+      "max_runtime_seconds": 21600,
+      "artifact_verification": {
+        "checked_at": "2026-05-26T20:02Z",
+        "s3_object_count": 376,
+        "images_registered": 360,
+        "dataset_image_count": 360,
+        "points_3d": 234422,
+        "processing_time_seconds": 2628.24,
+        "input_manifest_pose_priors_applied_count": 360,
+        "decision": "leaf_artifacts_present_basic_metadata_ok"
+      }
     },
     {
       "chunk_index": 16,
@@ -212,14 +433,45 @@
       "output_uri": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z/leaves/leaf-16/colmap",
       "core_image_count": 204,
       "image_count": 360,
-      "status": "not_launched"
+      "status": "Completed",
+      "launched_at": "2026-05-26T18:59:59Z",
+      "failure_reason": "",
+      "creation_time": "2026-05-26T12:59:59.730000-06:00",
+      "start_time": "2026-05-26T13:00:39.879000-06:00",
+      "end_time": "2026-05-26T13:51:09.544000-06:00",
+      "max_runtime_seconds": 21600,
+      "artifact_verification": {
+        "checked_at": "2026-05-26T20:02Z",
+        "s3_object_count": 376,
+        "images_registered": 360,
+        "dataset_image_count": 360,
+        "points_3d": 203204,
+        "processing_time_seconds": 2664.46,
+        "input_manifest_pose_priors_applied_count": 360,
+        "decision": "leaf_artifacts_present_basic_metadata_ok"
+      }
     }
   ],
   "reducer": {
-    "status": "not_started"
+    "status": "failed_strict_reducer",
+    "checked_at": "2026-05-26T20:14Z",
+    "decision": "fail",
+    "merged_registered_images": 0,
+    "promotion_blockers": [
+      "model_merge_failed",
+      "pose_aligned_merge_failed",
+      "accepted_seam_graph_is_disconnected",
+      "pose_aligned_model_validation_failed",
+      "leaf_retention_below_gate",
+      "merged_model_lost_dominant_leaf",
+      "missing_sparse0"
+    ],
+    "report_json_output": "logs/sfm-production-spine/md1_sg6_seam_graph_reducer_20260526T2004Z.json",
+    "seam_report_output": "logs/sfm-production-spine/md1_sg6_seam_merge_report_20260526T2004Z.json",
+    "blocker_isolation": "logs/sfm-production-spine/md1_sg6_strict_reducer_blocker_isolation_20260526T2014Z.json"
   },
   "quality": {
-    "status": "not_started"
+    "status": "not_started_blocked_by_reducer"
   },
   "notes": [
     "No quota raise needed for six concurrent ml.g4dn.xlarge processing jobs; account quota is exactly six.",

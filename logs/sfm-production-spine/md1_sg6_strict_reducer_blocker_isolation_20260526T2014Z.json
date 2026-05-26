@@ -1,0 +1,772 @@
+{
+  "artifact_kind": "md1_sg6_reducer_blocker_isolation",
+  "created_at": "2026-05-26T20:14Z",
+  "decision": "do_not_promote",
+  "scope": "SfM-only no downstream 3DGS/SOGS claim",
+  "run_root": "s3://spaceport-ml-processing-staging/manual-validations/md1-seamgraph-sixgpu-20260526T1620Z",
+  "strict_reducer_report": "logs/sfm-production-spine/md1_sg6_seam_graph_reducer_20260526T2004Z.json",
+  "strict_seam_report": "logs/sfm-production-spine/md1_sg6_seam_merge_report_20260526T2004Z.json",
+  "strict_thresholds": {
+    "min_shared_images": 20,
+    "max_scale_delta": 0.15,
+    "max_sim3_p95_residual_m": 0.25,
+    "max_baseline_normalized_residual": 0.01,
+    "strict_production_gates": true,
+    "gps_exif_p95_residual_m": 50.0
+  },
+  "terminal_leaf_status": "17/17 leaves Completed and basic metadata verified",
+  "blocker_summary": "Strict seam graph disconnected because no candidate seam with at least 20 shared registered images passed max_sim3_p95_residual_m=0.25; scale deltas and baseline-normalized residuals are mostly small, so the blocker is shared-camera meter-level drift in independently solved leaves, not SageMaker failure.",
+  "current_candidate_edge_stats": {
+    "candidate_edges": 136,
+    "accepted_merge_tree_edges": 0,
+    "rejected_edges": 136,
+    "shared_ge_20_edges": 50,
+    "p95_m_shared_ge_20": {
+      "p50": 1.053685,
+      "p95": 4.572454,
+      "min": 0.391424,
+      "max": 6.783903
+    }
+  },
+  "previous_md1_strict_replay_stats": {
+    "source": "/Users/gabrielhansen/worktrees/agent-73948216-sfm-production-spine/logs/sfm-production-spine/md1_seam_graph_sim3_v1_report_replay_20260521T215008Z.json",
+    "decision": "pass",
+    "accepted_tree_edges": 18,
+    "non_tree_accepted_edges": 15,
+    "accepted_p95_m": {
+      "p50": 0.010018,
+      "p95": 0.028947,
+      "min": 0.005554,
+      "max": 0.040572
+    }
+  },
+  "connectivity_by_p95_gate_m": {
+    "0.25": {
+      "accepted_edges_under_gate": 0,
+      "component_count": 17,
+      "components": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ],
+        [
+          5
+        ],
+        [
+          6
+        ],
+        [
+          7
+        ],
+        [
+          8
+        ],
+        [
+          9
+        ],
+        [
+          10
+        ],
+        [
+          11
+        ],
+        [
+          12
+        ],
+        [
+          13
+        ],
+        [
+          14
+        ],
+        [
+          15
+        ],
+        [
+          16
+        ]
+      ]
+    },
+    "0.5": {
+      "accepted_edges_under_gate": 3,
+      "component_count": 14,
+      "components": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4,
+          9,
+          10
+        ],
+        [
+          5
+        ],
+        [
+          6
+        ],
+        [
+          7
+        ],
+        [
+          8
+        ],
+        [
+          11,
+          14
+        ],
+        [
+          12
+        ],
+        [
+          13
+        ],
+        [
+          15
+        ],
+        [
+          16
+        ]
+      ]
+    },
+    "0.75": {
+      "accepted_edges_under_gate": 11,
+      "component_count": 9,
+      "components": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          6
+        ],
+        [
+          7
+        ],
+        [
+          8
+        ],
+        [
+          4,
+          5,
+          9,
+          10,
+          11,
+          12,
+          14,
+          15,
+          16
+        ],
+        [
+          13
+        ]
+      ]
+    },
+    "1.0": {
+      "accepted_edges_under_gate": 19,
+      "component_count": 5,
+      "components": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2,
+          3,
+          8
+        ],
+        [
+          6
+        ],
+        [
+          4,
+          5,
+          7,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ]
+      ]
+    },
+    "1.25": {
+      "accepted_edges_under_gate": 25,
+      "component_count": 3,
+      "components": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ]
+      ]
+    },
+    "1.5": {
+      "accepted_edges_under_gate": 30,
+      "component_count": 1,
+      "components": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ]
+      ]
+    },
+    "2.0": {
+      "accepted_edges_under_gate": 35,
+      "component_count": 1,
+      "components": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ]
+      ]
+    },
+    "2.5": {
+      "accepted_edges_under_gate": 38,
+      "component_count": 1,
+      "components": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ]
+      ]
+    },
+    "3.0": {
+      "accepted_edges_under_gate": 40,
+      "component_count": 1,
+      "components": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ]
+      ]
+    },
+    "5.0": {
+      "accepted_edges_under_gate": 45,
+      "component_count": 1,
+      "components": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ]
+      ]
+    },
+    "10.0": {
+      "accepted_edges_under_gate": 47,
+      "component_count": 1,
+      "components": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ]
+      ]
+    }
+  },
+  "best_edges_valid_except_p95_or_gps": [
+    {
+      "p95_m": 0.391424,
+      "gps_blocked": false,
+      "shared_images": 67,
+      "leaf_a": 4,
+      "leaf_b": 9,
+      "baseline_normalized_residual": 0.00051729,
+      "scale_delta": 0.00126862,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 0.41337,
+      "gps_blocked": false,
+      "shared_images": 68,
+      "leaf_a": 9,
+      "leaf_b": 10,
+      "baseline_normalized_residual": 0.00053232,
+      "scale_delta": 0.00047229,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 0.417528,
+      "gps_blocked": false,
+      "shared_images": 120,
+      "leaf_a": 11,
+      "leaf_b": 14,
+      "baseline_normalized_residual": 0.0004623,
+      "scale_delta": 0.0003492,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 0.471491,
+      "gps_blocked": true,
+      "shared_images": 153,
+      "leaf_a": 3,
+      "leaf_b": 8,
+      "baseline_normalized_residual": 0.00043549,
+      "scale_delta": 5.008e-05,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate",
+        "gps_exif_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 0.536583,
+      "gps_blocked": false,
+      "shared_images": 93,
+      "leaf_a": 11,
+      "leaf_b": 15,
+      "baseline_normalized_residual": 0.00059607,
+      "scale_delta": 0.00054181,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 0.565101,
+      "gps_blocked": false,
+      "shared_images": 74,
+      "leaf_a": 9,
+      "leaf_b": 16,
+      "baseline_normalized_residual": 0.00047752,
+      "scale_delta": 0.00048905,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 0.595054,
+      "gps_blocked": false,
+      "shared_images": 48,
+      "leaf_a": 9,
+      "leaf_b": 12,
+      "baseline_normalized_residual": 0.00089013,
+      "scale_delta": 0.00310813,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 0.625729,
+      "gps_blocked": false,
+      "shared_images": 33,
+      "leaf_a": 4,
+      "leaf_b": 12,
+      "baseline_normalized_residual": 0.0009517,
+      "scale_delta": 0.00073136,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 0.669608,
+      "gps_blocked": false,
+      "shared_images": 42,
+      "leaf_a": 9,
+      "leaf_b": 15,
+      "baseline_normalized_residual": 0.00066331,
+      "scale_delta": 8.334e-05,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 0.709474,
+      "gps_blocked": false,
+      "shared_images": 35,
+      "leaf_a": 5,
+      "leaf_b": 9,
+      "baseline_normalized_residual": 0.00109078,
+      "scale_delta": 0.00011863,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 0.73964,
+      "gps_blocked": false,
+      "shared_images": 87,
+      "leaf_a": 12,
+      "leaf_b": 15,
+      "baseline_normalized_residual": 0.00067313,
+      "scale_delta": 0.00030815,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 0.740164,
+      "gps_blocked": false,
+      "shared_images": 32,
+      "leaf_a": 12,
+      "leaf_b": 14,
+      "baseline_normalized_residual": 0.00089728,
+      "scale_delta": 0.00073472,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 0.759882,
+      "gps_blocked": false,
+      "shared_images": 93,
+      "leaf_a": 2,
+      "leaf_b": 3,
+      "baseline_normalized_residual": 0.00083452,
+      "scale_delta": 0.00076558,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 0.770303,
+      "gps_blocked": false,
+      "shared_images": 99,
+      "leaf_a": 11,
+      "leaf_b": 12,
+      "baseline_normalized_residual": 0.00078247,
+      "scale_delta": 0.00012792,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 0.784704,
+      "gps_blocked": false,
+      "shared_images": 35,
+      "leaf_a": 4,
+      "leaf_b": 10,
+      "baseline_normalized_residual": 0.00108753,
+      "scale_delta": 0.00128191,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 0.803609,
+      "gps_blocked": false,
+      "shared_images": 121,
+      "leaf_a": 5,
+      "leaf_b": 7,
+      "baseline_normalized_residual": 0.00101403,
+      "scale_delta": 0.0003948,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 0.827451,
+      "gps_blocked": true,
+      "shared_images": 88,
+      "leaf_a": 3,
+      "leaf_b": 6,
+      "baseline_normalized_residual": 0.00076454,
+      "scale_delta": 0.0006663,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate",
+        "gps_exif_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 0.860422,
+      "gps_blocked": false,
+      "shared_images": 58,
+      "leaf_a": 2,
+      "leaf_b": 8,
+      "baseline_normalized_residual": 0.00097991,
+      "scale_delta": 0.0006985,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 0.951355,
+      "gps_blocked": false,
+      "shared_images": 32,
+      "leaf_a": 9,
+      "leaf_b": 13,
+      "baseline_normalized_residual": 0.00146578,
+      "scale_delta": 0.00085816,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 0.979153,
+      "gps_blocked": false,
+      "shared_images": 41,
+      "leaf_a": 7,
+      "leaf_b": 12,
+      "baseline_normalized_residual": 0.00147166,
+      "scale_delta": 0.00057738,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 0.993715,
+      "gps_blocked": false,
+      "shared_images": 36,
+      "leaf_a": 12,
+      "leaf_b": 16,
+      "baseline_normalized_residual": 0.00095123,
+      "scale_delta": 9.126e-05,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 1.024343,
+      "gps_blocked": false,
+      "shared_images": 155,
+      "leaf_a": 6,
+      "leaf_b": 8,
+      "baseline_normalized_residual": 0.00091415,
+      "scale_delta": 0.00083632,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 1.031189,
+      "gps_blocked": false,
+      "shared_images": 139,
+      "leaf_a": 15,
+      "leaf_b": 16,
+      "baseline_normalized_residual": 0.00093408,
+      "scale_delta": 2.703e-05,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 1.045933,
+      "gps_blocked": true,
+      "shared_images": 108,
+      "leaf_a": 14,
+      "leaf_b": 15,
+      "baseline_normalized_residual": 0.00116016,
+      "scale_delta": 0.00041281,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate",
+        "gps_exif_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 1.053685,
+      "gps_blocked": false,
+      "shared_images": 40,
+      "leaf_a": 5,
+      "leaf_b": 12,
+      "baseline_normalized_residual": 0.00176647,
+      "scale_delta": 0.00144494,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 1.092468,
+      "gps_blocked": false,
+      "shared_images": 86,
+      "leaf_a": 13,
+      "leaf_b": 16,
+      "baseline_normalized_residual": 0.00106052,
+      "scale_delta": 0.00130439,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 1.110202,
+      "gps_blocked": false,
+      "shared_images": 142,
+      "leaf_a": 8,
+      "leaf_b": 13,
+      "baseline_normalized_residual": 0.00101366,
+      "scale_delta": 0.000259,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 1.22769,
+      "gps_blocked": false,
+      "shared_images": 52,
+      "leaf_a": 6,
+      "leaf_b": 9,
+      "baseline_normalized_residual": 0.0016074,
+      "scale_delta": 0.00120787,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 1.286627,
+      "gps_blocked": false,
+      "shared_images": 134,
+      "leaf_a": 10,
+      "leaf_b": 13,
+      "baseline_normalized_residual": 0.00102594,
+      "scale_delta": 0.0020949,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    },
+    {
+      "p95_m": 1.291184,
+      "gps_blocked": false,
+      "shared_images": 82,
+      "leaf_a": 1,
+      "leaf_b": 7,
+      "baseline_normalized_residual": 0.00170769,
+      "scale_delta": 0.00301142,
+      "blockers": [
+        "sim3_p95_residual_exceeds_gate"
+      ]
+    }
+  ],
+  "next_no_spend_step": "Inspect leaf mapper/GPS-align configuration and run reducer diagnostics that distinguish GPS-aligned leaf coordinate drift from true bad geometry before any paid relaunch. Candidate fixes are stronger global-prior/rig constraints during leaf solve or a seam-local camera normalization pass; do not loosen strict gate for promotion without a named rationale and quality proof."
+}
