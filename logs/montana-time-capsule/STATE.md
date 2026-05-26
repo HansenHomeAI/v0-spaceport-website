@@ -12,6 +12,7 @@
   - Hosted viewer reachability (HTTP 200 for base + sky/no-sky): logs/montana-time-capsule/viewer-alias-20260526T084617Z.txt + logs/montana-time-capsule/viewer-urls-20260526T084617Z.txt + logs/montana-time-capsule/curlI-viewer-base-20260526T084617Z.headers + logs/montana-time-capsule/curlI-viewer-sky-hmc-mtc-20260520T2015Z-20260526T084617Z.headers + logs/montana-time-capsule/curlI-viewer-nosky-hmc-mtc-20260520T2015Z-20260526T084617Z.headers
   - Viewer screenshot proof (sky/no-sky; prior stamp still canonical): logs/montana-time-capsule/viewer-proof-friday-mtc-20260524T0001Z-sky-20260526T082710Z.png + logs/montana-time-capsule/viewer-proof-friday-mtc-20260524T0001Z-nosky-20260526T082710Z.png
   - GitHub Actions snapshots (`/opt/homebrew/bin/gh`; exact-head may be empty on `[skip ci]` head): logs/montana-time-capsule/gh-run-list-branch-agent-40136728-montana-time-capsule-20260526T084617Z.json + logs/montana-time-capsule/gh-run-list-exact-head-8d58a31889580448042643207fc0c8bdecdcef04-20260526T084617Z.json + logs/montana-time-capsule/gh-version-20260526T084617Z.txt
+  - Postpush exact-head snapshot (head is `[skip ci]`, expected empty): logs/montana-time-capsule/gh-run-list-exact-head-b3d232b0a39a993a7227cc1aadeae0c2bb801dfd-20260526T085055Z.json
   - Machine-readable state refreshed: logs/montana-time-capsule/hmc-state.json (evidence_stamp=20260526T084617Z; updated_at=2026-05-26T08:46:17Z)
 
 
