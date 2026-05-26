@@ -1,0 +1,3 @@
+base=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev
+sky=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/?id=hmc-mtc-20260520T2015Z&sky=1
+nosky=https://agent-40136728-montana-time.v0-spaceport-website-preview2.pages.dev/?id=hmc-mtc-20260520T2015Z&sky=0

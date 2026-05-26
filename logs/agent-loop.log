@@ -641,3 +641,4 @@
 [2026-05-26T01:45:09Z] heartbeat(20260526T014509Z) -> ok (SageMaker Completed; InProgress 0/0; S3 meta 200; viewer 200; GH snapshots captured) -> next: await new acceptance gate
 [2026-05-26T01:47:27Z] postpush gh snapshot -> head d318e3b2 -> saved logs/montana-time-capsule/gh-run-list-exact-head-d318e3b25a2a27ab0af97e4d909b06555e371a5a-postpush-20260526T014727Z.json
 [2026-05-26T01:49:30Z] exact-head gh snapshot -> head 3b5993f2 -> saved logs/montana-time-capsule/gh-run-list-exact-head-3b5993f202369085b8bfe91ba67e8372a3b646ff-20260526T014930Z.json
+[2026-05-26T02:06:59Z] heartbeat(20260526T020659Z) -> ok (SageMaker Completed; InProgress 0/0; S3 meta 200; viewer base/sky/nosky 200; GH snapshots captured) -> next: commit+push ledger
