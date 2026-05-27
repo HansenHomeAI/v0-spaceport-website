@@ -1,0 +1,136 @@
+{
+  "artifact_complete": true,
+  "artifact_head_object": {
+    "AcceptRanges": "bytes",
+    "ContentLength": 176561044,
+    "ContentType": "binary/octet-stream",
+    "ETag": "\"71d30690cd5a702a49ae70c96201444f-34\"",
+    "LastModified": "2026-05-27T21:02:14+00:00",
+    "Metadata": {},
+    "SSEKMSKeyId": "arn:aws:kms:us-west-2:975050048887:key/e498a88e-6b23-44e3-90bd-f35b25d6e420",
+    "ServerSideEncryption": "aws:kms",
+    "VersionId": "8bVhLVNDZTmGXuwcVq3Hndue1EVPK11q"
+  },
+  "artifact_inventory_filtered_path": "artifact_inventory_filtered.txt",
+  "artifact_required_paths": {
+    "missing": [],
+    "present": [
+      "merged/merge_report.json",
+      "merged/merged_splat.ply",
+      "tiled_pipeline/inputs/tile_00/3dgs_tile_manifest.json",
+      "tiled_pipeline/inputs/tile_00/3dgs_view_buckets.json",
+      "tiled_pipeline/inputs/tile_00/scaffold_init_metadata.json",
+      "tiled_pipeline/inputs/tile_07/3dgs_tile_manifest.json",
+      "tiled_pipeline/inputs/tile_07/3dgs_view_buckets.json",
+      "tiled_pipeline/inputs/tile_07/scaffold_init_metadata.json",
+      "tiled_pipeline_summary.json",
+      "tiles/tile_00/export_manifest.json",
+      "tiles/tile_00/splat.ply",
+      "tiles/tile_00/stage_summary.json",
+      "tiles/tile_00/training_metadata.json",
+      "tiles/tile_00/training_selection.json",
+      "tiles/tile_07/export_manifest.json",
+      "tiles/tile_07/splat.ply",
+      "tiles/tile_07/stage_summary.json",
+      "tiles/tile_07/training_metadata.json",
+      "tiles/tile_07/training_selection.json",
+      "training_metadata.json"
+    ]
+  },
+  "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r4-quality-seam-20260526/merge/output/model.tar.gz",
+  "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r4-quality-seam-20260526/merge/output/model.tar.gz",
+  "block_reasons": [],
+  "candidate_label": "cvhr_sfm_authority_r4_quality_seam",
+  "checked_at": "2026-05-27T21:07:08.545086+00:00",
+  "decision": "preflight_passed_run_frozen_smoke_review",
+  "job_name": "cvhr-sfm-auth-r4-quality-1779912532-merge",
+  "merge": {
+    "background_asset": {
+      "asset": "background_skybox.webp",
+      "requested_source_tile_id": "tile_00",
+      "retained_gaussians": 100897,
+      "selection_mode": "forced_tile",
+      "selection_score": 0.639645072854669,
+      "source_asset": "/opt/ml/processing/output/artifact/tiles/tile_00/background_skybox.webp",
+      "source_tile_id": "tile_00"
+    },
+    "dropped_gaussians": 31886,
+    "fallback_reasons": [],
+    "fallback_tile_count": 0,
+    "merge_mode": "strict_core",
+    "retain_all_tile_count": 0,
+    "retained_gaussians": 222201,
+    "source_gaussians": 254087,
+    "tile_count": 2
+  },
+  "next_unblocked_step": "run frozen-camera smoke review against the R1 strict_core baseline before any R5 spend",
+  "pipeline": {
+    "include_merge": null,
+    "include_scaffold": null,
+    "mode": null,
+    "selected_tile_ids": null,
+    "tile_manifest_resolution": null
+  },
+  "root_training_metadata": {
+    "downscale_factor": null,
+    "enable_bg_model": null,
+    "max_iterations": null,
+    "model_variant": null,
+    "sh_degree": null,
+    "training_completed": true,
+    "training_mode": "remote_no_training_tiled_merge"
+  },
+  "rung": "cvhr-r4-quality-seam",
+  "tiles": {
+    "tile_00": {
+      "file_size_mb": 20.20426368713379,
+      "foreground_coordinate_frame": "planner",
+      "inherited_gaussian_count": null,
+      "max_iterations": 3000,
+      "merge_dropped_gaussians": null,
+      "merge_fallback_reason": null,
+      "merge_fallback_used": null,
+      "merge_retained_gaussians": null,
+      "model_variant": "splatfacto-w-light",
+      "planner_transform_applied": null,
+      "remaining_gaussians": null,
+      "scaffold_inheritance_mode": "remote_no_training_reuse",
+      "scaffold_source_artifact": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r4-quality-seam-20260526/tiles/tile_00/cvhr-sfm-auth-r4-quality-1779912532-tile-00/output/model.tar.gz",
+      "selected_image_count": 160,
+      "sh_degree": 2,
+      "stage_elapsed_seconds": 0,
+      "training_completed": true,
+      "training_mode": "leaf_tile",
+      "view_bucket_counts": {
+        "boundary": 59,
+        "horizon": 40,
+        "near_detail": 160
+      }
+    },
+    "tile_07": {
+      "file_size_mb": 19.537519454956055,
+      "foreground_coordinate_frame": "planner",
+      "inherited_gaussian_count": null,
+      "max_iterations": 3000,
+      "merge_dropped_gaussians": null,
+      "merge_fallback_reason": null,
+      "merge_fallback_used": null,
+      "merge_retained_gaussians": null,
+      "model_variant": "splatfacto-w-light",
+      "planner_transform_applied": null,
+      "remaining_gaussians": null,
+      "scaffold_inheritance_mode": "remote_no_training_reuse",
+      "scaffold_source_artifact": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r4-quality-seam-20260526/tiles/tile_07/cvhr-sfm-auth-r4-quality-1779912532-tile-07/output/model.tar.gz",
+      "selected_image_count": 160,
+      "sh_degree": 2,
+      "stage_elapsed_seconds": 0,
+      "training_completed": true,
+      "training_mode": "leaf_tile",
+      "view_bucket_counts": {
+        "boundary": 33,
+        "horizon": 4,
+        "near_detail": 160
+      }
+    }
+  }
+}

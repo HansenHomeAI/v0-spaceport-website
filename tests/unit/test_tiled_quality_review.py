@@ -14,6 +14,22 @@ MODULE_PATH = REPO_ROOT / "infrastructure" / "containers" / "3dgs" / "run_tiled_
 
 def load_module_with_stubs():
     import numpy as numpy_stub
+    stubbed_modules = {
+        "numpy",
+        "torch",
+        "PIL",
+        "PIL.ImageDraw",
+        "PIL.ImageFont",
+        "plyfile",
+        "skimage",
+        "skimage.metrics",
+        "gsplat",
+        "geometry_review",
+        "sky_quality",
+        "tile_pipeline",
+        "train_nerfstudio_production",
+    }
+    original_modules = {name: sys.modules.get(name) for name in stubbed_modules}
     torch_stub = types.ModuleType("torch")
     pil_stub = types.ModuleType("PIL")
     pil_image_draw_stub = types.ModuleType("PIL.ImageDraw")
@@ -68,8 +84,15 @@ def load_module_with_stubs():
     spec = importlib.util.spec_from_file_location("run_tiled_quality_review_test_module", MODULE_PATH)
     module = importlib.util.module_from_spec(spec)
     assert spec and spec.loader
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
+    try:
+        sys.modules[spec.name] = module
+        spec.loader.exec_module(module)
+    finally:
+        for name, original_module in original_modules.items():
+            if original_module is None:
+                sys.modules.pop(name, None)
+            else:
+                sys.modules[name] = original_module
     return module
 
 
@@ -88,6 +111,26 @@ def make_view(bucket: str, *, psnr: float = 30.0) -> dict:
 
 
 class TiledQualityReviewManifestTests(unittest.TestCase):
+    def test_decode_ply_sh_rest_converts_channel_major_to_basis_major_rgb(self):
+        module = load_module_with_stubs()
+
+        sh_rest = module.decode_ply_sh_rest(
+            module.np.array([[10.0, 11.0, 20.0, 21.0, 30.0, 31.0]], dtype=module.np.float32),
+            source="unit-test.ply",
+        )
+
+        self.assertEqual(sh_rest.shape, (1, 2, 3))
+        self.assertEqual(sh_rest.tolist(), [[[10.0, 20.0, 30.0], [11.0, 21.0, 31.0]]])
+
+    def test_decode_ply_sh_rest_rejects_invalid_width(self):
+        module = load_module_with_stubs()
+
+        with self.assertRaisesRegex(RuntimeError, "Unexpected SH payload width"):
+            module.decode_ply_sh_rest(
+                module.np.array([[1.0, 2.0, 3.0, 4.0]], dtype=module.np.float32),
+                source="bad-width.ply",
+            )
+
     def test_extract_model_artifact_rejects_unsafe_members(self):
         module = load_module_with_stubs()
 

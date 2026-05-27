@@ -1,0 +1,28 @@
+{
+  "cache_entries": [
+    {
+      "tile_id": "tile_00",
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r5-quality-seam-20260527/tiles/tile_00/cvhr-sfm-auth-r5-quality-1779917117-tile-00/output/model.tar.gz",
+      "input_hash": "62f55b83710af486e43a895e4be3f4226fa57a5118499746d0c7e7afa906e068",
+      "quality_gate_status": "passed",
+      "ownership_gate_status": "passed",
+      "preflight_json": "logs/3dgs-sfm-authority/cvhr_sfm_authority_r5_tile00_preflight.json",
+      "splat_vertex_count": 322505,
+      "source_filtered_gaussian_count": 24867,
+      "source_gaussian_count": 74138,
+      "source_filter_retention_ratio": 0.33541503682322155
+    },
+    {
+      "tile_id": "tile_07",
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r5-quality-seam-20260527/tiles/tile_07/cvhr-sfm-auth-r5-quality-1779917117-tile-07/output/model.tar.gz",
+      "input_hash": "7a6d4f05fd178a8c5d5072ee9094433182329beda37c620d3050eea586d13aeb",
+      "quality_gate_status": "passed",
+      "ownership_gate_status": "passed",
+      "preflight_json": "logs/3dgs-sfm-authority/cvhr_sfm_authority_r5_tile07_preflight.json",
+      "splat_vertex_count": 300026,
+      "source_filtered_gaussian_count": 23963,
+      "source_gaussian_count": 74138,
+      "source_filter_retention_ratio": 0.3232215597938979
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "checked_at": "2026-05-27T23:13:00Z",
+  "status": "blocked",
+  "reviewed_panels": [
+    "logs/3dgs-sfm-authority/cvhr-r5-quality-seam/panels/panel_near_detail_DJI_00836.png",
+    "logs/3dgs-sfm-authority/cvhr-r5-quality-seam/panels/panel_boundary_DJI_00815.png",
+    "logs/3dgs-sfm-authority/cvhr-r5-quality-seam/panels/panel_horizon_DJI_00809.png"
+  ],
+  "observations": [
+    "geometry is recognizable and no reviewed panel is blank",
+    "candidate renders have strong magenta/green false color and washed highlights",
+    "texture detail remains smeared relative to the input photo",
+    "horizon view remains the weakest bucket and visually overexposed/smeared"
+  ],
+  "decision": "do_not_widen",
+  "next_no_spend_focus": [
+    "isolate leaf-render versus merge-render color drift",
+    "audit Gaussian PLY color/SH decoding and RGB/BGR/gamma handling",
+    "audit review render normalization/exposure path before spending on more training",
+    "preserve SfM-authority bounds and merge gates because geometry ownership is passing"
+  ]
+}

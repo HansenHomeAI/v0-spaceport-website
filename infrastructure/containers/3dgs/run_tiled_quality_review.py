@@ -625,9 +625,7 @@ def load_gaussian_model(ply_path: Path, device: torch.device) -> dict[str, Any]:
     )
     if sh_rest_fields:
         sh_rest_flat = np.stack([np.asarray(vertex[field], dtype=np.float32) for field in sh_rest_fields], axis=1)
-        if sh_rest_flat.shape[1] % 3 != 0:
-            raise RuntimeError(f"Unexpected SH payload width in {ply_path}: {sh_rest_flat.shape[1]}")
-        sh_rest = torch.from_numpy(sh_rest_flat.reshape(len(vertex), -1, 3)).to(device)
+        sh_rest = torch.from_numpy(decode_ply_sh_rest(sh_rest_flat, source=str(ply_path))).to(device)
     else:
         sh_rest = torch.zeros((len(vertex), 0, 3), dtype=torch.float32, device=device)
 
@@ -650,6 +648,16 @@ def load_gaussian_model(ply_path: Path, device: torch.device) -> dict[str, Any]:
             "quats": "normalized",
         },
     }
+
+
+def decode_ply_sh_rest(sh_rest_flat: np.ndarray, *, source: str = "PLY") -> np.ndarray:
+    """Invert gsplat/Nerfstudio PLY SH layout from channel-major flat fields."""
+    if sh_rest_flat.ndim != 2:
+        raise RuntimeError(f"Unexpected SH payload rank in {source}: {sh_rest_flat.ndim}")
+    if sh_rest_flat.shape[1] % 3 != 0:
+        raise RuntimeError(f"Unexpected SH payload width in {source}: {sh_rest_flat.shape[1]}")
+    basis_count = sh_rest_flat.shape[1] // 3
+    return sh_rest_flat.reshape(sh_rest_flat.shape[0], 3, basis_count).transpose(0, 2, 1)
 
 
 def normalize_render_color(render_colors: torch.Tensor) -> np.ndarray:

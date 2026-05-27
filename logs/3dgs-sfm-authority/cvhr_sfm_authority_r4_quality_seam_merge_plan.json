@@ -1,0 +1,43 @@
+{
+  "artifact_inputs": [
+    {
+      "artifact_input_name": "artifact-00",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r4-quality-seam-20260526/tiles/tile_00/cvhr-sfm-auth-r4-quality-1779912532-tile-00/output/model.tar.gz"
+    },
+    {
+      "artifact_input_name": "artifact-01",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r4-quality-seam-20260526/tiles/tile_07/cvhr-sfm-auth-r4-quality-1779912532-tile-07/output/model.tar.gz"
+    }
+  ],
+  "selected_tile_ids": [
+    "tile_00",
+    "tile_07"
+  ],
+  "source_summary_json": "logs/3dgs-sfm-authority/cvhr_sfm_authority_r4_quality_seam_cached_merge_review_dry_run.json",
+  "tiles": [
+    {
+      "artifact_input_name": "artifact-00",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r4-quality-seam-20260526/tiles/tile_00/cvhr-sfm-auth-r4-quality-1779912532-tile-00/output/model.tar.gz",
+      "cache_status": "hit",
+      "candidate_members": [
+        "splat.ply"
+      ],
+      "quality_gate_status": "passed",
+      "stage_name": "T0_tile_00",
+      "stage_type": "cached_tile",
+      "tile_id": "tile_00"
+    },
+    {
+      "artifact_input_name": "artifact-01",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r4-quality-seam-20260526/tiles/tile_07/cvhr-sfm-auth-r4-quality-1779912532-tile-07/output/model.tar.gz",
+      "cache_status": "hit",
+      "candidate_members": [
+        "splat.ply"
+      ],
+      "quality_gate_status": "passed",
+      "stage_name": "T0_tile_07",
+      "stage_type": "cached_tile",
+      "tile_id": "tile_07"
+    }
+  ]
+}

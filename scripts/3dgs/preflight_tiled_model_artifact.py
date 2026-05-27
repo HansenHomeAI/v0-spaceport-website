@@ -261,7 +261,7 @@ def build_summary(
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
     parser.add_argument("--artifact-uri", required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--tile-ids", required=True, help="Comma-separated tile ids to require.")

@@ -1,0 +1,7 @@
+usage: preflight_tiled_model_artifact.py [-h] --artifact-uri ARTIFACT_URI
+                                         --output-dir OUTPUT_DIR --tile-ids
+                                         TILE_IDS [--rung RUNG]
+                                         [--candidate-label CANDIDATE_LABEL]
+                                         [--job-name JOB_NAME]
+                                         [--summary-json-output SUMMARY_JSON_OUTPUT]
+preflight_tiled_model_artifact.py: error: the following arguments are required: --tile-ids
