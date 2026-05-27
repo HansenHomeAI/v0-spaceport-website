@@ -13,7 +13,7 @@ MODULE_PATH = REPO_ROOT / "infrastructure" / "containers" / "3dgs" / "run_tiled_
 
 
 def load_module_with_stubs():
-    numpy_stub = types.ModuleType("numpy")
+    import numpy as numpy_stub
     torch_stub = types.ModuleType("torch")
     pil_stub = types.ModuleType("PIL")
     pil_image_draw_stub = types.ModuleType("PIL.ImageDraw")
@@ -126,6 +126,51 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
                 json.loads((review_dir / "sfm_metadata.json").read_text(encoding="utf-8")),
                 {"source": "colmap"},
             )
+
+    def test_planner_frame_review_camera_uses_colmap_pose(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            model_dir = root / "model"
+            tile_dir = model_dir / "tiles" / "tile_00"
+            sparse_dir = root / "review" / "sparse" / "0"
+            tile_dir.mkdir(parents=True)
+            sparse_dir.mkdir(parents=True)
+            (tile_dir / "export_manifest.json").write_text(
+                json.dumps(
+                    {
+                        "foreground_coordinate_frame": "planner",
+                        "foreground_transform": {
+                            "planner_transform_applied": True,
+                            "planner_transform": [
+                                [1.0, 0.0, 0.0, 0.0],
+                                [0.0, 1.0, 0.0, 0.0],
+                                [0.0, 0.0, 1.0, 0.0],
+                            ],
+                            "planner_scale": 1.0,
+                            "planner_offset": [0.0, 0.0, 0.0],
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (sparse_dir / "images.txt").write_text(
+                "1 1 0 0 0 10 20 30 1 DJI_0001.JPG\n\n",
+                encoding="utf-8",
+            )
+
+            planner_frame = module.load_planner_frame_transform(model_dir)
+            poses = module.load_colmap_world_to_camera_by_name(sparse_dir / "images.txt")
+            world_to_camera, source = module.foreground_world_to_camera_for_image(
+                image_name="DJI_0001.JPG",
+                frame={"transform_matrix": [[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 1.0, 0.0], [0.0, 0.0, 0.0, 1.0]]},
+                planner_frame=planner_frame,
+                colmap_world_to_camera_by_name=poses,
+            )
+
+            self.assertEqual(source, "colmap_planner_frame")
+            self.assertEqual(world_to_camera[:3, 3].tolist(), [10.0, 20.0, 30.0])
 
     def test_load_frozen_review_images_uses_smoke_bucket_keys(self):
         module = load_module_with_stubs()

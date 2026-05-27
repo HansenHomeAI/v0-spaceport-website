@@ -719,6 +719,111 @@ def frame_world_to_camera(frame: Mapping[str, Any]) -> np.ndarray:
     return opengl_to_opencv @ world_to_camera_gl
 
 
+def quaternion_to_rotation_matrix(qw: float, qx: float, qy: float, qz: float) -> np.ndarray:
+    norm = float(np.sqrt(qw * qw + qx * qx + qy * qy + qz * qz))
+    if norm <= 1e-12:
+        return np.eye(3, dtype=np.float64)
+    qw /= norm
+    qx /= norm
+    qy /= norm
+    qz /= norm
+    return np.array(
+        [
+            [1.0 - 2.0 * (qy * qy + qz * qz), 2.0 * (qx * qy - qz * qw), 2.0 * (qx * qz + qy * qw)],
+            [2.0 * (qx * qy + qz * qw), 1.0 - 2.0 * (qx * qx + qz * qz), 2.0 * (qy * qz - qx * qw)],
+            [2.0 * (qx * qz - qy * qw), 2.0 * (qy * qz + qx * qw), 1.0 - 2.0 * (qx * qx + qy * qy)],
+        ],
+        dtype=np.float64,
+    )
+
+
+def load_colmap_world_to_camera_by_name(images_txt: Path) -> dict[str, np.ndarray]:
+    world_to_camera_by_name: dict[str, np.ndarray] = {}
+    if not images_txt.exists():
+        return world_to_camera_by_name
+    with open(images_txt, "r", encoding="utf-8") as handle:
+        for raw_line in handle:
+            line = raw_line.strip()
+            if not line or line.startswith("#"):
+                continue
+            parts = line.split()
+            if len(parts) < 10:
+                continue
+            try:
+                qw, qx, qy, qz = (float(parts[1]), float(parts[2]), float(parts[3]), float(parts[4]))
+                tx, ty, tz = (float(parts[5]), float(parts[6]), float(parts[7]))
+            except ValueError:
+                continue
+            world_to_camera = np.eye(4, dtype=np.float64)
+            world_to_camera[:3, :3] = quaternion_to_rotation_matrix(qw, qx, qy, qz)
+            world_to_camera[:3, 3] = np.array([tx, ty, tz], dtype=np.float64)
+            world_to_camera_by_name[normalize_image_name(parts[9])] = world_to_camera
+    return world_to_camera_by_name
+
+
+def load_planner_frame_transform(extracted_model_dir: Path) -> dict[str, Any]:
+    for export_manifest_path in sorted(extracted_model_dir.glob("tiles/*/export_manifest.json")):
+        export_manifest = load_json(export_manifest_path)
+        transform = export_manifest.get("foreground_transform") or {}
+        if export_manifest.get("foreground_coordinate_frame") != "planner":
+            continue
+        if not transform.get("planner_transform_applied"):
+            continue
+        planner_transform = np.asarray(transform.get("planner_transform"), dtype=np.float64)
+        if planner_transform.shape != (3, 4):
+            continue
+        affine = np.eye(4, dtype=np.float64)
+        affine[:3, :4] = planner_transform
+        try:
+            inverse_affine = np.linalg.inv(affine)
+        except np.linalg.LinAlgError:
+            continue
+        planner_scale = float(transform.get("planner_scale") or 1.0)
+        if not np.isfinite(planner_scale) or abs(planner_scale) <= 1e-9:
+            planner_scale = 1.0
+        try:
+            planner_offset = np.asarray(transform.get("planner_offset", [0.0, 0.0, 0.0]), dtype=np.float64).reshape(3)
+        except (TypeError, ValueError):
+            planner_offset = np.zeros(3, dtype=np.float64)
+        return {
+            "coordinate_frame": "planner",
+            "source_export_manifest": str(export_manifest_path),
+            "planner_transform": affine,
+            "inverse_planner_transform": inverse_affine,
+            "planner_scale": planner_scale,
+            "planner_offset": planner_offset,
+        }
+    return {"coordinate_frame": "model"}
+
+
+def colmap_world_to_planner_world_to_camera(
+    colmap_world_to_camera: np.ndarray,
+    planner_frame: Mapping[str, Any],
+) -> np.ndarray:
+    inverse_planner = np.asarray(planner_frame["inverse_planner_transform"], dtype=np.float64)
+    planner_scale = float(planner_frame.get("planner_scale") or 1.0)
+    planner_offset = np.asarray(planner_frame.get("planner_offset", [0.0, 0.0, 0.0]), dtype=np.float64).reshape(3)
+    planner_to_colmap = np.eye(4, dtype=np.float64)
+    planner_to_colmap[:3, :3] = inverse_planner[:3, :3] / planner_scale
+    planner_to_colmap[:3, 3] = inverse_planner[:3, :3] @ (-planner_offset / planner_scale) + inverse_planner[:3, 3]
+    return (colmap_world_to_camera @ planner_to_colmap).astype(np.float32)
+
+
+def foreground_world_to_camera_for_image(
+    *,
+    image_name: str,
+    frame: Mapping[str, Any],
+    planner_frame: Mapping[str, Any],
+    colmap_world_to_camera_by_name: Mapping[str, np.ndarray],
+) -> tuple[np.ndarray, str]:
+    if planner_frame.get("coordinate_frame") != "planner":
+        return frame_world_to_camera(frame), "review_transform_frame"
+    colmap_world_to_camera = colmap_world_to_camera_by_name.get(normalize_image_name(image_name))
+    if colmap_world_to_camera is None:
+        return frame_world_to_camera(frame), "review_transform_frame_missing_colmap_pose"
+    return colmap_world_to_planner_world_to_camera(colmap_world_to_camera, planner_frame), "colmap_planner_frame"
+
+
 def select_gaussians_for_view(
     model: Mapping[str, Any],
     world_to_camera: np.ndarray,
@@ -798,9 +903,15 @@ def render_gaussian_view(
     device: torch.device,
     *,
     settings: RenderSettings,
+    world_to_camera_override: np.ndarray | None = None,
+    camera_frame_source: str = "review_transform_frame",
 ) -> tuple[np.ndarray, np.ndarray, dict[str, Any]]:
     fx, fy, cx, cy, width, height = frame_intrinsics(frame, transforms, render_scale=settings.render_scale)
-    world_to_camera = frame_world_to_camera(frame)
+    world_to_camera = (
+        np.asarray(world_to_camera_override, dtype=np.float32)
+        if world_to_camera_override is not None
+        else frame_world_to_camera(frame)
+    )
     K = torch.tensor([[fx, 0.0, cx], [0.0, fy, cy], [0.0, 0.0, 1.0]], device=device, dtype=torch.float32)
 
     source_count = int(model["gaussian_count"])
@@ -820,6 +931,7 @@ def render_gaussian_view(
             height=height,
             settings=effective_settings,
         )
+        stats["camera_frame_source"] = camera_frame_source
         try:
             with torch.no_grad():
                 render_colors, render_alphas, _ = rasterization(
@@ -1310,6 +1422,12 @@ def main() -> None:
             selected_tile_ids = [str(tile.get("tile_id")) for tile in tile_manifest.get("tiles", []) if tile.get("tile_id")]
 
         transforms, frame_index = build_frame_index(converted_input_dir)
+        planner_frame = load_planner_frame_transform(extracted_model_dir)
+        colmap_world_to_camera_by_name = load_colmap_world_to_camera_by_name(review_input_dir / "sparse" / "0" / "images.txt")
+        logger.info("🧭 Foreground camera frame: %s", planner_frame.get("coordinate_frame"))
+        if planner_frame.get("coordinate_frame") == "planner":
+            logger.info("🧭 Planner frame source: %s", planner_frame.get("source_export_manifest"))
+            logger.info("🧭 COLMAP poses available for review: %s", len(colmap_world_to_camera_by_name))
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         merged_model = load_gaussian_model(merged_ply_path, device)
         merged_background_path = extracted_model_dir / "merged" / "background_skybox.webp"
@@ -1351,6 +1469,12 @@ def main() -> None:
                 reference_image = resize_image_array(reference_image_full, width=render_width, height=render_height)
                 reference_output_path = reference_root / bucket_label_value / Path(image_name).name
                 saved_reference_path = save_rgb_image(reference_image, reference_output_path)
+                foreground_world_to_camera, foreground_camera_frame_source = foreground_world_to_camera_for_image(
+                    image_name=image_name,
+                    frame=frame,
+                    planner_frame=planner_frame,
+                    colmap_world_to_camera_by_name=colmap_world_to_camera_by_name,
+                )
 
                 merged_foreground, merged_alpha, merged_render_stats = render_gaussian_view(
                     merged_model,
@@ -1358,6 +1482,8 @@ def main() -> None:
                     transforms,
                     device,
                     settings=render_settings,
+                    world_to_camera_override=foreground_world_to_camera,
+                    camera_frame_source=foreground_camera_frame_source,
                 )
                 merged_background = render_skybox_view(
                     merged_background_path,
@@ -1419,6 +1545,7 @@ def main() -> None:
                     "sky_metrics_no_background": sky_metrics_no_background,
                     "difference_stats": difference_summary_stats(reference_image, merged_final),
                     "edge_alignment": edge_alignment_stats(reference_image, merged_final),
+                    "foreground_camera_frame_source": foreground_camera_frame_source,
                     "merged_render_stats": merged_render_stats,
                     "merged_alpha_stats": alpha_summary_stats(merged_alpha),
                     "merged_foreground_stats": image_summary_stats(merged_foreground),
@@ -1443,6 +1570,8 @@ def main() -> None:
                             transforms,
                             device,
                             settings=render_settings,
+                            world_to_camera_override=foreground_world_to_camera,
+                            camera_frame_source=foreground_camera_frame_source,
                         )
                         tile_background = render_skybox_view(
                             tile_background_path,
@@ -1494,6 +1623,11 @@ def main() -> None:
         )
         manifest["preconversion_selection"] = preconversion_summary
         manifest["manifest_backfill"] = manifest_backfill_summary
+        manifest["foreground_camera_frame"] = {
+            "coordinate_frame": planner_frame.get("coordinate_frame"),
+            "source_export_manifest": planner_frame.get("source_export_manifest"),
+            "colmap_pose_count": len(colmap_world_to_camera_by_name),
+        }
         quality_review_manifest_path = output_dir / "quality_review_manifest.json"
         visual_qa_manifest = build_visual_qa_manifest(
             model_tarball=model_tarball,
