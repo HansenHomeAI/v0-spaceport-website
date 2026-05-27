@@ -1,0 +1,32 @@
+{
+  "created_at": "2026-05-27T01:33:18.879810+00:00",
+  "guard_commit": "69c739005315ecc9941df5340eb7faa78c8c2611",
+  "remote_ecr_digest": "sha256:5c3213e7359e090ef6a51dfe947939ef3e4c319c45d0c4ad86dae7cf1fe9a618",
+  "tile_count": 9,
+  "max_filter_retention_ratio": 0.98,
+  "status": "pass",
+  "results": [
+    {
+      "tile_id": "tile_00",
+      "metadata_path": "/Users/gabrielhansen/Documents/v0-spaceport-website/logs/3dgs-sfm-authority/cvhr-r1-two-tile-00-07/tile_00_preflight_extract/training_selection.json",
+      "source_gaussian_count": 74138,
+      "source_filtered_gaussian_count": 74138,
+      "inherited_gaussian_count": 74138,
+      "fallback_used": false,
+      "expected_guard": "reject_nonselective_multitile_scaffold_filter",
+      "guard_result": "rejected",
+      "error": "leaf_tile scaffold initialization failed SfM-authority filter guard for tile_00: nonselective_scaffold_filter_retention:74138/74138=1.000000>0.980000"
+    },
+    {
+      "tile_id": "tile_07",
+      "metadata_path": "/Users/gabrielhansen/Documents/v0-spaceport-website/logs/3dgs-sfm-authority/cvhr-r1-two-tile-00-07/tile_07_preflight_extract/training_selection.json",
+      "source_gaussian_count": 74138,
+      "source_filtered_gaussian_count": 74138,
+      "inherited_gaussian_count": 74138,
+      "fallback_used": false,
+      "expected_guard": "reject_nonselective_multitile_scaffold_filter",
+      "guard_result": "rejected",
+      "error": "leaf_tile scaffold initialization failed SfM-authority filter guard for tile_07: nonselective_scaffold_filter_retention:74138/74138=1.000000>0.980000"
+    }
+  ]
+}
