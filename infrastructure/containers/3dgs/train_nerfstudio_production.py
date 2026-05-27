@@ -64,7 +64,7 @@ for var in ('LD_LIBRARY_PATH', 'LIBRARY_PATH'):
     os.environ[var] = ':'.join(parts) if parts else ':'.join(cuda_lib_paths)
     print(f"✅ {var}={os.environ[var]}")
 from pathlib import Path
-from typing import Dict, Any, Optional, Sequence
+from typing import Dict, Any, Mapping, Optional, Sequence
 import shutil
 try:
     from PIL import Image
@@ -112,6 +112,7 @@ logger = logging.getLogger(__name__)
 PROOF_PROFILE_NONE = "none"
 PROOF_PROFILE_QUALITY_GATE_LOW_MEMORY = "quality_gate_low_memory"
 QUALITY_GATE_LOW_MEMORY_STOP_SPLIT_AT = 8500
+DEFAULT_GLOBAL_SCAFFOLD_MAX_FILTER_RETENTION_RATIO = 0.98
 
 
 def load_colmap_image_id_name_map(images_txt: Path) -> dict[str, str]:
@@ -819,6 +820,7 @@ class NerfStudioTrainer:
             'GLOBAL_SCAFFOLD_SH_DEGREE': 'tiling.global_scaffold.sh_degree',
             'GLOBAL_SCAFFOLD_MAX_GAUSS_RATIO': 'tiling.global_scaffold.max_gauss_ratio',
             'GLOBAL_SCAFFOLD_INIT_MAX_POINTS': 'tiling.global_scaffold.max_init_points',
+            'GLOBAL_SCAFFOLD_MAX_FILTER_RETENTION_RATIO': 'tiling.global_scaffold.max_filter_retention_ratio',
             'GLOBAL_SCAFFOLD_SOURCE_DIR': 'tiling.global_scaffold.source_dir',
             'TILED_MAX_TILES': 'tiling.pipeline.max_tiles',
             'TILED_TILE_IDS': 'tiling.pipeline.tile_ids',
@@ -835,7 +837,7 @@ class NerfStudioTrainer:
                     value = value.lower() in ('true', '1', 'yes', 'on')
                 elif env_var in ['MAX_ITERATIONS', 'LOG_INTERVAL', 'TRAINING_DATALOADER_NUM_WORKERS', 'TRAINING_MAX_SELECTED_IMAGES', 'TRAINING_SELECTION_STRIDE', 'BOUNDARY_CAMERA_REPEAT_FACTOR', 'TRAINING_REVIEW_IMAGES_PER_BUCKET', 'TRAINING_STEPS_PER_EVAL_IMAGE', 'TRAINING_STEPS_PER_EVAL_ALL_IMAGES', 'TRAINING_STEPS_PER_SAVE', 'TRAINING_STOP_SPLIT_AT', 'SH_DEGREE', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'TRAINING_DOWNSCALE_FACTOR', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT', 'TRAINING_MAX_OUTPUT_GAUSSIANS', 'GLOBAL_SCAFFOLD_MAX_IMAGES', 'GLOBAL_SCAFFOLD_FRAME_STRIDE', 'GLOBAL_SCAFFOLD_MAX_ITERATIONS', 'GLOBAL_SCAFFOLD_SH_DEGREE', 'GLOBAL_SCAFFOLD_INIT_MAX_POINTS', 'TILED_MAX_TILES']:
                     value = int(value)
-                elif env_var in ['TARGET_PSNR', 'SSIM_LAMBDA', 'CULL_ALPHA_THRESH', 'CULL_SCALE_THRESH', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_SKY_MIN_LUMINANCE', 'FLOATER_PRUNING_SKY_MIN_SATURATION', 'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE', 'GLOBAL_SCAFFOLD_MAX_GAUSS_RATIO']:
+                elif env_var in ['TARGET_PSNR', 'SSIM_LAMBDA', 'CULL_ALPHA_THRESH', 'CULL_SCALE_THRESH', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_SKY_MIN_LUMINANCE', 'FLOATER_PRUNING_SKY_MIN_SATURATION', 'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE', 'GLOBAL_SCAFFOLD_MAX_GAUSS_RATIO', 'GLOBAL_SCAFFOLD_MAX_FILTER_RETENTION_RATIO']:
                     value = float(value)
                 
                 # Set nested config values
@@ -1580,6 +1582,11 @@ class NerfStudioTrainer:
                     padding_ratio=0.1,
                     max_points=max_init_points or None,
                 )
+                self.validate_leaf_scaffold_initialization(
+                    scaffold_metadata,
+                    tile_manifest=tile_manifest,
+                    tile_id=tile_id,
+                )
                 transforms_path = stage_input_dir / "transforms.json"
                 with open(transforms_path, "r", encoding="utf-8") as f:
                     transforms_payload = json.load(f)
@@ -1614,6 +1621,82 @@ class NerfStudioTrainer:
             return scaffold_score, len(path.parts), str(path)
 
         return sorted(candidates, key=candidate_score)[0].parent
+
+    def leaf_scaffold_filter_required(self) -> bool:
+        explicit_require = str(
+            os.environ.get("GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT", "")
+        ).lower() in {"1", "true", "yes", "on"}
+        tiling_config = self.config.get("tiling", {}) if isinstance(self.config, Mapping) else {}
+        return explicit_require or bool(tiling_config.get("require_sfm_authority", False))
+
+    def scaffold_max_filter_retention_ratio(self) -> float:
+        tiling_config = self.config.get("tiling", {}) if isinstance(self.config, Mapping) else {}
+        scaffold_config = tiling_config.get("global_scaffold", {}) if isinstance(tiling_config, Mapping) else {}
+        raw_value = scaffold_config.get(
+            "max_filter_retention_ratio",
+            os.environ.get(
+                "GLOBAL_SCAFFOLD_MAX_FILTER_RETENTION_RATIO",
+                DEFAULT_GLOBAL_SCAFFOLD_MAX_FILTER_RETENTION_RATIO,
+            ),
+        )
+        try:
+            parsed = float(raw_value)
+        except (TypeError, ValueError):
+            parsed = DEFAULT_GLOBAL_SCAFFOLD_MAX_FILTER_RETENTION_RATIO
+        return min(1.0, max(0.0, parsed))
+
+    def validate_leaf_scaffold_initialization(
+        self,
+        scaffold_metadata: Mapping[str, Any],
+        *,
+        tile_manifest: Mapping[str, Any],
+        tile_id: str,
+    ) -> None:
+        if not self.leaf_scaffold_filter_required():
+            return
+
+        source_count = int(scaffold_metadata.get("source_gaussian_count") or 0)
+        filtered_count = int(
+            scaffold_metadata.get("source_filtered_gaussian_count")
+            or scaffold_metadata.get("inherited_gaussian_count")
+            or 0
+        )
+        inherited_count = int(scaffold_metadata.get("inherited_gaussian_count") or 0)
+        if source_count > 0:
+            fallback_retention_ratio = float(filtered_count) / float(source_count)
+        else:
+            fallback_retention_ratio = 1.0
+        try:
+            retention_ratio = float(
+                scaffold_metadata.get("source_filter_retention_ratio", fallback_retention_ratio)
+            )
+        except (TypeError, ValueError):
+            retention_ratio = fallback_retention_ratio
+
+        errors: list[str] = []
+        if bool(scaffold_metadata.get("fallback_used")):
+            errors.append(f"fallback_used:{scaffold_metadata.get('fallback_reason') or 'unknown'}")
+        if not scaffold_metadata.get("scaffold_filter_bounds"):
+            errors.append("missing_scaffold_filter_bounds")
+        if inherited_count <= 0:
+            errors.append("zero_inherited_gaussians")
+        if source_count <= 0:
+            errors.append("missing_source_gaussian_count")
+
+        tile_count = len(tile_manifest.get("tiles", [])) if isinstance(tile_manifest, Mapping) else 0
+        max_retention_ratio = self.scaffold_max_filter_retention_ratio()
+        if tile_count > 1 and source_count > 0 and retention_ratio > max_retention_ratio:
+            errors.append(
+                "nonselective_scaffold_filter_retention:"
+                f"{filtered_count}/{source_count}={retention_ratio:.6f}"
+                f">{max_retention_ratio:.6f}"
+            )
+
+        if errors:
+            raise RuntimeError(
+                "leaf_tile scaffold initialization failed SfM-authority filter guard "
+                f"for {tile_id}: {'; '.join(errors)}"
+            )
 
     @staticmethod
     def safe_extract_tar(artifact_path: Path, target_dir: Path) -> None:
@@ -1723,18 +1806,11 @@ class NerfStudioTrainer:
         if scaffold_summary is not None:
             scaffold_metadata["external_scaffold"] = scaffold_summary
 
-        require_filtered = str(
-            os.environ.get("GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT", "")
-        ).lower() in {"1", "true", "yes", "on"}
-        if require_filtered and (
-            scaffold_metadata.get("fallback_used")
-            or not scaffold_metadata.get("scaffold_filter_bounds")
-            or int(scaffold_metadata.get("inherited_gaussian_count") or 0) <= 0
-        ):
-            raise RuntimeError(
-                "leaf_tile scaffold initialization was not filtered to tile bounds; "
-                "refusing production fanout train"
-            )
+        self.validate_leaf_scaffold_initialization(
+            scaffold_metadata,
+            tile_manifest=tile_manifest,
+            tile_id=tile_id,
+        )
 
         transforms_path = self.input_dir / "transforms.json"
         with open(transforms_path, "r", encoding="utf-8") as f:

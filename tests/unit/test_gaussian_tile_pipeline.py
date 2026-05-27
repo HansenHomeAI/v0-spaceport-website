@@ -1260,7 +1260,36 @@ class GaussianTilePipelineTests(unittest.TestCase):
             filtered = PlyData.read(str(target))["vertex"].data
             self.assertEqual(len(filtered), 1)
             self.assertEqual(metadata["inherited_gaussian_count"], 1)
+            self.assertEqual(metadata["source_rejected_gaussian_count"], 1)
+            self.assertAlmostEqual(metadata["source_filter_retention_ratio"], 0.5)
+            self.assertTrue(metadata["scaffold_filter_selective"])
             self.assertEqual(metadata["scaffold_inheritance_mode"], "global_scaffold_ply_filtered_point_cloud")
+
+    def test_write_point_cloud_ply_from_gaussians_reports_nonselective_bounds(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "scaffold.ply"
+            target = root / "tile" / "scaffold_init.ply"
+            write_gaussian_test_ply(
+                source,
+                [
+                    (0.0, 0.0, 0.0, 0.8, 0.1, 0.1, 0.1),
+                    (0.5, 0.0, 0.0, 0.8, 0.1, 0.1, 0.1),
+                ],
+            )
+
+            metadata = tile_pipeline.write_point_cloud_ply_from_gaussians(
+                source,
+                target,
+                bounds={"min_x": -1, "max_x": 1, "min_y": -1, "max_y": 1, "min_z": -1, "max_z": 1},
+                padding_ratio=0.1,
+            )
+
+            self.assertEqual(metadata["source_filtered_gaussian_count"], 2)
+            self.assertEqual(metadata["source_rejected_gaussian_count"], 0)
+            self.assertAlmostEqual(metadata["source_filter_retention_ratio"], 1.0)
+            self.assertFalse(metadata["scaffold_filter_selective"])
+            self.assertFalse(metadata["fallback_used"])
 
     def test_write_point_cloud_ply_from_gaussians_caps_scaffold_init_points(self):
         with tempfile.TemporaryDirectory() as tmp:

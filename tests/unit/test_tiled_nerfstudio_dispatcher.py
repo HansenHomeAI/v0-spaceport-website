@@ -1071,6 +1071,79 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
                 False,
             )
 
+    def test_leaf_tile_scaffold_init_rejects_nonselective_multitile_filter(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            input_dir = root / "input"
+            scaffold_dir = root / "scaffold"
+            selection_dir = root / "selection"
+            input_dir.mkdir()
+            scaffold_dir.mkdir()
+            selection_dir.mkdir()
+            (input_dir / "transforms.json").write_text(json.dumps({"frames": []}), encoding="utf-8")
+            (scaffold_dir / "splat.ply").write_text("ply\n", encoding="utf-8")
+            bounds = {
+                "min_x": -100,
+                "max_x": 100,
+                "min_y": -100,
+                "max_y": 100,
+                "min_z": -100,
+                "max_z": 100,
+            }
+            tile_manifest_path = selection_dir / "3dgs_tile_manifest.json"
+            tile_manifest_path.write_text(
+                json.dumps(
+                    {
+                        "tiles": [
+                            {"tile_id": "tile_00", "core_bounds": bounds},
+                            {"tile_id": "tile_01", "core_bounds": bounds},
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+            view_bucket_path = selection_dir / "3dgs_view_buckets.json"
+            view_bucket_path.write_text(json.dumps({"near_detail_camera_ids": []}), encoding="utf-8")
+
+            def fake_write_point_cloud(source, output, **kwargs):
+                Path(output).write_text("ply\n", encoding="utf-8")
+                return {
+                    "scaffold_source_artifact": str(source),
+                    "filtered_point_cloud": str(output),
+                    "scaffold_filter_bounds": kwargs["bounds"],
+                    "source_gaussian_count": 10,
+                    "source_filtered_gaussian_count": 10,
+                    "source_filter_retention_ratio": 1.0,
+                    "inherited_gaussian_count": 10,
+                    "fallback_used": False,
+                }
+
+            original_writer = module.write_point_cloud_ply_from_gaussians
+            module.write_point_cloud_ply_from_gaussians = fake_write_point_cloud
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.config = {
+                "tiling": {
+                    "training_mode": "leaf_tile",
+                    "tile_id": "tile_00",
+                    "tile_manifest_path": str(tile_manifest_path),
+                    "view_bucket_manifest_path": str(view_bucket_path),
+                    "global_scaffold": {"source_dir": str(scaffold_dir)},
+                    "require_sfm_authority": True,
+                }
+            }
+            trainer.input_dir = input_dir
+            trainer.output_dir = root / "output"
+            trainer.temp_dir = root / "tmp"
+            trainer.tile_manifest_resolution = None
+
+            try:
+                with self.assertRaisesRegex(RuntimeError, "nonselective_scaffold_filter_retention"):
+                    trainer.prepare_leaf_tile_scaffold_initialization()
+            finally:
+                module.write_point_cloud_ply_from_gaussians = original_writer
+
     def test_run_nerfstudio_training_retries_with_explicit_dataparser_on_tyro_order_error(self):
         module = load_module_with_stubs()
 

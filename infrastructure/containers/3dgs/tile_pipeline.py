@@ -1641,19 +1641,29 @@ def write_point_cloud_ply_from_gaussians(
     )
     filter_bounds = None
     keep_mask = np.ones(total_count, dtype=bool)
+    fallback_reason = None
     if isinstance(bounds, Mapping):
         parsed_bounds = AxisAlignedBounds.from_dict(bounds)
         if not parsed_bounds.is_degenerate():
             filter_bounds = parsed_bounds.expanded(ratio=padding_ratio)
             keep_mask = filter_bounds.contains_points(positions)
+        else:
+            fallback_reason = "degenerate_bounds"
+    else:
+        fallback_reason = "missing_bounds"
     if not np.any(keep_mask):
         keep_mask = np.ones(total_count, dtype=bool)
         filter_bounds = None
+        fallback_reason = "empty_filter"
 
     colors = _colors_from_gaussian_vertex(vertex)
     kept_positions = positions[keep_mask]
     kept_colors = colors[keep_mask]
     filtered_count = int(kept_positions.shape[0])
+    rejected_count = max(0, total_count - filtered_count)
+    filter_retention_ratio = float(filtered_count) / float(total_count)
+    filter_rejection_ratio = float(rejected_count) / float(total_count)
+    filter_selective = filter_bounds is not None and rejected_count > 0
     inherited_cap = int(max_points or 0)
     downsample_strategy = None
     if inherited_cap > 0 and filtered_count > inherited_cap:
@@ -1695,12 +1705,17 @@ def write_point_cloud_ply_from_gaussians(
         "scaffold_filter_bounds": filter_bounds.to_dict() if filter_bounds is not None else None,
         "source_gaussian_count": total_count,
         "source_filtered_gaussian_count": filtered_count,
+        "source_rejected_gaussian_count": rejected_count,
+        "source_filter_retention_ratio": filter_retention_ratio,
+        "source_filter_rejection_ratio": filter_rejection_ratio,
         "inherited_gaussian_count": int(len(point_cloud)),
         "inherited_gaussian_cap": inherited_cap or None,
         "inherited_attributes": ["positions", "rgb_from_gaussian_dc"],
         "reinitialized_attributes": ["scale", "opacity", "rotation", "sh_rest", "appearance_embeddings"],
         "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
         "scaffold_init_downsample_strategy": downsample_strategy,
+        "scaffold_filter_selective": filter_selective,
+        "fallback_reason": fallback_reason,
         "fallback_used": filter_bounds is None,
     }
 
