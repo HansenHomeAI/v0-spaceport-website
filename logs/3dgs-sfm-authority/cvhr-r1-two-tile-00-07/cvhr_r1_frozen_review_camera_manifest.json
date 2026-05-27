@@ -1,0 +1,42 @@
+{
+  "dataset": "CV-HR",
+  "purpose": "R1 two-tile SfM-authority frozen smoke review for tile_00/tile_07 seam",
+  "selected_tile_ids": [
+    "tile_00",
+    "tile_07"
+  ],
+  "smoke_buckets": {
+    "near_detail": [
+      "DJI_00814.JPG",
+      "DJI_00836.JPG"
+    ],
+    "boundary": [
+      "DJI_00814.JPG",
+      "DJI_00815.JPG"
+    ],
+    "horizon": [
+      "DJI_00801.JPG",
+      "DJI_00809.JPG"
+    ]
+  },
+  "buckets": {
+    "near_detail": [
+      "DJI_00814.JPG",
+      "DJI_00815.JPG",
+      "DJI_00836.JPG",
+      "DJI_00837.JPG"
+    ],
+    "boundary": [
+      "DJI_00814.JPG",
+      "DJI_00815.JPG",
+      "DJI_00816.JPG",
+      "DJI_00817.JPG"
+    ],
+    "horizon": [
+      "DJI_00801.JPG",
+      "DJI_00802.JPG",
+      "DJI_00809.JPG",
+      "DJI_00810.JPG"
+    ]
+  }
+}

@@ -126,8 +126,11 @@ def prepare_review_input_dir(source_dir: Path, target_dir: Path) -> Path:
     for file_name in (
         "3dgs_tile_manifest.json",
         "3dgs_view_buckets.json",
+        "3dgs_seam_graph.json",
         "chunk_planner_manifest.json",
         "sfm_metadata.json",
+        "reducer_metadata.json",
+        "seam_merge_report.json",
         "transforms.json",
         "transforms.full.json",
         "colmap_image_name_map.json",
@@ -136,6 +139,37 @@ def prepare_review_input_dir(source_dir: Path, target_dir: Path) -> Path:
         if source_path.exists():
             shutil.copy2(source_path, target_dir / file_name)
     return target_dir
+
+
+def backfill_review_manifests_from_model(extracted_model_dir: Path, review_input_dir: Path) -> dict[str, Any]:
+    """Copy embedded 3DGS manifests into the review COLMAP root when needed."""
+    copied: list[str] = []
+    present: list[str] = []
+    missing: list[str] = []
+    for file_name in (
+        "3dgs_tile_manifest.json",
+        "3dgs_view_buckets.json",
+        "3dgs_seam_graph.json",
+        "chunk_planner_manifest.json",
+        "sfm_metadata.json",
+        "reducer_metadata.json",
+        "seam_merge_report.json",
+    ):
+        target_path = review_input_dir / file_name
+        if target_path.exists():
+            present.append(file_name)
+            continue
+        source_path = extracted_model_dir / file_name
+        if not source_path.exists():
+            missing.append(file_name)
+            continue
+        shutil.copy2(source_path, target_path)
+        copied.append(file_name)
+    return {
+        "copied": copied,
+        "already_present": present,
+        "missing_from_model": missing,
+    }
 
 
 def resolve_selected_tile_ids(
@@ -1254,6 +1288,9 @@ def main() -> None:
             max_images_per_bucket=max_images_per_bucket,
             review_camera_set=review_camera_set,
         )
+        manifest_backfill_summary = backfill_review_manifests_from_model(extracted_model_dir, review_input_dir)
+        if manifest_backfill_summary["copied"]:
+            logger.info("🧩 Backfilled review manifests from merged model artifact: %s", manifest_backfill_summary["copied"])
         merged_ply_path = extracted_model_dir / "merged" / "merged_splat.ply"
         if not merged_ply_path.exists():
             raise FileNotFoundError(f"Merged tiled model was missing: {merged_ply_path}")
@@ -1456,6 +1493,7 @@ def main() -> None:
             render_settings=render_settings,
         )
         manifest["preconversion_selection"] = preconversion_summary
+        manifest["manifest_backfill"] = manifest_backfill_summary
         quality_review_manifest_path = output_dir / "quality_review_manifest.json"
         visual_qa_manifest = build_visual_qa_manifest(
             model_tarball=model_tarball,

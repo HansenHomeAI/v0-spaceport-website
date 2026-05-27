@@ -8,3 +8,4 @@
 [2026-05-26T22:04:00Z] cvhr-dry-run -> SfM-authority planner fallback patched/tested; CV-HR no-spend plan passes with 9 tiles and ownership bounds -> commit/push and wait for fresh 3DGS image
 [2026-05-26T22:34:00Z] cvhr-canary-r0 -> scaffold failed cheaply: missing training/images; container patched for selected-image roots and targeted tests pass -> commit/push rebuild, stage partial input, rerun canary
 [2026-05-26T23:12:00Z] cvhr-canary-r0-selected-input -> scaffold 501s + tile_00 677s completed; leaf preflight passed with 74138 splats and 372 selected images -> commit/push evidence, then harden midrun checkpoint visual-smoke before two-tile seam canary
+[2026-05-27T00:05:00Z] cvhr-canary-r1-seam -> tile_00/tile_07 trained, leaf preflights passed, strict-core remote merge preflight passed; frozen review failed on missing review manifests before rendering -> patch review manifest backfill, commit/push rebuild, rerun frozen review

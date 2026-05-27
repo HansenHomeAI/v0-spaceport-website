@@ -1,0 +1,206 @@
+{
+    "events": [
+        {
+            "timestamp": 1779838671171,
+            "message": "2026-05-26 23:37:51,064 - INFO -    Max gauss ratio: 10.0",
+            "ingestionTime": 1779838676084
+        },
+        {
+            "timestamp": 1779838671171,
+            "message": "2026-05-26 23:37:51,064 - INFO -    Visualization mode: tensorboard",
+            "ingestionTime": 1779838676084
+        },
+        {
+            "timestamp": 1779838671171,
+            "message": "2026-05-26 23:37:51,064 - INFO -    Quit on train completion: True",
+            "ingestionTime": 1779838676084
+        },
+        {
+            "timestamp": 1779838671171,
+            "message": "2026-05-26 23:37:51,064 - INFO -    Training mode: leaf_tile",
+            "ingestionTime": 1779838676084
+        },
+        {
+            "timestamp": 1779838671171,
+            "message": "2026-05-26 23:37:51,064 - INFO -    Dataparser: transforms.json (via ns-process-data conversion)",
+            "ingestionTime": 1779838676084
+        },
+        {
+            "timestamp": 1779838671171,
+            "message": "2026-05-26 23:37:51,064 - INFO -    Selected images: 372",
+            "ingestionTime": 1779838676084
+        },
+        {
+            "timestamp": 1779838671171,
+            "message": "2026-05-26 23:37:51,064 - INFO -    Tile ID: tile_00",
+            "ingestionTime": 1779838676084
+        },
+        {
+            "timestamp": 1779838671171,
+            "message": "2026-05-26 23:37:51,065 - INFO - ℹ️  Bilateral guided processing disabled",
+            "ingestionTime": 1779838676084
+        },
+        {
+            "timestamp": 1779838671171,
+            "message": "2026-05-26 23:37:51,065 - INFO - 🖥️  A10G GPU optimization enabled (max-gauss-ratio: 10.0)",
+            "ingestionTime": 1779838676084
+        },
+        {
+            "timestamp": 1779838671171,
+            "message": "2026-05-26 23:37:51,065 - INFO - 🪟 Visualization backend for this run: tensorboard",
+            "ingestionTime": 1779838676084
+        },
+        {
+            "timestamp": 1779838671171,
+            "message": "2026-05-26 23:37:51,065 - INFO - 🚀 Executing NerfStudio training command:",
+            "ingestionTime": 1779838676084
+        },
+        {
+            "timestamp": 1779838671172,
+            "message": "2026-05-26 23:37:51,065 - INFO -    ns-train splatfacto-w-light --data /tmp/nerfstudio_training/converted_data --output-dir /opt/ml/checkpoints/nerfstudio_runs --vis tensorboard --max_num_iterations 400 --pipeline.model.sh_degree 3 --logging.steps_per_log 100 --viewer.quit_on_train_completion True --steps_per_eval_image 401 --steps_per_eval_all_images 401 --steps_per_save 200 --pipeline.model.rasterize_mode classic --pipeline.model.ssim_lambda 0.2 --pipeline.model.use_scale_regularization True --pipeline.model.cull_alpha_thresh 0.12 --pipeline.model.cull_scale_thresh 0.35 --pipeline.model.enable_bg_model True --pipeline.model.enable_alpha_loss True --pipeline.model.enable_robust_mask True --pipeline.model.bg_sh_degree 8 --pipeline.model.appearance_embed_dim 64 --pipeline.model.never_mask_upper 0.4 --pipeline.model.max-gauss-ratio 10.0",
+            "ingestionTime": 1779838676084
+        },
+        {
+            "timestamp": 1779838671172,
+            "message": "2026-05-26 23:37:51,065 - INFO - ============================================================",
+            "ingestionTime": 1779838676084
+        },
+        {
+            "timestamp": 1779838671172,
+            "message": "2026-05-26 23:37:51,065 - INFO - ⏱️  Training timeout: 3600 seconds",
+            "ingestionTime": 1779838676084
+        },
+        {
+            "timestamp": 1779838671172,
+            "message": "2026-05-26 23:37:51,065 - INFO - 🐍 PYTHONPATH for ns-train: /opt/ml/code:/opt/ml/code:",
+            "ingestionTime": 1779838676084
+        },
+        {
+            "timestamp": 1779838671172,
+            "message": "2026-05-26 23:37:51,065 - INFO - 📝 Streaming ns-train output to /opt/ml/model/ns_train.log",
+            "ingestionTime": 1779838676084
+        },
+        {
+            "timestamp": 1779838781162,
+            "message": "2026-05-26 23:39:40,007 - INFO - ✅ NerfStudio training completed successfully",
+            "ingestionTime": 1779838791800
+        },
+        {
+            "timestamp": 1779838781162,
+            "message": "2026-05-26 23:39:40,007 - INFO - 📊 Training output:",
+            "ingestionTime": 1779838791800
+        },
+        {
+            "timestamp": 1779838781162,
+            "message": "2026-05-26 23:39:40,007 - INFO -    #033[6A#033[1K",
+            "ingestionTime": 1779838791800
+        },
+        {
+            "timestamp": 1779838781162,
+            "message": "2026-05-26 23:39:40,008 - INFO -    Step (% Done)                                                                       #033[0m",
+            "ingestionTime": 1779838791800
+        },
+        {
+            "timestamp": 1779838781162,
+            "message": "2026-05-26 23:39:40,008 - INFO -    --------------------                                                                #033[0m",
+            "ingestionTime": 1779838791800
+        },
+        {
+            "timestamp": 1779838781162,
+            "message": "2026-05-26 23:39:40,008 - INFO -    0 (0.00%)           15 s, 971.543 ms     1 h, 46 m, 28 s                            #033[0m",
+            "ingestionTime": 1779838791800
+        },
+        {
+            "timestamp": 1779838781162,
+            "message": "2026-05-26 23:39:40,008 - INFO -    100 (25.00%)        94.701 ms            28 s, 410.151 ms     6.27 M                #033[0m",
+            "ingestionTime": 1779838791800
+        },
+        {
+            "timestamp": 1779838781162,
+            "message": "2026-05-26 23:39:40,008 - INFO -    200 (50.00%)        71.223 ms            14 s, 244.676 ms     8.04 M                #033[0m",
+            "ingestionTime": 1779838791800
+        },
+        {
+            "timestamp": 1779838781162,
+            "message": "2026-05-26 23:39:40,008 - INFO -    300 (75.00%)        77.665 ms            7 s, 766.496 ms      7.72 M                #033[0m",
+            "ingestionTime": 1779838791800
+        },
+        {
+            "timestamp": 1779838781162,
+            "message": "2026-05-26 23:39:40,008 - INFO -    399 (99.75%)                                                                        #033[0m",
+            "ingestionTime": 1779838791800
+        },
+        {
+            "timestamp": 1779838781162,
+            "message": "2026-05-26 23:39:40,008 - INFO -    ╭────────────────────────────────────────────── 🎉 Training Finished 🎉 ───────────────────────────────────────────────╮",
+            "ingestionTime": 1779838791800
+        },
+        {
+            "timestamp": 1779838781162,
+            "message": "2026-05-26 23:39:40,008 - INFO -    │                        ╷                                                                                             │",
+            "ingestionTime": 1779838791800
+        },
+        {
+            "timestamp": 1779838781162,
+            "message": "2026-05-26 23:39:40,008 - INFO -    │   Config File          │ /opt/ml/checkpoints/nerfstudio_runs/converted_data/splatfacto-w-light/2026-05-26_233817/…   │",
+            "ingestionTime": 1779838791800
+        },
+        {
+            "timestamp": 1779838781162,
+            "message": "2026-05-26 23:39:40,008 - INFO -    │   Checkpoint Directory │ /opt/ml/checkpoints/nerfstudio_runs/converted_data/splatfacto-w-light/2026-05-26_233817/…   │",
+            "ingestionTime": 1779838791800
+        },
+        {
+            "timestamp": 1779838781162,
+            "message": "2026-05-26 23:39:40,008 - INFO -    │                        ╵                                                                                             │",
+            "ingestionTime": 1779838791800
+        },
+        {
+            "timestamp": 1779838781162,
+            "message": "2026-05-26 23:39:40,008 - INFO -    ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯",
+            "ingestionTime": 1779838791800
+        },
+        {
+            "timestamp": 1779838781162,
+            "message": "2026-05-26 23:39:40,008 - INFO -    Printing profiling stats, from longest to shortest duration in seconds",
+            "ingestionTime": 1779838791800
+        },
+        {
+            "timestamp": 1779838781162,
+            "message": "2026-05-26 23:39:40,008 - INFO -    Trainer.train_iteration: 0.1162              ",
+            "ingestionTime": 1779838791800
+        },
+        {
+            "timestamp": 1779838781162,
+            "message": "2026-05-26 23:39:40,008 - INFO -    VanillaPipeline.get_train_loss_dict: 0.1006              ",
+            "ingestionTime": 1779838791800
+        },
+        {
+            "timestamp": 1779838781162,
+            "message": "2026-05-26 23:39:40,008 - INFO -    Trainer.eval_iteration: 0.0000              ",
+            "ingestionTime": 1779838791800
+        },
+        {
+            "timestamp": 1779838781162,
+            "message": "2026-05-26 23:39:40,104 - INFO - 📦 Staged compact checkpoint for sync: /opt/ml/checkpoints/resume_checkpoint (1 checkpoint file(s))",
+            "ingestionTime": 1779838791800
+        },
+        {
+            "timestamp": 1779838782419,
+            "message": "2026-05-26 23:39:41,235 - INFO - ☁️ Uploaded 5 compact checkpoint files to s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r1-seam-20260526/checkpoints/cvhr-sfm-auth-r1-seam-1779838097-tile-00",
+            "ingestionTime": 1779838791800
+        },
+        {
+            "timestamp": 1779838782419,
+            "message": "2026-05-26 23:39:41,235 - INFO - 📦 Exporting trained model artifacts...",
+            "ingestionTime": 1779838791800
+        },
+        {
+            "timestamp": 1779838782419,
+            "message": "2026-05-26 23:39:41,241 - INFO - 📄 Using config: /opt/ml/checkpoints/nerfstudio_runs/converted_data/splatfacto-w-light/2026-05-26_233817/config.yml",
+            "ingestionTime": 1779838791800
+        }
+    ],
+    "nextForwardToken": "f/39691731181189104722267970586347853837318404925252501527/s",
+    "nextBackwardToken": "b/39691728700275802876133207196890168079957301418520739871/s"
+}

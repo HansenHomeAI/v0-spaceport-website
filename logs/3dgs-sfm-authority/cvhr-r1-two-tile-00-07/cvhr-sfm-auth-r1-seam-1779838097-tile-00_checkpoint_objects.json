@@ -1,0 +1,46 @@
+{
+    "Prefix": "manual-validations/cvhr-sfm-auth-r1-seam-20260526/checkpoints/cvhr-sfm-auth-r1-seam-1779838097-tile-00/",
+    "Count": 8,
+    "Objects": [
+        {
+            "Key": "manual-validations/cvhr-sfm-auth-r1-seam-20260526/checkpoints/cvhr-sfm-auth-r1-seam-1779838097-tile-00/checkpoint_manifest.json",
+            "Size": 473,
+            "LastModified": "2026-05-26T23:39:41+00:00"
+        },
+        {
+            "Key": "manual-validations/cvhr-sfm-auth-r1-seam-20260526/checkpoints/cvhr-sfm-auth-r1-seam-1779838097-tile-00/config.yml",
+            "Size": 10801,
+            "LastModified": "2026-05-26T23:39:41+00:00"
+        },
+        {
+            "Key": "manual-validations/cvhr-sfm-auth-r1-seam-20260526/checkpoints/cvhr-sfm-auth-r1-seam-1779838097-tile-00/nerfstudio_models/step-000000200.ckpt.sagemaker-uploaded",
+            "Size": 0,
+            "LastModified": "2026-05-26T23:39:42+00:00"
+        },
+        {
+            "Key": "manual-validations/cvhr-sfm-auth-r1-seam-20260526/checkpoints/cvhr-sfm-auth-r1-seam-1779838097-tile-00/nerfstudio_models/step-000000399.ckpt",
+            "Size": 50019671,
+            "LastModified": "2026-05-26T23:39:41+00:00"
+        },
+        {
+            "Key": "manual-validations/cvhr-sfm-auth-r1-seam-20260526/checkpoints/cvhr-sfm-auth-r1-seam-1779838097-tile-00/nerfstudio_models/step-000000399.ckpt.sagemaker-uploading",
+            "Size": 0,
+            "LastModified": "2026-05-26T23:39:42+00:00"
+        },
+        {
+            "Key": "manual-validations/cvhr-sfm-auth-r1-seam-20260526/checkpoints/cvhr-sfm-auth-r1-seam-1779838097-tile-00/resume_checkpoint/checkpoint_manifest.json",
+            "Size": 473,
+            "LastModified": "2026-05-26T23:39:48+00:00"
+        },
+        {
+            "Key": "manual-validations/cvhr-sfm-auth-r1-seam-20260526/checkpoints/cvhr-sfm-auth-r1-seam-1779838097-tile-00/resume_checkpoint/config.yml",
+            "Size": 10801,
+            "LastModified": "2026-05-26T23:39:48+00:00"
+        },
+        {
+            "Key": "manual-validations/cvhr-sfm-auth-r1-seam-20260526/checkpoints/cvhr-sfm-auth-r1-seam-1779838097-tile-00/resume_checkpoint/nerfstudio_models/step-000000399.ckpt",
+            "Size": 50019671,
+            "LastModified": "2026-05-26T23:39:48+00:00"
+        }
+    ]
+}

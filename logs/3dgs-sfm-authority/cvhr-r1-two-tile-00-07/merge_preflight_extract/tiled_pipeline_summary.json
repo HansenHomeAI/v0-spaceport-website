@@ -1,0 +1,117 @@
+{
+  "created_at": "2026-05-26T23:49:49Z",
+  "training_completed": true,
+  "training_mode": "remote_no_training_tiled_merge",
+  "merge_mode": "strict_core",
+  "background_source_tile_id": "tile_00",
+  "protected_overlap_tile_ids": [],
+  "protected_overlap_mode": null,
+  "merge_plan": {
+    "artifact_inputs": [
+      {
+        "artifact_input_name": "artifact-00",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r1-seam-1779838097/3dgs/tiles/tile_00/cvhr-sfm-auth-r1-seam-1779838097-tile-00/output/model.tar.gz"
+      },
+      {
+        "artifact_input_name": "artifact-01",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r1-seam-1779838097/3dgs/tiles/tile_07/cvhr-sfm-auth-r1-seam-1779838097-tile-07/output/model.tar.gz"
+      }
+    ],
+    "selected_tile_ids": [
+      "tile_00",
+      "tile_07"
+    ],
+    "source_summary_json": "logs/3dgs-sfm-authority/cvhr_sfm_authority_r1_seam_00_07_merge_input_summary.json",
+    "tiles": [
+      {
+        "artifact_input_name": "artifact-00",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r1-seam-1779838097/3dgs/tiles/tile_00/cvhr-sfm-auth-r1-seam-1779838097-tile-00/output/model.tar.gz",
+        "cache_status": null,
+        "candidate_members": [
+          "splat.ply"
+        ],
+        "quality_gate_status": null,
+        "stage_name": "T0_tile_00",
+        "stage_type": "train",
+        "tile_id": "tile_00"
+      },
+      {
+        "artifact_input_name": "artifact-01",
+        "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r1-seam-1779838097/3dgs/tiles/tile_07/cvhr-sfm-auth-r1-seam-1779838097-tile-07/output/model.tar.gz",
+        "cache_status": null,
+        "candidate_members": [
+          "splat.ply"
+        ],
+        "quality_gate_status": null,
+        "stage_name": "T0_tile_07",
+        "stage_type": "train",
+        "tile_id": "tile_07"
+      }
+    ]
+  },
+  "extracted_tiles": [
+    {
+      "tile_id": "tile_00",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r1-seam-1779838097/3dgs/tiles/tile_00/cvhr-sfm-auth-r1-seam-1779838097-tile-00/output/model.tar.gz",
+      "artifact_input_name": "artifact-00",
+      "selected_member": "splat.ply",
+      "selected_size_bytes": 18387754,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_00"
+    },
+    {
+      "tile_id": "tile_07",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r1-seam-1779838097/3dgs/tiles/tile_07/cvhr-sfm-auth-r1-seam-1779838097-tile-07/output/model.tar.gz",
+      "artifact_input_name": "artifact-01",
+      "selected_member": "splat.ply",
+      "selected_size_bytes": 18387754,
+      "tile_output_dir": "/opt/ml/processing/output/artifact/tiles/tile_07"
+    }
+  ],
+  "merge_report": {
+    "merge_mode": "strict_core",
+    "protected_overlap_mode": null,
+    "protected_overlap_tile_ids": [],
+    "merged_ply": "/opt/ml/processing/output/artifact/merged/merged_splat.ply",
+    "tile_count": 2,
+    "source_gaussians": 148276,
+    "retained_gaussians": 148276,
+    "dropped_gaussians": 0,
+    "fallback_tile_count": 0,
+    "retain_all_tile_count": 0,
+    "fallback_reasons": [],
+    "tiles": [
+      {
+        "tile_id": "tile_00",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_00/splat.ply",
+        "source_gaussians": 74138,
+        "retained_gaussians": 74138,
+        "dropped_gaussians": 0,
+        "retention_strategy": "core_bounds",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true
+      },
+      {
+        "tile_id": "tile_07",
+        "source_ply": "/opt/ml/processing/output/artifact/tiles/tile_07/splat.ply",
+        "source_gaussians": 74138,
+        "retained_gaussians": 74138,
+        "dropped_gaussians": 0,
+        "retention_strategy": "core_bounds",
+        "fallback_used": false,
+        "fallback_reason": null,
+        "ownership_bounds_available": true
+      }
+    ],
+    "background_asset": {
+      "asset": "background_skybox.webp",
+      "source_tile_id": "tile_00",
+      "source_asset": "/opt/ml/processing/output/artifact/tiles/tile_00/background_skybox.webp",
+      "selection_score": 0.5995554906888981,
+      "selection_mode": "forced_tile",
+      "requested_source_tile_id": "tile_00",
+      "retained_gaussians": 74138
+    }
+  },
+  "model_artifact": "model.tar.gz"
+}

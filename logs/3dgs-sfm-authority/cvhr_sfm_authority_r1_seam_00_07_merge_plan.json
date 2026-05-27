@@ -1,0 +1,43 @@
+{
+  "artifact_inputs": [
+    {
+      "artifact_input_name": "artifact-00",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r1-seam-1779838097/3dgs/tiles/tile_00/cvhr-sfm-auth-r1-seam-1779838097-tile-00/output/model.tar.gz"
+    },
+    {
+      "artifact_input_name": "artifact-01",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r1-seam-1779838097/3dgs/tiles/tile_07/cvhr-sfm-auth-r1-seam-1779838097-tile-07/output/model.tar.gz"
+    }
+  ],
+  "selected_tile_ids": [
+    "tile_00",
+    "tile_07"
+  ],
+  "source_summary_json": "logs/3dgs-sfm-authority/cvhr_sfm_authority_r1_seam_00_07_merge_input_summary.json",
+  "tiles": [
+    {
+      "artifact_input_name": "artifact-00",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r1-seam-1779838097/3dgs/tiles/tile_00/cvhr-sfm-auth-r1-seam-1779838097-tile-00/output/model.tar.gz",
+      "cache_status": null,
+      "candidate_members": [
+        "splat.ply"
+      ],
+      "quality_gate_status": null,
+      "stage_name": "T0_tile_00",
+      "stage_type": "train",
+      "tile_id": "tile_00"
+    },
+    {
+      "artifact_input_name": "artifact-01",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r1-seam-1779838097/3dgs/tiles/tile_07/cvhr-sfm-auth-r1-seam-1779838097-tile-07/output/model.tar.gz",
+      "cache_status": null,
+      "candidate_members": [
+        "splat.ply"
+      ],
+      "quality_gate_status": null,
+      "stage_name": "T0_tile_07",
+      "stage_type": "train",
+      "tile_id": "tile_07"
+    }
+  ]
+}

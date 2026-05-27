@@ -1,0 +1,85 @@
+{
+    "ProcessingInputs": [
+        {
+            "InputName": "model",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r1-seam-1779838097/3dgs/merge/output/model.tar.gz",
+                "LocalPath": "/opt/ml/processing/input/model",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated"
+            }
+        },
+        {
+            "InputName": "colmap",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r1-two-tile-00-07-input-20260526/colmap",
+                "LocalPath": "/opt/ml/processing/input/colmap",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated"
+            }
+        },
+        {
+            "InputName": "review-manifest",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r1-seam-1779838097/3dgs/review/frozen-camera-manifest",
+                "LocalPath": "/opt/ml/processing/input/review",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated"
+            }
+        }
+    ],
+    "ProcessingOutputConfig": {
+        "Outputs": [
+            {
+                "OutputName": "quality-review",
+                "S3Output": {
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r1-seam-1779838097/3dgs/review/output",
+                    "LocalPath": "/opt/ml/processing/output",
+                    "S3UploadMode": "EndOfJob"
+                },
+                "AppManaged": false
+            }
+        ]
+    },
+    "ProcessingJobName": "cvhr-sfm-auth-r1-seam-1779838097-review",
+    "ProcessingResources": {
+        "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 80
+        }
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 1800
+    },
+    "AppSpecification": {
+        "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent526894313dgssfmauthority",
+        "ContainerEntrypoint": [
+            "python3",
+            "/opt/ml/code/run_tiled_quality_review.py"
+        ]
+    },
+    "Environment": {
+        "FROZEN_REVIEW_CAMERA_MANIFEST": "/opt/ml/processing/input/review/review_camera_manifest.json",
+        "QUALITY_REVIEW_CAMERA_SET": "smoke",
+        "QUALITY_REVIEW_MAX_GAUSSIANS_PER_VIEW": "0",
+        "QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET": "2",
+        "QUALITY_REVIEW_RENDER_SCALE": "0.5",
+        "QUALITY_REVIEW_TILE_IDS": "tile_00,tile_07",
+        "REQUIRE_SFM_AUTHORITY": "true"
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/cvhr-sfm-auth-r1-seam-1779838097-review",
+    "ProcessingJobStatus": "Failed",
+    "FailureReason": "AlgorithmError: , exit code: 1",
+    "ProcessingEndTime": "2026-05-26T18:01:36.502000-06:00",
+    "ProcessingStartTime": "2026-05-26T17:57:25.642000-06:00",
+    "LastModifiedTime": "2026-05-26T18:01:48.764000-06:00",
+    "CreationTime": "2026-05-26T17:56:47.512000-06:00"
+}

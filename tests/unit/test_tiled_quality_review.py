@@ -102,6 +102,31 @@ class TiledQualityReviewManifestTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "Refusing unsafe tar member"):
                 module.extract_model_artifact(archive_path, root / "extract")
 
+    def test_backfill_review_manifests_from_model_copies_missing_manifests(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            model_dir = root / "model"
+            review_dir = root / "review"
+            model_dir.mkdir()
+            review_dir.mkdir()
+            (model_dir / "3dgs_tile_manifest.json").write_text('{"tiles":[]}', encoding="utf-8")
+            (model_dir / "3dgs_view_buckets.json").write_text('{"near_detail_camera_ids":[]}', encoding="utf-8")
+            (review_dir / "sfm_metadata.json").write_text('{"source":"colmap"}', encoding="utf-8")
+
+            summary = module.backfill_review_manifests_from_model(model_dir, review_dir)
+
+            self.assertIn("3dgs_tile_manifest.json", summary["copied"])
+            self.assertIn("3dgs_view_buckets.json", summary["copied"])
+            self.assertIn("sfm_metadata.json", summary["already_present"])
+            self.assertTrue((review_dir / "3dgs_tile_manifest.json").exists())
+            self.assertTrue((review_dir / "3dgs_view_buckets.json").exists())
+            self.assertEqual(
+                json.loads((review_dir / "sfm_metadata.json").read_text(encoding="utf-8")),
+                {"source": "colmap"},
+            )
+
     def test_load_frozen_review_images_uses_smoke_bucket_keys(self):
         module = load_module_with_stubs()
 
