@@ -1,0 +1,14 @@
+{
+  "branch": "agent-52689431-3dgs-sfm-authority",
+  "codebuild_id": "spaceport-ml-containers:30e7e5bd-575e-433b-89c0-720604a05c20",
+  "decision": "do_not_widen",
+  "image_digest": "sha256:b025dffb86988de895d6bd38eea997b02379408abeca0254a0cdffc531cf9290",
+  "observations": [
+    "PLY SH channel-major decode fix removes the prior magenta/green false-color cast in near_detail and boundary views.",
+    "Near_detail and boundary geometry are recognizable, but renders remain smeared, washed out, and below absolute metric thresholds.",
+    "Horizon views remain blocked with blue/cyan foreground wash, high exposure error, and PSNR regression against R4/R3 baselines."
+  ],
+  "review_job_name": "cvhr-sfm-auth-r5-quality-1779917117-review-shfix",
+  "status": "blocked",
+  "updated": "2026-05-27T23:51:54Z"
+}
