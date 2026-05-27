@@ -1585,6 +1585,7 @@ def split_stage_csv(value: Any) -> list[str]:
 
 
 def build_visual_qa_plan(args: argparse.Namespace) -> dict[str, Any]:
+    reference_manifest_s3_uri = args.v18_review_manifest_s3_uri or args.baseline_review_manifest_s3_uri
     return {
         "required": True,
         "ai_review_required": True,
@@ -1608,6 +1609,7 @@ def build_visual_qa_plan(args: argparse.Namespace) -> dict[str, Any]:
             "color_or_exposure",
             "boundary_discontinuity",
         ],
+        "reference_review_manifest_s3_uri": reference_manifest_s3_uri,
         "v18_reference_manifest_s3_uri": args.v18_review_manifest_s3_uri,
     }
 
@@ -1704,12 +1706,16 @@ def validate_submit_guardrails(args: argparse.Namespace, summary: dict) -> None:
     max_estimated_usd = float(getattr(args, "max_estimated_usd", 0.0) or 0.0)
     experiment_id = str(getattr(args, "experiment_id", "") or "").strip()
     v18_review_manifest_s3_uri = str(getattr(args, "v18_review_manifest_s3_uri", "") or "").strip()
+    baseline_review_manifest_s3_uri = str(getattr(args, "baseline_review_manifest_s3_uri", "") or "").strip()
     if max_estimated_usd <= 0:
         errors.append("--max-estimated-usd is required for submitted training runs")
     if not experiment_id:
         errors.append("--experiment-id is required for submitted training runs")
-    if not v18_review_manifest_s3_uri:
-        errors.append("--v18-review-manifest-s3-uri is required so every paid run has a V18 comparison plan")
+    if not (v18_review_manifest_s3_uri or baseline_review_manifest_s3_uri):
+        errors.append(
+            "--baseline-review-manifest-s3-uri or --v18-review-manifest-s3-uri is required "
+            "so every paid run has a comparison plan"
+        )
     if not summary.get("visual_qa_plan"):
         errors.append("visual_qa_plan is required before submitted training runs")
     if not summary.get("viewer_smoke_plan"):
@@ -3211,12 +3217,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--baseline-review-manifest-s3-uri",
         default="",
-        help="Optional baseline quality_review_manifest.json prefix for quality review.",
+        help="Dataset-specific baseline quality_review_manifest.json prefix for quality review.",
     )
     parser.add_argument(
         "--v18-review-manifest-s3-uri",
         default="",
-        help="Required with --submit. V18 quality_review_manifest.json prefix used for non-regression comparison.",
+        help=(
+            "MD1 V18 quality_review_manifest.json prefix used for non-regression comparison. "
+            "Paid runs require this or --baseline-review-manifest-s3-uri."
+        ),
     )
     parser.add_argument(
         "--compatibility-gate",

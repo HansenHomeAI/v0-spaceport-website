@@ -97,6 +97,7 @@ class Tiled3DGSBenchmarkLauncherTests(unittest.TestCase):
                 "max_estimated_usd": 1.0,
                 "experiment_id": "coverage-test",
                 "v18_review_manifest_s3_uri": "s3://bucket/v18.json",
+                "baseline_review_manifest_s3_uri": "",
                 "enable_checkpoints": False,
                 "enable_spot": False,
                 "checkpoint_resume_s3_uri": "",
@@ -135,6 +136,51 @@ class Tiled3DGSBenchmarkLauncherTests(unittest.TestCase):
 
         with self.assertRaisesRegex(RuntimeError, "input image coverage gate blocked submit"):
             benchmark.validate_submit_guardrails(args, summary)
+
+    def test_submit_guardrail_accepts_dataset_baseline_without_v18(self):
+        args = type(
+            "Args",
+            (),
+            {
+                "submit": True,
+                "max_estimated_usd": 1.0,
+                "experiment_id": "cvhr-baseline-test",
+                "v18_review_manifest_s3_uri": "",
+                "baseline_review_manifest_s3_uri": "s3://bucket/cvhr-baseline.json",
+                "enable_checkpoints": False,
+                "enable_spot": False,
+                "checkpoint_resume_s3_uri": "",
+                "reuse_tile_cache": False,
+                "orchestration_mode": "fanout",
+                "skip_merge": True,
+                "skip_review": True,
+            },
+        )()
+        summary = {
+            "visual_qa_plan": {"enabled": True},
+            "viewer_smoke_plan": {"enabled": True},
+            "early_visual_smoke_plan": {
+                "abort_on_failure": True,
+                "checkpoint_steps": [200],
+                "sentinel_cameras": ["DJI_0001.JPG"],
+                "checkpoint_s3_uris": {"tile_07": "s3://bucket/checkpoints"},
+                "checkpoint_probe_command_template": "probe",
+                "visual_gate_command_template": "gate",
+                "stop_command_template": "stop",
+            },
+            "cost_estimate": {"estimated_usd": 0.1, "stage_estimates": []},
+            "sagemaker_env_value_length_violations": [],
+            "leaf_density_cap_preflight_violations": [],
+            "input_image_coverage_gate": {"status": "passed", "stages": []},
+            "stages": [
+                {
+                    "stage_type": "train",
+                    "training_mode": "leaf_tile",
+                }
+            ],
+        }
+
+        benchmark.validate_submit_guardrails(args, summary)
 
 
 if __name__ == "__main__":
