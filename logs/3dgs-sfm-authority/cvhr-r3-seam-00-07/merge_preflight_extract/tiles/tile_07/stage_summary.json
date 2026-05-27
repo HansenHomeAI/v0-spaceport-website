@@ -1,0 +1,8 @@
+{
+  "tile_id": "tile_07",
+  "stage_type": "train",
+  "source_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r3-tile07-twoinput-1779851548/3dgs/tiles/tile_07/cvhr-sfm-auth-r3-tile07-twoinput-1779851548-tile-07/output/model.tar.gz",
+  "source_member": "splat.ply",
+  "splat_size_bytes": 2487375,
+  "stage_elapsed_seconds": 0
+}

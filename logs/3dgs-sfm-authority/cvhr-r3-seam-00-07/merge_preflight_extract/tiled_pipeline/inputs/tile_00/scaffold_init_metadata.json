@@ -1,0 +1,8 @@
+{
+  "tile_id": "tile_00",
+  "scaffold_inheritance_mode": "remote_no_training_reuse",
+  "scaffold_source_artifact": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r2-framefix-1779848026/3dgs/tiles/tile_00/cvhr-sfm-auth-r2-framefix-1779848026-tile-00/output/model.tar.gz",
+  "source_member_candidates": [
+    "splat.ply"
+  ]
+}

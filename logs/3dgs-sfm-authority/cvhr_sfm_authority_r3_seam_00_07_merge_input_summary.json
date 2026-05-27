@@ -1,0 +1,32 @@
+{
+  "branch": "agent-52689431-3dgs-sfm-authority",
+  "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs:agent526894313dgssfmauthority",
+  "tile_selection_input_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r3-tile07-twoinput-1779851548/3dgs/inputs/tile-selection",
+  "merge_mode": "strict_core",
+  "selected_tile_ids": [
+    "tile_00",
+    "tile_07"
+  ],
+  "stages": [
+    {
+      "stage_name": "T0_tile_00",
+      "stage_type": "train",
+      "training_mode": "leaf_tile",
+      "tile_id": "tile_00",
+      "model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r2-framefix-1779848026/3dgs/tiles/tile_00/cvhr-sfm-auth-r2-framefix-1779848026-tile-00/output/model.tar.gz",
+      "source_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r2-framefix-1779848026/3dgs/tiles/tile_00/cvhr-sfm-auth-r2-framefix-1779848026-tile-00/output/model.tar.gz"
+    },
+    {
+      "stage_name": "T0_tile_07",
+      "stage_type": "train",
+      "training_mode": "leaf_tile",
+      "tile_id": "tile_07",
+      "model_artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r3-tile07-twoinput-1779851548/3dgs/tiles/tile_07/cvhr-sfm-auth-r3-tile07-twoinput-1779851548-tile-07/output/model.tar.gz",
+      "source_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r3-tile07-twoinput-1779851548/3dgs/tiles/tile_07/cvhr-sfm-auth-r3-tile07-twoinput-1779851548-tile-07/output/model.tar.gz"
+    }
+  ],
+  "post_leaf_preflight_summaries": {
+    "tile_00": "logs/3dgs-sfm-authority/cvhr_sfm_authority_r2_framefix_tile00_preflight.json",
+    "tile_07": "logs/3dgs-sfm-authority/cvhr_sfm_authority_r3_tile07_two_tile_input_preflight.json"
+  }
+}
