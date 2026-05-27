@@ -1467,6 +1467,12 @@ class NerfStudioTrainer:
             self.tile_manifest_resolution = None
             return None, None
 
+        sparse_support_candidates = [
+            manifest_root / "sparse" / "0",
+            Path(os.environ.get("SM_CHANNEL_TRAINING", "")) / "sparse" / "0",
+            self.input_dir / "sparse" / "0",
+        ]
+        sparse_support_dir = next((candidate for candidate in sparse_support_candidates if candidate.exists()), None)
         scaffold_config = tiling_config.get('global_scaffold', {})
         tile_manifest, view_buckets, resolution = resolve_tiled_input_manifests(
             tile_manifest_payload=tile_manifest_payload,
@@ -1476,7 +1482,7 @@ class NerfStudioTrainer:
             reducer_metadata=reducer_metadata_payload,
             seam_merge_report=seam_merge_report_payload,
             require_sfm_authority=bool(tiling_config.get('require_sfm_authority', False)),
-            colmap_sparse_dir=self.input_dir / "sparse" / "0",
+            colmap_sparse_dir=sparse_support_dir,
             transforms_payload=transforms_payload,
             image_name_map_payload=image_name_map_payload,
             global_scaffold_max_images=int(scaffold_config.get('max_images', 240) or 240),
@@ -3049,6 +3055,8 @@ class NerfStudioTrainer:
                 "--output-dir",
                 str(self.output_dir),
                 "--skip-background",
+                "--foreground-coordinate-frame",
+                "planner",
             ]
             export_log_path = self.output_dir / "scaffold_export.log"
             result = run_command_with_log_file(
@@ -3067,7 +3075,14 @@ class NerfStudioTrainer:
                 logger.error("❌ Scaffold export completed without splat.ply")
                 return False
 
+            generated_export_manifest_path = self.output_dir / "export_manifest.json"
+            generated_export_manifest = (
+                load_json(generated_export_manifest_path)
+                if generated_export_manifest_path.exists()
+                else {}
+            )
             export_manifest = {
+                **generated_export_manifest,
                 "mode": "gaussian_ply_export",
                 "reason": "global_scaffold exports Gaussian PLY for geometry-first leaf initialization",
                 "config": str(scaffold_config_path),

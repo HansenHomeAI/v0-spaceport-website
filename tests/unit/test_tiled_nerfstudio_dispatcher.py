@@ -1560,6 +1560,50 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             self.assertIn("--foreground-coordinate-frame", calls[0])
             self.assertEqual(calls[0][calls[0].index("--foreground-coordinate-frame") + 1], "planner")
 
+    def test_scaffold_export_requests_planner_foreground_frame(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.output_dir = root / "output"
+            trainer.output_dir.mkdir()
+            config_dir = root / "run"
+            config_dir.mkdir()
+            config_path = config_dir / "config.yml"
+            config_path.write_text("stub: true\n", encoding="utf-8")
+
+            calls: list[list[str]] = []
+
+            def fake_run(cmd, **_kwargs):
+                calls.append(list(cmd))
+                (trainer.output_dir / "splat.ply").write_text("ply\n", encoding="utf-8")
+                (trainer.output_dir / "export_manifest.json").write_text(
+                    json.dumps(
+                        {
+                            "foreground_coordinate_frame": "planner",
+                            "foreground_transform": {"coordinate_frame": "planner"},
+                        }
+                    ),
+                    encoding="utf-8",
+                )
+                return types.SimpleNamespace(returncode=0, stdout="done\n", stderr="")
+
+            original_run_command = module.run_command_with_log_file
+            module.run_command_with_log_file = fake_run
+            try:
+                success = trainer.persist_scaffold_training_artifacts(config_path)
+            finally:
+                module.run_command_with_log_file = original_run_command
+
+            self.assertTrue(success)
+            self.assertEqual(len(calls), 1)
+            self.assertIn("--foreground-coordinate-frame", calls[0])
+            self.assertEqual(calls[0][calls[0].index("--foreground-coordinate-frame") + 1], "planner")
+            manifest = json.loads((trainer.output_dir / "export_manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(manifest["foreground_coordinate_frame"], "planner")
+            self.assertEqual(manifest["foreground_transform"]["coordinate_frame"], "planner")
+
     def test_cap_exported_foreground_density_writes_summary(self):
         module = load_module_with_stubs()
 

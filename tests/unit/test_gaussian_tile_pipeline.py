@@ -245,7 +245,7 @@ class GaussianTilePipelineTests(unittest.TestCase):
         self.assertGreater(tile_zero["core_bounds"]["max_x"], 19.0)
         self.assertLess(tile_zero["core_bounds"]["min_z"], -5.0)
 
-    def test_synthesize_tiled_inputs_prefers_transformed_camera_centers_before_point_bounds(self):
+    def test_synthesize_tiled_inputs_prefers_planner_camera_centers_before_point_bounds(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             sparse_dir = Path(temp_dir) / "sparse" / "0"
             sparse_dir.mkdir(parents=True, exist_ok=True)
@@ -343,13 +343,86 @@ class GaussianTilePipelineTests(unittest.TestCase):
 
         self.assertTrue(resolution["ownership_bounds_available"])
         tile_zero = manifest["tiles"][0]
-        self.assertEqual(tile_zero["bounds_strategy"]["core"], "transformed_camera_centers")
-        self.assertAlmostEqual(tile_zero["core_bounds"]["min_x"], -11.0)
-        self.assertAlmostEqual(tile_zero["core_bounds"]["max_x"], 16.0)
-        self.assertAlmostEqual(tile_zero["core_bounds"]["min_y"], -10.0)
-        self.assertAlmostEqual(tile_zero["core_bounds"]["max_y"], 17.0)
-        self.assertAlmostEqual(tile_zero["core_bounds"]["min_z"], -9.0)
-        self.assertAlmostEqual(tile_zero["core_bounds"]["max_z"], 18.0)
+        self.assertEqual(tile_zero["bounds_strategy"]["core"], "planner_camera_centers")
+        self.assertAlmostEqual(tile_zero["core_bounds"]["min_x"], -22.0)
+        self.assertAlmostEqual(tile_zero["core_bounds"]["max_x"], 12.0)
+        self.assertAlmostEqual(tile_zero["core_bounds"]["min_y"], -12.0)
+        self.assertAlmostEqual(tile_zero["core_bounds"]["max_y"], 12.0)
+        self.assertAlmostEqual(tile_zero["core_bounds"]["min_z"], -12.0)
+        self.assertAlmostEqual(tile_zero["core_bounds"]["max_z"], 12.0)
+
+    def test_native_manifest_refreshes_raw_bounds_after_conversion(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            sparse_dir = Path(temp_dir) / "sparse" / "0"
+            sparse_dir.mkdir(parents=True, exist_ok=True)
+            (sparse_dir / "images.txt").write_text(
+                "\n".join(
+                    [
+                        "1 1 0 0 0 0 0 0 1 a.jpg",
+                        "",
+                        "2 1 0 0 0 -10 0 0 1 b.jpg",
+                        "",
+                        "3 1 0 0 0 -20 0 0 1 c.jpg",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            manifest, _view_buckets, resolution = tile_pipeline.resolve_tiled_input_manifests(
+                tile_manifest_payload={
+                    "version": "3dgs_tile_manifest_v1",
+                    "manifest_resolution": {"source_mode": "chunk_planner_synthesized_v1"},
+                    "global_scaffold_camera_ids": ["a.jpg", "b.jpg"],
+                    "all_image_names": ["a.jpg", "b.jpg", "c.jpg"],
+                    "tiles": [
+                        {
+                            "tile_id": "tile_00",
+                            "core_bounds": {
+                                "min_x": -1000.0,
+                                "max_x": 1000.0,
+                                "min_y": -1000.0,
+                                "max_y": 1000.0,
+                                "min_z": -1000.0,
+                                "max_z": 1000.0,
+                            },
+                            "overlap_bounds": {
+                                "min_x": -1000.0,
+                                "max_x": 1000.0,
+                                "min_y": -1000.0,
+                                "max_y": 1000.0,
+                                "min_z": -1000.0,
+                                "max_z": 1000.0,
+                            },
+                            "base_camera_ids": ["a.jpg", "b.jpg"],
+                            "border_camera_ids": ["c.jpg"],
+                            "context_camera_ids": [],
+                            "image_names": ["a.jpg", "b.jpg", "c.jpg"],
+                            "bounds_strategy": {"core": "observed_points", "overlap": "observed_points"},
+                        }
+                    ],
+                },
+                view_bucket_payload={"near_detail_camera_ids": ["a.jpg"], "boundary_camera_ids": ["c.jpg"]},
+                colmap_sparse_dir=sparse_dir,
+                transforms_payload={
+                    "applied_transform": [
+                        [1.0, 0.0, 0.0, 0.0],
+                        [0.0, 1.0, 0.0, 0.0],
+                        [0.0, 0.0, 1.0, 0.0],
+                    ],
+                    "scale": 0.1,
+                    "offset": [1.0, 2.0, 3.0],
+                },
+            )
+
+        tile_zero = manifest["tiles"][0]
+        self.assertEqual(resolution["ownership_bounds_refresh"]["status"], "refreshed")
+        self.assertEqual(tile_zero["bounds_strategy"]["core"], "planner_camera_centers")
+        self.assertEqual(tile_zero["bounds_strategy"]["overlap"], "planner_camera_centers")
+        self.assertEqual(tile_zero["core_bounds"]["min_x"], -11.0)
+        self.assertEqual(tile_zero["core_bounds"]["max_x"], 14.0)
+        self.assertEqual(tile_zero["overlap_bounds"]["max_x"], 15.0)
+        self.assertTrue(tile_zero["bounds_refreshed_from_converted_support"])
 
     def test_select_review_image_names_by_bucket_caps_per_bucket(self):
         review_images = tile_pipeline.select_review_image_names_by_bucket(

@@ -625,32 +625,34 @@ def load_transformed_camera_centers(
     return transformed_camera_centers
 
 
-def load_transformed_point_bounds(
+def load_applied_transform_affine(
     transforms_payload: Mapping[str, Any] | None,
-    image_name_map_payload: Mapping[str, Any] | None,
-    point_bounds_by_image: Mapping[str, Sequence[float]],
-) -> dict[str, list[float]]:
-    if not isinstance(transforms_payload, Mapping) or not point_bounds_by_image:
-        return {}
+) -> tuple[np.ndarray, float, np.ndarray] | None:
+    if not isinstance(transforms_payload, Mapping):
+        return None
 
     applied_transform_payload = transforms_payload.get("applied_transform")
     if not isinstance(applied_transform_payload, Sequence):
-        return {}
+        return None
     try:
         applied_transform = np.asarray(applied_transform_payload, dtype=np.float64)
     except (TypeError, ValueError):
-        return {}
+        return None
     if applied_transform.shape == (3, 4):
         affine = np.eye(4, dtype=np.float64)
         affine[:3, :4] = applied_transform
     elif applied_transform.shape == (4, 4):
         affine = applied_transform
     else:
-        return {}
+        return None
 
-    scale = transforms_payload.get("scale")
-    if not isinstance(scale, (int, float)):
+    try:
+        scale = float(transforms_payload.get("scale", 1.0))
+    except (TypeError, ValueError):
         scale = 1.0
+    if not np.isfinite(scale) or abs(scale) <= 1e-9:
+        scale = 1.0
+
     offset_payload = transforms_payload.get("offset")
     if isinstance(offset_payload, Sequence) and len(offset_payload) >= 3:
         try:
@@ -659,6 +661,41 @@ def load_transformed_point_bounds(
             offset = np.zeros(3, dtype=np.float64)
     else:
         offset = np.zeros(3, dtype=np.float64)
+
+    return affine, scale, offset
+
+
+def _apply_affine_to_point(point: Sequence[float], affine: np.ndarray, scale: float, offset: np.ndarray) -> np.ndarray:
+    homogeneous = np.asarray([float(point[0]), float(point[1]), float(point[2]), 1.0], dtype=np.float64)
+    return (affine @ homogeneous)[:3] * float(scale) + offset
+
+
+def load_planner_frame_camera_centers(
+    transforms_payload: Mapping[str, Any] | None,
+    camera_centers: Mapping[str, np.ndarray],
+) -> dict[str, np.ndarray]:
+    transform = load_applied_transform_affine(transforms_payload)
+    if transform is None or not camera_centers:
+        return {}
+    affine, scale, offset = transform
+    return {
+        image_name: _apply_affine_to_point(center, affine, scale, offset)
+        for image_name, center in camera_centers.items()
+    }
+
+
+def load_transformed_point_bounds(
+    transforms_payload: Mapping[str, Any] | None,
+    image_name_map_payload: Mapping[str, Any] | None,
+    point_bounds_by_image: Mapping[str, Sequence[float]],
+) -> dict[str, list[float]]:
+    if not isinstance(transforms_payload, Mapping) or not point_bounds_by_image:
+        return {}
+
+    transform = load_applied_transform_affine(transforms_payload)
+    if transform is None:
+        return {}
+    affine, scale, offset = transform
 
     by_original_name = {}
     if isinstance(image_name_map_payload, Mapping):
@@ -681,8 +718,7 @@ def load_transformed_point_bounds(
             ],
             dtype=np.float64,
         )
-        transformed = (affine @ corners.T).T[:, :3]
-        transformed = transformed * float(scale) + offset
+        transformed = (affine @ corners.T).T[:, :3] * float(scale) + offset[None, :]
         transformed_bounds_by_image[original_name] = [
             float(np.min(transformed[:, 0])),
             float(np.max(transformed[:, 0])),
@@ -698,6 +734,7 @@ def load_transformed_point_bounds(
 def selection_bounds_from_support(
     image_names: Sequence[str],
     *,
+    planner_camera_centers: Mapping[str, np.ndarray] | None = None,
     transformed_point_bounds_by_image: Mapping[str, Sequence[float]] | None = None,
     transformed_camera_centers: Mapping[str, np.ndarray] | None = None,
     camera_centers: Mapping[str, np.ndarray],
@@ -705,6 +742,15 @@ def selection_bounds_from_support(
     padding_m: float = DEFAULT_TILE_BOUNDS_PADDING_M,
 ) -> tuple[dict[str, float], str, bool]:
     ordered_names = ordered_unique(image_names)
+    planner_bounds: list[float] | None = None
+    for image_name in ordered_names:
+        center = (planner_camera_centers or {}).get(image_name)
+        if center is None:
+            continue
+        planner_bounds = _update_bounds(planner_bounds, center.tolist())
+    if planner_bounds is not None:
+        return _bounds_payload(planner_bounds, padding_m=padding_m), "planner_camera_centers", True
+
     transformed_bounds: list[float] | None = None
     for image_name in ordered_names:
         center = (transformed_camera_centers or {}).get(image_name)
@@ -750,6 +796,95 @@ def selection_bounds_from_support(
         return _camera_bounds_payload(camera_bounds), "camera_centers_fallback", True
 
     return zero_bounds(), "missing_sparse_support", False
+
+
+def refresh_tile_manifest_bounds_from_support(
+    manifest: Mapping[str, Any],
+    *,
+    transformed_point_bounds_by_image: Mapping[str, Sequence[float]] | None = None,
+    planner_camera_centers: Mapping[str, np.ndarray] | None = None,
+    transformed_camera_centers: Mapping[str, np.ndarray] | None = None,
+    camera_centers: Mapping[str, np.ndarray],
+    point_bounds_by_image: Mapping[str, Sequence[float]],
+    padding_m: float = DEFAULT_TILE_BOUNDS_PADDING_M,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Refresh raw/native manifest bounds into the export frame when converted support exists."""
+    refresh_strategies = {
+        "planner_camera_centers",
+        "transformed_camera_centers",
+        "transformed_observed_points",
+    }
+    refreshed_manifest = dict(manifest)
+    refreshed_tiles: list[dict[str, Any]] = []
+    refreshed_tile_count = 0
+    strategy_counts: dict[str, int] = {}
+    bounds_key_refreshed_count = 0
+
+    for tile_entry in manifest.get("tiles", []):
+        tile = dict(tile_entry)
+        strategies = dict(tile.get("bounds_strategy", {})) if isinstance(tile.get("bounds_strategy"), Mapping) else {}
+
+        core_names = ordered_unique(
+            tile.get("base_camera_ids", [])
+            or tile.get("core_camera_ids", [])
+            or tile.get("image_names", [])
+        )
+        overlap_names = ordered_unique(
+            tile.get("image_names", [])
+            or [
+                *tile.get("base_camera_ids", []),
+                *tile.get("border_camera_ids", []),
+                *tile.get("context_camera_ids", []),
+            ]
+        )
+
+        tile_refreshed = False
+        for key, names in (("core", core_names), ("overlap", overlap_names)):
+            if not names:
+                continue
+            bounds, strategy, available = selection_bounds_from_support(
+                names,
+                planner_camera_centers=planner_camera_centers,
+                transformed_point_bounds_by_image=transformed_point_bounds_by_image,
+                transformed_camera_centers=transformed_camera_centers,
+                camera_centers=camera_centers,
+                point_bounds_by_image=point_bounds_by_image,
+                padding_m=padding_m,
+            )
+            if not available or strategy not in refresh_strategies:
+                continue
+            tile[f"{key}_bounds"] = bounds
+            strategies[key] = strategy
+            strategy_counts[strategy] = strategy_counts.get(strategy, 0) + 1
+            bounds_key_refreshed_count += 1
+            tile_refreshed = True
+
+        if tile_refreshed:
+            refreshed_tile_count += 1
+            tile["bounds_refreshed_from_converted_support"] = True
+            tile["ownership_bounds_available"] = (
+                bounds_available(tile.get("core_bounds"))
+                or bounds_available(tile.get("overlap_bounds"))
+            )
+            tile["bounds_strategy"] = strategies
+        refreshed_tiles.append(tile)
+
+    refreshed_manifest["tiles"] = refreshed_tiles
+    summary = {
+        "status": "refreshed" if refreshed_tile_count else "unchanged",
+        "refreshed_tile_count": refreshed_tile_count,
+        "refreshed_bounds_key_count": bounds_key_refreshed_count,
+        "strategy_counts": strategy_counts,
+    }
+    if refreshed_tile_count:
+        refreshed_manifest.setdefault("manifest_resolution", {})
+        if isinstance(refreshed_manifest["manifest_resolution"], dict):
+            refreshed_manifest["manifest_resolution"]["ownership_bounds_available"] = all(
+                bool(tile.get("ownership_bounds_available", True))
+                for tile in refreshed_tiles
+            )
+            refreshed_manifest["manifest_resolution"]["ownership_bounds_refresh"] = summary
+    return refreshed_manifest, summary
 
 
 def normalize_view_bucket_payload(view_buckets: Mapping[str, Any] | None) -> dict[str, list[str]]:
@@ -1221,6 +1356,7 @@ def synthesize_tiled_inputs_from_chunk_planner(
                 break
     scaffold_names = scaffold_names[:global_scaffold_max_images]
     _image_id_to_name, camera_centers, point_bounds_by_image = load_sparse_bounds_support(colmap_sparse_dir)
+    planner_camera_centers = load_planner_frame_camera_centers(transforms_payload, camera_centers)
     transformed_camera_centers = load_transformed_camera_centers(transforms_payload, image_name_map_payload)
     transformed_point_bounds_by_image = load_transformed_point_bounds(
         transforms_payload,
@@ -1281,6 +1417,7 @@ def synthesize_tiled_inputs_from_chunk_planner(
 
         core_bounds, core_bounds_strategy, core_bounds_available = selection_bounds_from_support(
             core_names or image_names,
+            planner_camera_centers=planner_camera_centers,
             transformed_point_bounds_by_image=transformed_point_bounds_by_image,
             transformed_camera_centers=transformed_camera_centers,
             camera_centers=camera_centers,
@@ -1289,6 +1426,7 @@ def synthesize_tiled_inputs_from_chunk_planner(
         )
         overlap_bounds, overlap_bounds_strategy, overlap_bounds_available = selection_bounds_from_support(
             image_names or core_names,
+            planner_camera_centers=planner_camera_centers,
             transformed_point_bounds_by_image=transformed_point_bounds_by_image,
             transformed_camera_centers=transformed_camera_centers,
             camera_centers=camera_centers,
@@ -1392,6 +1530,23 @@ def resolve_tiled_input_manifests(
                     "seam_merge_report_sha256": stable_json_sha256(seam_merge_report),
                 }
             )
+        _image_id_to_name, camera_centers, point_bounds_by_image = load_sparse_bounds_support(colmap_sparse_dir)
+        planner_camera_centers = load_planner_frame_camera_centers(transforms_payload, camera_centers)
+        transformed_camera_centers = load_transformed_camera_centers(transforms_payload, image_name_map_payload)
+        transformed_point_bounds_by_image = load_transformed_point_bounds(
+            transforms_payload,
+            image_name_map_payload,
+            point_bounds_by_image,
+        )
+        manifest, bounds_refresh = refresh_tile_manifest_bounds_from_support(
+            manifest,
+            planner_camera_centers=planner_camera_centers,
+            transformed_point_bounds_by_image=transformed_point_bounds_by_image,
+            transformed_camera_centers=transformed_camera_centers,
+            camera_centers=camera_centers,
+            point_bounds_by_image=point_bounds_by_image,
+            padding_m=tile_bounds_padding_m,
+        )
         manifest = enrich_tile_manifest_support_metadata(
             manifest,
             view_buckets,
@@ -1408,7 +1563,11 @@ def resolve_tiled_input_manifests(
             "tile_count": len(manifest.get("tiles", [])),
             "scaffold_count": len(manifest.get("global_scaffold_camera_ids", [])),
         }
+        if bounds_refresh["status"] == "refreshed":
+            resolution["ownership_bounds_refresh"] = bounds_refresh
         manifest.setdefault("manifest_resolution", resolution)
+        if isinstance(manifest.get("manifest_resolution"), dict) and bounds_refresh["status"] == "refreshed":
+            manifest["manifest_resolution"].update(resolution)
         return manifest, view_buckets, resolution
 
     if chunk_planner_manifest is None:
