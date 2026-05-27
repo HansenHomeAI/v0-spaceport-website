@@ -523,6 +523,180 @@ def tile_selected_image_names(tile_entry: dict) -> list[str]:
     )
 
 
+def evenly_spaced_subset(values: Sequence[str], limit: int) -> list[str]:
+    unique_values = ordered_unique(values)
+    if limit <= 0:
+        return []
+    if len(unique_values) <= limit:
+        return unique_values
+    if limit == 1:
+        return [unique_values[len(unique_values) // 2]]
+    sampled_indices = [
+        round(index * (len(unique_values) - 1) / (limit - 1))
+        for index in range(limit)
+    ]
+    sampled = ordered_unique(unique_values[index] for index in sampled_indices)
+    if len(sampled) >= limit:
+        return sampled[:limit]
+    for value in unique_values:
+        if value in sampled:
+            continue
+        sampled.append(value)
+        if len(sampled) >= limit:
+            break
+    return sampled[:limit]
+
+
+def limit_selected_image_names(
+    selected_image_names: Sequence[str],
+    *,
+    view_buckets: dict | None = None,
+    max_images: int = 0,
+    selection_stride: int = 1,
+) -> list[str]:
+    working_names = ordered_unique(selected_image_names)
+    stride = max(1, int(selection_stride or 1))
+    if stride > 1:
+        working_names = working_names[::stride]
+    if max_images <= 0 or len(working_names) <= max_images:
+        return working_names
+
+    buckets = view_buckets or {}
+    chosen: list[str] = []
+    chosen_set: set[str] = set()
+    for bucket_name, target in (
+        ("boundary_camera_ids", 2),
+        ("horizon_camera_ids", 1),
+        ("near_detail_camera_ids", 1),
+    ):
+        if len(chosen) >= max_images:
+            break
+        bucket_candidates = [
+            image_name
+            for image_name in buckets.get(bucket_name, [])
+            if image_name in working_names and image_name not in chosen_set
+        ]
+        bucket_limit = min(target, max_images - len(chosen), len(bucket_candidates))
+        for image_name in evenly_spaced_subset(bucket_candidates, bucket_limit):
+            if image_name in chosen_set:
+                continue
+            chosen.append(image_name)
+            chosen_set.add(image_name)
+            if len(chosen) >= max_images:
+                break
+
+    remaining = [image_name for image_name in working_names if image_name not in chosen_set]
+    chosen.extend(evenly_spaced_subset(remaining, max_images - len(chosen)))
+    return chosen[:max_images]
+
+
+def _stage_env_int(stage: "BenchmarkStage", key: str, default: int = 0) -> int:
+    try:
+        return int((stage.environment or {}).get(key, default) or default)
+    except (TypeError, ValueError):
+        return default
+
+
+def selected_image_names_for_stage(tile_manifest: dict, view_buckets: dict, stage: "BenchmarkStage") -> list[str]:
+    if stage.stage_type != "train":
+        return []
+    if stage.training_mode == "global_scaffold":
+        selected = ordered_unique(tile_manifest.get("global_scaffold_camera_ids", []))
+        if not selected:
+            selected = ordered_unique(tile_manifest.get("all_image_names", []))
+    elif stage.training_mode == "leaf_tile":
+        if not stage.tile_id:
+            return []
+        tile_by_id = {str(tile.get("tile_id")): tile for tile in tile_manifest.get("tiles", [])}
+        tile_entry = tile_by_id.get(str(stage.tile_id))
+        if not isinstance(tile_entry, dict):
+            return []
+        selected = tile_selected_image_names(tile_entry)
+    else:
+        return []
+
+    return limit_selected_image_names(
+        selected,
+        view_buckets=view_buckets,
+        max_images=_stage_env_int(stage, "TRAINING_MAX_SELECTED_IMAGES", int(stage.max_selected_images or 0)),
+        selection_stride=_stage_env_int(stage, "TRAINING_SELECTION_STRIDE", 1),
+    )
+
+
+def list_colmap_s3_image_basenames(colmap_s3_uri: str) -> set[str]:
+    image_prefix_uri = f"{normalize_s3_prefix(colmap_s3_uri)}/images/"
+    bucket, prefix = parse_s3_uri(image_prefix_uri)
+    names: set[str] = set()
+    continuation_token = ""
+    while True:
+        request_args = ["s3api", "list-objects-v2", "--bucket", bucket, "--prefix", prefix]
+        if continuation_token:
+            request_args.extend(["--continuation-token", continuation_token])
+        payload = aws_json(*request_args)
+        for obj in payload.get("Contents", []) or []:
+            key = str(obj.get("Key") or "")
+            if not key or key.endswith("/"):
+                continue
+            names.add(Path(key).name)
+        if not payload.get("IsTruncated"):
+            break
+        continuation_token = str(payload.get("NextContinuationToken") or "")
+        if not continuation_token:
+            break
+    return names
+
+
+def build_input_image_coverage_gate(
+    *,
+    colmap_s3_uri: str,
+    tile_manifest: dict,
+    view_buckets: dict,
+    stages: Sequence["BenchmarkStage"],
+    available_image_names: set[str] | None = None,
+) -> dict:
+    if not colmap_s3_uri.startswith("s3://"):
+        return {"status": "skipped", "reason": "colmap_input_not_s3"}
+    available = available_image_names
+    if available is None:
+        available = list_colmap_s3_image_basenames(colmap_s3_uri)
+    normalized_available = {Path(name).name for name in available}
+
+    stage_reports: list[dict] = []
+    missing_total = 0
+    for stage in stages:
+        selected = selected_image_names_for_stage(tile_manifest, view_buckets, stage)
+        if not selected:
+            continue
+        missing = [
+            Path(image_name).name
+            for image_name in selected
+            if Path(image_name).name not in normalized_available
+        ]
+        missing_total += len(missing)
+        stage_reports.append(
+            {
+                "stage_name": stage.stage_name,
+                "tile_id": stage.tile_id,
+                "training_mode": stage.training_mode,
+                "required_image_count": len(selected),
+                "available_image_count": len(selected) - len(missing),
+                "missing_image_count": len(missing),
+                "missing_images_sample": missing[:20],
+            }
+        )
+
+    blocked_stages = [report for report in stage_reports if int(report.get("missing_image_count") or 0) > 0]
+    return {
+        "status": "blocked" if blocked_stages else "passed",
+        "colmap_s3_uri": normalize_s3_prefix(colmap_s3_uri),
+        "input_image_count": len(normalized_available),
+        "stage_count": len(stage_reports),
+        "blocked_stage_count": len(blocked_stages),
+        "missing_image_count": missing_total,
+        "stages": stage_reports,
+    }
+
+
 def tile_role_count(tile_entry: dict, role_name: str) -> int:
     selected_by_role = tile_entry.get("selected_cameras_by_role") or {}
     if isinstance(selected_by_role, dict):
@@ -1553,6 +1727,14 @@ def validate_submit_guardrails(args: argparse.Namespace, summary: dict) -> None:
         errors.append("early_visual_smoke_plan must name visual_gate_command_template")
     if not early_visual_smoke_plan.get("stop_command_template"):
         errors.append("early_visual_smoke_plan must name stop_command_template")
+    input_image_gate = summary.get("input_image_coverage_gate") or {}
+    if input_image_gate.get("status") == "blocked":
+        blocked = [
+            f"{stage.get('stage_name')} missing {stage.get('missing_image_count')} images"
+            for stage in input_image_gate.get("stages") or []
+            if int(stage.get("missing_image_count") or 0) > 0
+        ]
+        errors.append("input image coverage gate blocked submit: " + "; ".join(blocked[:5]))
     estimate = (summary.get("cost_estimate") or {}).get("estimated_usd")
     if estimate is not None and max_estimated_usd > 0 and float(estimate) > max_estimated_usd:
         errors.append(f"estimated cost ${float(estimate):.2f} exceeds --max-estimated-usd ${max_estimated_usd:.2f}")
@@ -3282,6 +3464,16 @@ def main() -> int:
         max_runtime_seconds=args.training_max_runtime_seconds,
         baseline_iterations=args.tile_max_iterations,
     )
+    input_image_coverage_gate = (
+        build_input_image_coverage_gate(
+            colmap_s3_uri=colmap_s3_uri,
+            tile_manifest=tile_manifest,
+            view_buckets=view_buckets,
+            stages=stages,
+        )
+        if args.submit or args.require_sfm_authority
+        else {"status": "skipped", "reason": "submit_or_sfm_authority_not_requested"}
+    )
 
     summary: dict = {
         "branch": branch_name,
@@ -3345,6 +3537,7 @@ def main() -> int:
         "visual_qa_plan": build_visual_qa_plan(args),
         "viewer_smoke_plan": build_viewer_smoke_plan(),
         "early_visual_smoke_plan": build_early_visual_smoke_plan(stages),
+        "input_image_coverage_gate": input_image_coverage_gate,
         "cost_estimate": cost_estimate,
         "sagemaker_env_value_length_violations": sagemaker_env_value_length_violations(
             {"stages": [stage.to_dict() for stage in stages]}
