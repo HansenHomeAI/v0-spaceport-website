@@ -1,0 +1,18 @@
+{
+    "imageDetails": [
+        {
+            "registryId": "975050048887",
+            "repositoryName": "spaceport/3dgs",
+            "imageDigest": "sha256:5c3213e7359e090ef6a51dfe947939ef3e4c319c45d0c4ad86dae7cf1fe9a618",
+            "imageTags": [
+                "latest",
+                "agent526894313dgssfmauthority"
+            ],
+            "imageSizeInBytes": 9202687764,
+            "imagePushedAt": "2026-05-26T19:29:40.746000-06:00",
+            "imageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "artifactMediaType": "application/vnd.docker.container.image.v1+json",
+            "imageStatus": "ACTIVE"
+        }
+    ]
+}
