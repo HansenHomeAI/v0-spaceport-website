@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import argparse
-import datetime as _dt
 import os
 import re
+import secrets
 import shlex
 import shutil
 import subprocess
@@ -33,9 +33,9 @@ def _slugify(text: str, *, max_length: int = 30) -> str:
 
 
 def generate_branch_name(objective: str) -> str:
-    timestamp = _dt.datetime.utcnow().strftime("%Y%m%d%H%M%S")
     suffix = _slugify(objective, max_length=18)
-    return f"agent-{timestamp}-{suffix}"
+    branch_id = 10_000_000 + secrets.randbelow(90_000_000)
+    return f"agent-{branch_id}-{suffix}"
 
 
 def ensure_codex_available(command: str) -> Optional[str]:
@@ -72,6 +72,8 @@ def build_instruction_block(
         - Do not modify or rotate secrets. Pause and request maintainer approval for any secret change.
         - Apply smallest viable fixes; avoid refactors unless necessary for the objective.
         - If a deployment or CI cycle fails twice, halt and provide a written diagnosis.
+        - Preview branches are auth read-only by default. Add `.spaceport/deploy-auth-preview` only when the branch intentionally needs to redeploy the shared staging auth stack on every push.
+        - If you branch from an auth-enabled preview branch, the marker file is inherited until you remove it.
 
         ## Required Loop
         1. Checkout `{DEFAULT_BRANCH}`, fetch, and create `{branch_name}`.
@@ -83,8 +85,8 @@ def build_instruction_block(
            - Use `gh run watch --branch {branch_name}` for `Deploy Next.js to Cloudflare Pages`.
            - Record run URLs and surface any failing jobs (`build-containers`, `cdk-deploy`).
         4. Discover the Cloudflare preview URL:
-           - Prefer workflow outputs (hash + alias URLs).
-           - Otherwise query `wrangler pages deployment list --project-name <preview-project>` and resolve latest deployment.
+           - Read the `PREVIEW_URL` emitted by the Pages workflow for that same branch run.
+           - Do not query the project's latest deployment; concurrent branch deploys can return another branch's preview.
         5. Execute baseline end-to-end checks via Playwright:
            - Set BASE_URL environment variable to preview URL
            - Run `{playwright_task}` (adjust task if baseline scripts change).

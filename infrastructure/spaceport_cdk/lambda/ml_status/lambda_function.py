@@ -6,6 +6,34 @@ from datetime import datetime
 # Initialize AWS clients
 stepfunctions = boto3.client('stepfunctions')
 
+
+def extract_edge_bundle_url(execution_response):
+    output = execution_response.get('output')
+    if not output:
+        return None
+
+    try:
+        parsed = json.loads(output)
+    except (TypeError, json.JSONDecodeError):
+        return None
+
+    publish_result = parsed.get('publishResult') or {}
+    if isinstance(publish_result, dict):
+        edge_bundle_url = publish_result.get('edgeBundleUrl')
+        if isinstance(edge_bundle_url, str) and edge_bundle_url.strip():
+            return edge_bundle_url.strip()
+
+    notification_result = parsed.get('notificationResult') or {}
+    if isinstance(notification_result, dict):
+        payload = notification_result.get('Payload') or {}
+        if isinstance(payload, dict):
+            edge_bundle_url = payload.get('edgeBundleUrl')
+            if isinstance(edge_bundle_url, str) and edge_bundle_url.strip():
+                return edge_bundle_url.strip()
+
+    return None
+
+
 def lambda_handler(event, context):
     """
     Lambda function to get ML processing pipeline status
@@ -59,6 +87,7 @@ def lambda_handler(event, context):
         # Parse execution status
         status = response['status']  # RUNNING, SUCCEEDED, FAILED, TIMED_OUT, ABORTED
         start_time = response['startDate']
+        edge_bundle_url = extract_edge_bundle_url(response) if status == 'SUCCEEDED' else None
         
         # Get detailed execution history to determine current stage
         history_response = stepfunctions.get_execution_history(
@@ -89,7 +118,8 @@ def lambda_handler(event, context):
                 'details': details,
                 'startTime': start_time.isoformat(),
                 'elapsedSeconds': int(elapsed_seconds),
-                'estimatedCompletionSeconds': completion_estimate
+                'estimatedCompletionSeconds': completion_estimate,
+                **({'edgeBundleUrl': edge_bundle_url} if edge_bundle_url else {})
             })
         }
         

@@ -1,0 +1,8 @@
+{
+  "name": "spaces-thumbnail-worker",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@cloudflare/puppeteer": "^1.0.5"
+  }
+}

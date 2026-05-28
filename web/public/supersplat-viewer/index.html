@@ -301,30 +301,7 @@
             </symbol>
         </svg>
 
-        <!-- Application Script -->
-        <script type="module">
-            import { main } from './index.js';
-
-            const { config, settings } = window.sse;
-            const { poster } = config;
-
-            // Show the poster image
-            if (poster) {
-                const element = document.getElementById('poster');
-                element.style.backgroundImage = `url(${poster.src})`;
-                element.style.display = 'block';
-                element.style.filter = 'blur(40px)';
-            }
-
-            document.addEventListener('DOMContentLoaded', async () => {
-                const [appElement, cameraElement, settingsJson] = await Promise.all([
-                    document.querySelector('pc-app').ready(),
-                    document.querySelector('pc-entity[name="camera"]').ready(),
-                    settings
-                ]);
-
-                const viewer = await main(appElement.app, cameraElement.entity, settingsJson, config);
-            });
-        </script>
+        <!-- Application Script (Spaceport SOGS bridge: postMessage + guides) -->
+        <script type="module" src="./sogs-bridge.mjs"></script>
     </body>
 </html>

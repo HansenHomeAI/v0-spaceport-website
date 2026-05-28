@@ -20,6 +20,8 @@ class DeploymentContextTests(unittest.TestCase):
         self.assertEqual(context.ml_stack_name, "SpaceportMLPipelineProductionStack")
         self.assertEqual(context.auth_stack_name, "SpaceportAuthProductionStack")
         self.assertTrue(context.deploy_auth_stack)
+        self.assertFalse(context.reuse_shared_preview_resources)
+        self.assertEqual(context.shared_preview_resource_suffix, "prod")
 
     def test_development_resolves_shared_staging_context(self):
         context = resolve_deployment_context("development")
@@ -31,6 +33,8 @@ class DeploymentContextTests(unittest.TestCase):
         self.assertEqual(context.auth_stack_name, "SpaceportAuthStagingStack")
         self.assertTrue(context.allow_fallback_imports)
         self.assertFalse(context.reuse_shared_ecr)
+        self.assertFalse(context.reuse_shared_preview_resources)
+        self.assertEqual(context.shared_preview_resource_suffix, "staging")
 
     def test_feature_branch_resolves_deterministic_branch_preview_context(self):
         branch_name = "codex/agent-26030402-preview-backend-isolation"
@@ -45,6 +49,8 @@ class DeploymentContextTests(unittest.TestCase):
         self.assertEqual(first.auth_stack_name, "SpaceportAuthStagingStack")
         self.assertFalse(first.deploy_auth_stack)
         self.assertFalse(first.allow_fallback_imports)
+        self.assertTrue(first.reuse_shared_preview_resources)
+        self.assertEqual(first.shared_preview_resource_suffix, "staging")
         self.assertTrue(first.reuse_shared_auth)
         self.assertTrue(first.reuse_shared_ecr)
         self.assertEqual(first.spaceport_stack_name, f"SpaceportPreview{first.branch_id.upper()}Stack")
@@ -73,6 +79,8 @@ class DeploymentContextTests(unittest.TestCase):
         self.assertEqual(env_config["spaceportStackName"], context.spaceport_stack_name)
         self.assertEqual(env_config["mlStackName"], context.ml_stack_name)
         self.assertEqual(env_config["sharedAuthStackName"], "SpaceportAuthStagingStack")
+        self.assertTrue(env_config["reuseSharedPreviewResources"])
+        self.assertEqual(env_config["sharedPreviewResourceSuffix"], "staging")
 
 
 if __name__ == "__main__":

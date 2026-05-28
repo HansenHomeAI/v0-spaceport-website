@@ -32,6 +32,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -212,10 +214,96 @@ jobs:
           exit 1
         fi
 
+    - name: Detect deploy scope
+      if: github.event_name == 'push'
+      id: deploy_scope
+      run: |
+        set -euo pipefail
+        CHANGED_FILES_EMPTY="false"
+        BASE_SHA="$(jq -r '.before // empty' "$GITHUB_EVENT_PATH")"
+        if [ "$BASE_SHA" = "null" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+          BASE_SHA=""
+        fi
+
+        CHANGED_FILES=""
+        if [ -n "${BASE_SHA}" ]; then
+          CHANGED_FILES="$(git diff --name-only "${BASE_SHA}" "${GITHUB_SHA}" || true)"
+        fi
+        if [ -z "${CHANGED_FILES}" ] && git rev-parse "${GITHUB_SHA}^" >/dev/null 2>&1; then
+          CHANGED_FILES="$(git diff --name-only "${GITHUB_SHA}^" "${GITHUB_SHA}" || true)"
+        fi
+        if [ -z "${CHANGED_FILES}" ]; then
+          CHANGED_FILES_EMPTY="true"
+          echo "Changed file detection returned an empty set for ${GITHUB_SHA}; failing safe by forcing stack deploy."
+          STACK_DEPLOY_REQUIRED="true"
+        fi
+        printf 'Changed files for %s:\n%s\n' "${GITHUB_SHA}" "${CHANGED_FILES}"
+
+        STACK_DEPLOY_REQUIRED="${STACK_DEPLOY_REQUIRED:-false}"
+        SPACEPORT_STACK_CHANGED="false"
+        ML_STACK_CHANGED="false"
+        LAMBDA_CHANGED="false"
+        AUTH_STACK_CHANGED="false"
+        EXPLORE_API_MISSING="false"
+
+        if printf '%s\n' "${CHANGED_FILES}" | grep -Eq '^(infrastructure/spaceport_cdk/|scripts/resolve_preview_context\.py)'; then
+          STACK_DEPLOY_REQUIRED="true"
+          echo "CDK stack sources changed - will deploy stacks"
+        elif [ "${CHANGED_FILES_EMPTY}" = "true" ]; then
+          echo "Changed file list is empty - preserving fail-safe stack deploy"
+        else
+          echo "No CDK stack source changes detected - will skip stack deploy"
+        fi
+
+        if printf '%s\n' "${CHANGED_FILES}" | grep -Eq '^(infrastructure/spaceport_cdk/(app\.py|requirements\.txt|setup\.py)|infrastructure/spaceport_cdk/spaceport_cdk/(deployment_context|auth_stack)\.py)'; then
+          SPACEPORT_STACK_CHANGED="true"
+          ML_STACK_CHANGED="true"
+          echo "Shared CDK sources changed - will deploy both app and ML stacks"
+        fi
+
+        if printf '%s\n' "${CHANGED_FILES}" | grep -Eq '^(infrastructure/spaceport_cdk/spaceport_cdk/ml_pipeline_stack\.py|infrastructure/spaceport_cdk/lambda/(ml_|start_ml_job|stop_job))'; then
+          ML_STACK_CHANGED="true"
+          echo "ML pipeline sources changed - will deploy ML stack"
+        fi
+
+        if printf '%s\n' "${CHANGED_FILES}" | grep -Eq '^(infrastructure/spaceport_cdk/spaceport_cdk/spaceport_stack\.py|infrastructure/spaceport_cdk/lambda/(drone_path|feedback|file_upload|waitlist|file_metadata|explore_public|subscription|beta_access|model_delivery_admin))'; then
+          SPACEPORT_STACK_CHANGED="true"
+          echo "Application API sources changed - will deploy app stack"
+        fi
+
+        if printf '%s\n' "${CHANGED_FILES}" | grep -q '^infrastructure/spaceport_cdk/lambda/'; then
+          LAMBDA_CHANGED="true"
+          echo "Lambda functions changed - will deploy branch-specific Lambda versions"
+        fi
+
+        if printf '%s\n' "${CHANGED_FILES}" | grep -Eq '^(infrastructure/spaceport_cdk/app\.py|infrastructure/spaceport_cdk/spaceport_cdk/deployment_context\.py|infrastructure/spaceport_cdk/spaceport_cdk/auth_stack\.py|infrastructure/spaceport_cdk/lambda/explore_public/|infrastructure/spaceport_cdk/lambda/model_delivery_admin/|infrastructure/cloudflare/spaces-thumbnail/)'; then
+          AUTH_STACK_CHANGED="true"
+          echo "Auth-backed explore files changed - will deploy shared auth stack for this branch"
+        fi
+
+        if [ "${DEPLOYMENT_CLASS}" = "branch-preview" ]; then
+          CURRENT_EXPLORE_API_URL=$(aws cloudformation describe-stacks \
+            --stack-name "${AUTH_STACK_NAME}" \
+            --query "Stacks[0].Outputs[?OutputKey=='ExplorePublicApiUrl'].OutputValue" \
+            --output text 2>/dev/null || true)
+          if [ -z "${CURRENT_EXPLORE_API_URL}" ] || [ "${CURRENT_EXPLORE_API_URL}" = "None" ]; then
+            EXPLORE_API_MISSING="true"
+            AUTH_STACK_CHANGED="true"
+            echo "Shared auth stack is missing ExplorePublicApiUrl - forcing auth redeploy"
+          fi
+        fi
+
+        echo "stack_deploy_required=${STACK_DEPLOY_REQUIRED}" >> "$GITHUB_OUTPUT"
+        echo "spaceport_stack_changed=${SPACEPORT_STACK_CHANGED}" >> "$GITHUB_OUTPUT"
+        echo "ml_stack_changed=${ML_STACK_CHANGED}" >> "$GITHUB_OUTPUT"
+        echo "lambda_changed=${LAMBDA_CHANGED}" >> "$GITHUB_OUTPUT"
+        echo "auth_stack_changed=${AUTH_STACK_CHANGED}" >> "$GITHUB_OUTPUT"
+        echo "explore_api_missing=${EXPLORE_API_MISSING}" >> "$GITHUB_OUTPUT"
+
     # Removed dangerous cleanup script - production stacks should not be deleted automatically
 
     - name: Deploy CDK Stacks
-      if: github.event_name == 'push'
+      if: github.event_name == 'push' && steps.deploy_scope.outputs.stack_deploy_required == 'true'
       env:
         RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
         # Stripe secrets for staging environment (CDK expects _TEST suffix for staging)
@@ -246,6 +334,8 @@ jobs:
         R2_SECRET_ACCESS_KEY_PROD: ${{ secrets.R2_SECRET_ACCESS_KEY_PROD }}
         R2_BUCKET_NAME_PROD: ${{ secrets.R2_BUCKET_NAME_PROD }}
         R2_REGION_PROD: ${{ secrets.R2_REGION_PROD }}
+        SPACES_THUMBNAIL_URL: ${{ secrets.SPACES_THUMBNAIL_URL }}
+        SPACES_THUMBNAIL_TOKEN: ${{ secrets.SPACES_THUMBNAIL_TOKEN }}
         # Referral system configuration - using CDK defaults (Option A)
         # REFERRAL_KICKBACK_PERCENTAGE: 10 (default)
         # EMPLOYEE_KICKBACK_PERCENTAGE: 30 (default) 
@@ -257,16 +347,12 @@ jobs:
         set -euo pipefail
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
         BRANCH_NAME="${GITHUB_REF_NAME}"
-        
-        # Detect Lambda function changes
-        LAMBDA_CHANGED="false"
-        if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
-          # Check if any Lambda files changed
-          if git diff --name-only HEAD~1 HEAD | grep -q "^infrastructure/spaceport_cdk/lambda/"; then
-            LAMBDA_CHANGED="true"
-            echo "Lambda functions changed - will deploy branch-specific Lambda versions"
-          fi
-        fi
+        STACK_DEPLOY_REQUIRED="${{ steps.deploy_scope.outputs.stack_deploy_required }}"
+        SPACEPORT_STACK_CHANGED="${{ steps.deploy_scope.outputs.spaceport_stack_changed }}"
+        ML_STACK_CHANGED="${{ steps.deploy_scope.outputs.ml_stack_changed }}"
+        LAMBDA_CHANGED="${{ steps.deploy_scope.outputs.lambda_changed }}"
+        AUTH_STACK_CHANGED="${{ steps.deploy_scope.outputs.auth_stack_changed }}"
+        EXPLORE_API_MISSING="${{ steps.deploy_scope.outputs.explore_api_missing }}"
         
         # Determine environment based on branch
         if [ "${BRANCH_NAME}" = "main" ]; then
@@ -290,20 +376,50 @@ jobs:
         
         echo "Branch name: ${BRANCH_NAME}"
         echo "Sanitized branch suffix: ${BRANCH_SANITIZED}"
+        echo "Stack deploy required: ${STACK_DEPLOY_REQUIRED}"
         echo "Lambda changed: ${LAMBDA_CHANGED}"
+        echo "Auth stack changed: ${AUTH_STACK_CHANGED}"
+        echo "Explore API missing on shared auth stack: ${EXPLORE_API_MISSING}"
 
-        STACKS=("$SPACEPORT_STACK_NAME" "$ML_STACK_NAME")
-        if [ "${DEPLOY_AUTH_STACK}" = "true" ]; then
+        DEPLOY_AUTH_STACK_EFFECTIVE="${DEPLOY_AUTH_STACK}"
+        if [ "${DEPLOYMENT_CLASS}" = "branch-preview" ] && [ "${AUTH_STACK_CHANGED}" = "true" ]; then
+          DEPLOY_AUTH_STACK_EFFECTIVE="true"
+        fi
+
+        echo "Deploy auth stack (effective): ${DEPLOY_AUTH_STACK_EFFECTIVE}"
+
+        STACKS=()
+        TARGET_STACKS=()
+        if [ "${SPACEPORT_STACK_CHANGED}" = "true" ]; then
+          STACKS+=("$SPACEPORT_STACK_NAME")
+          TARGET_STACKS+=("spaceport")
+        fi
+        if [ "${ML_STACK_CHANGED}" = "true" ]; then
+          STACKS+=("$ML_STACK_NAME")
+          TARGET_STACKS+=("ml")
+        fi
+        if [ "${#STACKS[@]}" -eq 0 ]; then
+          STACKS=("$SPACEPORT_STACK_NAME" "$ML_STACK_NAME")
+          TARGET_STACKS=("spaceport" "ml")
+          echo "Unable to determine stack ownership from changed files - deploying both stacks"
+        fi
+        if [ "${DEPLOY_AUTH_STACK_EFFECTIVE}" = "true" ]; then
           STACKS+=("$AUTH_STACK_NAME")
+          TARGET_STACKS+=("auth")
         fi
 
         echo "Deploying ${DEPLOYMENT_CLASS} stacks: ${STACKS[*]}"
+        TARGET_STACKS_CSV="$(IFS=,; echo "${TARGET_STACKS[*]}")"
+        echo "Synthesizing CDK targets: ${TARGET_STACKS_CSV}"
         
+        export DEPLOY_AUTH_STACK_OVERRIDE="${DEPLOY_AUTH_STACK_EFFECTIVE}"
         cdk deploy "${STACKS[@]}" \
           --require-approval never \
           --no-fail-on-empty-changeset \
           --context environment="${CDK_ENVIRONMENT_NAME}" \
           --context branch_name="${BRANCH_NAME}" \
+          --context deploy_auth_stack="${DEPLOY_AUTH_STACK_EFFECTIVE}" \
+          --context target_stacks="${TARGET_STACKS_CSV}" \
           --context lambdaChanged=$LAMBDA_CHANGED \
           --context account=$ACCOUNT \
           --context region=us-west-2 \
@@ -314,6 +430,40 @@ jobs:
       id: publish_outputs
       run: |
         set -euo pipefail
+
+        resolve_output_stack() {
+          local primary="$1"
+          local fallback="$2"
+          local status
+
+          if status=$(aws cloudformation describe-stacks \
+            --stack-name "$primary" \
+            --query 'Stacks[0].StackStatus' \
+            --output text 2>/dev/null); then
+            case "$status" in
+              CREATE_COMPLETE|UPDATE_COMPLETE|IMPORT_COMPLETE|UPDATE_COMPLETE_CLEANUP_IN_PROGRESS|UPDATE_ROLLBACK_COMPLETE)
+                printf '%s' "$primary"
+                return 0
+                ;;
+            esac
+          fi
+
+          if [ -n "$fallback" ] && status=$(aws cloudformation describe-stacks \
+            --stack-name "$fallback" \
+            --query 'Stacks[0].StackStatus' \
+            --output text 2>/dev/null); then
+            case "$status" in
+              CREATE_COMPLETE|UPDATE_COMPLETE|IMPORT_COMPLETE|UPDATE_COMPLETE_CLEANUP_IN_PROGRESS|UPDATE_ROLLBACK_COMPLETE)
+                echo "Falling back from stack $primary to shared stack $fallback" >&2
+                printf '%s' "$fallback"
+                return 0
+                ;;
+            esac
+          fi
+
+          echo "Unable to resolve ready stack for primary=$primary fallback=${fallback:-<none>}" >&2
+          exit 1
+        }
 
         get_output() {
           local stack_name="$1"
@@ -330,14 +480,17 @@ jobs:
           printf '%s' "$value"
         }
 
-        DRONE_PATH_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "DronePathApiUrl")"
-        FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_STACK_NAME" "FileUploadApiUrl")"
-        ML_PIPELINE_API_URL="$(get_output "$ML_STACK_NAME" "MLPipelineApiUrl")"
+        SPACEPORT_OUTPUT_STACK="$(resolve_output_stack "$SPACEPORT_STACK_NAME" "$([ "$DEPLOYMENT_CLASS" = "branch-preview" ] && printf 'SpaceportStagingStack')")"
+        ML_OUTPUT_STACK="$(resolve_output_stack "$ML_STACK_NAME" "$([ "$DEPLOYMENT_CLASS" = "branch-preview" ] && printf 'SpaceportMLPipelineStagingStack')")"
+
+        DRONE_PATH_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "DronePathApiUrl")"
+        FILE_UPLOAD_API_URL="$(get_output "$SPACEPORT_OUTPUT_STACK" "FileUploadApiUrl")"
+        ML_PIPELINE_API_URL="$(get_output "$ML_OUTPUT_STACK" "MLPipelineApiUrl")"
 
         echo "Deployment class: $DEPLOYMENT_CLASS"
         echo "Branch ID: ${BRANCH_ID:-<shared>}"
-        echo "Spaceport stack: $SPACEPORT_STACK_NAME"
-        echo "ML stack: $ML_STACK_NAME"
+        echo "Spaceport stack: $SPACEPORT_OUTPUT_STACK"
+        echo "ML stack: $ML_OUTPUT_STACK"
         echo "Shared auth stack: $AUTH_STACK_NAME"
         echo "Drone Path API: $DRONE_PATH_API_URL"
         echo "File Upload API: $FILE_UPLOAD_API_URL"

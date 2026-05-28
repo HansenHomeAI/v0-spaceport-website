@@ -22,6 +22,14 @@ import os
 import json
 import boto3
 from .branch_utils import build_scoped_name
+from .api_gateway_config import (
+    resolve_preview_api_endpoint_type,
+    should_disable_preview_api_cloudwatch_role,
+)
+from .preview_sharing import (
+    shared_preview_bucket_name,
+    shared_preview_role_name,
+)
 
 
 class MLPipelineStack(Stack):
@@ -40,12 +48,15 @@ class MLPipelineStack(Stack):
         self.branch_name = env_config.get("branchName", "")
         self.allow_fallback_imports = env_config.get("allowFallbackImports", True)
         self.reuse_shared_ecr = env_config.get("reuseSharedEcr", False)
+        self.reuse_shared_preview_resources = bool(env_config.get("reuseSharedPreviewResources", False))
+        self.shared_preview_resource_suffix = env_config.get("sharedPreviewResourceSuffix", "staging")
         
         # Initialize AWS clients for resource checking
         self.s3_client = boto3.client('s3', region_name=region)
         self.ecr_client = boto3.client('ecr', region_name=region)
         self.cloudwatch_client = boto3.client('cloudwatch', region_name=region)
         self.iam_client = boto3.client('iam', region_name=region)
+        self.lambda_client = boto3.client('lambda', region_name=region)
 
         if self.deployment_class == "branch-preview":
             Tags.of(self).add("SpaceportDeploymentClass", "branch-preview")
@@ -87,12 +98,17 @@ class MLPipelineStack(Stack):
 
         # Import upload bucket from main Spaceport stack - DO NOT CREATE
         # This bucket is owned by the main Spaceport stack, we just reference it
+        upload_bucket_name = (
+            shared_preview_bucket_name("spaceport-uploads", self.shared_preview_resource_suffix)
+            if self.reuse_shared_preview_resources
+            else f"spaceport-uploads-{suffix}"
+        )
         upload_bucket = s3.Bucket.from_bucket_name(
             self, "ImportedUploadBucket",
-            f"spaceport-uploads-{suffix}"
+            upload_bucket_name
         )
-        print(f"✅ Importing upload bucket from main stack: spaceport-uploads-{suffix}")
-        self._imported_resources.append({"type": "S3::Bucket", "name": f"spaceport-uploads-{suffix}", "action": "imported_from_main_stack"})
+        print(f"✅ Importing upload bucket from main stack: {upload_bucket_name}")
+        self._imported_resources.append({"type": "S3::Bucket", "name": upload_bucket_name, "action": "imported_from_main_stack"})
 
         # ========== ECR REPOSITORIES ==========
         # Dynamic ECR repositories - import if exist, create if not
@@ -122,146 +138,190 @@ class MLPipelineStack(Stack):
         # ========== IAM ROLES ==========
         # SageMaker execution role with environment-specific naming
         # Add cross-bucket permissions for staging/prod ML buckets to enable flexible testing
-        sagemaker_role = iam.Role(
-            self, "SageMakerExecutionRole",
-            role_name=scoped_name("Spaceport-SageMaker-Role-"),
-            assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
-            managed_policies=[
-                iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSageMakerFullAccess"),
-                iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3FullAccess"),
-                iam.ManagedPolicy.from_aws_managed_policy_name("AmazonEC2ContainerRegistryReadOnly"),
-                iam.ManagedPolicy.from_aws_managed_policy_name("CloudWatchLogsFullAccess")
-            ],
-            inline_policies={
-                "CrossBucketAccess": iam.PolicyDocument(
-                    statements=[
-                        # Allow reading from staging ML bucket
-                        iam.PolicyStatement(
-                            actions=[
-                                "s3:GetObject",
-                                "s3:ListBucket",
-                                "s3:HeadObject"
-                            ],
-                            resources=[
-                                f"arn:aws:s3:::spaceport-ml-processing-staging",
-                                f"arn:aws:s3:::spaceport-ml-processing-staging/*"
-                            ]
-                        ),
-                        # Allow reading from prod ML bucket
-                        iam.PolicyStatement(
-                            actions=[
-                                "s3:GetObject",
-                                "s3:ListBucket",
-                                "s3:HeadObject"
-                            ],
-                            resources=[
-                                f"arn:aws:s3:::spaceport-ml-processing-prod",
-                                f"arn:aws:s3:::spaceport-ml-processing-prod/*"
-                            ]
-                        )
-                    ]
-                )
-            }
-        )
+        if self.reuse_shared_preview_resources:
+            sagemaker_role = iam.Role.from_role_name(
+                self,
+                "SageMakerExecutionRole",
+                shared_preview_role_name(
+                    "Spaceport-SageMaker-Role-",
+                    self.shared_preview_resource_suffix,
+                ),
+                mutable=False,
+            )
+        else:
+            sagemaker_role = iam.Role(
+                self, "SageMakerExecutionRole",
+                role_name=scoped_name("Spaceport-SageMaker-Role-"),
+                assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
+                managed_policies=[
+                    iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSageMakerFullAccess"),
+                    iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3FullAccess"),
+                    iam.ManagedPolicy.from_aws_managed_policy_name("AmazonEC2ContainerRegistryReadOnly"),
+                    iam.ManagedPolicy.from_aws_managed_policy_name("CloudWatchLogsFullAccess")
+                ],
+                inline_policies={
+                    "CrossBucketAccess": iam.PolicyDocument(
+                        statements=[
+                            # Allow reading from staging ML bucket
+                            iam.PolicyStatement(
+                                actions=[
+                                    "s3:GetObject",
+                                    "s3:ListBucket",
+                                    "s3:HeadObject"
+                                ],
+                                resources=[
+                                    f"arn:aws:s3:::spaceport-ml-processing-staging",
+                                    f"arn:aws:s3:::spaceport-ml-processing-staging/*"
+                                ]
+                            ),
+                            # Allow reading from prod ML bucket
+                            iam.PolicyStatement(
+                                actions=[
+                                    "s3:GetObject",
+                                    "s3:ListBucket",
+                                    "s3:HeadObject"
+                                ],
+                                resources=[
+                                    f"arn:aws:s3:::spaceport-ml-processing-prod",
+                                    f"arn:aws:s3:::spaceport-ml-processing-prod/*"
+                                ]
+                            )
+                        ]
+                    )
+                }
+            )
 
         # Step Functions execution role with environment-specific naming
-        step_functions_role = iam.Role(
-            self, "StepFunctionsExecutionRole",
-            role_name=scoped_name("Spaceport-StepFunctions-Role-"),
-            assumed_by=iam.ServicePrincipal("states.amazonaws.com"),
-            inline_policies={
-                "SageMakerPolicy": iam.PolicyDocument(
-                    statements=[
-                        iam.PolicyStatement(
-                            actions=[
-                                "sagemaker:CreateProcessingJob",
-                                "sagemaker:CreateTrainingJob",
-                                "sagemaker:DescribeProcessingJob",
-                                "sagemaker:DescribeTrainingJob",
-                                "sagemaker:StopProcessingJob",
-                                "sagemaker:StopTrainingJob",
-                                "sagemaker:AddTags"
-                            ],
-                            resources=["*"]
-                        ),
-                        iam.PolicyStatement(
-                            actions=["iam:PassRole"],
-                            resources=[sagemaker_role.role_arn]
-                        ),
-                        iam.PolicyStatement(
-                            actions=[
-                                "lambda:InvokeFunction"
-                            ],
-                            resources=["*"]
-                        ),
-                        iam.PolicyStatement(
-                            actions=[
-                                "logs:CreateLogGroup",
-                                "logs:CreateLogStream",
-                                "logs:PutLogEvents",
-                                "logs:DescribeLogGroups",
-                                "logs:DescribeLogStreams"
-                            ],
-                            resources=["*"]
-                        )
-                    ]
-                )
-            }
-        )
+        if self.reuse_shared_preview_resources:
+            step_functions_role = iam.Role.from_role_name(
+                self,
+                "StepFunctionsExecutionRole",
+                shared_preview_role_name(
+                    "Spaceport-StepFunctions-Role-",
+                    self.shared_preview_resource_suffix,
+                ),
+                mutable=False,
+            )
+        else:
+            step_functions_role = iam.Role(
+                self, "StepFunctionsExecutionRole",
+                role_name=scoped_name("Spaceport-StepFunctions-Role-"),
+                assumed_by=iam.ServicePrincipal("states.amazonaws.com"),
+                inline_policies={
+                    "SageMakerPolicy": iam.PolicyDocument(
+                        statements=[
+                            iam.PolicyStatement(
+                                actions=[
+                                    "sagemaker:CreateProcessingJob",
+                                    "sagemaker:CreateTrainingJob",
+                                    "sagemaker:DescribeProcessingJob",
+                                    "sagemaker:DescribeTrainingJob",
+                                    "sagemaker:StopProcessingJob",
+                                    "sagemaker:StopTrainingJob",
+                                    "sagemaker:AddTags"
+                                ],
+                                resources=["*"]
+                            ),
+                            iam.PolicyStatement(
+                                actions=["iam:PassRole"],
+                                resources=[sagemaker_role.role_arn]
+                            ),
+                            iam.PolicyStatement(
+                                actions=[
+                                    "lambda:InvokeFunction"
+                                ],
+                                resources=["*"]
+                            ),
+                            iam.PolicyStatement(
+                                actions=[
+                                    "logs:CreateLogGroup",
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents",
+                                    "logs:DescribeLogGroups",
+                                    "logs:DescribeLogStreams"
+                                ],
+                                resources=["*"]
+                            )
+                        ]
+                    )
+                }
+            )
 
         # Lambda execution role for API with environment-specific naming
-        lambda_role = iam.Role(
-            self, "MLLambdaExecutionRole",
-            role_name=scoped_name("Spaceport-ML-Lambda-Role-"),
-            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
-            managed_policies=[
-                iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
-            ],
-            inline_policies={
-                "StepFunctionsPolicy": iam.PolicyDocument(
-                    statements=[
-                        iam.PolicyStatement(
-                            actions=["states:StartExecution"],
-                            resources=["*"]
-                        ),
-                        iam.PolicyStatement(
-                            actions=[
-                                "s3:GetObject",
-                                "s3:HeadObject",
-                                "s3:PutObject"
-                            ],
-                            resources=[
-                                f"{upload_bucket.bucket_arn}/*",
-                                f"{ml_bucket.bucket_arn}/*"
-                            ]
-                        )
-                    ]
-                )
-            }
-        )
+        if self.reuse_shared_preview_resources:
+            lambda_role = iam.Role.from_role_name(
+                self,
+                "MLLambdaExecutionRole",
+                shared_preview_role_name(
+                    "Spaceport-ML-Lambda-Role-",
+                    self.shared_preview_resource_suffix,
+                ),
+                mutable=False,
+            )
+        else:
+            lambda_role = iam.Role(
+                self, "MLLambdaExecutionRole",
+                role_name=scoped_name("Spaceport-ML-Lambda-Role-"),
+                assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+                managed_policies=[
+                    iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
+                ],
+                inline_policies={
+                    "StepFunctionsPolicy": iam.PolicyDocument(
+                        statements=[
+                            iam.PolicyStatement(
+                                actions=["states:StartExecution"],
+                                resources=["*"]
+                            ),
+                            iam.PolicyStatement(
+                                actions=[
+                                    "s3:GetObject",
+                                    "s3:HeadObject",
+                                    "s3:PutObject"
+                                ],
+                                resources=[
+                                    f"{upload_bucket.bucket_arn}/*",
+                                    f"{ml_bucket.bucket_arn}/*"
+                                ]
+                            )
+                        ]
+                    )
+                }
+            )
 
         # Notification Lambda role with environment-specific naming
-        notification_lambda_role = iam.Role(
-            self, "NotificationLambdaRole",
-            role_name=scoped_name("Spaceport-Notification-Lambda-Role-"),
-            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
-            managed_policies=[
-                iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
-            ],
-            inline_policies={
-                "SESPolicy": iam.PolicyDocument(
-                    statements=[
-                        iam.PolicyStatement(
-                            actions=[
-                                "ses:SendEmail",
-                                "ses:SendRawEmail"
-                            ],
-                            resources=["*"]
-                        )
-                    ]
-                )
-            }
-        )
+        if self.reuse_shared_preview_resources:
+            notification_lambda_role = iam.Role.from_role_name(
+                self,
+                "NotificationLambdaRole",
+                shared_preview_role_name(
+                    "Spaceport-Notification-Lambda-Role-",
+                    self.shared_preview_resource_suffix,
+                ),
+                mutable=False,
+            )
+        else:
+            notification_lambda_role = iam.Role(
+                self, "NotificationLambdaRole",
+                role_name=scoped_name("Spaceport-Notification-Lambda-Role-"),
+                assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+                managed_policies=[
+                    iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
+                ],
+                inline_policies={
+                    "SESPolicy": iam.PolicyDocument(
+                        statements=[
+                            iam.PolicyStatement(
+                                actions=[
+                                    "ses:SendEmail",
+                                    "ses:SendRawEmail"
+                                ],
+                                resources=["*"]
+                            )
+                        ]
+                    )
+                }
+            )
 
         # ========== CLOUDWATCH LOG GROUPS ==========
         # Log groups for each component with environment-specific naming
@@ -313,6 +373,7 @@ class MLPipelineStack(Stack):
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset("lambda/start_ml_job"),
+            role=lambda_role,
             timeout=Duration.seconds(60),
             memory_size=512,
             environment={
@@ -334,6 +395,7 @@ class MLPipelineStack(Stack):
             function_name=scoped_name("Spaceport-MLNotification-"),
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
+            role=notification_lambda_role,
             code=lambda_.Code.from_asset(
                 "lambda/ml_notification",
                 bundling=BundlingOptions(
@@ -369,7 +431,7 @@ class MLPipelineStack(Stack):
                 "ProcessingResources": {
                     "ClusterConfig": {
                         "InstanceCount": 1,
-                        "InstanceType": "ml.c6i.2xlarge",
+                        "InstanceType": "ml.g4dn.xlarge",
                         "VolumeSizeInGB": 100
                     }
                 },
@@ -457,7 +519,7 @@ class MLPipelineStack(Stack):
                     "VolumeSizeInGB": 100
                 },
                 "StoppingCondition": {
-                    "MaxRuntimeInSeconds": 7200  # 2 hours for real training
+                    "MaxRuntimeInSeconds": 14400  # 4 hours for real training with splatfacto-w-light skyboxes
                 },
                 "RoleArn": sagemaker_role.role_arn,
                 # Enable comprehensive CloudWatch logging for training
@@ -473,21 +535,47 @@ class MLPipelineStack(Stack):
                     "PYTHONUNBUFFERED": "1",
                     "SAGEMAKER_PROGRAM": "train.py",
                     
-                    # Vincent Woo's NerfStudio Methodology - Core Parameters
-                    # Note: All values must be strings for SageMaker environment variables
-                    # Using JsonPath.string_at() directly - CDK will convert to Step Functions intrinsic functions
+                    # Note: All values must be strings for SageMaker environment variables.
                     "MAX_ITERATIONS": sfn.JsonPath.string_at("$.MAX_ITERATIONS"),
                     "TARGET_PSNR": sfn.JsonPath.string_at("$.TARGET_PSNR"),
                     "LOG_INTERVAL": sfn.JsonPath.string_at("$.LOG_INTERVAL"),
                     
-                    # Vincent Woo's Key Features
-                    "MODEL_VARIANT": sfn.JsonPath.string_at("$.MODEL_VARIANT"),  # splatfacto vs splatfacto-big
-                    "SH_DEGREE": sfn.JsonPath.string_at("$.SH_DEGREE"),          # Industry standard: 3
-                    "BILATERAL_PROCESSING": sfn.JsonPath.string_at("$.BILATERAL_PROCESSING"),  # Vincent's innovation
+                    # Model configuration
+                    "MODEL_VARIANT": sfn.JsonPath.string_at("$.MODEL_VARIANT"),
+                    "SH_DEGREE": sfn.JsonPath.string_at("$.SH_DEGREE"),
+                    "BILATERAL_PROCESSING": sfn.JsonPath.string_at("$.BILATERAL_PROCESSING"),
+                    "RASTERIZE_MODE": sfn.JsonPath.string_at("$.RASTERIZE_MODE"),
+                    "USE_SCALE_REGULARIZATION": sfn.JsonPath.string_at("$.USE_SCALE_REGULARIZATION"),
+                    "CULL_ALPHA_THRESH": sfn.JsonPath.string_at("$.CULL_ALPHA_THRESH"),
+                    "CULL_SCALE_THRESH": sfn.JsonPath.string_at("$.CULL_SCALE_THRESH"),
+                    "ENABLE_BG_MODEL": sfn.JsonPath.string_at("$.ENABLE_BG_MODEL"),
+                    "ENABLE_ALPHA_LOSS": sfn.JsonPath.string_at("$.ENABLE_ALPHA_LOSS"),
+                    "ENABLE_ROBUST_MASK": sfn.JsonPath.string_at("$.ENABLE_ROBUST_MASK"),
+                    "BG_SH_DEGREE": sfn.JsonPath.string_at("$.BG_SH_DEGREE"),
+                    "APPEARANCE_EMBED_DIM": sfn.JsonPath.string_at("$.APPEARANCE_EMBED_DIM"),
+                    "NEVER_MASK_UPPER": sfn.JsonPath.string_at("$.NEVER_MASK_UPPER"),
+                    "BACKGROUND_APPEARANCE_MODE": sfn.JsonPath.string_at("$.BACKGROUND_APPEARANCE_MODE"),
+                    "BACKGROUND_SKYBOX_WIDTH": sfn.JsonPath.string_at("$.BACKGROUND_SKYBOX_WIDTH"),
+                    "BACKGROUND_SKYBOX_HEIGHT": sfn.JsonPath.string_at("$.BACKGROUND_SKYBOX_HEIGHT"),
+                    "BACKGROUND_SKYBOX_QUALITY": sfn.JsonPath.string_at("$.BACKGROUND_SKYBOX_QUALITY"),
+                    "BACKGROUND_SELECTION_STRIDE": sfn.JsonPath.string_at("$.BACKGROUND_SELECTION_STRIDE"),
+                    "BACKGROUND_SELECTION_MAX_FRAMES": sfn.JsonPath.string_at("$.BACKGROUND_SELECTION_MAX_FRAMES"),
+                    "FLOATER_PRUNING_ENABLED": sfn.JsonPath.string_at("$.FLOATER_PRUNING_ENABLED"),
+                    "FLOATER_PRUNING_MIN_VIEWS": sfn.JsonPath.string_at("$.FLOATER_PRUNING_MIN_VIEWS"),
+                    "FLOATER_PRUNING_TOP_REGION_RATIO": sfn.JsonPath.string_at("$.FLOATER_PRUNING_TOP_REGION_RATIO"),
+                    "FLOATER_PRUNING_TOP_VIEW_FRACTION": sfn.JsonPath.string_at("$.FLOATER_PRUNING_TOP_VIEW_FRACTION"),
+                    "FLOATER_PRUNING_MIN_SKY_VIEWS": sfn.JsonPath.string_at("$.FLOATER_PRUNING_MIN_SKY_VIEWS"),
+                    "FLOATER_PRUNING_SKY_MIN_LUMINANCE": sfn.JsonPath.string_at("$.FLOATER_PRUNING_SKY_MIN_LUMINANCE"),
+                    "FLOATER_PRUNING_SKY_MIN_SATURATION": sfn.JsonPath.string_at("$.FLOATER_PRUNING_SKY_MIN_SATURATION"),
+                    "FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN": sfn.JsonPath.string_at("$.FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN"),
+                    "FLOATER_PRUNING_MAX_OPACITY": sfn.JsonPath.string_at("$.FLOATER_PRUNING_MAX_OPACITY"),
+                    "FLOATER_PRUNING_MAX_COLOR_DISTANCE": sfn.JsonPath.string_at("$.FLOATER_PRUNING_MAX_COLOR_DISTANCE"),
+                    "FLOATER_PRUNING_MIN_EDGE_SUPPORT": sfn.JsonPath.string_at("$.FLOATER_PRUNING_MIN_EDGE_SUPPORT"),
+                    "TRAINING_TIMEOUT_SECONDS": sfn.JsonPath.string_at("$.TRAINING_TIMEOUT_SECONDS"),
                     
                     # NerfStudio Framework Configuration
                     "FRAMEWORK": "nerfstudio",
-                    "METHODOLOGY": "vincent_woo_sutro_tower",
+                    "METHODOLOGY": "spaceport_splatfacto_w_light_skybox",
                     "LICENSE": "apache_2_0",
                     
                     # Quality and Performance Settings
@@ -762,6 +850,7 @@ class MLPipelineStack(Stack):
             runtime=lambda_.Runtime.PYTHON_3_9,
             handler="stop_job.lambda_handler",
             code=lambda_.Code.from_asset("../lambda/stop_job"),
+            role=self._resolve_stop_job_role(suffix),
             timeout=Duration.seconds(30),
             memory_size=256,
             environment={
@@ -771,6 +860,12 @@ class MLPipelineStack(Stack):
 
         # ========== API GATEWAY ==========
         # Create API Gateway for ML pipeline
+        ml_api_kwargs = {}
+        if resolve_preview_api_endpoint_type(self.deployment_class) == "REGIONAL":
+            ml_api_kwargs["endpoint_types"] = [apigw.EndpointType.REGIONAL]
+        if should_disable_preview_api_cloudwatch_role(self.deployment_class):
+            ml_api_kwargs["cloud_watch_role"] = False
+
         ml_api = apigw.RestApi(
             self, "SpaceportMLApi",
             rest_api_name=f"Spaceport-ML-API-{suffix}",
@@ -779,7 +874,8 @@ class MLPipelineStack(Stack):
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
                 allow_headers=["Content-Type", "Authorization"]
-            )
+            ),
+            **ml_api_kwargs,
         )
 
         # Add /start-job endpoint
@@ -894,6 +990,22 @@ class MLPipelineStack(Stack):
             return True
         except Exception:
             return False
+
+    def _resolve_stop_job_role(self, suffix: str) -> iam.IRole:
+        if not self.reuse_shared_preview_resources:
+            return None
+
+        function_name = f"Spaceport-StopJobFunction-{self.shared_preview_resource_suffix}"
+        role_arn = self.lambda_client.get_function_configuration(
+            FunctionName=function_name
+        )["Role"]
+        print(f"Importing shared preview stop-job role from {function_name}: {role_arn}")
+        return iam.Role.from_role_arn(
+            self,
+            "ImportedStopJobFunctionRole",
+            role_arn,
+            mutable=False,
+        )
 
     def _get_or_create_s3_bucket(self, construct_id: str, preferred_name: str, fallback_name: str) -> s3.IBucket:
         """Get existing S3 bucket or create new one with robustness validation"""
@@ -1210,4 +1322,4 @@ class MLPipelineStack(Stack):
             if fallback_count > 0:
                 print(f"⚠️  Warning: Production using {fallback_count} fallback resources")
         
-        print(f"✅ Environment requirements validated for: {suffix}") 
+        print(f"✅ Environment requirements validated for: {suffix}")

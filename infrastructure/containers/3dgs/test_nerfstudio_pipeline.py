@@ -12,6 +12,7 @@ import shutil
 import logging
 import subprocess
 from pathlib import Path
+import numpy as np
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -90,10 +91,25 @@ class NerfStudioPipelineTest:
         
         # Test script path
         script_path = Path(__file__).parent / "train_nerfstudio_production.py"
+        export_script_path = Path(__file__).parent / "export_splatfacto_w_assets.py"
+        quality_pass_script_path = Path(__file__).parent / "run_export_quality_pass.py"
+        helper_script_path = Path(__file__).parent / "sky_quality.py"
         config_path = Path(__file__).parent / "nerfstudio_config.yaml"
         
         if not script_path.exists():
             logger.error("❌ Training script not found")
+            return False
+
+        if not export_script_path.exists():
+            logger.error("❌ Export script not found")
+            return False
+
+        if not helper_script_path.exists():
+            logger.error("❌ Sky quality helper not found")
+            return False
+
+        if not quality_pass_script_path.exists():
+            logger.error("❌ Export quality pass script not found")
             return False
         
         if not config_path.exists():
@@ -111,6 +127,36 @@ class NerfStudioPipelineTest:
                 return False
             
             logger.info("✅ Training script syntax validated")
+
+            export_result = subprocess.run([
+                sys.executable, "-m", "py_compile", str(export_script_path)
+            ], capture_output=True, text=True)
+            
+            if export_result.returncode != 0:
+                logger.error(f"❌ Export script syntax error: {export_result.stderr}")
+                return False
+
+            logger.info("✅ Export script syntax validated")
+
+            helper_result = subprocess.run([
+                sys.executable, "-m", "py_compile", str(helper_script_path)
+            ], capture_output=True, text=True)
+
+            if helper_result.returncode != 0:
+                logger.error(f"❌ Sky quality helper syntax error: {helper_result.stderr}")
+                return False
+
+            logger.info("✅ Sky quality helper syntax validated")
+
+            quality_pass_result = subprocess.run([
+                sys.executable, "-m", "py_compile", str(quality_pass_script_path)
+            ], capture_output=True, text=True)
+
+            if quality_pass_result.returncode != 0:
+                logger.error(f"❌ Export quality pass syntax error: {quality_pass_result.stderr}")
+                return False
+
+            logger.info("✅ Export quality pass syntax validated")
             
             # Test configuration loading
             import yaml
@@ -142,9 +188,11 @@ class NerfStudioPipelineTest:
         
         # Check Vincent Woo's key parameters
         checks = [
-            (config.get('model', {}).get('variant') == 'splatfacto-big', "Model variant should be splatfacto-big"),
-            (config.get('model', {}).get('sh_degree') == 3, "SH degree should be 3 (industry standard)"),
-            (config.get('model', {}).get('bilateral_processing') == True, "Bilateral processing should be enabled"),
+            (config.get('model', {}).get('variant') == 'splatfacto-w-light', "Model variant should be splatfacto-w-light"),
+            (config.get('model', {}).get('sh_degree') == 3, "SH degree should be 3"),
+            (config.get('model', {}).get('enable_bg_model') == True, "Background model should be enabled"),
+            (config.get('model', {}).get('enable_alpha_loss') == True, "Alpha loss should be enabled"),
+            (config.get('model', {}).get('enable_robust_mask') == True, "Robust mask should be enabled"),
             (config.get('training', {}).get('max_iterations') == 30000, "Max iterations should be 30000"),
             (config.get('licensing', {}).get('license') == 'Apache 2.0', "License should be Apache 2.0")
         ]
@@ -183,8 +231,69 @@ class NerfStudioPipelineTest:
         else:
             logger.error("❌ SOGS compatibility not configured")
             return False
-        
+
+        skybox_config = output_config.get('background_skybox', {})
+        if (
+            skybox_config.get('enabled')
+            and skybox_config.get('width') == 2048
+            and skybox_config.get('height') == 1024
+            and skybox_config.get('appearance_mode') == 'auto_camera'
+        ):
+            logger.info("✅ Background skybox export configured")
+        else:
+            logger.error("❌ Background skybox export not configured")
+            return False
+
+        floater_pruning_config = output_config.get('floater_pruning', {})
+        if (
+            floater_pruning_config.get('enabled')
+            and floater_pruning_config.get('min_views') == 6
+            and floater_pruning_config.get('min_sky_views') == 2
+            and floater_pruning_config.get('max_opacity') == 0.75
+        ):
+            logger.info("✅ Floater pruning configured")
+        else:
+            logger.error("❌ Floater pruning not configured")
+            return False
+
         return True
+
+    def test_sky_color_distance_resolution(self) -> bool:
+        """Prefer sky-view color statistics when sky support exists."""
+        logger.info("🌤️ Testing sky-only color distance resolution...")
+
+        sys.path.insert(0, str(Path(__file__).parent))
+        from sky_quality import _resolve_color_distance_medians
+
+        all_view_distances = np.array([
+            [0.30, 0.32, np.nan],
+            [0.24, 0.22, np.nan],
+            [0.16, 0.17, np.nan],
+        ], dtype=np.float32)
+        sky_view_distances = np.array([
+            [0.10, 0.12, np.nan],
+            [np.nan, np.nan, np.nan],
+            [0.14, np.nan, np.nan],
+        ], dtype=np.float32)
+        prefer_sky_mask = np.array([True, True, False], dtype=bool)
+
+        resolved = _resolve_color_distance_medians(
+            all_view_distances=all_view_distances,
+            sky_view_distances=sky_view_distances,
+            prefer_sky_mask=prefer_sky_mask,
+        )
+
+        checks = [
+            np.isclose(resolved[0], 0.11, atol=1e-6),
+            np.isclose(resolved[1], 0.23, atol=1e-6),
+            np.isclose(resolved[2], 0.165, atol=1e-6),
+        ]
+        if all(checks):
+            logger.info("✅ Sky-only color median fallback behaves as expected")
+            return True
+
+        logger.error(f"❌ Unexpected resolved color medians: {resolved.tolist()}")
+        return False
     
     def run_comprehensive_test(self) -> bool:
         """Run all tests"""
@@ -196,7 +305,8 @@ class NerfStudioPipelineTest:
             ("Container Build", self.test_container_build),
             ("Training Script", self.test_training_script),
             ("Vincent Woo Parameters", self.test_vincent_woo_parameters),
-            ("Quality Expectations", self.test_quality_expectations)
+            ("Quality Expectations", self.test_quality_expectations),
+            ("Sky Color Distance Resolution", self.test_sky_color_distance_resolution),
         ]
         
         results = {}

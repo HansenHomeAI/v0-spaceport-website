@@ -17,7 +17,21 @@ from aws_cdk import (
 from constructs import Construct
 import os
 import boto3
+from .api_gateway_config import (
+    resolve_auth_api_endpoint_type,
+    should_serialize_auth_api_updates,
+)
 from .branch_utils import build_scoped_name
+
+
+def build_auth_api_kwargs(deployment_class: str) -> dict:
+    api_kwargs = {}
+    endpoint_type = resolve_auth_api_endpoint_type(deployment_class)
+    if endpoint_type == "REGIONAL":
+        # Shared staging auth is reused by development and explicit preview opt-in branches.
+        # Keeping non-production auth APIs regional avoids exhausting the account EDGE API quota.
+        api_kwargs["endpoint_types"] = [apigw.EndpointType.REGIONAL]
+    return api_kwargs
 
 
 class AuthStack(Stack):
@@ -29,10 +43,10 @@ class AuthStack(Stack):
         suffix = env_config['resourceSuffix']
         region = env_config['region']
         deployment_class = env_config.get("deploymentClass", "shared-staging")
+        deploy_auth_stack = bool(env_config.get("deployAuthStack"))
 
-        if deployment_class == "branch-preview":
+        if deployment_class == "branch-preview" and not deploy_auth_stack:
             raise ValueError("AuthStack must not be deployed for branch-preview contexts")
-        
         def scoped_name(prefix: str, max_total_length: int = 64) -> str:
             return build_scoped_name(prefix, suffix, max_total_length=max_total_length)
         
@@ -58,6 +72,7 @@ class AuthStack(Stack):
 
         CfnOutput(self, "CognitoUserPoolId", value=user_pool.user_pool_id)
         CfnOutput(self, "CognitoUserPoolClientId", value=user_pool_client.user_pool_client_id)
+        api_kwargs = build_auth_api_kwargs(deployment_class)
 
         # Import existing Lambda functions to avoid conflicts
 
@@ -81,6 +96,7 @@ class AuthStack(Stack):
                 allow_origins=apigw.Cors.ALL_ORIGINS,
                 allow_methods=apigw.Cors.ALL_METHODS,
             ),
+            **api_kwargs,
         )
 
         invite_res = invite_api.root.add_resource("invite")
@@ -101,6 +117,28 @@ class AuthStack(Stack):
             partition_key_name="id",
             partition_key_type=dynamodb.AttributeType.STRING
         )
+
+        explore_listings_table = self._get_or_create_dynamodb_table(
+            construct_id="Spaceport-ExploreListingsTable",
+            preferred_name=f"Spaceport-ExploreListings-{suffix}",
+            fallback_name="Spaceport-ExploreListings",
+            partition_key_name="listingId",
+            partition_key_type=dynamodb.AttributeType.STRING
+        )
+
+        if isinstance(explore_listings_table, dynamodb.Table):
+            explore_listings_table.add_global_secondary_index(
+                index_name="visibility-updatedAt-index",
+                partition_key=dynamodb.Attribute(
+                    name="visibility",
+                    type=dynamodb.AttributeType.STRING,
+                ),
+                sort_key=dynamodb.Attribute(
+                    name="updatedAt",
+                    type=dynamodb.AttributeType.NUMBER,
+                ),
+                projection_type=dynamodb.ProjectionType.ALL,
+            )
 
         # Define Projects Lambda function with environment-specific naming
         projects_lambda = lambda_.Function(
@@ -183,6 +221,7 @@ class AuthStack(Stack):
                     user=True,
                 ),
             ),
+            **api_kwargs,
         )
         # Create Cognito authorizer for projects API
         projects_authorizer = apigw.CognitoUserPoolsAuthorizer(
@@ -259,6 +298,78 @@ class AuthStack(Stack):
         )
 
         CfnOutput(self, "ProjectsApiUrl", value=f"{projects_api.url}projects")
+
+        # -------------------------------------
+        # Explore Listings (public read API)
+        # -------------------------------------
+        explore_public_lambda = lambda_.Function(
+            self,
+            "Spaceport-ExplorePublicFunction",
+            function_name=f"Spaceport-ExplorePublicFunction-{suffix}",
+            runtime=lambda_.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=lambda_.Code.from_asset(
+                os.path.join(os.path.dirname(__file__), "..", "lambda", "explore_public"),
+                bundling=BundlingOptions(
+                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash", "-c",
+                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output"
+                    ],
+                ),
+            ),
+            timeout=Duration.seconds(20),
+            memory_size=256,
+            environment={
+                "EXPLORE_LISTINGS_TABLE_NAME": explore_listings_table.table_name,
+                "EXPLORE_LISTINGS_VISIBILITY_INDEX": "visibility-updatedAt-index",
+                "PROJECTS_TABLE_NAME": projects_table.table_name,
+            },
+        )
+
+        explore_listings_table.grant_read_data(explore_public_lambda)
+        projects_table.grant_read_data(explore_public_lambda)
+
+        explore_api = apigw.RestApi(
+            self,
+            "Spaceport-ExplorePublicApi",
+            rest_api_name=f"Spaceport-ExplorePublicApi-{suffix}",
+            description="Public explore listings API",
+            default_cors_preflight_options=apigw.CorsOptions(
+                allow_origins=apigw.Cors.ALL_ORIGINS,
+                allow_methods=apigw.Cors.ALL_METHODS,
+            ),
+            **api_kwargs,
+        )
+
+        explore_resource = explore_api.root.add_resource("explore")
+        explore_resource.add_method(
+            "GET",
+            apigw.LambdaIntegration(explore_public_lambda),
+            authorization_type=apigw.AuthorizationType.NONE,
+        )
+
+        explore_api.add_gateway_response(
+            "ExploreDefault4XX",
+            type=apigw.ResponseType.DEFAULT_4_XX,
+            response_headers={
+                "Access-Control-Allow-Origin": "'*'",
+                "Access-Control-Allow-Headers": "'Content-Type,Authorization,authorization,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
+                "Access-Control-Allow-Methods": "'GET,OPTIONS'",
+            },
+        )
+
+        explore_api.add_gateway_response(
+            "ExploreDefault5XX",
+            type=apigw.ResponseType.DEFAULT_5_XX,
+            response_headers={
+                "Access-Control-Allow-Origin": "'*'",
+                "Access-Control-Allow-Headers": "'Content-Type,Authorization,authorization,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
+                "Access-Control-Allow-Methods": "'GET,OPTIONS'",
+            },
+        )
+
+        CfnOutput(self, "ExplorePublicApiUrl", value=f"{explore_api.url}explore")
 
         # -------------------------------------
         # Subscription Management (integrated into AuthStack)
@@ -350,6 +461,7 @@ class AuthStack(Stack):
                     "X-Api-Key",
                 ],
             ),
+            **api_kwargs,
         )
 
         # Add subscription endpoints
@@ -533,6 +645,7 @@ class AuthStack(Stack):
                     "X-Amz-Security-Token",
                 ],
             ),
+            **api_kwargs,
         )
 
         # Add beta access admin endpoints
@@ -650,17 +763,21 @@ class AuthStack(Stack):
                 "COGNITO_USER_POOL_ID": user_pool.user_pool_id,
                 "PROJECTS_TABLE_NAME": projects_table.table_name,
                 "PERMISSIONS_TABLE_NAME": beta_access_permissions_table.table_name,
+                "EXPLORE_LISTINGS_TABLE_NAME": explore_listings_table.table_name,
                 "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", ""),
                 "STRIPE_SECRET_KEY": os.environ.get(f"STRIPE_SECRET_KEY_{'TEST' if suffix == 'staging' else suffix.upper()}", ""),
                 "STRIPE_MODEL_TRAINING_PRICE": os.environ.get(f"STRIPE_MODEL_TRAINING_PRICE_{suffix.upper()}", ""),
                 "STRIPE_MODEL_HOSTING_PRICE": os.environ.get(f"STRIPE_MODEL_HOSTING_PRICE_{suffix.upper()}", ""),
                 "FRONTEND_URL": os.environ.get("FRONTEND_URL", "https://spcprt.com"),
+                "SPACES_THUMBNAIL_URL": os.environ.get("SPACES_THUMBNAIL_URL") or "https://spaces-thumbnail.hello-462.workers.dev/thumbnail",
+                "SPACES_THUMBNAIL_TOKEN": os.environ.get("SPACES_THUMBNAIL_TOKEN", ""),
             },
         )
 
         # Grant table access
         beta_access_permissions_table.grant_read_write_data(model_delivery_lambda)
         projects_table.grant_read_write_data(model_delivery_lambda)
+        explore_listings_table.grant_read_write_data(model_delivery_lambda)
 
         model_delivery_api = apigw.RestApi(
             self, "Spaceport-ModelDeliveryAdminApi",
@@ -677,6 +794,7 @@ class AuthStack(Stack):
                     "X-Amz-Security-Token",
                 ],
             ),
+            **api_kwargs,
         )
 
         model_delivery_authorizer = apigw.CognitoUserPoolsAuthorizer(
@@ -852,6 +970,7 @@ class AuthStack(Stack):
                     "X-Amz-Security-Token",
                 ],
             ),
+            **api_kwargs,
         )
 
         # Add password reset endpoint
@@ -873,6 +992,21 @@ class AuthStack(Stack):
         self.password_reset_lambda = password_reset_lambda
         self.password_reset_api = password_reset_api
         self.password_reset_codes_table = password_reset_codes_table
+
+        if should_serialize_auth_api_updates(deployment_class):
+            # API Gateway only allows one endpoint-type migration at a time for these shared auth APIs.
+            # Serializing the RestApi resources keeps staging auth redeploys from deadlocking each other.
+            self._serialize_rest_api_updates(
+                [
+                    invite_api,
+                    projects_api,
+                    explore_api,
+                    subscription_api,
+                    beta_access_api,
+                    model_delivery_api,
+                    password_reset_api,
+                ]
+            )
 
     def _dynamodb_table_exists(self, table_name: str) -> bool:
         """Check if a DynamoDB table exists"""
@@ -907,6 +1041,14 @@ class AuthStack(Stack):
             removal_policy=RemovalPolicy.RETAIN,
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST
         )
+
+    def _serialize_rest_api_updates(self, rest_apis) -> None:
+        previous_api_resource = None
+        for rest_api in rest_apis:
+            current_api_resource = rest_api.node.default_child
+            if previous_api_resource is not None and current_api_resource is not None:
+                current_api_resource.add_dependency(previous_api_resource)
+            previous_api_resource = current_api_resource
 
     def _cognito_user_pool_exists(self, user_pool_name: str) -> bool:
         """Check if a Cognito User Pool exists"""

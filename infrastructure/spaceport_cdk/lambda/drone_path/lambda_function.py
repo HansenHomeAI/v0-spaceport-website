@@ -7,6 +7,11 @@ import requests
 import time
 from typing import List, Dict, Tuple, Optional
 
+
+class TerrainElevationUnavailableError(RuntimeError):
+    """Raised when terrain-following requires live elevation data but Google is unavailable."""
+
+
 class SpiralDesigner:
     """
     Bounded Spiral Designer - Advanced Drone Flight Pattern Generator
@@ -91,18 +96,26 @@ class SpiralDesigner:
         """
         self.waypoint_cache = []
         self.elevation_cache = {}  # Cache for elevation data with coordinate keys
+        self.require_live_elevation = False
 
         # DEVELOPMENT API KEY - Replace with environment variable for production
         # This key is rate-limited and for development/testing only
         dev_api_key = "AIzaSyDkdnE1weVG38PSUO5CWFneFjH16SPYZHU"
 
-        # Priority: Environment variable > Development key
-        self.api_key = os.environ.get("GOOGLE_MAPS_API_KEY", dev_api_key)
+        # Treat a blank env var the same as missing so preview/staging never silently
+        # switches from the intended production key to an unusable empty string.
+        configured_api_key = os.environ.get("GOOGLE_MAPS_API_KEY")
+        self.api_key = configured_api_key or dev_api_key
 
         # Log which API key is being used (mask for security)
-        key_source = "PRODUCTION" if "GOOGLE_MAPS_API_KEY" in os.environ else "DEV (RATE LIMITED)"
+        key_source = "PRODUCTION" if configured_api_key else "DEV (RATE LIMITED)"
         masked_key = self.api_key[:10] + "..." + self.api_key[-4:] if self.api_key else "None"
         print(f"🔑 Using {key_source} API key: {masked_key}")
+
+    def _handle_elevation_failure(self, message: str, default_elevation: float) -> float:
+        if self.require_live_elevation:
+            raise TerrainElevationUnavailableError(message)
+        return default_elevation
 
     def haversine_distance(self, lat1: float, lon1: float, lat2: float, lon2: float) -> float:
         """
@@ -170,7 +183,10 @@ class SpiralDesigner:
         if not self.api_key:
             # Graceful degradation when no API key available
             print("Warning: No Google Maps API key available, using default elevation")
-            return 4500.0  # Default elevation in feet
+            return self._handle_elevation_failure(
+                "Terrain following is unavailable because GOOGLE_MAPS_API_KEY is not configured.",
+                4500.0,
+            )
 
         try:
             # Google Maps Elevation API endpoint
@@ -178,12 +194,22 @@ class SpiralDesigner:
             response = requests.get(url, timeout=10)
 
             if response.status_code != 200:
-                raise ValueError(f"Elevation HTTP error {response.status_code}")
+                return self._handle_elevation_failure(
+                    f"Terrain following is unavailable because the Google Elevation API returned HTTP {response.status_code}.",
+                    1000.0,
+                )
 
             data = response.json()
             if data["status"] != "OK" or not data["results"]:
-                print(f"Google Elevation API error: {data.get('status', 'Unknown error')}")
-                return 1000.0  # Default to 1000ft if API fails
+                status = data.get("status", "Unknown error")
+                detail = data.get("error_message")
+                print(f"Google Elevation API error: {status}")
+                if detail:
+                    print(f"Google Elevation API detail: {detail}")
+                message = f"Terrain following is unavailable because Google Elevation returned {status}"
+                if detail:
+                    message = f"{message}: {detail}"
+                return self._handle_elevation_failure(message, 1000.0)
 
             # Convert meters to feet (Google returns meters)
             elevation_meters = data["results"][0]["elevation"]
@@ -197,7 +223,10 @@ class SpiralDesigner:
         except Exception as e:
             print(f"Elevation API error for {lat},{lon}: {str(e)}")
             # Return reasonable default elevation on any error
-            return 1000.0
+            return self._handle_elevation_failure(
+                f"Terrain following is unavailable because the Google Elevation request failed: {str(e)}",
+                1000.0,
+            )
 
     def get_elevations_feet_optimized(self, locations: List[Tuple[float, float]]) -> List[float]:
         """
@@ -805,7 +834,8 @@ class SpiralDesigner:
 
         return {'traces': traces}
 
-    def generate_csv(self, params: Dict, center_str: str, min_height: float = 100.0, max_height: float = None, debug_mode: bool = False, debug_angle: float = 0) -> str:
+    def generate_csv(self, params: Dict, center_str: str, min_height: float = 100.0, max_height: float = None,
+                     debug_mode: bool = False, debug_angle: float = 0, form_to_terrain: bool = True) -> str:
         """
         Generate complete Litchi CSV mission file with elevation-aware altitudes and neural network optimizations.
 
@@ -861,8 +891,12 @@ class SpiralDesigner:
         if not center:
             raise ValueError("Invalid center coordinates")
 
-        # Get takeoff elevation for reference
-        takeoff_elevation_feet = self.get_elevation_feet(center['lat'], center['lon'])
+        if form_to_terrain:
+            # Get takeoff elevation for reference
+            takeoff_elevation_feet = self.get_elevation_feet(center['lat'], center['lon'])
+        else:
+            print("🛫 Terrain following disabled - generating flat mission altitudes")
+            takeoff_elevation_feet = 0.0
 
         # Generate waypoints using the same algorithm as the designer
         spiral_path = []
@@ -916,16 +950,20 @@ class SpiralDesigner:
                 'phase': wp.get('phase', 'unknown')
             })
 
-        # Get elevations with 15-foot proximity optimization
-        ground_elevations = self.get_elevations_feet_optimized(locations)
+        if form_to_terrain:
+            # Get elevations with 15-foot proximity optimization
+            ground_elevations = self.get_elevations_feet_optimized(locations)
 
-        # Add elevations to waypoints_with_coords for adaptive sampling
-        for i, elevation in enumerate(ground_elevations):
-            waypoints_with_coords[i]['elevation'] = elevation
+            # Add elevations to waypoints_with_coords for adaptive sampling
+            for i, elevation in enumerate(ground_elevations):
+                waypoints_with_coords[i]['elevation'] = elevation
 
-        # ADAPTIVE TERRAIN SAMPLING - Detect and add safety waypoints (All slices)
-        print(f"🛡️  Starting adaptive terrain sampling for complete mission safety")
-        safety_waypoints = self.adaptive_terrain_sampling(waypoints_with_coords)
+            # ADAPTIVE TERRAIN SAMPLING - Detect and add safety waypoints (All slices)
+            print(f"🛡️  Starting adaptive terrain sampling for complete mission safety")
+            safety_waypoints = self.adaptive_terrain_sampling(waypoints_with_coords)
+        else:
+            ground_elevations = [0.0] * len(locations)
+            safety_waypoints = []
 
         if safety_waypoints:
             print(f"🔧 Integrating {len(safety_waypoints)} safety waypoints into complete mission flight path")
@@ -1122,7 +1160,8 @@ class SpiralDesigner:
 
         return '\n'.join(rows)
 
-    def generate_battery_csv(self, params: Dict, center_str: str, battery_index: int, min_height: float = 100.0, max_height: float = None) -> str:
+    def generate_battery_csv(self, params: Dict, center_str: str, battery_index: int, min_height: float = 100.0,
+                             max_height: float = None, form_to_terrain: bool = True) -> str:
         """
         Generate Litchi CSV for a specific battery/slice with neural network altitude optimization.
 
@@ -1164,8 +1203,12 @@ class SpiralDesigner:
         self.elevation_cache = {}
         self.waypoint_cache = []
 
-        # Get takeoff elevation for reference
-        takeoff_elevation_feet = self.get_elevation_feet(center['lat'], center['lon'])
+        if form_to_terrain:
+            # Get takeoff elevation for reference
+            takeoff_elevation_feet = self.get_elevation_feet(center['lat'], center['lon'])
+        else:
+            print("🛫 Terrain following disabled - generating flat battery mission altitudes")
+            takeoff_elevation_feet = 0.0
 
         # Generate waypoints for all slices, then extract the specific battery slice
         all_waypoints = self.compute_waypoints(params)
@@ -1189,16 +1232,20 @@ class SpiralDesigner:
                 'phase': wp.get('phase', 'unknown')
             })
 
-        # Get elevations with 15-foot proximity optimization
-        ground_elevations = self.get_elevations_feet_optimized(locations)
+        if form_to_terrain:
+            # Get elevations with 15-foot proximity optimization
+            ground_elevations = self.get_elevations_feet_optimized(locations)
 
-        # Add elevations to waypoints_with_coords for adaptive sampling
-        for i, elevation in enumerate(ground_elevations):
-            waypoints_with_coords[i]['elevation'] = elevation
+            # Add elevations to waypoints_with_coords for adaptive sampling
+            for i, elevation in enumerate(ground_elevations):
+                waypoints_with_coords[i]['elevation'] = elevation
 
-        # ADAPTIVE TERRAIN SAMPLING - Detect and add safety waypoints
-        print(f"🛡️  Starting adaptive terrain sampling for mission safety")
-        safety_waypoints = self.adaptive_terrain_sampling(waypoints_with_coords)
+            # ADAPTIVE TERRAIN SAMPLING - Detect and add safety waypoints
+            print(f"🛡️  Starting adaptive terrain sampling for mission safety")
+            safety_waypoints = self.adaptive_terrain_sampling(waypoints_with_coords)
+        else:
+            ground_elevations = [0.0] * len(locations)
+            safety_waypoints = []
 
         if safety_waypoints:
             print(f"🔧 Integrating {len(safety_waypoints)} safety waypoints into flight path")
@@ -2389,6 +2436,7 @@ def handle_optimize_spiral(designer, body, cors_headers):
 def handle_elevation(designer, body, cors_headers):
     """Handle /api/elevation endpoint"""
     try:
+        designer.require_live_elevation = True
         center = body.get('center', '')
 
         if not center:
@@ -2421,12 +2469,33 @@ def handle_elevation(designer, body, cors_headers):
             })
         }
 
+    except TerrainElevationUnavailableError as e:
+        return {
+            'statusCode': 503,
+            'headers': cors_headers,
+            'body': json.dumps({'error': str(e)})
+        }
     except Exception as e:
         return {
             'statusCode': 500,
             'headers': cors_headers,
             'body': json.dumps({'error': f'Elevation lookup failed: {str(e)}'})
         }
+
+
+def _parse_bool(value, default=True):
+    """Parse API boolean fields without treating the string 'false' as truthy."""
+    if value is None:
+        return default
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized in {"true", "1", "yes", "on"}:
+            return True
+        if normalized in {"false", "0", "no", "off"}:
+            return False
+    return bool(value)
 
 def handle_csv_download(designer, body, cors_headers):
     """Handle /api/csv endpoint"""
@@ -2457,6 +2526,8 @@ def handle_csv_download(designer, body, cors_headers):
         min_height = _parse_height(body.get('minHeight'), 120.0)
         # maxHeight is optional – if blank/invalid we treat as unlimited (None)
         max_height = _parse_height(body.get('maxHeight'), None)
+        form_to_terrain = _parse_bool(body.get('formToTerrain'), True)
+        designer.require_live_elevation = form_to_terrain
 
         if not center:
             return {
@@ -2474,7 +2545,13 @@ def handle_csv_download(designer, body, cors_headers):
         }
 
         # Generate CSV content
-        csv_content = designer.generate_csv(params, center, min_height, max_height)
+        csv_content = designer.generate_csv(
+            params,
+            center,
+            min_height,
+            max_height,
+            form_to_terrain=form_to_terrain,
+        )
 
         # Return CSV as text/csv
         return {
@@ -2487,6 +2564,12 @@ def handle_csv_download(designer, body, cors_headers):
             'body': csv_content
         }
 
+    except TerrainElevationUnavailableError as e:
+        return {
+            'statusCode': 503,
+            'headers': cors_headers,
+            'body': json.dumps({'error': str(e)})
+        }
     except Exception as e:
         return {
             'statusCode': 500,
@@ -2539,6 +2622,8 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
         min_height = _parse_height(body.get('minHeight'), 120.0)
         # maxHeight is optional – if blank/invalid we treat as unlimited (None)
         max_height = _parse_height(body.get('maxHeight'), None)
+        form_to_terrain = _parse_bool(body.get('formToTerrain'), True)
+        designer.require_live_elevation = form_to_terrain
 
         if not center:
             return {
@@ -2563,7 +2648,14 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
         }
 
         # Generate battery-specific CSV content
-        csv_content = designer.generate_battery_csv(params, center, battery_index, min_height, max_height)
+        csv_content = designer.generate_battery_csv(
+            params,
+            center,
+            battery_index,
+            min_height,
+            max_height,
+            form_to_terrain=form_to_terrain,
+        )
 
         # Return CSV as text/csv
         return {
@@ -2576,6 +2668,12 @@ def handle_battery_csv_download(designer, body, battery_id, cors_headers):
             'body': csv_content
         }
 
+    except TerrainElevationUnavailableError as e:
+        return {
+            'statusCode': 503,
+            'headers': cors_headers,
+            'body': json.dumps({'error': str(e)})
+        }
     except Exception as e:
         return {
             'statusCode': 500,

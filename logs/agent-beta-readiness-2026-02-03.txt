@@ -1,0 +1,280 @@
+[1m[96m🚀 SPACEPORT AI - BETA READINESS TEST SUITE[0m
+[97mComprehensive testing for early beta launch readiness[0m
+[97m======================================================================[0m
+[97mPreview URL detected: https://agent-74621839-explore-auto.v0-spaceport-website-preview2.pages.dev[0m
+[94m🕐 Started at: 2026-02-02 17:14:48[0m
+
+[1m🔍 Checking Prerequisites...[0m
+   ✅ boto3 installed
+   ✅ requests installed
+   ✅ AWS credentials configured
+   ✅ Internet connectivity confirmed
+   [92m✅ All prerequisites met[0m
+
+[1m🧪 Running Test Suites[0m
+[97m======================================================================[0m
+
+[1m📋 Running Production Monitoring Test...[0m
+[97m──────────────────────────────────────────────────[0m
+📊 Production Environment Monitoring Test
+==================================================
+🚀 Starting Production Monitoring Test Suite
+==================================================
+
+🔧 Testing Lambda Function Monitoring...
+[17:14:51] ❌ Lambda Function - Spaceport-DronePathFunction: Function not found
+[17:14:51] ❌ Lambda Function - Spaceport-FileUploadFunction: Function not found
+[17:14:51] ❌ Lambda Function - Spaceport-CsvUploadFunction: Function not found
+[17:14:51] ❌ Lambda Function - Spaceport-WaitlistFunction: Function not found
+[17:14:51] ✅ Lambda Function - Spaceport-ProjectsFunction: Active and healthy
+[17:14:52] ✅ CloudWatch Metrics - Spaceport-ProjectsFunction: Metrics collection active
+[17:14:53] ✅ Log Group - Spaceport-ProjectsFunction: Log group exists
+
+🗄️ Testing DynamoDB Monitoring...
+[17:14:53] ✅ DynamoDB Table - Spaceport-Projects: Table active
+[17:14:53] ✅ PITR - Spaceport-Projects: Point-in-time recovery enabled
+[17:14:54] ✅ DynamoDB Metrics - Spaceport-Projects: Metrics collection active
+[17:14:54] ✅ DynamoDB Table - Spaceport-Waitlist: Table active
+[17:14:54] ✅ PITR - Spaceport-Waitlist: Point-in-time recovery enabled
+[17:14:54] ✅ DynamoDB Metrics - Spaceport-Waitlist: Metrics collection active
+[17:14:54] ✅ DynamoDB Table - Spaceport-FileMetadata: Table active
+[17:14:54] ✅ PITR - Spaceport-FileMetadata: Point-in-time recovery enabled
+[17:14:54] ✅ DynamoDB Metrics - Spaceport-FileMetadata: Metrics collection active
+[17:14:54] ✅ DynamoDB Table - Spaceport-DroneFlightPaths: Table active
+[17:14:54] ✅ PITR - Spaceport-DroneFlightPaths: Point-in-time recovery enabled
+[17:14:54] ✅ DynamoDB Metrics - Spaceport-DroneFlightPaths: Metrics collection active
+
+🌐 Testing API Gateway Monitoring...
+[17:14:55] ✅ API Gateway - Spaceport CRM API: API ID: 140zkriu48
+[17:14:55] ✅ API Metrics - Spaceport CRM API: 101.0 requests in 24h
+[17:14:55] ✅ API Gateway - Spaceport-ProjectsApi: API ID: 34ap3qgem7
+[17:14:56] ✅ API Metrics - Spaceport-ProjectsApi: 1.0 requests in 24h
+[17:14:56] ✅ API Gateway - Spaceport-ML-API: API ID: 3xzfdyvwpd
+[17:14:56] ✅ API Metrics - Spaceport-ML-API: 1.0 requests in 24h
+[17:14:56] ✅ API Gateway - Spaceport-InviteApiV3: API ID: gcqqr7bwpg
+[17:14:56] ⚠️ API Metrics - Spaceport-InviteApiV3: No recent API calls
+[17:14:56] ✅ API Gateway - Spaceport-InviteApiV2: API ID: gxlmbhtbi4
+[17:14:56] ⚠️ API Metrics - Spaceport-InviteApiV2: No recent API calls
+[17:14:56] ✅ API Gateway - Spaceport-ProjectsApi-staging: API ID: mca9yf1vgl
+[17:14:57] ✅ API Metrics - Spaceport-ProjectsApi-staging: 4.0 requests in 24h
+[17:14:57] ✅ API Gateway - Spaceport-PasswordResetApi-staging: API ID: mx549qsbel
+[17:14:57] ⚠️ API Metrics - Spaceport-PasswordResetApi-staging: No recent API calls
+[17:14:57] ✅ API Gateway - Spaceport-InviteApi: API ID: rmfux6wbpf
+[17:14:58] ⚠️ API Metrics - Spaceport-InviteApi: No recent API calls
+[17:14:58] ✅ API Gateway - Spaceport-ModelDeliveryAdminApi-staging: API ID: tbzxbstibh
+[17:14:58] ⚠️ API Metrics - Spaceport-ModelDeliveryAdminApi-staging: No recent API calls
+[17:14:58] ✅ API Gateway - Spaceport-ExplorePublicApi-staging: API ID: vswlq3lic8
+[17:14:58] ⚠️ API Metrics - Spaceport-ExplorePublicApi-staging: No recent API calls
+[17:14:58] ✅ API Gateway - Spaceport-ML-API-staging: API ID: wz0ezgptue
+[17:14:58] ⚠️ API Metrics - Spaceport-ML-API-staging: No recent API calls
+[17:14:58] ✅ API Gateway - Spaceport-SubscriptionApi: API ID: xduxbyklm1
+[17:14:59] ✅ API Metrics - Spaceport-SubscriptionApi: 4.0 requests in 24h
+[17:14:59] ✅ API Gateway - Spaceport-BetaAccessAdminApi-staging: API ID: y5fej7zgx8
+[17:14:59] ✅ API Metrics - Spaceport-BetaAccessAdminApi-staging: 8.0 requests in 24h
+
+🚨 Testing Error Rate Monitoring...
+[17:14:59] ⚠️ Error Rate - Spaceport-DronePathFunction: No recent invocations
+[17:15:00] ⚠️ Error Rate - Spaceport-FileUploadFunction: No recent invocations
+[17:15:00] ⚠️ Error Rate - Spaceport-CsvUploadFunction: No recent invocations
+[17:15:00] ⚠️ Error Rate - Spaceport-WaitlistFunction: No recent invocations
+[17:15:01] ⚠️ Error Rate - Spaceport-ProjectsFunction: No recent invocations
+
+💰 Testing Cost Monitoring Setup...
+[17:15:01] ✅ Cost Monitoring: Cost Explorer data available
+[17:15:01] ✅ Weekly Cost: $7.12 in the last 7 days
+
+⏰ Testing CloudWatch Alarms...
+[17:15:02] ⚠️ Alarm - SpaceportMLPipeline-Failures: Insufficient data
+[17:15:02] ⚠️ Alarm - SpaceportMLPipeline-Failures-staging: Insufficient data
+
+📋 Testing Log Retention Policies...
+[17:15:03] ✅ Log Retention - Spaceport-DronePathFunction: 30 days retention
+[17:15:03] ✅ Log Retention - Spaceport-FileUploadFunction: 30 days retention
+[17:15:03] ⚠️ Log Retention - Spaceport-CsvUploadFunction: Log group not found
+[17:15:03] ✅ Log Retention - Spaceport-WaitlistFunction: 30 days retention
+[17:15:03] ✅ Log Retention - Spaceport-ProjectsFunction: 30 days retention
+
+📊 PRODUCTION MONITORING TEST RESULTS
+==================================================
+✅ Passed: 40
+❌ Failed: 4
+⚠️  Warnings: 15
+📈 Success Rate: 67.8%
+⏱️  Duration: 13.03 seconds
+
+🎯 MONITORING READINESS ASSESSMENT
+==================================================
+🔴 MONITORING NEEDS IMPROVEMENT
+   Critical monitoring gaps detected
+   Beta launch without proper monitoring is risky
+
+💡 MONITORING RECOMMENDATIONS
+==================================================
+1. Review and address warning items above
+2. Set up SNS notifications for critical alarms
+3. Create CloudWatch dashboard for key metrics
+4. Set up cost budgets with alerts
+5. Test alert notifications before beta launch
+6. Document monitoring runbook for troubleshooting
+
+[91m❌[0m Production Monitoring Test - [1m90.9% success rate[0m
+   Duration: 13.1s | Passed: 40 | Failed: 4
+   [93m⚠️  Warnings: 15[0m
+
+[1m📋 Running Beta Readiness Comprehensive Test...[0m
+[97m──────────────────────────────────────────────────[0m
+[96m🧪 Beta Readiness Test Suite Initialized[0m
+[97mTesting against Cloudflare preview endpoints[0m
+
+[1m[96m🚀 SPACEPORT AI - BETA READINESS TEST SUITE[0m
+[97mTesting system readiness for early beta launch[0m
+[97m============================================================[0m
+
+[1m🔍 Test 1: API Endpoint Health Checks[0m
+[92m✅ [17:15:04] API Health - projects OPTIONS: PASSED[0m
+[92m✅ [17:15:05] API Health - drone_path OPTIONS: PASSED[0m
+[92m✅ [17:15:05] API Health - file_upload OPTIONS: PASSED[0m
+[92m✅ [17:15:05] API Health - ml_pipeline OPTIONS: PASSED[0m
+[92m✅ [17:15:06] API Health - waitlist OPTIONS: PASSED[0m
+
+[1m🔒 Test 2: Database Isolation Testing[0m
+[92m✅ [17:15:07] Database Isolation - User 1: PASSED[0m
+[92m✅ [17:15:07] Database Isolation - User 2: PASSED[0m
+
+[1m🛸 Test 3: Concurrent Drone Path Generation[0m
+[92m✅ [17:15:08] Concurrent Drone Path Generation: PASSED[0m
+
+[1m📁 Test 4: File Upload System Testing[0m
+[92m✅ [17:15:10] Multipart Upload - Start: PASSED[0m
+[92m✅ [17:15:10] Multipart Upload - Get Presigned URL: PASSED[0m
+
+[1m📝 Test 5: Waitlist System Testing[0m
+[92m✅ [17:15:13] Waitlist Submission: PASSED[0m
+[92m✅ [17:15:14] Waitlist Duplicate Handling: PASSED[0m
+
+[1m🔐 Test 6: Cross-User Data Isolation[0m
+[92m✅ [17:15:14] Cross-User Isolation - Query: PASSED[0m
+
+[1m⚡ Test 7: Concurrent Mixed Operations Load Test[0m
+[92m✅ [17:15:19] Concurrent Mixed Operations: PASSED[0m
+
+[1m🚨 Test 8: Error Handling and Edge Cases[0m
+[92m✅ [17:15:19] Error Handling - Invalid Coordinates: PASSED[0m
+[92m✅ [17:15:19] Error Handling - Empty Waitlist: PASSED[0m
+[92m✅ [17:15:20] Error Handling - Malformed JSON: PASSED[0m
+
+[1m📊 TEST SUITE RESULTS[0m
+[97m============================================================[0m
+[92m✅ Passed: 17[0m
+[91m❌ Failed: 0[0m
+[94m📈 Success Rate: 100.0%[0m
+[95m⏱️  Duration: 15.77 seconds[0m
+
+[1m🎯 BETA READINESS ASSESSMENT[0m
+[97m============================================================[0m
+[92m🟢 READY FOR BETA LAUNCH[0m
+[92m   Your system passes 100.0% of tests[0m
+[92m   Core functionality is stable for early beta testing[0m
+
+[1m💡 RECOMMENDATIONS[0m
+[97m============================================================[0m
+[97m1. Monitor CloudWatch logs during beta testing[0m
+[97m2. Set up DynamoDB and API Gateway alarms[0m
+[97m3. Have a rollback plan ready[0m
+[97m4. Start with a small group of beta testers[0m
+[97m5. Collect user feedback actively[0m
+
+[92m✅[0m Beta Readiness Comprehensive Test - [1m100.0% success rate[0m
+   Duration: 16.7s | Passed: 17 | Failed: 0
+
+[1m📋 Running Multi-User Concurrency Test...[0m
+[97m──────────────────────────────────────────────────[0m
+🔐 Multi-User Concurrency Test Suite
+==================================================
+🚀 Starting Multi-User Concurrency Test Suite
+==================================================
+
+🔒 Testing database cross-contamination prevention...
+[17:15:22] ✅ PASS - User 1 Data Isolation: Found 3 projects, all belong to User 1
+[17:15:22] ✅ PASS - User 2 Data Isolation: Found 2 projects, all belong to User 2
+[17:15:22] ✅ PASS - No Data Cross-Contamination: No shared project IDs between users
+
+🔄 Testing 5 concurrent user sessions...
+[17:15:26] ✅ PASS - Concurrent Sessions (5 users): 100.0% success rate in 2.89s
+[17:15:26] ✅ PASS - Database Isolation: All users saw only their own data
+[17:15:26] ✅ PASS - Drone Path Generation Under Load: 100.0% success rate (15/15)
+[17:15:26] ✅ PASS - Response Time Performance: Avg: 0.30s, Max: 0.36s
+
+⚡ Testing API endpoints under concurrent load...
+[17:15:27] ✅ PASS - Concurrent API Calls (20 requests): 100.0% success rate
+[17:15:27] ✅ PASS - API Response Time Under Load: Avg: 0.32s, Max: 0.36s
+
+🔥 Stress Test: 10 concurrent users
+
+🔄 Testing 10 concurrent user sessions...
+[17:15:30] ✅ PASS - Concurrent Sessions (10 users): 100.0% success rate in 3.26s
+[17:15:30] ✅ PASS - Database Isolation: All users saw only their own data
+[17:15:30] ✅ PASS - Drone Path Generation Under Load: 100.0% success rate (30/30)
+[17:15:30] ✅ PASS - Response Time Performance: Avg: 0.36s, Max: 0.43s
+
+📊 MULTI-USER CONCURRENCY TEST RESULTS
+==================================================
+✅ Passed: 13
+❌ Failed: 0
+📈 Success Rate: 100.0%
+⏱️  Duration: 8.78 seconds
+
+🎯 MULTI-USER READINESS ASSESSMENT
+==================================================
+🟢 EXCELLENT - Ready for multi-user beta
+   Your system handles concurrent users exceptionally well
+
+[92m✅[0m Multi-User Concurrency Test - [1m100.0% success rate[0m
+   Duration: 10.0s | Passed: 13 | Failed: 0
+
+[1m[96m📊 FINAL BETA READINESS REPORT[0m
+[97m======================================================================[0m
+[97m📈 Overall Statistics:[0m
+   Test Suites: 2/3 passed (66.7%)
+   Individual Tests: 70/74 passed (94.6%)
+   Total Duration: 41.4 seconds
+   Test Mode: Comprehensive
+
+[97m📋 Test Suite Results:[0m
+   ❌ Production Monitoring Test: 90.9% (13.1s)
+   ✅ Beta Readiness Comprehensive Test (CRITICAL): 100.0% (16.7s)
+   ✅ Multi-User Concurrency Test (CRITICAL): 100.0% (10.0s)
+
+[93m⚠️  Warnings:[0m
+   ⚠️  Production Monitoring Test: 15 warnings
+
+[1m🎯 BETA READINESS ASSESSMENT[0m
+[97m======================================================================[0m
+[92m🟢 READY FOR BETA LAUNCH[0m
+[92m   ✅ No critical failures detected[0m
+[92m   ✅ 94.6% overall success rate[0m
+[92m   ✅ Core functionality is stable[0m
+[92m   ✅ Multi-user support is working[0m
+
+[1m💡 RECOMMENDATIONS[0m
+[97m======================================================================[0m
+[97m🚀 Launch Recommendations:[0m
+   1. Start with 5-10 trusted beta testers
+   2. Monitor CloudWatch logs closely during first week
+   3. Set up real-time alerts for errors
+   4. Have a rollback plan ready
+   5. Schedule daily check-ins during first week
+   6. Collect user feedback actively
+
+[93m   ⚠️  Address warnings when possible[0m
+
+[1m📋 NEXT STEPS[0m
+[97m======================================================================[0m
+1. [92m✅ Begin beta user invitations[0m
+2. 📧 Send beta testing guidelines to users
+3. 📊 Set up monitoring dashboards
+4. 📝 Prepare feedback collection system
+5. 🔄 Plan for iterative improvements
+
+[1m🎉 Beta readiness testing completed![0m
+[97mReport generated at: 2026-02-02 17:15:30[0m
