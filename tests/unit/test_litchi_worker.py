@@ -22,11 +22,22 @@ SPEC.loader.exec_module(litchi_worker)
 
 
 class FakeKMS:
-    def encrypt(self, KeyId, Plaintext):
+    def encrypt(self, KeyId, Plaintext, **_kwargs):
         return {"CiphertextBlob": Plaintext[::-1]}
 
-    def decrypt(self, CiphertextBlob):
+    def decrypt(self, CiphertextBlob, **_kwargs):
         return {"Plaintext": CiphertextBlob[::-1]}
+
+
+class FakeTable:
+    def __init__(self, item):
+        self.item = item
+
+    def get_item(self, Key):
+        return {"Item": self.item}
+
+    def put_item(self, Item):
+        self.item = Item
 
 
 class LitchiWorkerTests(unittest.TestCase):
@@ -60,6 +71,31 @@ class LitchiWorkerTests(unittest.TestCase):
         self.assertTrue(litchi_worker._detect_rate_limit("Too many requests"))
         self.assertTrue(litchi_worker._detect_rate_limit("HTTP 429"))
         self.assertFalse(litchi_worker._detect_rate_limit("All good"))
+
+    def test_dry_run_upload_updates_progress_without_browser(self):
+        with patch.object(litchi_worker, "_kms_client", return_value=FakeKMS()):
+            cookies = litchi_worker._serialize_cookies([{"name": "session", "value": "abc"}], "key")
+
+        table = FakeTable({"userId": "user-123", "cookies": cookies})
+
+        with patch.dict(litchi_worker.os.environ, {
+            "LITCHI_WORKER_DRY_RUN": "1",
+            "LITCHI_KMS_KEY_ID": "key",
+        }, clear=False):
+            with patch.object(litchi_worker, "_kms_client", return_value=FakeKMS()):
+                with patch.object(litchi_worker, "_dynamodb_table", return_value=table):
+                    result = litchi_worker.lambda_handler({
+                        "mode": "upload",
+                        "userId": "user-123",
+                        "mission": {"name": "edgewood_flight-01-of-02_20260528-1407", "csv": "lat,lng\n"},
+                        "missionIndex": 0,
+                        "missionTotal": 2,
+                    }, None)
+
+        self.assertEqual(result["status"], "ok")
+        self.assertEqual(table.item["status"], "active")
+        self.assertEqual(table.item["progress"]["label"], "Uploaded 1/2")
+        self.assertIn("Uploaded edgewood_flight-01-of-02_20260528-1407 (dry run)", table.item["message"])
 
 
 if __name__ == "__main__":  # pragma: no cover

@@ -77,6 +77,32 @@ class AuthStack(Stack):
         CfnOutput(self, "CognitoUserPoolClientId", value=user_pool_client.user_pool_client_id)
         api_kwargs = build_auth_api_kwargs(deployment_class)
 
+        # ========== INVITE USER LAMBDA ==========
+        # Development already owns this Lambda. Import it instead of adding a
+        # replacement role/function in the shared auth stack.
+        invite_lambda = lambda_.Function.from_function_name(
+            self,
+            "Spaceport-InviteUserFunction",
+            "Spaceport-InviteUserFunction"
+        )
+
+        invite_api = apigw.RestApi(
+            self,
+            "Spaceport-InviteApi",
+            rest_api_name="Spaceport-InviteApi",
+            description="Invite approved users to Spaceport",
+            default_cors_preflight_options=apigw.CorsOptions(
+                allow_origins=apigw.Cors.ALL_ORIGINS,
+                allow_methods=apigw.Cors.ALL_METHODS,
+            ),
+            **api_kwargs,
+        )
+
+        invite_res = invite_api.root.add_resource("invite")
+        invite_res.add_method("POST", apigw.LambdaIntegration(invite_lambda, proxy=True))
+
+        CfnOutput(self, "InviteApiUrl", value=f"{invite_api.url}invite")
+
         # -------------------------------------
         # Per-user Projects storage and REST API
         # -------------------------------------
@@ -177,7 +203,7 @@ class AuthStack(Stack):
             deploy_options=apigw.StageOptions(
                 stage_name="prod",
                 logging_level=apigw.MethodLoggingLevel.INFO,
-                data_trace_enabled=True,
+                data_trace_enabled=False,
                 metrics_enabled=True,
                 access_log_destination=apigw.LogGroupLogDestination(access_log_group),
                 access_log_format=apigw.AccessLogFormat.json_with_standard_fields(
@@ -915,6 +941,20 @@ class AuthStack(Stack):
             "LitchiJitterWait",
             time=sfn.WaitTime.seconds_path("$.worker.waitSeconds"),
         )
+        worker_done = sfn.Pass(self, "LitchiWorkerDone")
+        worker_failed = sfn.Fail(
+            self,
+            "LitchiWorkerFailed",
+            cause="Litchi upload worker returned a terminal failure",
+        )
+        worker_result = (
+            sfn.Choice(self, "LitchiWorkerResult")
+            .when(sfn.Condition.string_equals("$.worker.status", "ok"), jitter_wait.next(worker_done))
+            .when(sfn.Condition.string_equals("$.worker.status", "pending_2fa"), worker_failed)
+            .when(sfn.Condition.string_equals("$.worker.status", "expired"), worker_failed)
+            .when(sfn.Condition.string_equals("$.worker.status", "error"), worker_failed)
+            .otherwise(worker_failed)
+        )
 
         litchi_map = sfn.Map(
             self,
@@ -928,7 +968,7 @@ class AuthStack(Stack):
             },
             max_concurrency=1,
         )
-        litchi_map.iterator(worker_task.next(jitter_wait))
+        litchi_map.iterator(worker_task.next(worker_result))
 
         litchi_state_machine = sfn.StateMachine(
             self,
@@ -939,7 +979,7 @@ class AuthStack(Stack):
             logs=sfn.LogOptions(
                 destination=litchi_stepfunctions_log_group,
                 level=sfn.LogLevel.ALL,
-                include_execution_data=True,
+                include_execution_data=False,
             ),
             timeout=Duration.hours(1),
         )
@@ -1143,6 +1183,7 @@ class AuthStack(Stack):
             # Serializing the RestApi resources keeps staging auth redeploys from deadlocking each other.
             self._serialize_rest_api_updates(
                 [
+                    invite_api,
                     projects_api,
                     explore_api,
                     subscription_api,

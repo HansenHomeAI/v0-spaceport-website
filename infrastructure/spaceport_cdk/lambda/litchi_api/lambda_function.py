@@ -1,6 +1,7 @@
 import json
 import os
 import logging
+import re
 from decimal import Decimal
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
@@ -9,6 +10,11 @@ import boto3
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+MAX_MISSION_COUNT = 12
+MAX_MISSION_NAME_LENGTH = 64
+MAX_MISSION_CSV_BYTES = 150_000
+MAX_UPLOAD_PAYLOAD_BYTES = 220_000
 
 
 def _cors_headers() -> Dict[str, str]:
@@ -74,6 +80,45 @@ def _parse_body(event: Dict[str, Any]) -> Dict[str, Any]:
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _safe_execution_fragment(value: str, fallback: str) -> str:
+    fragment = re.sub(r"[^A-Za-z0-9_-]+", "-", value or "").strip("-")
+    return (fragment or fallback)[:40]
+
+
+def _sanitize_mission_name(value: Any, fallback: str) -> str:
+    name = re.sub(r"[^A-Za-z0-9 _.-]+", " ", str(value or "").strip())
+    name = re.sub(r"\s+", " ", name).strip()
+    return (name or fallback)[:MAX_MISSION_NAME_LENGTH]
+
+
+def _validate_missions(missions: Any) -> tuple[Optional[list[dict[str, str]]], Optional[str]]:
+    if not isinstance(missions, list) or not missions:
+        return None, "missions must be a non-empty list"
+    if len(missions) > MAX_MISSION_COUNT:
+        return None, f"missions cannot exceed {MAX_MISSION_COUNT} files per upload"
+
+    sanitized: list[dict[str, str]] = []
+    total_bytes = 0
+    for index, mission in enumerate(missions, start=1):
+        if not isinstance(mission, dict):
+            return None, f"mission {index} must be an object"
+        csv_text = mission.get("csv")
+        if not isinstance(csv_text, str) or not csv_text.strip():
+            return None, f"mission {index} is missing CSV content"
+        csv_bytes = len(csv_text.encode("utf-8"))
+        if csv_bytes > MAX_MISSION_CSV_BYTES:
+            return None, f"mission {index} CSV is too large"
+        total_bytes += csv_bytes
+        if total_bytes > MAX_UPLOAD_PAYLOAD_BYTES:
+            return None, "mission upload payload is too large"
+        sanitized.append({
+            "name": _sanitize_mission_name(mission.get("name"), f"Spaceport Mission {index}"),
+            "csv": csv_text,
+        })
+
+    return sanitized, None
 
 
 def _table():
@@ -181,27 +226,36 @@ def _handle_test_connection(user_id: str) -> Dict[str, Any]:
 
 
 def _handle_upload(user_id: str, payload: Dict[str, Any]) -> Dict[str, Any]:
-    missions = payload.get("missions")
-    if not isinstance(missions, list) or not missions:
-        return _response(400, {"error": "missions must be a non-empty list"})
+    missions, validation_error = _validate_missions(payload.get("missions"))
+    if validation_error:
+        return _response(400, {"error": validation_error})
 
     state_machine_arn = os.environ.get("LITCHI_STATE_MACHINE_ARN")
     if not state_machine_arn:
         return _response(500, {"error": "LITCHI_STATE_MACHINE_ARN is not configured"})
 
     sfn_client = boto3.client("stepfunctions")
-    execution_name = f"litchi-{user_id[:8]}-{int(datetime.now(timezone.utc).timestamp())}"
+    requested_at = _now_iso()
+    idempotency_key = _safe_execution_fragment(str(payload.get("idempotencyKey") or ""), "")
+    timestamp = int(datetime.now(timezone.utc).timestamp())
+    execution_name = f"litchi-{_safe_execution_fragment(user_id[:8], 'user')}-{idempotency_key or timestamp}"
     input_payload = {
         "userId": user_id,
         "missions": missions,
         "totalMissions": len(missions),
-        "requestedAt": _now_iso(),
+        "requestedAt": requested_at,
     }
-    response = sfn_client.start_execution(
-        stateMachineArn=state_machine_arn,
-        name=execution_name,
-        input=json.dumps(input_payload),
-    )
+    try:
+        response = sfn_client.start_execution(
+            stateMachineArn=state_machine_arn,
+            name=execution_name[:80],
+            input=json.dumps(input_payload),
+        )
+    except Exception as exc:
+        error_code = getattr(exc, "response", {}).get("Error", {}).get("Code")
+        if error_code == "ExecutionAlreadyExists":
+            return _response(409, {"error": "This mission batch is already queued"})
+        raise
     return _response(200, {
         "executionArn": response.get("executionArn"),
         "startDate": response.get("startDate").isoformat() if response.get("startDate") else None,

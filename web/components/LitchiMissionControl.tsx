@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from 'react';
 import { useLitchiAutomation } from '../hooks/useLitchiAutomation';
+import { sanitizeMissionTitle } from '../lib/litchiMissionNaming';
 
 const STATUS_LABELS: Record<string, string> = {
   not_connected: 'Not connected',
@@ -56,7 +57,7 @@ export default function LitchiMissionControl(): JSX.Element {
     const csvText = await missionFile.text();
     await uploadMissions([
       {
-        name: missionName || missionFile.name.replace(/\.csv$/i, ''),
+        name: sanitizeMissionTitle(missionName || missionFile.name),
         csv: csvText,
       },
     ]);

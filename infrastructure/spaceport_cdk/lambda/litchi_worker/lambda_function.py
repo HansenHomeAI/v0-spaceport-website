@@ -64,16 +64,34 @@ def _dynamodb_table():
     return dynamodb.Table(table_name)
 
 
-def _encrypt_text(plaintext: str, key_id: str) -> str:
+def _kms_context(user_id: Optional[str], field: str) -> Optional[Dict[str, str]]:
+    if not user_id:
+        return None
+    return {"userId": user_id, "field": field}
+
+
+def _encrypt_text(plaintext: str, key_id: str, encryption_context: Optional[Dict[str, str]] = None) -> str:
     client = _kms_client()
-    response = client.encrypt(KeyId=key_id, Plaintext=plaintext.encode("utf-8"))
+    kwargs: Dict[str, Any] = {"KeyId": key_id, "Plaintext": plaintext.encode("utf-8")}
+    if encryption_context:
+        kwargs["EncryptionContext"] = encryption_context
+    response = client.encrypt(**kwargs)
     return base64.b64encode(response["CiphertextBlob"]).decode("utf-8")
 
 
-def _decrypt_text(ciphertext: str) -> str:
+def _decrypt_text(ciphertext: str, encryption_context: Optional[Dict[str, str]] = None) -> str:
     client = _kms_client()
     blob = base64.b64decode(ciphertext.encode("utf-8"))
-    response = client.decrypt(CiphertextBlob=blob)
+    kwargs: Dict[str, Any] = {"CiphertextBlob": blob}
+    if encryption_context:
+        kwargs["EncryptionContext"] = encryption_context
+    try:
+        response = client.decrypt(**kwargs)
+    except Exception:
+        # Backward-compatible read for records encrypted before encryption context was added.
+        if not encryption_context:
+            raise
+        response = client.decrypt(CiphertextBlob=blob)
     return response["Plaintext"].decode("utf-8")
 
 
@@ -274,53 +292,53 @@ async def _close_context(playwright, browser) -> None:
     await playwright.stop()
 
 
-def _serialize_cookies(cookies: List[Dict[str, Any]], key_id: str) -> str:
+def _serialize_cookies(cookies: List[Dict[str, Any]], key_id: str, user_id: Optional[str] = None) -> str:
     payload = json.dumps(cookies)
-    return _encrypt_text(payload, key_id)
+    return _encrypt_text(payload, key_id, _kms_context(user_id, "cookies"))
 
 
-def _deserialize_cookies(ciphertext: str) -> List[Dict[str, Any]]:
-    payload = _decrypt_text(ciphertext)
+def _deserialize_cookies(ciphertext: str, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+    payload = _decrypt_text(ciphertext, _kms_context(user_id, "cookies"))
     return json.loads(payload)
 
 
-def _serialize_local_storage(storage: Dict[str, str], key_id: str) -> str:
+def _serialize_local_storage(storage: Dict[str, str], key_id: str, user_id: Optional[str] = None) -> str:
     payload = json.dumps(storage)
-    return _encrypt_text(payload, key_id)
+    return _encrypt_text(payload, key_id, _kms_context(user_id, "localStorage"))
 
 
-def _deserialize_local_storage(ciphertext: str) -> Dict[str, str]:
-    payload = _decrypt_text(ciphertext)
+def _deserialize_local_storage(ciphertext: str, user_id: Optional[str] = None) -> Dict[str, str]:
+    payload = _decrypt_text(ciphertext, _kms_context(user_id, "localStorage"))
     return json.loads(payload)
 
 
-def _serialize_session_storage(storage: Dict[str, str], key_id: str) -> str:
+def _serialize_session_storage(storage: Dict[str, str], key_id: str, user_id: Optional[str] = None) -> str:
     payload = json.dumps(storage)
-    return _encrypt_text(payload, key_id)
+    return _encrypt_text(payload, key_id, _kms_context(user_id, "sessionStorage"))
 
 
-def _deserialize_session_storage(ciphertext: str) -> Dict[str, str]:
-    payload = _decrypt_text(ciphertext)
+def _deserialize_session_storage(ciphertext: str, user_id: Optional[str] = None) -> Dict[str, str]:
+    payload = _decrypt_text(ciphertext, _kms_context(user_id, "sessionStorage"))
     return json.loads(payload)
 
 
-def _serialize_credentials(credentials: Dict[str, str], key_id: str) -> str:
+def _serialize_credentials(credentials: Dict[str, str], key_id: str, user_id: Optional[str] = None) -> str:
     payload = json.dumps(credentials)
-    return _encrypt_text(payload, key_id)
+    return _encrypt_text(payload, key_id, _kms_context(user_id, "credentials"))
 
 
-def _deserialize_credentials(ciphertext: str) -> Dict[str, str]:
-    payload = _decrypt_text(ciphertext)
+def _deserialize_credentials(ciphertext: str, user_id: Optional[str] = None) -> Dict[str, str]:
+    payload = _decrypt_text(ciphertext, _kms_context(user_id, "credentials"))
     return json.loads(payload)
 
 
-def _serialize_storage_state(state: Dict[str, Any], key_id: str) -> str:
+def _serialize_storage_state(state: Dict[str, Any], key_id: str, user_id: Optional[str] = None) -> str:
     payload = json.dumps(state)
-    return _encrypt_text(payload, key_id)
+    return _encrypt_text(payload, key_id, _kms_context(user_id, "storageState"))
 
 
-def _deserialize_storage_state(ciphertext: str) -> Dict[str, Any]:
-    payload = _decrypt_text(ciphertext)
+def _deserialize_storage_state(ciphertext: str, user_id: Optional[str] = None) -> Dict[str, Any]:
+    payload = _decrypt_text(ciphertext, _kms_context(user_id, "storageState"))
     return json.loads(payload)
 
 
@@ -344,7 +362,7 @@ def _load_cookies(table, user_id: str) -> Optional[List[Dict[str, Any]]]:
     encrypted = record.get("cookies")
     if not encrypted:
         return None
-    return _deserialize_cookies(encrypted)
+    return _deserialize_cookies(encrypted, user_id)
 
 
 def _load_local_storage(table, user_id: str) -> Optional[Dict[str, str]]:
@@ -352,7 +370,7 @@ def _load_local_storage(table, user_id: str) -> Optional[Dict[str, str]]:
     encrypted = record.get("localStorage")
     if not encrypted:
         return None
-    return _deserialize_local_storage(encrypted)
+    return _deserialize_local_storage(encrypted, user_id)
 
 
 def _load_session_storage(table, user_id: str) -> Optional[Dict[str, str]]:
@@ -360,7 +378,7 @@ def _load_session_storage(table, user_id: str) -> Optional[Dict[str, str]]:
     encrypted = record.get("sessionStorage")
     if not encrypted:
         return None
-    return _deserialize_session_storage(encrypted)
+    return _deserialize_session_storage(encrypted, user_id)
 
 
 def _load_credentials(table, user_id: str) -> Optional[Dict[str, str]]:
@@ -368,7 +386,7 @@ def _load_credentials(table, user_id: str) -> Optional[Dict[str, str]]:
     encrypted = record.get("credentials")
     if not encrypted:
         return None
-    return _deserialize_credentials(encrypted)
+    return _deserialize_credentials(encrypted, user_id)
 
 
 def _load_storage_state(table, user_id: str) -> Optional[Dict[str, Any]]:
@@ -376,7 +394,7 @@ def _load_storage_state(table, user_id: str) -> Optional[Dict[str, Any]]:
     encrypted = record.get("storageState")
     if not encrypted:
         return None
-    return _deserialize_storage_state(encrypted)
+    return _deserialize_storage_state(encrypted, user_id)
 
 
 def _save_credentials(table, user_id: str, username: str, password: str) -> None:
@@ -385,6 +403,7 @@ def _save_credentials(table, user_id: str, username: str, password: str) -> None
     record["credentials"] = _serialize_credentials(
         {"username": username, "password": password},
         key_id,
+        user_id,
     )
     record["updatedAt"] = _now_iso()
     _save_record(table, record)
@@ -393,7 +412,7 @@ def _save_credentials(table, user_id: str, username: str, password: str) -> None
 def _save_storage_state(table, user_id: str, state: Dict[str, Any]) -> None:
     record = _session_record(table, user_id)
     key_id = _require_kms_key()
-    record["storageState"] = _serialize_storage_state(state, key_id)
+    record["storageState"] = _serialize_storage_state(state, key_id, user_id)
     record["updatedAt"] = _now_iso()
     _save_record(table, record)
 
@@ -408,11 +427,11 @@ def _save_cookies(
 ) -> None:
     record = _session_record(table, user_id)
     key_id = _require_kms_key()
-    record["cookies"] = _serialize_cookies(cookies, key_id)
+    record["cookies"] = _serialize_cookies(cookies, key_id, user_id)
     if local_storage is not None:
-        record["localStorage"] = _serialize_local_storage(local_storage, key_id)
+        record["localStorage"] = _serialize_local_storage(local_storage, key_id, user_id)
     if session_storage is not None:
-        record["sessionStorage"] = _serialize_session_storage(session_storage, key_id)
+        record["sessionStorage"] = _serialize_session_storage(session_storage, key_id, user_id)
     record["status"] = status
     record["lastUsed"] = _now_iso()
     record["updatedAt"] = _now_iso()
@@ -1805,115 +1824,115 @@ async def _run_upload_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
         refreshed = await _refresh_litchi_user(page)
         if refreshed.get("litchiUser"):
             login_gate_present = False
-            if not relogin_attempted:
-                credentials = _load_credentials(table, user_id)
-                if credentials and credentials.get("username") and credentials.get("password"):
-                    logger.info("Attempting in-context Litchi re-login after save modal login gate.")
-                    if await login_gate_button.count() > 0 and await login_gate_button.first.is_visible():
-                        try:
-                            await _human_click(login_gate_button.first, timeout_ms=8000, force_fallback=True)
-                        except PlaywrightTimeoutError:
-                            await login_gate_button.first.evaluate("el => el.click()")
-                        await page.wait_for_timeout(int(_human_delay(0.4, 0.8) * 1000))
-                    login_result = await _login_in_page(
-                        page,
-                        credentials["username"],
-                        credentials["password"],
-                        force_form=True,
-                    )
-                    if login_result == "pending_2fa":
-                        _update_status(table, user_id, status="pending_2fa", message="Two-factor code required")
-                        return {"status": "pending_2fa", "message": "Two-factor code required"}
-                    if login_result == "invalid":
-                        _mark_error(table, user_id, "Invalid Litchi credentials")
-                        return {"status": "error", "message": "Invalid Litchi credentials"}
-                    if login_result != "success":
-                        _mark_error(table, user_id, "Login failed. Please reconnect.")
-                        return {"status": "error", "message": "Login failed"}
-                    refreshed = await _refresh_litchi_user(page)
-                    logger.info("Litchi user state after in-context login: %s", refreshed)
-                    local_storage = await page.evaluate(
-                        """
-                        () => {
-                          const entries = {};
-                          for (const key of Object.keys(localStorage)) {
-                            const value = localStorage.getItem(key);
-                            if (value) entries[key] = value;
-                          }
-                          return entries;
-                        }
-                        """
-                    )
-                    session_storage = await page.evaluate(
-                        """
-                        () => {
-                          const entries = {};
-                          for (const key of Object.keys(sessionStorage)) {
-                            const value = sessionStorage.getItem(key);
-                            if (value) entries[key] = value;
-                          }
-                          return entries;
-                        }
-                        """
-                    )
+        if login_gate_present and not refreshed.get("litchiUser") and not relogin_attempted:
+            credentials = _load_credentials(table, user_id)
+            if credentials and credentials.get("username") and credentials.get("password"):
+                logger.info("Attempting in-context Litchi re-login after save modal login gate.")
+                if await login_gate_button.count() > 0 and await login_gate_button.first.is_visible():
                     try:
-                        storage_state = await context.storage_state()
-                        _save_storage_state(table, user_id, storage_state)
+                        await _human_click(login_gate_button.first, timeout_ms=8000, force_fallback=True)
+                    except PlaywrightTimeoutError:
+                        await login_gate_button.first.evaluate("el => el.click()")
+                    await page.wait_for_timeout(int(_human_delay(0.4, 0.8) * 1000))
+                login_result = await _login_in_page(
+                    page,
+                    credentials["username"],
+                    credentials["password"],
+                    force_form=True,
+                )
+                if login_result == "pending_2fa":
+                    _update_status(table, user_id, status="pending_2fa", message="Two-factor code required")
+                    return {"status": "pending_2fa", "message": "Two-factor code required"}
+                if login_result == "invalid":
+                    _mark_error(table, user_id, "Invalid Litchi credentials")
+                    return {"status": "error", "message": "Invalid Litchi credentials"}
+                if login_result != "success":
+                    _mark_error(table, user_id, "Login failed. Please reconnect.")
+                    return {"status": "error", "message": "Login failed"}
+                refreshed = await _refresh_litchi_user(page)
+                logger.info("Litchi user state after in-context login: %s", refreshed)
+                local_storage = await page.evaluate(
+                    """
+                    () => {
+                      const entries = {};
+                      for (const key of Object.keys(localStorage)) {
+                        const value = localStorage.getItem(key);
+                        if (value) entries[key] = value;
+                      }
+                      return entries;
+                    }
+                    """
+                )
+                session_storage = await page.evaluate(
+                    """
+                    () => {
+                      const entries = {};
+                      for (const key of Object.keys(sessionStorage)) {
+                        const value = sessionStorage.getItem(key);
+                        if (value) entries[key] = value;
+                      }
+                      return entries;
+                    }
+                    """
+                )
+                try:
+                    storage_state = await context.storage_state()
+                    _save_storage_state(table, user_id, storage_state)
+                except Exception as exc:
+                    logger.warning("Failed to capture storage state after re-login: %s", exc)
+                cookies = await context.cookies()
+                _save_cookies(
+                    table,
+                    user_id,
+                    cookies,
+                    status="active",
+                    local_storage=local_storage,
+                    session_storage=session_storage,
+                )
+                relogin_attempted = True
+
+                missions_menu = page.locator("#dropdownMenuMissions")
+                if await missions_menu.count() == 0:
+                    missions_menu = page.get_by_role("button", name="MISSIONS")
+                if await missions_menu.count() > 0:
+                    await _human_click(missions_menu.first, timeout_ms=8000, force_fallback=True)
+                    await page.wait_for_timeout(int(_human_delay(0.4, 0.8) * 1000))
+
+                save_menu_item = page.get_by_role("menuitem", name="Save...")
+                if await save_menu_item.count() == 0:
+                    save_menu_item = page.get_by_text("Save...")
+                if await save_menu_item.count() > 0:
+                    try:
+                        await _human_click(save_menu_item.first, timeout_ms=8000, force_fallback=True)
                     except Exception as exc:
-                        logger.warning("Failed to capture storage state after re-login: %s", exc)
-                    cookies = await context.cookies()
-                    _save_cookies(
-                        table,
-                        user_id,
-                        cookies,
-                        status="active",
-                        local_storage=local_storage,
-                        session_storage=session_storage,
-                    )
-                    relogin_attempted = True
+                        logger.warning("Save menu click failed after re-login, forcing script click: %s", exc)
+                        await save_menu_item.first.evaluate("el => el.click()")
+                    await page.wait_for_timeout(int(_human_delay(0.6, 1.2) * 1000))
 
-                    missions_menu = page.locator("#dropdownMenuMissions")
-                    if await missions_menu.count() == 0:
-                        missions_menu = page.get_by_role("button", name="MISSIONS")
-                    if await missions_menu.count() > 0:
-                        await _human_click(missions_menu.first, timeout_ms=8000, force_fallback=True)
-                        await page.wait_for_timeout(int(_human_delay(0.4, 0.8) * 1000))
-
-                    save_menu_item = page.get_by_role("menuitem", name="Save...")
-                    if await save_menu_item.count() == 0:
-                        save_menu_item = page.get_by_text("Save...")
-                    if await save_menu_item.count() > 0:
-                        try:
-                            await _human_click(save_menu_item.first, timeout_ms=8000, force_fallback=True)
-                        except Exception as exc:
-                            logger.warning("Save menu click failed after re-login, forcing script click: %s", exc)
-                            await save_menu_item.first.evaluate("el => el.click()")
-                        await page.wait_for_timeout(int(_human_delay(0.6, 1.2) * 1000))
-
-                    await page.evaluate(
-                        """
-                        () => {
-                          const modal = document.querySelector('#downloadalert');
-                          if (!modal) return;
-                          modal.classList.add('show', 'in');
-                          modal.style.display = 'block';
-                          modal.style.visibility = 'visible';
-                          modal.setAttribute('aria-hidden', 'false');
-                          document.body.classList.add('modal-open');
-                        }
-                        """
-                    )
-                    download_modal = page.locator("#downloadalert")
-                    if await download_modal.count() > 0:
-                        await download_modal.first.wait_for(state="visible", timeout=8000)
-                    not_logged_in = page.locator("#save-notloggedin")
-                    login_gate_button = page.locator("#downloadalert button", has_text="Log in")
-                    login_gate_present = (await not_logged_in.count() > 0 and await not_logged_in.first.is_visible()) or (
-                        await login_gate_button.count() > 0 and await login_gate_button.first.is_visible()
-                    )
-                    refreshed = await _refresh_litchi_user(page)
-                    if refreshed.get("litchiUser"):
-                        login_gate_present = False
+                await page.evaluate(
+                    """
+                    () => {
+                      const modal = document.querySelector('#downloadalert');
+                      if (!modal) return;
+                      modal.classList.add('show', 'in');
+                      modal.style.display = 'block';
+                      modal.style.visibility = 'visible';
+                      modal.setAttribute('aria-hidden', 'false');
+                      document.body.classList.add('modal-open');
+                    }
+                    """
+                )
+                download_modal = page.locator("#downloadalert")
+                if await download_modal.count() > 0:
+                    await download_modal.first.wait_for(state="visible", timeout=8000)
+                not_logged_in = page.locator("#save-notloggedin")
+                login_gate_button = page.locator("#downloadalert button", has_text="Log in")
+                login_gate_present = (await not_logged_in.count() > 0 and await not_logged_in.first.is_visible()) or (
+                    await login_gate_button.count() > 0 and await login_gate_button.first.is_visible()
+                )
+                refreshed = await _refresh_litchi_user(page)
+                if refreshed.get("litchiUser"):
+                    login_gate_present = False
 
         login_modal = page.locator("#login-modal")
         if await login_modal.count() > 0 and await login_modal.first.is_visible():

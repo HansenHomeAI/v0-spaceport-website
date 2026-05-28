@@ -26,6 +26,10 @@ export type LitchiMissionPayload = {
   csv: string;
 };
 
+export type LitchiUploadOptions = {
+  idempotencyKey?: string;
+};
+
 type UseLitchiAutomationOptions = {
   pollIntervalMs?: number;
 };
@@ -170,7 +174,7 @@ export function useLitchiAutomation(options: UseLitchiAutomationOptions = {}) {
     }
   }, [apiConfigured, fetchWithFallback, refreshStatus]);
 
-  const uploadMissions = useCallback(async (missions: LitchiMissionPayload[]) => {
+  const uploadMissions = useCallback(async (missions: LitchiMissionPayload[], uploadOptions: LitchiUploadOptions = {}) => {
     if (!apiConfigured) return null;
     if (!missions.length) {
       setError('No missions to upload.');
@@ -183,7 +187,10 @@ export function useLitchiAutomation(options: UseLitchiAutomationOptions = {}) {
       const response = await fetchWithFallback('/litchi/upload', {
         method: 'POST',
         headers: await authHeaders(),
-        body: JSON.stringify({ missions }),
+        body: JSON.stringify({
+          missions,
+          idempotencyKey: uploadOptions.idempotencyKey,
+        }),
       });
       const data = await response.json();
       if (!response.ok) {

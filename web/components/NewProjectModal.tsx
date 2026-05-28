@@ -2,6 +2,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { buildApiUrl } from '../app/api-config';
 import { useLitchiAutomation } from '../hooks/useLitchiAutomation';
+import { buildLitchiMissionName, formatLitchiBatchId } from '../lib/litchiMissionNaming';
 
 type NewProjectModalProps = {
   open: boolean;
@@ -117,6 +118,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [litchiSendError, setLitchiSendError] = useState<string | null>(null);
   const [litchiShowAllLogs, setLitchiShowAllLogs] = useState<boolean>(false);
   const [litchiSelectedBatteries, setLitchiSelectedBatteries] = useState<Set<number>>(new Set());
+  const [litchiBatchDate, setLitchiBatchDate] = useState<Date>(() => new Date());
   const [litchiLocalLogs, setLitchiLocalLogs] = useState<string[]>([]);
 
   const {
@@ -625,6 +627,18 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     });
   }, [batteryCount]);
 
+  const litchiSelectedIndexes = useMemo(
+    () => Array.from(litchiSelectedBatteries).sort((a, b) => a - b),
+    [litchiSelectedBatteries]
+  );
+  const litchiSelectedKey = litchiSelectedIndexes.join(',');
+
+  useEffect(() => {
+    if (open) {
+      setLitchiBatchDate(new Date());
+    }
+  }, [batteryCount, litchiSelectedKey, open, projectTitle]);
+
   const toggleLitchiBattery = useCallback((batteryIndex: number) => {
     setLitchiSelectedBatteries(prev => {
       const next = new Set(prev);
@@ -855,7 +869,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
     setLitchiSendError(null);
     setLitchiSending(true);
-    const selectedIndexes = Array.from(litchiSelectedBatteries).sort((a, b) => a - b);
+    const selectedIndexes = litchiSelectedIndexes;
     if (selectedIndexes.length === 0) {
       setLitchiSending(false);
       setLitchiPrepProgress(null);
@@ -864,10 +878,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       return;
     }
     setLitchiPrepProgress({ current: 0, total: selectedIndexes.length });
-    appendLitchiLog(`Preparing ${selectedIndexes.length} battery ${selectedIndexes.length === 1 ? 'segment' : 'segments'} for controller upload.`);
+    appendLitchiLog(`Preparing ${selectedIndexes.length} flight ${selectedIndexes.length === 1 ? 'file' : 'files'} for controller upload.`);
 
     try {
-      const baseTitle = projectTitle && projectTitle !== 'Untitled' ? projectTitle.trim() : 'Untitled';
+      const batchDate = litchiBatchDate;
+      const batchId = formatLitchiBatchId(batchDate);
       let completed = 0;
       const missions = await Promise.all(
         selectedIndexes.map(async (batteryIndex) => {
@@ -883,20 +898,28 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           completed += 1;
           setLitchiPrepProgress({ current: completed, total: selectedIndexes.length });
           return {
-            name: `${baseTitle} - ${batteryIndex}`,
+            name: buildLitchiMissionName({
+              projectTitle,
+              batteryIndex,
+              totalBatteries: batteryCount,
+              batchDate,
+            }),
             csv: csvText,
           };
         })
       );
 
       setLitchiPrepProgress(null);
-      appendLitchiLog('Queueing upload to the hosted Litchi browser...');
-      const result = await uploadLitchiMissions(missions);
+      appendLitchiLog(`Queueing upload to the hosted Litchi browser as ${missions.map(mission => mission.name).join(', ')}.`);
+      const result = await uploadLitchiMissions(missions, {
+        idempotencyKey: `${batchId}-${selectedIndexes.join('-')}`,
+      });
       if (!result) {
         setLitchiSendError('Upload failed');
         appendLitchiLog('Upload request failed. Check your connection and try again.');
         return;
       }
+      setLitchiBatchDate(new Date());
       appendLitchiLog('Controller upload queued. You can close this window while it completes.');
     } catch (e: any) {
       const message = e?.message || 'Upload failed';
@@ -912,7 +935,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     ensureOptimizedParams,
     appendLitchiLog,
     litchiApiConfigured,
-    litchiSelectedBatteries,
+    litchiBatchDate,
+    litchiSelectedIndexes,
     projectTitle,
     uploadLitchiMissions,
   ]);
@@ -966,10 +990,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         ));
       }
       const csvText = await res.text();
-      const safeTitle = (projectTitle && projectTitle !== 'Untitled')
-        ? projectTitle.replace(/[^a-zA-Z0-9-_]/g, '_').substring(0, 50)
-        : 'Untitled';
-      const filename = `${safeTitle}-${batteryIndex1}.csv`;
+      const filename = `${buildLitchiMissionName({
+        projectTitle,
+        batteryIndex: batteryIndex1,
+        totalBatteries: batteryCount || batteryIndex1,
+      })}.csv`;
       const blob = new Blob([csvText], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -1000,7 +1025,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         return newSet;
       });
     }
-  }, [API_ENHANCED_BASE, projectTitle, downloadingBatteries]);
+  }, [API_ENHANCED_BASE, batteryCount, projectTitle, downloadingBatteries]);
 
   // SIMPLE, ROBUST save function with rate limiting
   const saveProject = useCallback(async () => {
@@ -1447,6 +1472,20 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [API_UPLOAD, CHUNK_SIZE, MAX_FILE_SIZE, propertyTitle, contactEmail, listingDescription, selectedFile, validateUpload]);
 
+  const litchiSelectedCount = litchiSelectedIndexes.length;
+  const litchiMissionNamePreview = useMemo(() => {
+    if (!batteryCount || litchiSelectedCount === 0) return [];
+    return litchiSelectedIndexes
+      .slice(0, 4)
+      .map(batteryIndex => buildLitchiMissionName({
+        projectTitle,
+        batteryIndex,
+        totalBatteries: batteryCount,
+        batchDate: litchiBatchDate,
+      }));
+  }, [batteryCount, litchiBatchDate, litchiSelectedCount, litchiSelectedIndexes, projectTitle]);
+  const litchiMissionNameOverflow = Math.max(0, litchiSelectedCount - litchiMissionNamePreview.length);
+
   if (!open) return null;
 
   const litchiInlineOpen = litchiConnectOpen || Boolean(litchiStatus?.needsTwoFactor);
@@ -1464,10 +1503,9 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const litchiLogs = litchiStatus?.logs ?? [];
   const litchiAllLogs = [...litchiLogs, ...litchiLocalLogs].slice(-50);
   const litchiVisibleLogs = litchiShowAllLogs ? litchiAllLogs : litchiAllLogs.slice(-5);
-  const litchiSelectedCount = litchiSelectedBatteries.size;
   const litchiSelectionLabel = batteryCount
-    ? `${litchiSelectedCount}/${batteryCount} batteries selected`
-    : 'No batteries selected';
+    ? `${litchiSelectedCount}/${batteryCount} flight files selected`
+    : 'No flight files selected';
   const litchiStatusLabels: Record<string, string> = {
     not_connected: 'Not connected',
     connecting: 'Connecting',
@@ -1754,7 +1792,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                         : litchiUploading
                           ? 'Queueing upload...'
                           : litchiSelectedCount && litchiSelectedCount < batteryCount
-                            ? `Send ${litchiSelectedCount} batteries to Controller`
+                            ? `Send ${litchiSelectedCount} files to Controller`
                             : 'Send to Controller'}
                     </button>
                   ) : (
@@ -1778,7 +1816,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                 {batteryCount > 0 && (
                   <div className="litchi-selection">
                     <div className="litchi-selection-header">
-                      <span className="litchi-muted">Choose which flight files to send</span>
+                      <span className="litchi-muted">Choose flight files</span>
                       <div className="litchi-actions">
                         <button className="litchi-secondary" type="button" onClick={selectAllLitchiBatteries}>
                           Select all
@@ -1806,6 +1844,14 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                       })}
                     </div>
                     <p className="litchi-muted">{litchiSelectionLabel}</p>
+                    {litchiMissionNamePreview.length > 0 && (
+                      <div className="litchi-name-preview" aria-label="Controller mission names">
+                        {litchiMissionNamePreview.map(name => (
+                          <span key={name}>{name}</span>
+                        ))}
+                        {litchiMissionNameOverflow > 0 && <span>+{litchiMissionNameOverflow} more</span>}
+                      </div>
+                    )}
                   </div>
                 )}
                 {litchiIndicator && <p className="litchi-muted">{litchiIndicator}</p>}
