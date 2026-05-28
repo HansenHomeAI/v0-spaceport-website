@@ -1,0 +1,47 @@
+{
+  "cache_entries": [
+    {
+      "tile_id": "tile_00",
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r10-aggressive-prune-20260528/tiles/tile_00/cvhr-sfm-auth-r10-aggr-1780004429-tile-00/output/model.tar.gz",
+      "input_hash": "65e9ef84889b03584778217415d4c4a303b69b58f0e8438f36ee3e233ac54c68",
+      "quality_gate_status": "passed",
+      "ownership_gate_status": "passed",
+      "preflight_json": "logs/3dgs-sfm-authority/cvhr_sfm_authority_r10_tile_00_leaf_preflight.json",
+      "splat_vertex_count": 240188,
+      "source_filtered_gaussian_count": 24867,
+      "source_gaussian_count": 74138,
+      "source_filter_retention_ratio": 0.33541503682322155,
+      "floater_removed_gaussians": 73163,
+      "priority_frame_name_count": 2,
+      "priority_frame_match_count": 2,
+      "r9_comparison": {
+        "r9_splat_vertex_count": 300884,
+        "r9_floater_removed_gaussians": 48954,
+        "delta_splat_vertex_count": -60696,
+        "delta_floater_removed_gaussians": 24209
+      }
+    },
+    {
+      "tile_id": "tile_07",
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r10-aggressive-prune-20260528/tiles/tile_07/cvhr-sfm-auth-r10-aggr-1780006446-tile-07/output/model.tar.gz",
+      "input_hash": "510a8d958e29ffa6943c79a17f3db1bcdb15f0cd447c5354aebe8f61e5bc90b1",
+      "quality_gate_status": "passed",
+      "ownership_gate_status": "passed",
+      "preflight_json": "logs/3dgs-sfm-authority/cvhr_sfm_authority_r10_tile_07_leaf_preflight.json",
+      "splat_vertex_count": 225216,
+      "source_filtered_gaussian_count": 23963,
+      "source_gaussian_count": 74138,
+      "source_filter_retention_ratio": 0.3232215597938979,
+      "floater_removed_gaussians": 84661,
+      "priority_frame_name_count": 2,
+      "priority_frame_match_count": 0,
+      "priority_frame_match_note": "Non-blocking for tile_07: selected_image_names does not include DJI_00801.JPG or DJI_00809.JPG.",
+      "r8_comparison": {
+        "r8_splat_vertex_count": 294577,
+        "r8_floater_removed_gaussians": 10180,
+        "delta_splat_vertex_count": -69361,
+        "delta_floater_removed_gaussians": 74481
+      }
+    }
+  ]
+}

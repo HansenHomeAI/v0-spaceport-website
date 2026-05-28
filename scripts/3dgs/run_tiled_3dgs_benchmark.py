@@ -1734,6 +1734,8 @@ def validate_submit_guardrails(args: argparse.Namespace, summary: dict) -> None:
     if not getattr(args, "submit", False):
         return
     errors: list[str] = []
+    stages = summary.get("stages") or []
+    train_stage_planned = any(stage.get("stage_type") == "train" for stage in stages)
     max_estimated_usd = float(getattr(args, "max_estimated_usd", 0.0) or 0.0)
     experiment_id = str(getattr(args, "experiment_id", "") or "").strip()
     v18_review_manifest_s3_uri = str(getattr(args, "v18_review_manifest_s3_uri", "") or "").strip()
@@ -1754,10 +1756,11 @@ def validate_submit_guardrails(args: argparse.Namespace, summary: dict) -> None:
     early_visual_smoke_plan = summary.get("early_visual_smoke_plan") or {}
     if not isinstance(early_visual_smoke_plan, dict) or early_visual_smoke_plan.get("abort_on_failure") is not True:
         errors.append("early_visual_smoke_plan.abort_on_failure=true is required before submitted training runs")
-    if not early_visual_smoke_plan.get("checkpoint_steps") or not early_visual_smoke_plan.get("sentinel_cameras"):
-        errors.append("early_visual_smoke_plan must name checkpoint_steps and sentinel_cameras")
-    if not early_visual_smoke_plan.get("checkpoint_s3_uris"):
-        errors.append("early_visual_smoke_plan must name checkpoint_s3_uris for checkpoint probing")
+    if train_stage_planned:
+        if not early_visual_smoke_plan.get("checkpoint_steps") or not early_visual_smoke_plan.get("sentinel_cameras"):
+            errors.append("early_visual_smoke_plan must name checkpoint_steps and sentinel_cameras")
+        if not early_visual_smoke_plan.get("checkpoint_s3_uris"):
+            errors.append("early_visual_smoke_plan must name checkpoint_s3_uris for checkpoint probing")
     if not early_visual_smoke_plan.get("checkpoint_probe_command_template"):
         errors.append("early_visual_smoke_plan must name checkpoint_probe_command_template")
     if not early_visual_smoke_plan.get("visual_gate_command_template"):
@@ -1866,7 +1869,6 @@ def validate_submit_guardrails(args: argparse.Namespace, summary: dict) -> None:
                 f"{MAX_SPOT_EXTRA_WAIT_SECONDS}s for bounded Spot capacity waits"
             )
     if getattr(args, "reuse_tile_cache", False):
-        stages = summary.get("stages") or []
         scaffold_train_planned = any(
             stage.get("stage_type") == "train" and stage.get("training_mode") == "global_scaffold"
             for stage in stages

@@ -1,0 +1,8 @@
+{
+  "tile_id": "tile_00",
+  "stage_type": "cached_tile",
+  "source_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r10-aggressive-prune-20260528/tiles/tile_00/cvhr-sfm-auth-r10-aggr-1780004429-tile-00/output/model.tar.gz",
+  "source_member": "splat.ply",
+  "splat_size_bytes": 59568155,
+  "stage_elapsed_seconds": 0
+}

@@ -253,6 +253,55 @@ class Tiled3DGSBenchmarkLauncherTests(unittest.TestCase):
 
         benchmark.validate_submit_guardrails(args, summary)
 
+    def test_submit_guardrail_allows_cached_only_merge_without_checkpoint_targets(self):
+        args = type(
+            "Args",
+            (),
+            {
+                "submit": True,
+                "max_estimated_usd": 1.0,
+                "experiment_id": "cached-merge-test",
+                "v18_review_manifest_s3_uri": "",
+                "baseline_review_manifest_s3_uri": "s3://bucket/cvhr-baseline.json",
+                "enable_checkpoints": False,
+                "enable_spot": False,
+                "checkpoint_resume_s3_uri": "",
+                "reuse_tile_cache": True,
+                "orchestration_mode": "fanout",
+                "skip_merge": False,
+                "skip_review": True,
+            },
+        )()
+        summary = {
+            "visual_qa_plan": {"enabled": True},
+            "viewer_smoke_plan": {"enabled": True},
+            "early_visual_smoke_plan": {
+                "abort_on_failure": True,
+                "checkpoint_steps": [],
+                "sentinel_cameras": [],
+                "checkpoint_s3_uris": {},
+                "checkpoint_probe_command_template": "probe",
+                "visual_gate_command_template": "gate",
+                "stop_command_template": "stop",
+            },
+            "cost_estimate": {"estimated_usd": 0.0, "stage_estimates": []},
+            "sagemaker_env_value_length_violations": [],
+            "leaf_density_cap_preflight_violations": [],
+            "input_image_coverage_gate": {"status": "passed", "stages": []},
+            "stages": [
+                {
+                    "stage_type": "cached_tile",
+                    "training_mode": "leaf_tile",
+                },
+                {
+                    "stage_type": "merge",
+                    "training_mode": "strict_core",
+                },
+            ],
+        }
+
+        benchmark.validate_submit_guardrails(args, summary)
+
 
 if __name__ == "__main__":
     unittest.main()

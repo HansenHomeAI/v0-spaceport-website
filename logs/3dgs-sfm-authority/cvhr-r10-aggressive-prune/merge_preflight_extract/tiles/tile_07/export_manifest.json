@@ -1,0 +1,156 @@
+{
+  "ply": "splat.ply",
+  "skybox": "background_skybox.webp",
+  "camera_idx": 140,
+  "background_appearance_mode": "camera",
+  "background_skipped": false,
+  "foreground_coordinate_frame": "planner",
+  "foreground_transform": {
+    "coordinate_frame": "planner",
+    "dataparser_transform_source": "train_dataparser_outputs",
+    "dataparser_scale": 0.003648827927608715,
+    "applied": true,
+    "position_transform_applied": true,
+    "scale_transform_applied": true,
+    "rotation_transform_applied": true,
+    "dataparser_transform": [
+      [
+        0.9380180835723877,
+        -0.22765983641147614,
+        0.2613293528556824,
+        -7.348616600036621
+      ],
+      [
+        0.2613293528556824,
+        0.9598641395568848,
+        -0.10182225704193115,
+        76.49075317382812
+      ],
+      [
+        -0.22765983641147614,
+        0.16380417346954346,
+        0.9598641395568848,
+        -0.39339399337768555
+      ]
+    ],
+    "model_to_output_linear": [
+      [
+        257.07381718703937,
+        71.62008452822094,
+        -62.39259615749239
+      ],
+      [
+        71.62008452822093,
+        -27.905476179443095,
+        263.0609568527818
+      ],
+      [
+        62.3925961574924,
+        -263.0609568527818,
+        -44.89226690255996
+      ]
+    ],
+    "planner_transform_applied": true,
+    "planner_transform_source": "/tmp/nerfstudio_training/converted_data/transforms.json",
+    "planner_scale": 1.0,
+    "planner_offset": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "planner_transform": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        -0.0,
+        -1.0,
+        -0.0,
+        -0.0
+      ]
+    ],
+    "appearance": {
+      "requested_camera_idx": 140,
+      "appearance_camera_idx": 140,
+      "appearance_num_embeddings": 216,
+      "appearance_camera_clamped": false
+    },
+    "planner_scale_transform_applied": true,
+    "model_to_output_rotation": [
+      [
+        0.9380181035907167,
+        0.2613293587299759,
+        -0.22765984187347316
+      ],
+      [
+        0.2613293587299758,
+        -0.10182226892935152,
+        0.9598641527923932
+      ],
+      [
+        0.22765984187347324,
+        -0.9598641527923935,
+        -0.16380416533863465
+      ]
+    ]
+  },
+  "background_selection": {
+    "requested_mode": "auto_camera",
+    "resolved_mode": "camera",
+    "camera_idx": 140,
+    "image_path": "/tmp/nerfstudio_training/converted_data/images/frame_00099.JPG",
+    "score": 0.5205554134002615,
+    "stride": 5,
+    "max_frames": 32,
+    "sampled_candidates": 32
+  },
+  "floater_pruning": {
+    "enabled": true,
+    "evaluated_gaussians": 309877,
+    "candidate_gaussians": 309877,
+    "removed_gaussians": 84661,
+    "remaining_gaussians": 225216,
+    "sampled_views": 24,
+    "min_views": 4,
+    "top_region_ratio": 0.35,
+    "top_view_fraction": 0.9,
+    "min_sky_views": 1,
+    "sky_min_luminance": 0.3,
+    "sky_min_saturation": 0.08,
+    "sky_blue_dominance_margin": 0.02,
+    "max_opacity": 1.01,
+    "max_color_distance": 0.65,
+    "min_edge_support": 2,
+    "patch_size": 9,
+    "diagnostics": {
+      "visible_min_views_count": 244737,
+      "meets_top_region_count": 10424,
+      "meets_sky_support_count": 163978,
+      "meets_top_or_sky_count": 166071,
+      "low_sky_edge_support_count": 261382,
+      "color_distance_pass_count": 260185,
+      "removal_candidate_count": 84661,
+      "priority_frame_name_count": 2,
+      "priority_frame_match_count": 0,
+      "candidate_opacity_p50": 0.6145410537719727,
+      "candidate_opacity_p95": 0.9986024498939514,
+      "top_fraction_p50": 0.0,
+      "top_fraction_p95": 0.800000011920929,
+      "sky_support_count_p50": 1.0,
+      "sky_support_count_p95": 3.0,
+      "sky_edge_support_count_p95": 2.0,
+      "median_color_distance_p50": 0.3574247658252716,
+      "median_color_distance_p95": 0.8313590109348294
+    }
+  },
+  "density_cap": null
+}
