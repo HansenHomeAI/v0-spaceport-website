@@ -9,7 +9,7 @@ import json
 import math
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Sequence
 
 import numpy as np
 from PIL import Image
@@ -417,10 +417,40 @@ def _resolve_color_distance_medians(
     return resolved
 
 
+def _frame_image_basename(frame: dict[str, Any]) -> str:
+    return Path(str(frame.get("file_path") or "")).name
+
+
+def _select_pruning_frame_indices(
+    frames: Sequence[dict[str, Any]],
+    sampled_views: int,
+    priority_frame_names: Sequence[str] | None = None,
+) -> tuple[np.ndarray, int]:
+    if not frames:
+        return np.array([], dtype=int), 0
+
+    uniform_indices = {
+        int(index)
+        for index in np.linspace(0, len(frames) - 1, num=min(sampled_views, len(frames)), dtype=int)
+    }
+    priority_names = {
+        Path(str(name).strip()).name
+        for name in (priority_frame_names or [])
+        if str(name).strip()
+    }
+    priority_indices = {
+        index
+        for index, frame in enumerate(frames)
+        if _frame_image_basename(frame) in priority_names
+    }
+    return np.array(sorted(uniform_indices | priority_indices), dtype=int), len(priority_indices)
+
+
 def prune_foreground_floaters(
     ply_path: Path,
     data_dir: Path,
     sampled_views: int = 24,
+    priority_frame_names: Sequence[str] | None = None,
     min_views: int = 4,
     top_region_ratio: float = 0.35,
     top_view_fraction: float = 0.8,
@@ -491,8 +521,10 @@ def prune_foreground_floaters(
     candidate_positions = positions[candidate_indices]
     candidate_colors = _gaussian_rgb_from_vertex_data(vertex)[candidate_indices]
 
-    sampled_frame_indices = np.unique(
-        np.linspace(0, len(frames) - 1, num=min(sampled_views, len(frames)), dtype=int)
+    sampled_frame_indices, priority_frame_match_count = _select_pruning_frame_indices(
+        frames,
+        sampled_views=sampled_views,
+        priority_frame_names=priority_frame_names,
     )
     visible_counts = np.zeros(candidate_indices.shape[0], dtype=np.int32)
     top_counts = np.zeros(candidate_indices.shape[0], dtype=np.int32)
@@ -586,6 +618,14 @@ def prune_foreground_floaters(
         "low_sky_edge_support_count": int(np.count_nonzero(sky_edge_support_counts < min_edge_support)),
         "color_distance_pass_count": int(np.count_nonzero(median_color_distance <= max_color_distance)),
         "removal_candidate_count": int(np.count_nonzero(removal_local_mask)),
+        "priority_frame_name_count": len(
+            {
+                Path(str(name).strip()).name
+                for name in (priority_frame_names or [])
+                if str(name).strip()
+            }
+        ),
+        "priority_frame_match_count": int(priority_frame_match_count),
         "candidate_opacity_p50": float(np.percentile(actual_opacity[candidate_indices], 50)),
         "candidate_opacity_p95": float(np.percentile(actual_opacity[candidate_indices], 95)),
         "top_fraction_p50": float(np.percentile(top_fraction, 50)),

@@ -1650,6 +1650,78 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             summary = json.loads((trainer.output_dir / "density_cap_summary.json").read_text(encoding="utf-8"))
             self.assertEqual(summary["kept_gaussians"], 12)
 
+    def test_prune_exported_foreground_prioritizes_horizon_cameras(self):
+        module = load_module_with_stubs()
+
+        class FakeFloaterPruningResult:
+            enabled = True
+            evaluated_gaussians = 20
+            candidate_gaussians = 6
+            removed_gaussians = 2
+            remaining_gaussians = 18
+
+            def to_dict(self):
+                return {
+                    "enabled": self.enabled,
+                    "evaluated_gaussians": self.evaluated_gaussians,
+                    "candidate_gaussians": self.candidate_gaussians,
+                    "removed_gaussians": self.removed_gaussians,
+                    "remaining_gaussians": self.remaining_gaussians,
+                }
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.config = {
+                "output": {
+                    "floater_pruning": {
+                        "enabled": True,
+                        "min_views": 4,
+                        "top_region_ratio": 0.35,
+                        "top_view_fraction": 0.9,
+                        "min_sky_views": 1,
+                        "sky_min_luminance": 0.6,
+                        "sky_min_saturation": 0.12,
+                        "sky_blue_dominance_margin": 0.02,
+                        "max_opacity": 0.98,
+                        "max_color_distance": 0.24,
+                        "min_edge_support": 1,
+                        "patch_size": 9,
+                    }
+                }
+            }
+            trainer.input_dir = root / "input"
+            trainer.input_dir.mkdir()
+            trainer.output_dir = root / "output"
+            trainer.output_dir.mkdir()
+            (trainer.output_dir / "splat.ply").write_text("ply\n", encoding="utf-8")
+
+            calls = []
+
+            def fake_prune(**kwargs):
+                calls.append(kwargs)
+                return FakeFloaterPruningResult()
+
+            original_prune = module.prune_foreground_floaters
+            original_environ = module.os.environ.copy()
+            try:
+                module.prune_foreground_floaters = fake_prune
+                module.os.environ.clear()
+                module.os.environ.update(
+                    {"HORIZON_FROZEN_CAMERAS": "images/DJI_00801.JPG;DJI_00809.JPG"}
+                )
+                result = trainer.prune_exported_foreground()
+            finally:
+                module.prune_foreground_floaters = original_prune
+                module.os.environ.clear()
+                module.os.environ.update(original_environ)
+
+            self.assertIs(result, trainer.floater_pruning_result)
+            self.assertEqual(calls[0]["priority_frame_names"], ["DJI_00801.JPG", "DJI_00809.JPG"])
+            self.assertEqual(calls[0]["sampled_views"], 24)
+            summary = json.loads((trainer.output_dir / "floater_pruning_summary.json").read_text(encoding="utf-8"))
+            self.assertEqual(summary["removed_gaussians"], 2)
+
     def test_build_sparse_point_cloud_ply_writes_ascii_vertices(self):
         module = load_module_with_stubs()
 

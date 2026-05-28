@@ -16,6 +16,8 @@ Key Features:
 5. AWS SageMaker integration with Step Functions
 """
 
+from __future__ import annotations
+
 import os
 import sys
 import json
@@ -2852,6 +2854,11 @@ class NerfStudioTrainer:
             ply_path=ply_path,
             data_dir=self.input_dir,
             sampled_views=24,
+            priority_frame_names=parse_image_name_list(
+                os.environ.get("HORIZON_FROZEN_CAMERAS")
+                or pruning_config.get("priority_frame_names")
+                or []
+            ),
             min_views=int(pruning_config.get('min_views', 4)),
             top_region_ratio=float(pruning_config.get('top_region_ratio', 0.35)),
             top_view_fraction=float(pruning_config.get('top_view_fraction', 0.8)),
