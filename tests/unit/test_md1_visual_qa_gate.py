@@ -45,6 +45,12 @@ def make_args(
         min_single_ssim=0.45,
         max_single_lpips=0.75,
         max_mean_abs_rgb_error=0.22,
+        max_horizon_foreground_alpha_mean=0.98,
+        max_horizon_foreground_alpha_coverage=0.995,
+        min_horizon_foreground_luminance=0.60,
+        min_horizon_foreground_blue_dominance=0.35,
+        min_horizon_foreground_saturation=0.12,
+        disable_horizon_foreground_gate=False,
     )
 
 
@@ -212,6 +218,38 @@ class VisualQaGateTest(unittest.TestCase):
 
             self.assertEqual(report["status"], "blocked")
             self.assertIn("ai_review_blocking_defects", report["block_reasons"])
+
+    def test_blocks_opaque_sky_like_horizon_foreground(self):
+        module = load_module()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            asset_root = root / "assets"
+            views = [
+                make_view("near_detail", psnr=24.5, ssim=0.74, lpips=0.28),
+                make_view("boundary", psnr=23.6, ssim=0.71, lpips=0.31),
+                make_view("horizon", psnr=22.9, ssim=0.68, lpips=0.34),
+            ]
+            views[2]["merged_alpha_stats"] = {
+                "mean": 0.997,
+                "max": 1.0,
+                "coverage_gt_001": 1.0,
+                "coverage_gt_005": 1.0,
+            }
+            views[2]["sky_metrics_no_background"] = {
+                "luminance": 0.73,
+                "saturation": 0.18,
+                "blue_dominance": 0.64,
+            }
+            visual_path, quality_path = write_manifests(root, views, asset_root=asset_root)
+
+            report = module.build_report(
+                make_args(visual_path, quality_manifest=quality_path, asset_root=asset_root)
+            )
+
+            self.assertEqual(report["status"], "blocked")
+            self.assertIn("horizon_foreground_saturation", report["block_reasons"])
+            self.assertEqual(report["horizon_foreground_gate"]["saturated_view_count"], 1)
 
 
 if __name__ == "__main__":

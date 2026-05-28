@@ -58,6 +58,7 @@ class FloaterPruningResult:
     max_color_distance: float
     min_edge_support: int
     patch_size: int
+    diagnostics: Optional[dict[str, Any]] = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -576,6 +577,29 @@ def prune_foreground_floaters(
     )
     removal_global_mask = np.zeros(total_gaussians, dtype=bool)
     removal_global_mask[candidate_indices[removal_local_mask]] = True
+    finite_color_distances = median_color_distance[np.isfinite(median_color_distance)]
+    diagnostics = {
+        "visible_min_views_count": int(np.count_nonzero(visible_counts >= min_views)),
+        "meets_top_region_count": int(np.count_nonzero(meets_top_region)),
+        "meets_sky_support_count": int(np.count_nonzero(meets_sky_support)),
+        "meets_top_or_sky_count": int(np.count_nonzero(meets_top_region | meets_sky_support)),
+        "low_sky_edge_support_count": int(np.count_nonzero(sky_edge_support_counts < min_edge_support)),
+        "color_distance_pass_count": int(np.count_nonzero(median_color_distance <= max_color_distance)),
+        "removal_candidate_count": int(np.count_nonzero(removal_local_mask)),
+        "candidate_opacity_p50": float(np.percentile(actual_opacity[candidate_indices], 50)),
+        "candidate_opacity_p95": float(np.percentile(actual_opacity[candidate_indices], 95)),
+        "top_fraction_p50": float(np.percentile(top_fraction, 50)),
+        "top_fraction_p95": float(np.percentile(top_fraction, 95)),
+        "sky_support_count_p50": float(np.percentile(sky_support_counts, 50)),
+        "sky_support_count_p95": float(np.percentile(sky_support_counts, 95)),
+        "sky_edge_support_count_p95": float(np.percentile(sky_edge_support_counts, 95)),
+        "median_color_distance_p50": (
+            float(np.percentile(finite_color_distances, 50)) if finite_color_distances.size else None
+        ),
+        "median_color_distance_p95": (
+            float(np.percentile(finite_color_distances, 95)) if finite_color_distances.size else None
+        ),
+    }
 
     if removal_global_mask.any():
         pruned_vertex = vertex[~removal_global_mask]
@@ -602,4 +626,5 @@ def prune_foreground_floaters(
         max_color_distance=max_color_distance,
         min_edge_support=min_edge_support,
         patch_size=patch_size,
+        diagnostics=diagnostics,
     )

@@ -32,6 +32,11 @@ REQUIRED_ASSETS = (
     "diff_heatmap",
     "side_by_side_panel",
 )
+DEFAULT_MAX_HORIZON_FOREGROUND_ALPHA_MEAN = 0.98
+DEFAULT_MAX_HORIZON_FOREGROUND_ALPHA_COVERAGE = 0.995
+DEFAULT_MIN_HORIZON_FOREGROUND_LUMINANCE = 0.60
+DEFAULT_MIN_HORIZON_FOREGROUND_BLUE_DOMINANCE = 0.35
+DEFAULT_MIN_HORIZON_FOREGROUND_SATURATION = 0.12
 
 
 def load_json(path: str | Path | None) -> dict[str, Any] | None:
@@ -60,6 +65,15 @@ def median_or_none(values: Sequence[Any]) -> float | None:
     if not numeric:
         return None
     return float(median(numeric))
+
+
+def float_or_none(value: Any) -> float | None:
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
 
 
 def metric_payload(metrics: Mapping[str, Any] | None) -> dict[str, float | None]:
@@ -260,6 +274,74 @@ def evaluate_absolute_metrics(
     }
 
 
+def evaluate_horizon_foreground_saturation(
+    views: Sequence[Mapping[str, Any]],
+    args: argparse.Namespace,
+) -> dict[str, Any]:
+    """Block horizon views where foreground splats fully cover sky-like pixels."""
+    if getattr(args, "disable_horizon_foreground_gate", False):
+        return {"status": "skipped", "block_reasons": [], "saturated_view_count": 0}
+
+    saturated_views: list[dict[str, Any]] = []
+    checked_views = 0
+    for view in views:
+        if str(view.get("bucket") or "") != "horizon":
+            continue
+        alpha_stats = view.get("merged_alpha_stats")
+        sky_metrics = view.get("sky_metrics_no_background")
+        if not isinstance(alpha_stats, Mapping) or not isinstance(sky_metrics, Mapping):
+            continue
+        checked_views += 1
+
+        alpha_mean = float_or_none(alpha_stats.get("mean"))
+        alpha_coverage = float_or_none(alpha_stats.get("coverage_gt_005"))
+        luminance = float_or_none(sky_metrics.get("luminance"))
+        blue_dominance = float_or_none(sky_metrics.get("blue_dominance"))
+        saturation = float_or_none(sky_metrics.get("saturation"))
+        has_opaque_foreground = (
+            (alpha_mean is not None and alpha_mean >= args.max_horizon_foreground_alpha_mean)
+            or (
+                alpha_coverage is not None
+                and alpha_coverage >= args.max_horizon_foreground_alpha_coverage
+            )
+        )
+        has_sky_like_foreground = (
+            luminance is not None
+            and luminance >= args.min_horizon_foreground_luminance
+            and (
+                (blue_dominance is not None and blue_dominance >= args.min_horizon_foreground_blue_dominance)
+                or (saturation is not None and saturation >= args.min_horizon_foreground_saturation)
+            )
+        )
+        if has_opaque_foreground and has_sky_like_foreground:
+            saturated_views.append(
+                {
+                    "bucket": "horizon",
+                    "image_name": str(view.get("image_name") or ""),
+                    "alpha_mean": alpha_mean,
+                    "alpha_coverage_gt_005": alpha_coverage,
+                    "foreground_sky_luminance": luminance,
+                    "foreground_sky_blue_dominance": blue_dominance,
+                    "foreground_sky_saturation": saturation,
+                }
+            )
+
+    return {
+        "status": "passed" if not saturated_views else "blocked",
+        "block_reasons": ["horizon_foreground_saturation"] if saturated_views else [],
+        "checked_horizon_view_count": checked_views,
+        "saturated_view_count": len(saturated_views),
+        "saturated_views": saturated_views[:25],
+        "thresholds": {
+            "max_horizon_foreground_alpha_mean": args.max_horizon_foreground_alpha_mean,
+            "max_horizon_foreground_alpha_coverage": args.max_horizon_foreground_alpha_coverage,
+            "min_horizon_foreground_luminance": args.min_horizon_foreground_luminance,
+            "min_horizon_foreground_blue_dominance": args.min_horizon_foreground_blue_dominance,
+            "min_horizon_foreground_saturation": args.min_horizon_foreground_saturation,
+        },
+    }
+
+
 def evaluate_review_readiness(quality_manifest: Mapping[str, Any] | None) -> dict[str, Any]:
     if not isinstance(quality_manifest, Mapping):
         return {
@@ -335,6 +417,7 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
     )
     readiness = evaluate_review_readiness(quality_manifest)
     absolute = evaluate_absolute_metrics(views, quality_manifest, args)
+    horizon_foreground = evaluate_horizon_foreground_saturation(views, args)
     ai_decision = evaluate_ai_review(ai_review)
 
     baseline_decision = None
@@ -345,7 +428,7 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
         )
 
     block_reasons: list[str] = []
-    for section in (asset_check, readiness, absolute, ai_decision, baseline_decision or {}):
+    for section in (asset_check, readiness, absolute, horizon_foreground, ai_decision, baseline_decision or {}):
         block_reasons.extend(section.get("block_reasons", []))
 
     report = {
@@ -365,6 +448,7 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
         "asset_check": asset_check,
         "review_readiness": readiness,
         "absolute_metric_gate": absolute,
+        "horizon_foreground_gate": horizon_foreground,
         "ai_review_gate": ai_decision,
         "baseline_non_regression": baseline_decision,
     }
@@ -392,6 +476,36 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--min-single-ssim", type=float, default=0.45)
     parser.add_argument("--max-single-lpips", type=float, default=0.75)
     parser.add_argument("--max-mean-abs-rgb-error", type=float, default=0.22)
+    parser.add_argument(
+        "--max-horizon-foreground-alpha-mean",
+        type=float,
+        default=DEFAULT_MAX_HORIZON_FOREGROUND_ALPHA_MEAN,
+    )
+    parser.add_argument(
+        "--max-horizon-foreground-alpha-coverage",
+        type=float,
+        default=DEFAULT_MAX_HORIZON_FOREGROUND_ALPHA_COVERAGE,
+    )
+    parser.add_argument(
+        "--min-horizon-foreground-luminance",
+        type=float,
+        default=DEFAULT_MIN_HORIZON_FOREGROUND_LUMINANCE,
+    )
+    parser.add_argument(
+        "--min-horizon-foreground-blue-dominance",
+        type=float,
+        default=DEFAULT_MIN_HORIZON_FOREGROUND_BLUE_DOMINANCE,
+    )
+    parser.add_argument(
+        "--min-horizon-foreground-saturation",
+        type=float,
+        default=DEFAULT_MIN_HORIZON_FOREGROUND_SATURATION,
+    )
+    parser.add_argument(
+        "--disable-horizon-foreground-gate",
+        action="store_true",
+        help="Skip the explicit horizon foreground opacity/sky-color blocker.",
+    )
     return parser.parse_args()
 
 

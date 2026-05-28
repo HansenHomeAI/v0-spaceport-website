@@ -46,6 +46,11 @@ logger = logging.getLogger(__name__)
 
 CONFIG_PATH = Path("/opt/ml/code/nerfstudio_config.yaml")
 DEFAULT_BUCKET_ORDER = list(REVIEW_BUCKETS)
+MAX_HORIZON_FOREGROUND_ALPHA_MEAN = 0.98
+MAX_HORIZON_FOREGROUND_ALPHA_COVERAGE = 0.995
+MIN_HORIZON_FOREGROUND_LUMINANCE = 0.60
+MIN_HORIZON_FOREGROUND_BLUE_DOMINANCE = 0.35
+MIN_HORIZON_FOREGROUND_SATURATION = 0.12
 
 
 @dataclass(frozen=True)
@@ -1074,9 +1079,19 @@ def alpha_summary_stats(alpha: np.ndarray) -> dict[str, float]:
     }
 
 
+def numeric_or_none(value: Any) -> float | None:
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
 def summarize_render_sanity(review_views: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     checked_views = [view for view in review_views if isinstance(view.get("merged_alpha_stats"), Mapping)]
     blank_views: list[dict[str, Any]] = []
+    saturated_horizon_views: list[dict[str, Any]] = []
     for view in checked_views:
         alpha_stats = view.get("merged_alpha_stats", {})
         foreground_stats = view.get("merged_foreground_stats", {})
@@ -1093,12 +1108,62 @@ def summarize_render_sanity(review_views: Sequence[Mapping[str, Any]]) -> dict[s
                     "foreground_max_rgb": foreground_max,
                 }
             )
-    status = "unknown" if not checked_views else ("blocked" if blank_views else "ok")
+        if str(view.get("bucket") or "") != "horizon":
+            continue
+        foreground_sky_metrics = view.get("sky_metrics_no_background")
+        if not isinstance(foreground_sky_metrics, Mapping):
+            continue
+        alpha_mean = numeric_or_none(alpha_stats.get("mean"))
+        alpha_coverage_005 = numeric_or_none(alpha_stats.get("coverage_gt_005"))
+        luminance = numeric_or_none(foreground_sky_metrics.get("luminance"))
+        blue_dominance = numeric_or_none(foreground_sky_metrics.get("blue_dominance"))
+        saturation = numeric_or_none(foreground_sky_metrics.get("saturation"))
+        has_opaque_foreground = (
+            (alpha_mean is not None and alpha_mean >= MAX_HORIZON_FOREGROUND_ALPHA_MEAN)
+            or (
+                alpha_coverage_005 is not None
+                and alpha_coverage_005 >= MAX_HORIZON_FOREGROUND_ALPHA_COVERAGE
+            )
+        )
+        has_sky_like_foreground = (
+            luminance is not None
+            and luminance >= MIN_HORIZON_FOREGROUND_LUMINANCE
+            and (
+                (blue_dominance is not None and blue_dominance >= MIN_HORIZON_FOREGROUND_BLUE_DOMINANCE)
+                or (saturation is not None and saturation >= MIN_HORIZON_FOREGROUND_SATURATION)
+            )
+        )
+        if has_opaque_foreground and has_sky_like_foreground:
+            saturated_horizon_views.append(
+                {
+                    "bucket": view.get("bucket"),
+                    "image_name": view.get("image_name"),
+                    "alpha_mean": alpha_mean,
+                    "alpha_coverage_gt_005": alpha_coverage_005,
+                    "foreground_sky_luminance": luminance,
+                    "foreground_sky_blue_dominance": blue_dominance,
+                    "foreground_sky_saturation": saturation,
+                }
+            )
+    status = (
+        "unknown"
+        if not checked_views
+        else ("blocked" if blank_views or saturated_horizon_views else "ok")
+    )
     return {
         "status": status,
         "checked_view_count": len(checked_views),
         "blank_view_count": len(blank_views),
         "blank_views": blank_views[:12],
+        "horizon_foreground_saturation_count": len(saturated_horizon_views),
+        "horizon_foreground_saturation_views": saturated_horizon_views[:12],
+        "horizon_foreground_saturation_thresholds": {
+            "max_alpha_mean": MAX_HORIZON_FOREGROUND_ALPHA_MEAN,
+            "max_alpha_coverage_gt_005": MAX_HORIZON_FOREGROUND_ALPHA_COVERAGE,
+            "min_luminance": MIN_HORIZON_FOREGROUND_LUMINANCE,
+            "min_blue_dominance": MIN_HORIZON_FOREGROUND_BLUE_DOMINANCE,
+            "min_saturation": MIN_HORIZON_FOREGROUND_SATURATION,
+        },
     }
 
 
@@ -1160,8 +1225,10 @@ def build_review_manifest(
         promotion_notes.append("merge used retain_all fallback on at least one tile")
     if fallback_tile_count > 0:
         promotion_notes.append("merge used fallback on at least one tile")
-    if render_sanity["status"] == "blocked":
+    if int(render_sanity.get("blank_view_count") or 0) > 0:
         promotion_notes.append("merged gaussian foreground rendered blank for at least one review view")
+    if int(render_sanity.get("horizon_foreground_saturation_count") or 0) > 0:
+        promotion_notes.append("horizon review has opaque sky-like foreground splats")
     if merged_background_present:
         promotion_notes.append("merged review included promoted background skybox")
     else:
