@@ -1,4 +1,5 @@
 from aws_cdk import (
+    Aws,
     Stack,
     Duration,
     RemovalPolicy,
@@ -885,11 +886,31 @@ class AuthStack(Stack):
             )
         litchi_credentials_table.grant_read_write_data(litchi_execution_role)
         litchi_kms_key.grant_encrypt_decrypt(litchi_execution_role)
+        litchi_worker_function_name = f"Spaceport-LitchiWorkerContainerFunction-{suffix}"
+        litchi_state_machine_name = f"Spaceport-LitchiUpload-{suffix}"
+        litchi_worker_function_arn = (
+            f"arn:{Aws.PARTITION}:lambda:{region}:{Aws.ACCOUNT_ID}:function:{litchi_worker_function_name}"
+        )
+        litchi_state_machine_arn = (
+            f"arn:{Aws.PARTITION}:states:{region}:{Aws.ACCOUNT_ID}:stateMachine:{litchi_state_machine_name}"
+        )
+        litchi_execution_role.add_to_policy(
+            iam.PolicyStatement(
+                actions=["lambda:InvokeFunction"],
+                resources=[litchi_worker_function_arn, f"{litchi_worker_function_arn}:*"],
+            )
+        )
+        litchi_execution_role.add_to_policy(
+            iam.PolicyStatement(
+                actions=["states:StartExecution"],
+                resources=[litchi_state_machine_arn],
+            )
+        )
 
         litchi_worker_lambda = lambda_.DockerImageFunction(
             self,
             "Spaceport-LitchiWorkerFunction",
-            function_name=f"Spaceport-LitchiWorkerContainerFunction-{suffix}",
+            function_name=litchi_worker_function_name,
             code=lambda_.DockerImageCode.from_image_asset(
                 os.path.join(os.path.dirname(__file__), "..", "lambda", "litchi_worker"),
             ),
@@ -911,12 +932,16 @@ class AuthStack(Stack):
             removal_policy=RemovalPolicy.DESTROY,
         )
 
-        litchi_worker_lambda.grant_invoke(litchi_execution_role)
+        litchi_worker_task_lambda = lambda_.Function.from_function_arn(
+            self,
+            "Spaceport-LitchiWorkerFunctionTaskRef",
+            litchi_worker_function_arn,
+        )
 
         worker_task = sfn_tasks.LambdaInvoke(
             self,
             "LitchiUploadWorker",
-            lambda_function=litchi_worker_lambda,
+            lambda_function=litchi_worker_task_lambda,
             payload=sfn.TaskInput.from_object(
                 {
                     "mode": "upload",
@@ -973,7 +998,7 @@ class AuthStack(Stack):
         litchi_state_machine = sfn.StateMachine(
             self,
             "LitchiUploadStateMachine",
-            state_machine_name=f"Spaceport-LitchiUpload-{suffix}",
+            state_machine_name=litchi_state_machine_name,
             definition=litchi_map,
             role=litchi_execution_role,
             logs=sfn.LogOptions(
@@ -1006,13 +1031,10 @@ class AuthStack(Stack):
             memory_size=256,
             environment={
                 "LITCHI_CREDENTIALS_TABLE": litchi_credentials_table.table_name,
-                "LITCHI_WORKER_FUNCTION": litchi_worker_lambda.function_name,
-                "LITCHI_STATE_MACHINE_ARN": litchi_state_machine.state_machine_arn,
+                "LITCHI_WORKER_FUNCTION": litchi_worker_function_name,
+                "LITCHI_STATE_MACHINE_ARN": litchi_state_machine_arn,
             },
         )
-
-        litchi_worker_lambda.grant_invoke(litchi_api_lambda)
-        litchi_state_machine.grant_start_execution(litchi_api_lambda)
 
         litchi_routes = (
             ("status", "GET"),
