@@ -1143,7 +1143,6 @@ class AuthStack(Stack):
             # Serializing the RestApi resources keeps staging auth redeploys from deadlocking each other.
             self._serialize_rest_api_updates(
                 [
-                    invite_api,
                     projects_api,
                     explore_api,
                     subscription_api,
