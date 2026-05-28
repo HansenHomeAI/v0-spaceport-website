@@ -1,5 +1,10 @@
 # Repository Guidelines
 
+## Mandatory Worktree Isolation
+- Do every repository task from a local git worktree that is separate from the project root. The project root must stay clean and should not be used for implementation, tests, commits, deploys, or exploratory repo commands once a task begins.
+- Before starting, inspect existing worktrees and resume the matching task worktree/branch when one exists. If none exists, create a new non-root worktree on the required `agent-########-task-name` branch and work there.
+- Treat the root checkout as the stable base only: use it only when unavoidable for initial orientation or worktree creation, and do not leave uncommitted changes there.
+
 ## Agentic Dev Loop SOP
 1. **Branch**: from whichever branch you're currently tasked to extend (often `development`, but honor any provided base) create `agent-12345678-task-name` (unique eight-digit ID plus slug, e.g. `agent-74120953-update-web-copy`).
 2. **Baseline**: push your task branch to trigger the Cloudflare Pages workflow, then monitor *every* GitHub Actions run kicked off by the push until they finish successfully (use `gh run list --branch <branch>` to enumerate, and `gh run watch <id> --exit-status` on each run). At minimum, confirm both the Pages deploy and the "CDK Deploy" workflow are green before moving on, capturing failing logs immediately if either stops early.
