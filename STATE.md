@@ -1,5 +1,5 @@
 reason: building a development-based Send to Controller feature branch by merging the latest Litchi automation work and hardening it for hosted browser/controller delivery
-last_step: created worktree /Users/gabrielhansen/v0-spaceport-website/.agent-worktrees/agent-38642091-litchi-controller-send from development, merged origin/agent-49231687-litchi-connection-fix, and resolved the Pages env/build-trigger conflicts
-next_unblocked_step: commit the integrated baseline, verify local unit/frontend builds, then harden the Litchi hosted-browser flow for cached user sessions and per-battery mission uploads
+last_step: merged origin/agent-49231687-litchi-connection-fix into agent-38642091-litchi-controller-send, removed stale sensitive artifacts from the merge, exposed cached hosted-browser session status, retitled UI actions to Send to Controller, fixed selected-battery progress totals, and verified local unit/frontend builds
+next_unblocked_step: commit and push the Send to Controller hardening, then monitor branch CI/deploy workflows and use the resolved preview URL for browser validation
 owner_action_needed: none
-updated: 2026-05-28T00:00:00-06:00
+updated: 2026-05-28T14:03:52-06:00

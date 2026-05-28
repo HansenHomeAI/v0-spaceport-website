@@ -131,9 +131,14 @@ def _handle_status(user_id: str) -> Dict[str, Any]:
     item = table.get_item(Key={"userId": user_id}).get("Item", {})
     status = item.get("status", "not_connected")
     connected_states = {"active", "uploading", "rate_limited", "testing"}
+    session_cached = bool(item.get("storageState") or item.get("cookies"))
     response = {
         "status": status,
         "connected": status in connected_states,
+        "sessionCached": session_cached,
+        "storageStateCached": bool(item.get("storageState")),
+        "credentialsCached": bool(item.get("credentials")),
+        "requiresReconnect": status in {"expired", "error", "not_connected"} and not session_cached,
         "lastUsed": item.get("lastUsed"),
         "updatedAt": item.get("updatedAt"),
         "message": item.get("message"),

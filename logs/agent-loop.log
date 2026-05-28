@@ -1,0 +1,2 @@
+[2026-05-28T14:03:52-06:00] merge baseline -> origin/agent-49231687-litchi-connection-fix integrated on development worktree branch with sensitive/stale artifacts removed -> harden Send to Controller flow
+[2026-05-28T14:03:52-06:00] local verification -> litchi worker/api unit tests, compileall, TypeScript noEmit, and Next build passed with existing lint warnings -> commit and push branch

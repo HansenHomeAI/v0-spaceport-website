@@ -70,7 +70,7 @@ export default function LitchiMissionControl(): JSX.Element {
   if (!apiConfigured) {
     return (
       <div className="project-box litchi-card">
-        <h4>Litchi Mission Control</h4>
+        <h4>Controller Mission Control</h4>
         <p className="litchi-muted">Litchi automation API is not configured for this environment.</p>
       </div>
     );
@@ -80,8 +80,8 @@ export default function LitchiMissionControl(): JSX.Element {
     <div className="project-box litchi-card">
       <div className="litchi-card-header">
         <div>
-          <h4>Litchi Mission Control</h4>
-          <p className="litchi-muted">Uploads run at a safe, human pace to protect your account.</p>
+          <h4>Controller Mission Control</h4>
+          <p className="litchi-muted">A hosted Litchi browser uploads generated missions to your controller account.</p>
         </div>
         <span className={`litchi-status-pill litchi-status-${status?.status || 'unknown'}`}>{statusLabel}</span>
       </div>
@@ -92,7 +92,7 @@ export default function LitchiMissionControl(): JSX.Element {
 
       <div className="litchi-actions">
         <button className="litchi-primary" onClick={() => setConnectOpen(true)} disabled={isConnecting}>
-          {status?.needsTwoFactor ? 'Enter 2FA Code' : 'Connect Litchi Account'}
+          {status?.needsTwoFactor ? 'Enter 2FA Code' : 'Connect Controller Account'}
         </button>
         <button className="litchi-secondary" onClick={testConnection} disabled={isTesting}>
           {isTesting ? 'Testing...' : 'Test Connection'}
@@ -120,7 +120,7 @@ export default function LitchiMissionControl(): JSX.Element {
           />
         </div>
         <button className="litchi-primary" type="submit" disabled={isUploading}>
-          {isUploading ? 'Queueing upload...' : 'Upload Mission'}
+          {isUploading ? 'Queueing upload...' : 'Send to Controller'}
         </button>
       </form>
 
@@ -140,7 +140,7 @@ export default function LitchiMissionControl(): JSX.Element {
         <div className="litchi-modal-overlay" role="dialog" aria-modal="true">
           <div className="litchi-modal">
             <div className="litchi-modal-header">
-              <h3>Connect Litchi Account</h3>
+              <h3>Connect Controller Account</h3>
               <button className="litchi-close" onClick={() => setConnectOpen(false)} aria-label="Close">
                 ×
               </button>

@@ -1,9 +1,19 @@
 import importlib.util
+import sys
+import types
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
 MODULE_PATH = Path(__file__).resolve().parents[2] / "infrastructure" / "spaceport_cdk" / "lambda" / "litchi_worker" / "lambda_function.py"
+
+sys.modules.setdefault(
+    "boto3",
+    types.SimpleNamespace(
+        client=lambda *_args, **_kwargs: None,
+        resource=lambda *_args, **_kwargs: None,
+    ),
+)
 
 SPEC = importlib.util.spec_from_file_location("litchi_worker", MODULE_PATH)
 litchi_worker = importlib.util.module_from_spec(SPEC)
@@ -25,6 +35,20 @@ class LitchiWorkerTests(unittest.TestCase):
             ciphertext = litchi_worker._encrypt_text("hello", "key")
             plaintext = litchi_worker._decrypt_text(ciphertext)
             self.assertEqual(plaintext, "hello")
+
+    def test_storage_state_roundtrip(self):
+        state = {
+            "cookies": [{"name": "session", "value": "abc", "domain": ".flylitchi.com"}],
+            "origins": [
+                {
+                    "origin": "https://flylitchi.com",
+                    "localStorage": [{"name": "Parse/currentUser", "value": "{}"}],
+                }
+            ],
+        }
+        with patch.object(litchi_worker, "_kms_client", return_value=FakeKMS()):
+            ciphertext = litchi_worker._serialize_storage_state(state, "key")
+            self.assertEqual(litchi_worker._deserialize_storage_state(ciphertext), state)
 
     def test_jitter_seconds_range(self):
         for _ in range(50):

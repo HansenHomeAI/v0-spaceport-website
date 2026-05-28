@@ -5,6 +5,10 @@ import { API_CONFIG } from '../app/api-config';
 export type LitchiStatus = {
   status: string;
   connected: boolean;
+  sessionCached?: boolean;
+  storageStateCached?: boolean;
+  credentialsCached?: boolean;
+  requiresReconnect?: boolean;
   lastUsed?: string;
   updatedAt?: string;
   message?: string;
@@ -94,7 +98,7 @@ export function useLitchiAutomation(options: UseLitchiAutomationOptions = {}) {
     } catch (fetchError: any) {
       setError(fetchError?.message || 'Unable to load Litchi status');
     }
-  }, [apiConfigured]);
+  }, [apiConfigured, fetchWithFallback]);
 
   useEffect(() => {
     refreshStatus();
@@ -142,7 +146,7 @@ export function useLitchiAutomation(options: UseLitchiAutomationOptions = {}) {
       setIsConnecting(false);
       refreshStatus();
     }
-  }, [apiConfigured, refreshStatus]);
+  }, [apiConfigured, fetchWithFallback, refreshStatus]);
 
   const testConnection = useCallback(async () => {
     if (!apiConfigured) return;
@@ -164,7 +168,7 @@ export function useLitchiAutomation(options: UseLitchiAutomationOptions = {}) {
       setIsTesting(false);
       refreshStatus();
     }
-  }, [apiConfigured, refreshStatus]);
+  }, [apiConfigured, fetchWithFallback, refreshStatus]);
 
   const uploadMissions = useCallback(async (missions: LitchiMissionPayload[]) => {
     if (!apiConfigured) return null;
@@ -193,7 +197,7 @@ export function useLitchiAutomation(options: UseLitchiAutomationOptions = {}) {
       setIsUploading(false);
       refreshStatus();
     }
-  }, [apiConfigured, refreshStatus]);
+  }, [apiConfigured, fetchWithFallback, refreshStatus]);
 
   const connected = Boolean(status?.connected || status?.status === 'active');
   const progress = status?.progress ?? null;

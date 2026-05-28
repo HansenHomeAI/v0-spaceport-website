@@ -821,17 +821,17 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
   const handleLitchiConnect = useCallback(async (event: React.FormEvent) => {
     event.preventDefault();
-    appendLitchiLog('Submitting Litchi credentials...');
+    appendLitchiLog('Submitting Litchi credentials for hosted controller upload...');
     const result = await connectLitchi(litchiEmail, litchiPassword, litchiTwoFactor || undefined);
     if (result?.status === 'active') {
-      appendLitchiLog('Litchi session connected.');
+      appendLitchiLog('Hosted Litchi session connected and cached.');
       setLitchiConnectOpen(false);
       setLitchiPassword('');
       setLitchiTwoFactor('');
       return;
     }
     if (result?.status === 'connecting') {
-      appendLitchiLog('Login started. Verification can take up to a minute.');
+      appendLitchiLog('Login started. Verification can take up to a minute; cached sessions will be reused after 2FA.');
     } else if (!result) {
       appendLitchiLog('Connection request failed. Double-check your credentials.');
     }
@@ -846,7 +846,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
 
     if (!batteryCount) {
       setLitchiSendError('Please set battery quantity first');
-      appendLitchiLog('Please set battery quantity before sending to Litchi.');
+      appendLitchiLog('Please set battery quantity before sending to the controller.');
       return;
     }
 
@@ -859,12 +859,12 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     if (selectedIndexes.length === 0) {
       setLitchiSending(false);
       setLitchiPrepProgress(null);
-      setLitchiSendError('Select at least one battery to send to Litchi.');
-      appendLitchiLog('Select at least one battery before sending.');
+      setLitchiSendError('Select at least one battery to send to the controller.');
+      appendLitchiLog('Select at least one battery before sending to the controller.');
       return;
     }
     setLitchiPrepProgress({ current: 0, total: selectedIndexes.length });
-    appendLitchiLog(`Preparing ${selectedIndexes.length} battery ${selectedIndexes.length === 1 ? 'segment' : 'segments'} for Litchi.`);
+    appendLitchiLog(`Preparing ${selectedIndexes.length} battery ${selectedIndexes.length === 1 ? 'segment' : 'segments'} for controller upload.`);
 
     try {
       const baseTitle = projectTitle && projectTitle !== 'Untitled' ? projectTitle.trim() : 'Untitled';
@@ -881,7 +881,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
           }
           const csvText = await res.text();
           completed += 1;
-          setLitchiPrepProgress({ current: completed, total: batteryCount });
+          setLitchiPrepProgress({ current: completed, total: selectedIndexes.length });
           return {
             name: `${baseTitle} - ${batteryIndex}`,
             csv: csvText,
@@ -890,14 +890,14 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
       );
 
       setLitchiPrepProgress(null);
-      appendLitchiLog('Queueing upload to Litchi...');
+      appendLitchiLog('Queueing upload to the hosted Litchi browser...');
       const result = await uploadLitchiMissions(missions);
       if (!result) {
         setLitchiSendError('Upload failed');
         appendLitchiLog('Upload request failed. Check your connection and try again.');
         return;
       }
-      appendLitchiLog('Upload queued. You can close this window while it completes.');
+      appendLitchiLog('Controller upload queued. You can close this window while it completes.');
     } catch (e: any) {
       const message = e?.message || 'Upload failed';
       setLitchiSendError(message);
@@ -1485,23 +1485,36 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const litchiEmailUnverified = /email is not verified/i.test(
     `${litchiStatus?.message ?? ''} ${litchiError ?? ''} ${litchiConnectMessage ?? ''}`.trim(),
   );
-  const litchiGuidance = litchiNeedsReconnect
-    ? 'Login failed or expired. Re-enter your Litchi credentials to continue.'
-    : litchiHasLoginFailure
-      ? 'We could not verify these credentials. Please retry or re-enter your password.'
-      : litchiEmailUnverified
-        ? 'Verify your Litchi email to enable mission saving. Check your inbox (and spam) for the verification link.'
-        : litchiIsRateLimited
-        ? 'Litchi is rate limiting uploads. We will retry automatically in a minute or two.'
-      : litchiStatus?.needsTwoFactor
-        ? 'Enter your 2FA code to finish connecting.'
-        : litchiStatus?.status === 'connecting'
-          ? 'Verifying your Litchi login. This can take up to a minute.'
-          : !litchiConnected
-            ? 'Enter your Litchi email and password. Verification takes about a minute and updates in Activity.'
-            : litchiSelectedCount === 0
-              ? 'Select the battery segments you want to send below.'
-              : 'Uploads run in the background. You can close this window and return later.';
+  const litchiGuidance = (() => {
+    if (litchiNeedsReconnect) {
+      return 'Login failed or expired. Re-enter your Litchi credentials to continue sending to the controller.';
+    }
+    if (litchiHasLoginFailure) {
+      return 'We could not verify these credentials. Please retry or re-enter your password.';
+    }
+    if (litchiEmailUnverified) {
+      return 'Verify your Litchi email to enable mission saving. Check your inbox (and spam) for the verification link.';
+    }
+    if (litchiIsRateLimited) {
+      return 'Litchi is rate limiting uploads. We will retry automatically in a minute or two.';
+    }
+    if (litchiStatus?.needsTwoFactor) {
+      return 'Enter your 2FA code once; the hosted browser session will be cached for future sends when Litchi allows it.';
+    }
+    if (litchiStatus?.sessionCached) {
+      return 'Your hosted Litchi browser session is cached. Send generated battery files to make them appear in your controller account.';
+    }
+    if (litchiStatus?.status === 'connecting') {
+      return 'Verifying your Litchi login. This can take up to a minute.';
+    }
+    if (!litchiConnected) {
+      return 'Connect your Litchi account once. We cache the hosted browser session so later sends avoid repeated 2FA when Litchi allows it.';
+    }
+    if (litchiSelectedCount === 0) {
+      return 'Select the battery segments you want to send below.';
+    }
+    return 'Controller uploads run in the background. You can close this window and return later.';
+  })();
   const litchiConnectStatusMessage = (litchiNeedsReconnect || litchiHasLoginFailure)
     ? 'Login failed. Please re-enter your credentials.'
     : litchiConnectMessage;
@@ -1741,8 +1754,8 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                         : litchiUploading
                           ? 'Queueing upload...'
                           : litchiSelectedCount && litchiSelectedCount < batteryCount
-                            ? `Send ${litchiSelectedCount} batteries to Litchi`
-                            : 'Send to Litchi'}
+                            ? `Send ${litchiSelectedCount} batteries to Controller`
+                            : 'Send to Controller'}
                     </button>
                   ) : (
                     <button
@@ -1755,7 +1768,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                         ? 'Enter 2FA Code'
                         : litchiIsConnecting
                           ? 'Connecting...'
-                          : 'Connect Litchi Account'}
+                          : 'Connect Controller Account'}
                     </button>
                   )}
                   <button className="litchi-secondary" type="button" onClick={() => setShowManualDownloads(v => !v)}>
@@ -1765,7 +1778,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
                 {batteryCount > 0 && (
                   <div className="litchi-selection">
                     <div className="litchi-selection-header">
-                      <span className="litchi-muted">Choose which batteries to send</span>
+                      <span className="litchi-muted">Choose which flight files to send</span>
                       <div className="litchi-actions">
                         <button className="litchi-secondary" type="button" onClick={selectAllLitchiBatteries}>
                           Select all
