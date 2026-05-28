@@ -32,3 +32,4 @@
 [2026-05-28T15:38:08Z] aws-resume -> default/dev/prod/migration STS verified with static credentials; R6 dry-run pinned to ml.g4dn.xlarge passes coverage and $2.944 worst-case under $5 cap -> submit bounded R6 fanout-only canary
 [2026-05-28T15:41:58Z] cvhr-r6-submit -> submitted SageMaker leaf job cvhr-sfm-auth-r6-prune-1779982772-tile-00, status InProgress/Downloading, concurrency remains 1 -> poll until tile_00 completes and tile_07 launches
 [2026-05-28T16:11:33Z] cvhr-r6-tile00 -> tile_00 completed in 1716 billable seconds; leaf preflight passed with 309721 splats and 7677 floater-pruned gaussians; tile_07 submitted -> poll tile_07 then preflight
+[2026-05-28T16:41:34Z] cvhr-r6-leaves -> tile_07 completed in 1652 billable seconds; preflight passed with 307332 splats and 9349 floater-pruned gaussians; total leaf compute 3368 seconds (~$0.69) -> run cached strict-core merge/review
