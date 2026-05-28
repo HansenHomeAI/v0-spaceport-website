@@ -14,6 +14,77 @@ SPEC.loader.exec_module(benchmark)
 
 
 class Tiled3DGSBenchmarkLauncherTests(unittest.TestCase):
+    def _single_leaf_stages(self, *, extra_env=None, downscale_factor=1):
+        manifest = {
+            "tiles": [
+                {
+                    "tile_id": "tile_00",
+                    "base_camera_ids": ["DJI_0001.JPG", "DJI_0002.JPG"],
+                    "border_camera_ids": ["DJI_0003.JPG"],
+                    "context_camera_ids": ["DJI_0004.JPG"],
+                }
+            ]
+        }
+        return benchmark.build_benchmark_stages(
+            manifest=manifest,
+            branch_name="agent-test",
+            output_root_s3_uri="s3://bucket/out",
+            job_prefix="hash-test",
+            include_monolithic=False,
+            include_scaffold=False,
+            include_merge=False,
+            orchestration_mode="fanout",
+            tile_ids=["tile_00"],
+            monolithic_max_iterations=0,
+            scaffold_max_iterations=0,
+            tile_max_iterations=6000,
+            training_max_runtime_seconds=7200,
+            extra_env=extra_env or {},
+            timestamp=1234567890,
+            downscale_factor=downscale_factor,
+            include_review=False,
+            tile_budget_mode="fixed",
+            max_images_per_tile=240,
+            input_colmap_s3_uri="s3://bucket/colmap",
+            image_uri="111111111111.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:test",
+            scaffold_artifact_s3_uri="s3://bucket/scaffold/model.tar.gz",
+            instance_type="ml.g4dn.xlarge",
+        )
+
+    def test_tile_input_hash_changes_for_effective_downscale_factor(self):
+        downscale_1 = self._single_leaf_stages(downscale_factor=1)[0]
+        downscale_2 = self._single_leaf_stages(downscale_factor=2)[0]
+
+        self.assertNotEqual(downscale_1.input_hash, downscale_2.input_hash)
+        self.assertNotIn("TRAINING_DOWNSCALE_FACTOR", downscale_1.environment)
+        self.assertEqual(downscale_2.environment["TRAINING_DOWNSCALE_FACTOR"], "2")
+
+    def test_tile_input_hash_changes_for_floater_pruning_settings(self):
+        conservative = self._single_leaf_stages(
+            extra_env={
+                "FLOATER_PRUNING_MAX_OPACITY": "0.98",
+                "FLOATER_PRUNING_MAX_COLOR_DISTANCE": "0.24",
+            }
+        )[0]
+        aggressive = self._single_leaf_stages(
+            extra_env={
+                "FLOATER_PRUNING_MAX_OPACITY": "1.01",
+                "FLOATER_PRUNING_MAX_COLOR_DISTANCE": "0.65",
+            }
+        )[0]
+
+        self.assertNotEqual(conservative.input_hash, aggressive.input_hash)
+
+    def test_tile_input_hash_uses_effective_default_training_environment(self):
+        stage = self._single_leaf_stages()[0]
+        fingerprint = benchmark.tile_input_hash_env_fingerprint(stage.environment)
+
+        self.assertEqual(fingerprint["MODEL_VARIANT"], "splatfacto-w-light")
+        self.assertEqual(fingerprint["ENABLE_BG_MODEL"], "true")
+        self.assertEqual(fingerprint["ENABLE_ALPHA_LOSS"], "true")
+        self.assertEqual(fingerprint["ENABLE_ROBUST_MASK"], "true")
+        self.assertEqual(fingerprint["GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT"], "true")
+
     def test_nested_string_reads_metadata_paths(self):
         payload = {"planner_manifest": {"source": "s3://bucket/planner.json"}}
 

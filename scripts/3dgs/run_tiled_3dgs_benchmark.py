@@ -46,16 +46,47 @@ MD1_PRODUCTION_TILE_ENV_DEFAULTS = {
 TILE_INPUT_HASH_ENV_KEYS = (
     "MODEL_VARIANT",
     "BILATERAL_PROCESSING",
+    "RASTERIZE_MODE",
+    "SSIM_LAMBDA",
+    "USE_SCALE_REGULARIZATION",
+    "CULL_ALPHA_THRESH",
+    "CULL_SCALE_THRESH",
     "ENABLE_BG_MODEL",
     "ENABLE_ALPHA_LOSS",
     "ENABLE_ROBUST_MASK",
+    "BG_SH_DEGREE",
+    "APPEARANCE_EMBED_DIM",
+    "NEVER_MASK_UPPER",
+    "TRAINING_DOWNSCALE_FACTOR",
+    "TRAINING_SELECTION_STRIDE",
+    "BOUNDARY_CAMERA_REPEAT_FACTOR",
+    "TRAINING_REVIEW_IMAGES_PER_BUCKET",
+    "BACKGROUND_APPEARANCE_MODE",
+    "BACKGROUND_SKYBOX_WIDTH",
+    "BACKGROUND_SKYBOX_HEIGHT",
+    "BACKGROUND_SKYBOX_QUALITY",
+    "BACKGROUND_SELECTION_STRIDE",
+    "BACKGROUND_SELECTION_MAX_FRAMES",
+    "FLOATER_PRUNING_ENABLED",
+    "FLOATER_PRUNING_MIN_VIEWS",
+    "FLOATER_PRUNING_TOP_REGION_RATIO",
+    "FLOATER_PRUNING_TOP_VIEW_FRACTION",
+    "FLOATER_PRUNING_MIN_SKY_VIEWS",
+    "FLOATER_PRUNING_SKY_MIN_LUMINANCE",
+    "FLOATER_PRUNING_SKY_MIN_SATURATION",
+    "FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN",
+    "FLOATER_PRUNING_MAX_OPACITY",
+    "FLOATER_PRUNING_MAX_COLOR_DISTANCE",
+    "FLOATER_PRUNING_MIN_EDGE_SUPPORT",
     "GLOBAL_SCAFFOLD_INIT_MAX_POINTS",
     "GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT",
     "GLOBAL_SCAFFOLD_MAX_FILTER_RETENTION_RATIO",
+    "TRAINING_DENSITY_CAP_ENABLED",
+    "TRAINING_MAX_OUTPUT_GAUSSIANS",
+    "TRAINING_DENSITY_CAP_POLICY",
     "TRAINING_STOP_SPLIT_AT",
     "TRAINING_MAX_GAUSS_RATIO",
     "SH_DEGREE",
-    "BG_SH_DEGREE",
 )
 SCAFFOLD_CHANNEL_DIR = "/opt/ml/input/data/scaffold"
 TILE_SELECTION_CHANNEL_NAME = "tile-selection"
@@ -2332,6 +2363,20 @@ def build_benchmark_stages(
         stage_env = dict(extra_env)
         if tile_budget_mode == "adaptive":
             apply_md1_production_tile_defaults(stage_env)
+        if scaffold_artifact_s3_uri:
+            stage_env.setdefault("GLOBAL_SCAFFOLD_SOURCE_DIR", SCAFFOLD_CHANNEL_DIR)
+            stage_env.setdefault("GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT", "true")
+            stage_env.setdefault("GLOBAL_SCAFFOLD_MAX_FILTER_RETENTION_RATIO", "0.98")
+        hash_env = build_training_environment(
+            training_mode="leaf_tile",
+            tile_manifest_name=tile_manifest_name,
+            view_bucket_manifest_name=view_bucket_manifest_name,
+            tile_id=tile_id,
+            max_iterations=tile_max_iterations,
+            extra_env=stage_env,
+            training_timeout_seconds=training_max_runtime_seconds,
+            downscale_factor=downscale_factor,
+        )
         checkpoint_uri = (
             f"{normalize_s3_prefix(checkpoint_s3_prefix)}/{sanitize_sagemaker_job_name(f'{job_prefix}-{timestamp}-{tile_id}')}"
             if checkpoint_s3_prefix and (enable_spot or enable_checkpoints)
@@ -2345,7 +2390,7 @@ def build_benchmark_stages(
             input_colmap_s3_uri=input_colmap_s3_uri,
             image_uri=image_uri,
             scaffold_artifact_s3_uri=scaffold_artifact_s3_uri,
-            training_env_fingerprint=tile_input_hash_env_fingerprint(stage_env),
+            training_env_fingerprint=tile_input_hash_env_fingerprint(hash_env),
             instance_type=instance_type,
             spot_enabled=enable_spot,
             checkpoint_uri=checkpoint_uri,
@@ -2360,10 +2405,6 @@ def build_benchmark_stages(
                 stage_env.setdefault("TRAINING_MAX_SELECTED_IMAGES", str(tile_budget.max_selected_images))
         if checkpoint_uri:
             stage_env.setdefault("TRAINING_CHECKPOINT_S3_URI", checkpoint_uri)
-        if scaffold_artifact_s3_uri:
-            stage_env.setdefault("GLOBAL_SCAFFOLD_SOURCE_DIR", SCAFFOLD_CHANNEL_DIR)
-            stage_env.setdefault("GLOBAL_SCAFFOLD_REQUIRE_FILTERED_INIT", "true")
-            stage_env.setdefault("GLOBAL_SCAFFOLD_MAX_FILTER_RETENTION_RATIO", "0.98")
         cache_rejection_reasons: list[str] = []
         context_density_hit, context_density_rejection_reasons = resolve_context_density_reuse(
             tile_budget,
