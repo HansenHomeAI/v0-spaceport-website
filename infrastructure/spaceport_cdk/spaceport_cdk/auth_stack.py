@@ -77,82 +77,6 @@ class AuthStack(Stack):
         CfnOutput(self, "CognitoUserPoolClientId", value=user_pool_client.user_pool_client_id)
         api_kwargs = build_auth_api_kwargs(deployment_class)
 
-        # ========== INVITE USER LAMBDA ==========
-        # Create IAM role for invite Lambda
-        invite_lambda_role = iam.Role(
-            self, "InviteUserLambdaRole",
-            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
-            managed_policies=[
-                iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
-            ],
-            inline_policies={
-                "InviteUserPolicy": iam.PolicyDocument(
-                    statements=[
-                        iam.PolicyStatement(
-                            effect=iam.Effect.ALLOW,
-                            actions=[
-                                "cognito-idp:AdminCreateUser",
-                                "cognito-idp:AdminUpdateUserAttributes",
-                                "cognito-idp:AdminSetUserPassword",
-                                "cognito-idp:AdminAddUserToGroup",
-                                "cognito-idp:AdminGetUser",
-                            ],
-                            resources=[user_pool.user_pool_arn]
-                        )
-                    ]
-                )
-            }
-        )
-
-        # Create invite Lambda function with environment-specific naming
-        invite_lambda = lambda_.Function(
-            self,
-            "Spaceport-InviteUserFunction",
-            function_name=f"Spaceport-InviteUserFunctionV2",
-            runtime=lambda_.Runtime.PYTHON_3_9,
-            handler="lambda_function.lambda_handler",
-            code=lambda_.Code.from_asset(
-                os.path.join(os.path.dirname(__file__), "..", "lambda", "invite_user"),
-                bundling=BundlingOptions(
-                    image=lambda_.Runtime.PYTHON_3_9.bundling_image,
-                    command=[
-                        "bash", "-c",
-                        "pip install -r requirements.txt -t /asset-output && "
-                        "cp -au . /asset-output"
-                    ],
-                ),
-            ),
-            role=invite_lambda_role,
-            timeout=Duration.seconds(30),
-            memory_size=256,
-            environment={
-                "COGNITO_USER_POOL_ID": user_pool.user_pool_id,
-                "INVITE_GROUP": "beta-testers-v2",
-                "RESEND_API_KEY": os.environ.get("RESEND_API_KEY", ""),
-                "INVITE_API_KEY": os.environ.get("INVITE_API_KEY", ""),
-            },
-        )
-
-        # Create invite API Gateway
-        invite_api = apigw.RestApi(
-            self,
-            "Spaceport-InviteApiV2",
-            rest_api_name="Spaceport-InviteApiV2",
-            description="Invite approved users to Spaceport (V2)",
-            default_cors_preflight_options=apigw.CorsOptions(
-                allow_origins=apigw.Cors.ALL_ORIGINS,
-                allow_methods=apigw.Cors.ALL_METHODS,
-            ),
-            **api_kwargs,
-        )
-
-        invite_res = invite_api.root.add_resource("invite")
-        invite_res.add_method("POST", apigw.LambdaIntegration(invite_lambda, proxy=True))
-
-        CfnOutput(self, "InviteApiUrlV2", value=f"{invite_api.url}invite")
-
-
-
         # -------------------------------------
         # Per-user Projects storage and REST API
         # -------------------------------------
@@ -923,16 +847,18 @@ class AuthStack(Stack):
             target_key=litchi_kms_key,
         )
 
-        litchi_worker_role = iam.Role(
-            self,
-            "LitchiWorkerLambdaRole",
-            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
-            managed_policies=[
-                iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
-            ],
-        )
-        litchi_credentials_table.grant_read_write_data(litchi_worker_role)
-        litchi_kms_key.grant_encrypt_decrypt(litchi_worker_role)
+        litchi_execution_role = projects_lambda.role
+        if litchi_execution_role is None:
+            raise ValueError("Projects Lambda role is required for Litchi automation")
+        if isinstance(litchi_execution_role, iam.Role):
+            litchi_execution_role.assume_role_policy.add_statements(
+                iam.PolicyStatement(
+                    actions=["sts:AssumeRole"],
+                    principals=[iam.ServicePrincipal("states.amazonaws.com")],
+                )
+            )
+        litchi_credentials_table.grant_read_write_data(litchi_execution_role)
+        litchi_kms_key.grant_encrypt_decrypt(litchi_execution_role)
 
         litchi_worker_lambda = lambda_.DockerImageFunction(
             self,
@@ -941,7 +867,7 @@ class AuthStack(Stack):
             code=lambda_.DockerImageCode.from_image_asset(
                 os.path.join(os.path.dirname(__file__), "..", "lambda", "litchi_worker"),
             ),
-            role=litchi_worker_role,
+            role=litchi_execution_role,
             timeout=Duration.minutes(5),
             memory_size=2048,
             environment={
@@ -959,12 +885,7 @@ class AuthStack(Stack):
             removal_policy=RemovalPolicy.DESTROY,
         )
 
-        litchi_state_machine_role = iam.Role(
-            self,
-            "LitchiStateMachineRole",
-            assumed_by=iam.ServicePrincipal("states.amazonaws.com"),
-        )
-        litchi_worker_lambda.grant_invoke(litchi_state_machine_role)
+        litchi_worker_lambda.grant_invoke(litchi_execution_role)
 
         worker_task = sfn_tasks.LambdaInvoke(
             self,
@@ -1014,7 +935,7 @@ class AuthStack(Stack):
             "LitchiUploadStateMachine",
             state_machine_name=f"Spaceport-LitchiUpload-{suffix}",
             definition=litchi_map,
-            role=litchi_state_machine_role,
+            role=litchi_execution_role,
             logs=sfn.LogOptions(
                 destination=litchi_stepfunctions_log_group,
                 level=sfn.LogLevel.ALL,
@@ -1022,16 +943,6 @@ class AuthStack(Stack):
             ),
             timeout=Duration.hours(1),
         )
-
-        litchi_api_role = iam.Role(
-            self,
-            "LitchiApiLambdaRole",
-            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
-            managed_policies=[
-                iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
-            ],
-        )
-        litchi_credentials_table.grant_read_data(litchi_api_role)
 
         litchi_api_lambda = lambda_.Function(
             self,
@@ -1050,7 +961,7 @@ class AuthStack(Stack):
                     ],
                 ),
             ),
-            role=litchi_api_role,
+            role=litchi_execution_role,
             timeout=Duration.seconds(30),
             memory_size=256,
             environment={
@@ -1063,30 +974,6 @@ class AuthStack(Stack):
         litchi_worker_lambda.grant_invoke(litchi_api_lambda)
         litchi_state_machine.grant_start_execution(litchi_api_lambda)
 
-        litchi_api = apigw.RestApi(
-            self,
-            "Spaceport-LitchiApi",
-            rest_api_name=f"Spaceport-LitchiApi-{suffix}",
-            description="Litchi automation API for Spaceport users",
-            default_cors_preflight_options=apigw.CorsOptions(
-                allow_origins=apigw.Cors.ALL_ORIGINS,
-                allow_methods=apigw.Cors.ALL_METHODS,
-                allow_headers=[
-                    "Content-Type",
-                    "Authorization",
-                    "authorization",
-                    "X-Amz-Date",
-                    "X-Amz-Security-Token",
-                ],
-            ),
-        )
-
-        litchi_authorizer = apigw.CognitoUserPoolsAuthorizer(
-            self,
-            "LitchiAuthorizer",
-            cognito_user_pools=[user_pool],
-        )
-
         litchi_routes = (
             ("status", "GET"),
             ("connect", "POST"),
@@ -1094,16 +981,6 @@ class AuthStack(Stack):
             ("upload", "POST"),
         )
 
-        litchi_resource = litchi_api.root.add_resource("litchi")
-        for route, method in litchi_routes:
-            litchi_resource.add_resource(route).add_method(
-                method,
-                apigw.LambdaIntegration(litchi_api_lambda),
-                authorization_type=apigw.AuthorizationType.COGNITO,
-                authorizer=litchi_authorizer,
-            )
-
-        # Mirror Litchi endpoints on the Projects API base for frontend fallback.
         litchi_projects_resource = projects_api.root.add_resource("litchi")
         for route, method in litchi_routes:
             litchi_projects_resource.add_resource(route).add_method(
@@ -1113,23 +990,9 @@ class AuthStack(Stack):
                 authorizer=projects_authorizer,
             )
 
-        for response_type, label in (
-            (apigw.ResponseType.DEFAULT_4_XX, "Default4XX"),
-            (apigw.ResponseType.DEFAULT_5_XX, "Default5XX"),
-        ):
-            litchi_api.add_gateway_response(
-                f"Litchi{label}",
-                type=response_type,
-                response_headers={
-                    "Access-Control-Allow-Origin": "'*'",
-                    "Access-Control-Allow-Headers": "'Content-Type,Authorization,authorization,X-Amz-Date,X-Amz-Security-Token,X-Api-Key'",
-                    "Access-Control-Allow-Methods": "'GET,POST,OPTIONS'",
-                },
-            )
+        CfnOutput(self, "LitchiApiUrl", value=projects_api.url)
 
-        CfnOutput(self, "LitchiApiUrl", value=litchi_api.url)
-
-        self.litchi_api = litchi_api
+        self.litchi_api = projects_api
         self.litchi_api_lambda = litchi_api_lambda
         self.litchi_worker_lambda = litchi_worker_lambda
         self.litchi_state_machine = litchi_state_machine
