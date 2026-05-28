@@ -45,3 +45,4 @@
 [2026-05-28T19:54:23Z] cvhr-r8-merge-preflight -> merge completed and preflight passed with 485745/616624 retained, fallback=0, retain_all=0, required paths present -> submit frozen-camera review
 [2026-05-28T19:55:46Z] cvhr-r8-review -> submitted frozen-camera review processing job cvhr-sfm-auth-r8-alias-1779997456-review on ml.g4dn.xlarge, pinned to sha256:49564aff and R4 baseline -> poll review then run hard visual QA
 [2026-05-28T20:09:37Z] cvhr-r8-visual-gate -> review completed but hard QA blocked on blue-white foreground haze, horizon saturation, absolute metrics, and horizon non-regression; merge contract is clean -> run one-tile R9 aggressive sky-floater pruning canary before any two-tile merge spend
+[2026-05-28T20:17:24Z] cvhr-r9-tile00 -> dry-run passed coverage and $1.472<$2; first submit failed pre-spend because fanout requires --wait; corrected submit created cvhr-sfm-auth-r9-aggr-1779999050-1779999327-tile-00 -> poll leaf then preflight
