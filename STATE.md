@@ -1,5 +1,5 @@
 reason: building the development-based Send to Controller feature branch for hosted Litchi browser/controller delivery
-last_step: exact-head CDK failed on a CloudFormation circular dependency caused by reusing the Projects Lambda role for the Litchi API, worker, and state machine; replaced token grants/env references with deterministic worker/state-machine ARNs so the shared role policy no longer depends on resources that also depend on the role
-next_unblocked_step: commit and push the circular-dependency fix, then monitor exact-head Pages/CDK workflows and use the resolved preview URL for browser validation
+last_step: code head f3b8dee7 passed exact-head CDK run 26602867286 and Pages run 26603250249; preview alias and hash health probes passed
+next_unblocked_step: use preview alias https://agent-38642091-litchi-contro.v0-spaceport-website-preview2.pages.dev for authenticated browser validation, then open a development PR when ready
 owner_action_needed: none
-updated: 2026-05-28T15:17:52-06:00
+updated: 2026-05-28T15:30:55-06:00

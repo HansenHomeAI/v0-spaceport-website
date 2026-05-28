@@ -5,3 +5,4 @@
 [2026-05-28T14:43:23-06:00] exact-head CI -> auth synth failed on stale invite_api reference in serialized RestApi updates -> remove the stale reference and rerun exact-head workflows
 [2026-05-28T15:09:17-06:00] implementation -> added canonical controller names, upload validation/idempotency, log redaction controls, KMS context, and re-login-gate fix; compileall/unit/node/tsc/build passed locally -> commit and push exact head
 [2026-05-28T15:17:52-06:00] exact-head CI -> CDK failed on shared-role CloudFormation circular dependency for Litchi API/worker/SFN -> replace token grants/env refs with deterministic ARNs and rerun exact-head workflows
+[2026-05-28T15:30:55-06:00] exact-head CI -> f3b8dee7 CDK 26602867286 passed; manual Pages 26603250249 passed and verified alias/hash health -> preview ready at https://agent-38642091-litchi-contro.v0-spaceport-website-preview2.pages.dev
