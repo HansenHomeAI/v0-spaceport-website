@@ -1,0 +1,41 @@
+{
+  "cache_entries": [
+    {
+      "tile_id": "tile_00",
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r9-aggressive-prune-20260528/tiles/tile_00/cvhr-sfm-auth-r9-aggr-1779999050-1779999327-tile-00/output/model.tar.gz",
+      "input_hash": "f0890368b98466c25941f442ca18c96def60364593c06ddb499ad8ae3e4fdc5a",
+      "quality_gate_status": "passed",
+      "ownership_gate_status": "passed",
+      "preflight_json": "logs/3dgs-sfm-authority/cvhr_sfm_authority_r9_tile_00_leaf_preflight.json",
+      "splat_vertex_count": 300884,
+      "source_filtered_gaussian_count": 24867,
+      "source_gaussian_count": 74138,
+      "source_filter_retention_ratio": 0.33541503682322155,
+      "floater_removed_gaussians": 48954,
+      "priority_frame_name_count": 2,
+      "priority_frame_match_count": 2,
+      "r8_comparison": {
+        "r8_splat_vertex_count": 322047,
+        "r8_floater_removed_gaussians": 7498,
+        "delta_splat_vertex_count": -21163,
+        "delta_floater_removed_gaussians": 41456
+      }
+    },
+    {
+      "tile_id": "tile_07",
+      "artifact_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r8-priority-alias-20260528/tiles/tile_07/cvhr-sfm-auth-r8-alias-1779994914-tile-07/output/model.tar.gz",
+      "input_hash": "fac014d52720e291e3ee04c2216c6928367021422188d6d0649c12dfafddbc26",
+      "quality_gate_status": "passed",
+      "ownership_gate_status": "passed",
+      "preflight_json": "logs/3dgs-sfm-authority/cvhr_sfm_authority_r8_tile_07_leaf_preflight.json",
+      "splat_vertex_count": 294577,
+      "source_filtered_gaussian_count": 23963,
+      "source_gaussian_count": 74138,
+      "source_filter_retention_ratio": 0.3232215597938979,
+      "floater_removed_gaussians": 10180,
+      "priority_frame_name_count": 2,
+      "priority_frame_match_count": 0,
+      "priority_frame_match_note": "Non-blocking for tile_07: selected_image_names does not include DJI_00801.JPG or DJI_00809.JPG."
+    }
+  ]
+}
