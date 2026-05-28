@@ -7,9 +7,10 @@ from __future__ import annotations
 
 import json
 import math
+from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Optional, Sequence
+from typing import Any, Optional
 
 import numpy as np
 from PIL import Image
@@ -417,14 +418,49 @@ def _resolve_color_distance_medians(
     return resolved
 
 
-def _frame_image_basename(frame: dict[str, Any]) -> str:
-    return Path(str(frame.get("file_path") or "")).name
+def _load_image_name_map(data_dir: Path) -> dict[str, Any]:
+    image_name_map_path = data_dir / "colmap_image_name_map.json"
+    if not image_name_map_path.exists():
+        return {}
+    with open(image_name_map_path, "r", encoding="utf-8") as f:
+        payload = json.load(f)
+    return payload if isinstance(payload, dict) else {}
+
+
+def _frame_image_aliases(frame: Mapping[str, Any], image_name_map: Mapping[str, Any] | None = None) -> set[str]:
+    aliases = {
+        Path(str(value)).name
+        for key in ("file_path", "original_file_path", "original_image_name")
+        if (value := frame.get(key))
+    }
+    if not isinstance(image_name_map, Mapping):
+        return aliases
+
+    converted_name = Path(str(frame.get("file_path") or "")).name
+    converted_entry = (image_name_map.get("by_converted_name") or {}).get(converted_name)
+    if isinstance(converted_entry, Mapping):
+        for key in ("original_image_name", "converted_image_name", "converted_file_path"):
+            value = converted_entry.get(key)
+            if value:
+                aliases.add(Path(str(value)).name)
+
+    colmap_im_id = frame.get("colmap_im_id")
+    if colmap_im_id is not None:
+        colmap_entry = (image_name_map.get("by_colmap_im_id") or {}).get(str(colmap_im_id))
+        if isinstance(colmap_entry, Mapping):
+            for key in ("original_image_name", "converted_image_name", "converted_file_path"):
+                value = colmap_entry.get(key)
+                if value:
+                    aliases.add(Path(str(value)).name)
+
+    return aliases
 
 
 def _select_pruning_frame_indices(
     frames: Sequence[dict[str, Any]],
     sampled_views: int,
     priority_frame_names: Sequence[str] | None = None,
+    image_name_map: Mapping[str, Any] | None = None,
 ) -> tuple[np.ndarray, int]:
     if not frames:
         return np.array([], dtype=int), 0
@@ -441,7 +477,7 @@ def _select_pruning_frame_indices(
     priority_indices = {
         index
         for index, frame in enumerate(frames)
-        if _frame_image_basename(frame) in priority_names
+        if _frame_image_aliases(frame, image_name_map) & priority_names
     }
     return np.array(sorted(uniform_indices | priority_indices), dtype=int), len(priority_indices)
 
@@ -465,6 +501,7 @@ def prune_foreground_floaters(
 ) -> FloaterPruningResult:
     cv2_mod = _ensure_cv2()
     transforms = _load_transforms(data_dir)
+    image_name_map = _load_image_name_map(data_dir)
     frames = transforms.get("frames", [])
     if not frames:
         raise RuntimeError("No frames available for floater pruning")
@@ -525,6 +562,7 @@ def prune_foreground_floaters(
         frames,
         sampled_views=sampled_views,
         priority_frame_names=priority_frame_names,
+        image_name_map=image_name_map,
     )
     visible_counts = np.zeros(candidate_indices.shape[0], dtype=np.int32)
     top_counts = np.zeros(candidate_indices.shape[0], dtype=np.int32)
