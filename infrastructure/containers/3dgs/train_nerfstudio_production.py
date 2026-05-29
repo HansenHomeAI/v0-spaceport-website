@@ -2309,10 +2309,19 @@ class NerfStudioTrainer:
             return False
 
         boundary_repeat_factor = max(1, int(training_config.get("boundary_camera_repeat_factor", 1) or 1))
-        boundary_weight_cameras = parse_image_name_list(
-            os.environ.get("BOUNDARY_FROZEN_CAMERAS")
-            or training_config.get("boundary_frozen_cameras")
-            or (view_buckets or {}).get("boundary_camera_ids", [])
+        boundary_weight_cameras = unique_preserving_order(
+            [
+                *parse_image_name_list(
+                    os.environ.get("BOUNDARY_FROZEN_CAMERAS")
+                    or training_config.get("boundary_frozen_cameras")
+                    or (view_buckets or {}).get("boundary_camera_ids", [])
+                ),
+                *parse_image_name_list(
+                    os.environ.get("HORIZON_FROZEN_CAMERAS")
+                    or training_config.get("horizon_frozen_cameras")
+                    or []
+                ),
+            ]
         )
         weighted_transforms, weighting_summary = apply_boundary_frame_repeat_weighting(
             filtered_transforms,

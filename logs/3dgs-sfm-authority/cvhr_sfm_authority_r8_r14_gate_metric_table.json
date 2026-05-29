@@ -1,0 +1,79 @@
+{
+  "r8": {
+    "status": "blocked",
+    "block_count": 17,
+    "alpha": 0.9976644515991211,
+    "coverage": 1.0,
+    "near_psnr": 14.44320149204431,
+    "boundary_psnr": 12.853658209565001,
+    "horizon_psnr": 9.98625465677786,
+    "horizon_delta": -0.3077721596776488,
+    "horizon_lpips": 0.7492002844810486
+  },
+  "r9": {
+    "status": "blocked",
+    "block_count": 19,
+    "alpha": 0.9934637546539307,
+    "coverage": 1.0,
+    "near_psnr": 13.982909676939128,
+    "boundary_psnr": 12.868106651757685,
+    "horizon_psnr": 9.790008440844325,
+    "horizon_delta": -0.5040183756111833,
+    "horizon_lpips": 0.753605306148529
+  },
+  "r10": {
+    "status": "blocked",
+    "block_count": 19,
+    "alpha": 0.9829822182655334,
+    "coverage": 1.0,
+    "near_psnr": 14.48863307457722,
+    "boundary_psnr": 13.052672397510925,
+    "horizon_psnr": 9.96220590268375,
+    "horizon_delta": -0.3318209137717574,
+    "horizon_lpips": 0.757847249507904
+  },
+  "r11": {
+    "status": "blocked",
+    "block_count": 17,
+    "alpha": 0.9897311329841614,
+    "coverage": 1.0,
+    "near_psnr": 14.45662858917319,
+    "boundary_psnr": 12.79600830292128,
+    "horizon_psnr": 9.95468283506737,
+    "horizon_delta": -0.33934398138813826,
+    "horizon_lpips": 0.7177647948265076
+  },
+  "r12": {
+    "status": "blocked",
+    "block_count": 19,
+    "alpha": 0.9898431301116943,
+    "coverage": 1.0,
+    "near_psnr": 14.526568128988842,
+    "boundary_psnr": 13.066866296658842,
+    "horizon_psnr": 9.942914298776259,
+    "horizon_delta": -0.35111251767924934,
+    "horizon_lpips": 0.7546246945858002
+  },
+  "r13": {
+    "status": "blocked",
+    "block_count": 19,
+    "alpha": 0.9811598658561707,
+    "coverage": 1.0,
+    "near_psnr": 14.186044873314442,
+    "boundary_psnr": 12.794099513958102,
+    "horizon_psnr": 9.921931385030206,
+    "horizon_delta": -0.37209543142530244,
+    "horizon_lpips": 0.76127028465271
+  },
+  "r14": {
+    "status": "blocked",
+    "block_count": 18,
+    "alpha": 0.9909336566925049,
+    "coverage": 1.0,
+    "near_psnr": 14.31725563839236,
+    "boundary_psnr": 12.708346749829396,
+    "horizon_psnr": 9.936122697647495,
+    "horizon_delta": -0.35790411880801365,
+    "horizon_lpips": 0.7543182969093323
+  }
+}

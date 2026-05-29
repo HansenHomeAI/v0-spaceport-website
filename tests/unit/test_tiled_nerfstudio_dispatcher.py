@@ -834,6 +834,98 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             self.assertEqual(camera_weighting["added_weighted_frames"], 2)
             self.assertEqual(camera_weighting["matched_boundary_camera_ids"], ["frame_00002.JPG"])
 
+    def test_apply_training_selection_repeats_horizon_frozen_frames_for_weighting(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            input_dir = root / "input"
+            output_dir = root / "output"
+            (input_dir / "images").mkdir(parents=True)
+            output_dir.mkdir()
+            (input_dir / "3dgs_tile_manifest.json").write_text(
+                json.dumps(
+                    {
+                        "tiles": [
+                            {
+                                "tile_id": "tile_00",
+                                "base_camera_ids": ["frame_00001.JPG", "frame_00002.JPG"],
+                            }
+                        ],
+                        "global_scaffold_camera_ids": ["frame_00001.JPG", "frame_00002.JPG"],
+                        "all_image_names": ["frame_00001.JPG", "frame_00002.JPG"],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (input_dir / "3dgs_view_buckets.json").write_text(
+                json.dumps(
+                    {
+                        "boundary_camera_ids": ["frame_00001.JPG"],
+                        "horizon_camera_ids": ["frame_00002.JPG"],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (input_dir / "transforms.json").write_text(
+                json.dumps(
+                    {
+                        "frames": [
+                            {"file_path": "images/frame_00001.JPG"},
+                            {"file_path": "images/frame_00002.JPG"},
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.config = {
+                "tiling": {
+                    "training_mode": "leaf_tile",
+                    "tile_manifest_path": "3dgs_tile_manifest.json",
+                    "view_bucket_manifest_path": "3dgs_view_buckets.json",
+                    "tile_id": "tile_00",
+                },
+                "training": {
+                    "review_images_per_bucket": 1,
+                    "max_selected_images": 0,
+                    "selection_stride": 1,
+                    "boundary_camera_repeat_factor": 2,
+                },
+            }
+            trainer.input_dir = input_dir
+            trainer.output_dir = output_dir
+            trainer.temp_dir = root / "tmp"
+            trainer.tile_manifest_resolution = None
+            trainer.training_selection_result = None
+
+            selected = ["frame_00001.JPG", "frame_00002.JPG"]
+            original_select = module.select_training_image_names
+            original_environ = module.os.environ.copy()
+            try:
+                module.select_training_image_names = lambda **_kwargs: selected
+                module.os.environ.clear()
+                module.os.environ.update({"HORIZON_FROZEN_CAMERAS": "frame_00002.JPG"})
+                self.assertTrue(trainer.apply_training_selection())
+            finally:
+                module.select_training_image_names = original_select
+                module.os.environ.clear()
+                module.os.environ.update(original_environ)
+
+            weighted_transforms = json.loads((input_dir / "transforms.json").read_text(encoding="utf-8"))
+            self.assertEqual(
+                [Path(frame["file_path"]).name for frame in weighted_transforms["frames"]],
+                ["frame_00001.JPG", "frame_00001.JPG", "frame_00002.JPG", "frame_00002.JPG"],
+            )
+            camera_weighting = trainer.training_selection_result["camera_weighting"]
+            self.assertTrue(camera_weighting["enabled"])
+            self.assertEqual(
+                camera_weighting["matched_boundary_camera_ids"],
+                ["frame_00001.JPG", "frame_00002.JPG"],
+            )
+            self.assertEqual(camera_weighting["weighted_frame_count"], 4)
+
     def test_prepare_colmap_subset_for_image_names_filters_before_conversion(self):
         module = load_module_with_stubs()
 

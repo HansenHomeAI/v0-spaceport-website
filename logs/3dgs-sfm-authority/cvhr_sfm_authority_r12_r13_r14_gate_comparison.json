@@ -1,0 +1,263 @@
+{
+  "r12": {
+    "status": "blocked",
+    "horizon_alpha": [
+      {
+        "alpha_coverage_gt_005": 1.0,
+        "alpha_mean": 0.9898431301116943,
+        "bucket": "horizon",
+        "foreground_sky_blue_dominance": 0.4934423076923077,
+        "foreground_sky_luminance": 0.6615988612174988,
+        "foreground_sky_saturation": 0.13432639837265015,
+        "image_name": "DJI_00801.JPG"
+      }
+    ],
+    "buckets": {
+      "boundary": {
+        "block_reasons": [
+          "boundary_median_psnr_below_threshold",
+          "boundary_median_ssim_below_threshold",
+          "boundary_median_lpips_above_threshold"
+        ],
+        "metrics": {
+          "lpips": 0.5960646271705627,
+          "psnr": 13.066866296658842,
+          "ssim": 0.5320196747779846
+        },
+        "thresholds": {
+          "max_median_lpips": 0.55,
+          "min_median_psnr": 18.0,
+          "min_median_ssim": 0.55
+        }
+      },
+      "horizon": {
+        "block_reasons": [
+          "horizon_median_psnr_below_threshold",
+          "horizon_median_ssim_below_threshold",
+          "horizon_median_lpips_above_threshold"
+        ],
+        "metrics": {
+          "lpips": 0.7546246945858002,
+          "psnr": 9.942914298776259,
+          "ssim": 0.5252453535795212
+        },
+        "thresholds": {
+          "max_median_lpips": 0.55,
+          "min_median_psnr": 18.0,
+          "min_median_ssim": 0.55
+        }
+      },
+      "near_detail": {
+        "block_reasons": [
+          "near_detail_median_psnr_below_threshold",
+          "near_detail_median_ssim_below_threshold",
+          "near_detail_median_lpips_above_threshold"
+        ],
+        "metrics": {
+          "lpips": 0.5991487503051758,
+          "psnr": 14.526568128988842,
+          "ssim": 0.512552335858345
+        },
+        "thresholds": {
+          "max_median_lpips": 0.55,
+          "min_median_psnr": 18.0,
+          "min_median_ssim": 0.55
+        }
+      }
+    },
+    "horizon_regression": {
+      "block_reasons": [
+        "horizon_v18_median_psnr_regression"
+      ],
+      "candidate": {
+        "lpips": 0.7546246945858002,
+        "psnr": 9.942914298776259,
+        "ssim": 0.5252453535795212
+      },
+      "delta": {
+        "lpips": -0.08660319447517395,
+        "psnr": -0.35111251767924934,
+        "ssim": 0.008518904447555542
+      },
+      "v18": {
+        "lpips": 0.8412278890609741,
+        "psnr": 10.294026816455508,
+        "ssim": 0.5167264491319656
+      }
+    }
+  },
+  "r13": {
+    "status": "blocked",
+    "horizon_alpha": [
+      {
+        "alpha_coverage_gt_005": 1.0,
+        "alpha_mean": 0.9811598658561707,
+        "bucket": "horizon",
+        "foreground_sky_blue_dominance": 0.48780769230769233,
+        "foreground_sky_luminance": 0.6642178893089294,
+        "foreground_sky_saturation": 0.13314716517925262,
+        "image_name": "DJI_00801.JPG"
+      }
+    ],
+    "buckets": {
+      "boundary": {
+        "block_reasons": [
+          "boundary_median_psnr_below_threshold",
+          "boundary_median_ssim_below_threshold",
+          "boundary_median_lpips_above_threshold"
+        ],
+        "metrics": {
+          "lpips": 0.615863025188446,
+          "psnr": 12.794099513958102,
+          "ssim": 0.5123114585876465
+        },
+        "thresholds": {
+          "max_median_lpips": 0.55,
+          "min_median_psnr": 18.0,
+          "min_median_ssim": 0.55
+        }
+      },
+      "horizon": {
+        "block_reasons": [
+          "horizon_median_psnr_below_threshold",
+          "horizon_median_ssim_below_threshold",
+          "horizon_median_lpips_above_threshold"
+        ],
+        "metrics": {
+          "lpips": 0.76127028465271,
+          "psnr": 9.921931385030206,
+          "ssim": 0.5240529924631119
+        },
+        "thresholds": {
+          "max_median_lpips": 0.55,
+          "min_median_psnr": 18.0,
+          "min_median_ssim": 0.55
+        }
+      },
+      "near_detail": {
+        "block_reasons": [
+          "near_detail_median_psnr_below_threshold",
+          "near_detail_median_ssim_below_threshold",
+          "near_detail_median_lpips_above_threshold"
+        ],
+        "metrics": {
+          "lpips": 0.6199778616428375,
+          "psnr": 14.186044873314442,
+          "ssim": 0.4913281053304672
+        },
+        "thresholds": {
+          "max_median_lpips": 0.55,
+          "min_median_psnr": 18.0,
+          "min_median_ssim": 0.55
+        }
+      }
+    },
+    "horizon_regression": {
+      "block_reasons": [
+        "horizon_v18_median_psnr_regression"
+      ],
+      "candidate": {
+        "lpips": 0.76127028465271,
+        "psnr": 9.921931385030206,
+        "ssim": 0.5240529924631119
+      },
+      "delta": {
+        "lpips": -0.07995760440826416,
+        "psnr": -0.37209543142530244,
+        "ssim": 0.00732654333114624
+      },
+      "v18": {
+        "lpips": 0.8412278890609741,
+        "psnr": 10.294026816455508,
+        "ssim": 0.5167264491319656
+      }
+    }
+  },
+  "r14": {
+    "status": "blocked",
+    "horizon_alpha": [
+      {
+        "alpha_coverage_gt_005": 1.0,
+        "alpha_mean": 0.9909336566925049,
+        "bucket": "horizon",
+        "foreground_sky_blue_dominance": 0.5205295857988166,
+        "foreground_sky_luminance": 0.6395425796508789,
+        "foreground_sky_saturation": 0.13223761320114136,
+        "image_name": "DJI_00801.JPG"
+      }
+    ],
+    "buckets": {
+      "boundary": {
+        "block_reasons": [
+          "boundary_median_psnr_below_threshold",
+          "boundary_median_ssim_below_threshold",
+          "boundary_median_lpips_above_threshold"
+        ],
+        "metrics": {
+          "lpips": 0.5999152958393097,
+          "psnr": 12.708346749829396,
+          "ssim": 0.5272795855998993
+        },
+        "thresholds": {
+          "max_median_lpips": 0.55,
+          "min_median_psnr": 18.0,
+          "min_median_ssim": 0.55
+        }
+      },
+      "horizon": {
+        "block_reasons": [
+          "horizon_median_psnr_below_threshold",
+          "horizon_median_ssim_below_threshold",
+          "horizon_median_lpips_above_threshold"
+        ],
+        "metrics": {
+          "lpips": 0.7543182969093323,
+          "psnr": 9.936122697647495,
+          "ssim": 0.524230569601059
+        },
+        "thresholds": {
+          "max_median_lpips": 0.55,
+          "min_median_psnr": 18.0,
+          "min_median_ssim": 0.55
+        }
+      },
+      "near_detail": {
+        "block_reasons": [
+          "near_detail_median_psnr_below_threshold",
+          "near_detail_median_ssim_below_threshold",
+          "near_detail_median_lpips_above_threshold"
+        ],
+        "metrics": {
+          "lpips": 0.6032021045684814,
+          "psnr": 14.31725563839236,
+          "ssim": 0.507894366979599
+        },
+        "thresholds": {
+          "max_median_lpips": 0.55,
+          "min_median_psnr": 18.0,
+          "min_median_ssim": 0.55
+        }
+      }
+    },
+    "horizon_regression": {
+      "block_reasons": [
+        "horizon_v18_median_psnr_regression"
+      ],
+      "candidate": {
+        "lpips": 0.7543182969093323,
+        "psnr": 9.936122697647495,
+        "ssim": 0.524230569601059
+      },
+      "delta": {
+        "lpips": -0.08690959215164185,
+        "psnr": -0.35790411880801365,
+        "ssim": 0.007504120469093323
+      },
+      "v18": {
+        "lpips": 0.8412278890609741,
+        "psnr": 10.294026816455508,
+        "ssim": 0.5167264491319656
+      }
+    }
+  }
+}
