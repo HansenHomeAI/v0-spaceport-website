@@ -173,6 +173,40 @@ class Tiled3DGSBenchmarkLauncherTests(unittest.TestCase):
             ["DJI_0002.JPG", "DJI_0004.JPG"],
         )
 
+    def test_selected_image_names_for_stage_prioritizes_explicit_frozen_cameras(self):
+        manifest = {
+            "tiles": [
+                {
+                    "tile_id": "tile_07",
+                    "base_camera_ids": [f"DJI_{idx:05d}.JPG" for idx in range(1, 12)],
+                    "context_camera_ids": ["DJI_00801.JPG"],
+                }
+            ]
+        }
+        stage = benchmark.BenchmarkStage(
+            stage_name="T0_tile_07",
+            stage_type="train",
+            training_mode="leaf_tile",
+            tile_id="tile_07",
+            output_s3_uri="s3://bucket/out",
+            environment={
+                "TRAINING_MAX_SELECTED_IMAGES": "4",
+                "TRAINING_SELECTION_STRIDE": "2",
+                "HORIZON_FROZEN_CAMERAS": "images/DJI_00801.JPG,DJI_00809.JPG",
+            },
+            max_selected_images=4,
+        )
+
+        selected = benchmark.selected_image_names_for_stage(
+            manifest,
+            {"horizon_camera_ids": ["DJI_00801.JPG"]},
+            stage,
+        )
+
+        self.assertEqual(selected[0], "DJI_00801.JPG")
+        self.assertNotIn("DJI_00809.JPG", selected)
+        self.assertEqual(len(selected), 4)
+
     def test_submit_guardrail_reports_input_image_coverage_blocker(self):
         args = type(
             "Args",
