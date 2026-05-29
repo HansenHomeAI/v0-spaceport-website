@@ -1,0 +1,71 @@
+{
+  "status": "passed",
+  "pass_decision": "leaf_preflight_passed_cache_candidate",
+  "preflight_json": "logs/3dgs-sfm-authority/cvhr_sfm_authority_r13_tile_00_leaf_preflight.json",
+  "gate_json": "<benchmark-summary-json>",
+  "gate_json_exists": false,
+  "expected_tile_id": "tile_00",
+  "observed_tile_id": "tile_00",
+  "expected_selected_image_count": 240,
+  "observed_selected_image_count": 240,
+  "require_filtered_scaffold": true,
+  "splat_vertex_count": 218479,
+  "splat_reference_guard": {
+    "enabled": true,
+    "status": "ok",
+    "reference_splat_count": 250910,
+    "max_reference_splat_ratio": 1.0,
+    "min_reference_splat_ratio": 0.25,
+    "splat_vertex_count": 218479,
+    "observed_reference_ratio": 0.8707464828025986,
+    "block_reason": null
+  },
+  "scaffold_initialization": {
+    "scaffold_source_artifact": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/splat.ply",
+    "filtered_point_cloud": "/tmp/nerfstudio_training/converted_data/scaffold_init.ply",
+    "scaffold_filter_bounds": {
+      "min_x": -338.73830000000004,
+      "max_x": 225.5653,
+      "min_y": -79.53930000000001,
+      "max_y": 48.0243,
+      "min_z": -349.9832,
+      "max_z": 355.1392
+    },
+    "source_gaussian_count": 74138,
+    "source_filtered_gaussian_count": 24867,
+    "source_rejected_gaussian_count": 49271,
+    "source_filter_retention_ratio": 0.33541503682322155,
+    "source_filter_rejection_ratio": 0.6645849631767784,
+    "inherited_gaussian_count": 24867,
+    "inherited_gaussian_cap": 300000,
+    "inherited_attributes": [
+      "positions",
+      "rgb_from_gaussian_dc"
+    ],
+    "reinitialized_attributes": [
+      "scale",
+      "opacity",
+      "rotation",
+      "sh_rest",
+      "appearance_embeddings"
+    ],
+    "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+    "scaffold_init_downsample_strategy": null,
+    "scaffold_filter_selective": true,
+    "fallback_reason": null,
+    "fallback_used": false,
+    "external_scaffold": {
+      "stage_name": "scaffold",
+      "training_mode": "global_scaffold",
+      "status": "reused_external_scaffold",
+      "source_dir": "/opt/ml/input/data/scaffold",
+      "source_kind": "directory_tar_artifact",
+      "source_artifact": "/opt/ml/input/data/scaffold/model.tar.gz",
+      "output_dir": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold",
+      "splat_ply": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/splat.ply"
+    }
+  },
+  "preflight_block_reasons": [],
+  "block_reasons": [],
+  "warnings": []
+}

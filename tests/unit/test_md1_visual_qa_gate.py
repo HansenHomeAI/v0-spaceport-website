@@ -219,6 +219,39 @@ class VisualQaGateTest(unittest.TestCase):
             self.assertEqual(report["status"], "blocked")
             self.assertIn("ai_review_blocking_defects", report["block_reasons"])
 
+    def test_blocks_ai_review_overall_status_block(self):
+        module = load_module()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            asset_root = root / "assets"
+            visual_path, quality_path = write_manifests(
+                root,
+                [
+                    make_view("near_detail", psnr=24.5, ssim=0.74, lpips=0.28),
+                    make_view("boundary", psnr=23.6, ssim=0.71, lpips=0.31),
+                    make_view("horizon", psnr=22.9, ssim=0.68, lpips=0.34),
+                ],
+                asset_root=asset_root,
+            )
+            ai_review = root / "ai_review.json"
+            ai_review.write_text(
+                json.dumps({"overall_status": "block", "blocking_defects": []}),
+                encoding="utf-8",
+            )
+
+            report = module.build_report(
+                make_args(
+                    visual_path,
+                    quality_manifest=quality_path,
+                    asset_root=asset_root,
+                    ai_review_json=ai_review,
+                )
+            )
+
+            self.assertEqual(report["status"], "blocked")
+            self.assertIn("ai_review_decision_not_passing", report["block_reasons"])
+
     def test_blocks_opaque_sky_like_horizon_foreground(self):
         module = load_module()
 

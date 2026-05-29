@@ -382,6 +382,7 @@ def evaluate_ai_review(ai_review: Mapping[str, Any] | None) -> dict[str, Any]:
         ai_review.get("promotion_decision")
         or ai_review.get("decision")
         or ai_review.get("status")
+        or ai_review.get("overall_status")
         or ""
     ).strip().lower()
     block_reasons: list[str] = []

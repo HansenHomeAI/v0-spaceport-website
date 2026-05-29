@@ -1,0 +1,100 @@
+{
+    "ProcessingInputs": [
+        {
+            "InputName": "model",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r12-maskupper-20260528/tiles/tile_00/cvhr-sfm-auth-r12-mask-1780015543-tile-00/output/model.tar.gz",
+                "LocalPath": "/opt/ml/processing/input/model",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated"
+            }
+        },
+        {
+            "InputName": "colmap",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r1-two-tile-00-07-input-20260526/colmap",
+                "LocalPath": "/opt/ml/processing/input/colmap",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated"
+            }
+        },
+        {
+            "InputName": "tile-selection",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r12-maskupper-20260528/inputs/tile-selection",
+                "LocalPath": "/opt/ml/processing/input/tile-selection",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated"
+            }
+        }
+    ],
+    "ProcessingOutputConfig": {
+        "Outputs": [
+            {
+                "OutputName": "artifact",
+                "S3Output": {
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r13-export-prune-20260528/tiles/tile_00/output",
+                    "LocalPath": "/opt/ml/processing/output",
+                    "S3UploadMode": "EndOfJob"
+                },
+                "AppManaged": false
+            }
+        ]
+    },
+    "ProcessingJobName": "cvhr-sfm-auth-r13-export-1780020621-tile-00",
+    "ProcessingResources": {
+        "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.g4dn.xlarge",
+            "VolumeSizeInGB": 120
+        }
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 7200
+    },
+    "AppSpecification": {
+        "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:1375dec71bfe36ddcee027a92b3b38f5ec42c843310596e1816f075232730e16",
+        "ContainerEntrypoint": [
+            "python3",
+            "/opt/ml/code/run_export_quality_pass.py"
+        ]
+    },
+    "Environment": {
+        "AWS_DEFAULT_REGION": "us-west-2",
+        "BOUNDARY_FROZEN_CAMERAS": "DJI_00814.JPG,DJI_00815.JPG",
+        "COLMAP_INPUT_DIR": "/opt/ml/processing/input/colmap",
+        "FLOATER_PRUNING_ENABLED": "true",
+        "FLOATER_PRUNING_MAX_COLOR_DISTANCE": "0.65",
+        "FLOATER_PRUNING_MAX_OPACITY": "1.01",
+        "FLOATER_PRUNING_MIN_EDGE_SUPPORT": "4",
+        "FLOATER_PRUNING_MIN_SKY_VIEWS": "1",
+        "FLOATER_PRUNING_MIN_VIEWS": "4",
+        "FLOATER_PRUNING_TOP_REGION_RATIO": "0.35",
+        "FLOATER_PRUNING_TOP_VIEW_FRACTION": "0.9",
+        "HORIZON_FROZEN_CAMERAS": "DJI_00801.JPG,DJI_00809.JPG",
+        "IMAGE_DIGEST_PROOF": "sha256:1375dec71bfe36ddcee027a92b3b38f5ec42c843310596e1816f075232730e16",
+        "MODEL_INPUT_DIR": "/opt/ml/processing/input/model",
+        "OUTPUT_DIR": "/opt/ml/processing/output",
+        "PYTHONUNBUFFERED": "1",
+        "REQUIRE_SFM_AUTHORITY": "true",
+        "TILE_ID": "tile_00",
+        "TILE_MANIFEST_PATH": "/opt/ml/processing/input/tile-selection/3dgs_tile_manifest.json",
+        "TRAINING_DOWNSCALE_FACTOR": "2",
+        "TRAINING_MAX_SELECTED_IMAGES": "240",
+        "TRAINING_MODE": "leaf_tile",
+        "VIEW_BUCKET_MANIFEST_PATH": "/opt/ml/processing/input/tile-selection/3dgs_view_buckets.json"
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/cvhr-sfm-auth-r13-export-1780020621-tile-00",
+    "ProcessingJobStatus": "Completed",
+    "ProcessingEndTime": "2026-05-28T20:19:44.468000-06:00",
+    "ProcessingStartTime": "2026-05-28T20:12:28.707000-06:00",
+    "LastModifiedTime": "2026-05-28T20:21:48.492000-06:00",
+    "CreationTime": "2026-05-28T20:11:46.629000-06:00"
+}
