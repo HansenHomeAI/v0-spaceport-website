@@ -212,6 +212,7 @@ jobs:
           COGNITO_USER_POOL_CLIENT_ID="$(get_output "$AUTH_OUTPUT_STACK" "CognitoUserPoolClientId")"
           SUBSCRIPTION_API_URL="$(get_output "$AUTH_OUTPUT_STACK" "SubscriptionApiUrl")"
           BETA_ACCESS_API_URL="$(get_output "$AUTH_OUTPUT_STACK" "BetaAccessAdminApiUrl")"
+          LITCHI_API_URL="$(get_output "$AUTH_OUTPUT_STACK" "LitchiApiUrl")"
           MODEL_DELIVERY_ADMIN_API_URL="$(get_output "$AUTH_OUTPUT_STACK" "ModelDeliveryAdminApiUrl")"
           EXPLORE_API_URL="$(get_output "$AUTH_OUTPUT_STACK" "ExplorePublicApiUrl")"
 
@@ -228,6 +229,7 @@ jobs:
             echo "COGNITO_USER_POOL_CLIENT_ID=$COGNITO_USER_POOL_CLIENT_ID"
             echo "SUBSCRIPTION_API_URL=$SUBSCRIPTION_API_URL"
             echo "BETA_ACCESS_API_URL=$BETA_ACCESS_API_URL"
+            echo "LITCHI_API_URL=$LITCHI_API_URL"
             echo "MODEL_DELIVERY_ADMIN_API_URL=$MODEL_DELIVERY_ADMIN_API_URL"
             echo "EXPLORE_API_URL=$EXPLORE_API_URL"
             echo "DRONE_PATH_API_URL=$DRONE_PATH_API_URL"
@@ -244,6 +246,7 @@ jobs:
           echo "Shared auth stack: $AUTH_OUTPUT_STACK"
           echo "Drone Path API: $DRONE_PATH_API_URL"
           echo "File Upload API: $FILE_UPLOAD_API_URL"
+          echo "Litchi API: $LITCHI_API_URL"
           echo "Waitlist API: $WAITLIST_API_URL"
           echo "Feedback API: $FEEDBACK_API_URL"
           echo "ML Pipeline API: $ML_PIPELINE_API_URL"
@@ -288,6 +291,7 @@ jobs:
             echo "NEXT_PUBLIC_WAITLIST_API_URL=$WAITLIST_API_URL" >> .env
             echo "NEXT_PUBLIC_ML_PIPELINE_API_URL=$ML_PIPELINE_API_URL" >> .env
             echo "NEXT_PUBLIC_BETA_ACCESS_API_URL=$BETA_ACCESS_API_URL" >> .env
+            echo "NEXT_PUBLIC_LITCHI_API_URL=$LITCHI_API_URL" >> .env
             echo "NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL=$MODEL_DELIVERY_ADMIN_API_URL" >> .env
             echo "NEXT_PUBLIC_EXPLORE_API_URL=$EXPLORE_API_URL" >> .env
             echo "NEXT_PUBLIC_FEEDBACK_API_URL=$FEEDBACK_API_URL" >> .env
@@ -310,6 +314,7 @@ jobs:
             echo "NEXT_PUBLIC_WAITLIST_API_URL=$WAITLIST_API_URL" >> .env
             echo "NEXT_PUBLIC_ML_PIPELINE_API_URL=$ML_PIPELINE_API_URL" >> .env
             echo "NEXT_PUBLIC_BETA_ACCESS_API_URL=$BETA_ACCESS_API_URL" >> .env
+            echo "NEXT_PUBLIC_LITCHI_API_URL=$LITCHI_API_URL" >> .env
             echo "NEXT_PUBLIC_MODEL_DELIVERY_ADMIN_API_URL=$MODEL_DELIVERY_ADMIN_API_URL" >> .env
             echo "NEXT_PUBLIC_EXPLORE_API_URL=$EXPLORE_API_URL" >> .env
             echo "NEXT_PUBLIC_FEEDBACK_API_URL=$FEEDBACK_API_URL" >> .env

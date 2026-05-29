@@ -1,6 +1,8 @@
 "use client";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { buildApiUrl } from '../app/api-config';
+import { useLitchiAutomation } from '../hooks/useLitchiAutomation';
+import { buildLitchiMissionName, formatLitchiBatchId } from '../lib/litchiMissionNaming';
 
 type NewProjectModalProps = {
   open: boolean;
@@ -105,6 +107,32 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
   const [optimizationLoading, setOptimizationLoading] = useState<boolean>(false);
   const [downloadingBatteries, setDownloadingBatteries] = useState<Set<number>>(new Set());
   const [processingMessage, setProcessingMessage] = useState<string>('');
+  const [showManualDownloads, setShowManualDownloads] = useState<boolean>(false);
+
+  const [litchiConnectOpen, setLitchiConnectOpen] = useState<boolean>(false);
+  const [litchiEmail, setLitchiEmail] = useState<string>('');
+  const [litchiPassword, setLitchiPassword] = useState<string>('');
+  const [litchiTwoFactor, setLitchiTwoFactor] = useState<string>('');
+  const [litchiPrepProgress, setLitchiPrepProgress] = useState<{ current: number; total: number } | null>(null);
+  const [litchiSending, setLitchiSending] = useState<boolean>(false);
+  const [litchiSendError, setLitchiSendError] = useState<string | null>(null);
+  const [litchiShowAllLogs, setLitchiShowAllLogs] = useState<boolean>(false);
+  const [litchiSelectedBatteries, setLitchiSelectedBatteries] = useState<Set<number>>(new Set());
+  const [litchiBatchDate, setLitchiBatchDate] = useState<Date>(() => new Date());
+  const [litchiLocalLogs, setLitchiLocalLogs] = useState<string[]>([]);
+
+  const {
+    apiConfigured: litchiApiConfigured,
+    status: litchiStatus,
+    connected: litchiConnected,
+    isConnecting: litchiConnecting,
+    isUploading: litchiUploading,
+    progress: litchiProgress,
+    error: litchiError,
+    connectMessage: litchiConnectMessage,
+    connect: connectLitchi,
+    uploadMissions: uploadLitchiMissions,
+  } = useLitchiAutomation();
 
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -583,6 +611,55 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     return isValid;
   }, [batteryMinutes, numBatteries, selectedCoords]);
 
+  const batteryCount = Math.max(0, Math.min(12, parseInt(numBatteries || '0') || 0));
+
+  useEffect(() => {
+    setLitchiSelectedBatteries(prev => {
+      if (!batteryCount) return new Set();
+      if (prev.size === 0) {
+        return new Set(Array.from({ length: batteryCount }, (_, idx) => idx + 1));
+      }
+      const next = new Set<number>();
+      for (let idx = 1; idx <= batteryCount; idx += 1) {
+        if (prev.has(idx)) next.add(idx);
+      }
+      return next;
+    });
+  }, [batteryCount]);
+
+  const litchiSelectedIndexes = useMemo(
+    () => Array.from(litchiSelectedBatteries).sort((a, b) => a - b),
+    [litchiSelectedBatteries]
+  );
+  const litchiSelectedKey = litchiSelectedIndexes.join(',');
+
+  useEffect(() => {
+    if (open) {
+      setLitchiBatchDate(new Date());
+    }
+  }, [batteryCount, litchiSelectedKey, open, projectTitle]);
+
+  const toggleLitchiBattery = useCallback((batteryIndex: number) => {
+    setLitchiSelectedBatteries(prev => {
+      const next = new Set(prev);
+      if (next.has(batteryIndex)) {
+        next.delete(batteryIndex);
+      } else {
+        next.add(batteryIndex);
+      }
+      return next;
+    });
+  }, []);
+
+  const selectAllLitchiBatteries = useCallback(() => {
+    if (!batteryCount) return;
+    setLitchiSelectedBatteries(new Set(Array.from({ length: batteryCount }, (_, idx) => idx + 1)));
+  }, [batteryCount]);
+
+  const clearLitchiBatterySelection = useCallback(() => {
+    setLitchiSelectedBatteries(new Set());
+  }, []);
+
   // Rotating processing messages for optimization
   const processingMessages = useMemo(() => [
     "This may take a moment...",
@@ -708,6 +785,162 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     "Finalizing flight path"
   ];
 
+  const ensureOptimizedParams = useCallback(async () => {
+    const currentOptimizedParams = optimizedParamsRef.current;
+    if (currentOptimizedParams && Object.keys(currentOptimizedParams).length > 0) {
+      return currentOptimizedParams;
+    }
+
+    if (!canOptimize) {
+      if (!selectedCoordsRef.current) {
+        showSystemNotification('error', 'Please select a location on the map first');
+      } else if (!batteryMinutes || !numBatteries) {
+        showSystemNotification('error', 'Please enter battery duration and quantity first');
+      } else {
+        showSystemNotification('error', 'Please set location and battery params first');
+      }
+      return null;
+    }
+
+    try {
+      await handleOptimize();
+      let checkCount = 0;
+      const maxChecks = 60;
+
+      while (checkCount < maxChecks) {
+        await new Promise(r => setTimeout(r, 500));
+        checkCount++;
+        const refreshedParams = optimizedParamsRef.current;
+        if (refreshedParams && Object.keys(refreshedParams).length > 0) {
+          break;
+        }
+      }
+
+      const finalParams = optimizedParamsRef.current;
+      if (!finalParams || Object.keys(finalParams).length === 0) {
+        showSystemNotification('error', 'Optimization timed out after 30 seconds. The server may be busy - please try again.');
+        return null;
+      }
+
+      return finalParams;
+    } catch (e: any) {
+      showSystemNotification('error', 'Failed to optimize flight path: ' + (e?.message || 'Unknown error'));
+      return null;
+    }
+  }, [batteryMinutes, canOptimize, handleOptimize, numBatteries, showSystemNotification]);
+
+  const appendLitchiLog = useCallback((message: string) => {
+    setLitchiLocalLogs(prev => [...prev, `[${new Date().toISOString()}] ${message}`].slice(-50));
+  }, []);
+
+  const handleLitchiConnect = useCallback(async (event: React.FormEvent) => {
+    event.preventDefault();
+    appendLitchiLog('Submitting Litchi credentials for hosted controller upload...');
+    const result = await connectLitchi(litchiEmail, litchiPassword, litchiTwoFactor || undefined);
+    if (result?.status === 'active') {
+      appendLitchiLog('Hosted Litchi session connected and cached.');
+      setLitchiConnectOpen(false);
+      setLitchiPassword('');
+      setLitchiTwoFactor('');
+      return;
+    }
+    if (result?.status === 'connecting') {
+      appendLitchiLog('Login started. Verification can take up to a minute; cached sessions will be reused after 2FA.');
+    } else if (!result) {
+      appendLitchiLog('Connection request failed. Double-check your credentials.');
+    }
+  }, [appendLitchiLog, connectLitchi, litchiEmail, litchiPassword, litchiTwoFactor]);
+
+  const handleSendToLitchi = useCallback(async () => {
+    if (!litchiApiConfigured) {
+      setLitchiSendError('Litchi automation API is not configured.');
+      appendLitchiLog('Litchi automation API is not configured.');
+      return;
+    }
+
+    if (!batteryCount) {
+      setLitchiSendError('Please set battery quantity first');
+      appendLitchiLog('Please set battery quantity before sending to the controller.');
+      return;
+    }
+
+    const params = await ensureOptimizedParams();
+    if (!params) return;
+
+    setLitchiSendError(null);
+    setLitchiSending(true);
+    const selectedIndexes = litchiSelectedIndexes;
+    if (selectedIndexes.length === 0) {
+      setLitchiSending(false);
+      setLitchiPrepProgress(null);
+      setLitchiSendError('Select at least one battery to send to the controller.');
+      appendLitchiLog('Select at least one battery before sending to the controller.');
+      return;
+    }
+    setLitchiPrepProgress({ current: 0, total: selectedIndexes.length });
+    appendLitchiLog(`Preparing ${selectedIndexes.length} flight ${selectedIndexes.length === 1 ? 'file' : 'files'} for controller upload.`);
+
+    try {
+      const batchDate = litchiBatchDate;
+      const batchId = formatLitchiBatchId(batchDate);
+      let completed = 0;
+      const missions = await Promise.all(
+        selectedIndexes.map(async (batteryIndex) => {
+          const res = await fetch(`${API_ENHANCED_BASE}/api/csv/battery/${batteryIndex}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(params),
+          });
+          if (!res.ok) {
+            throw new Error(`Failed to generate battery ${batteryIndex} CSV`);
+          }
+          const csvText = await res.text();
+          completed += 1;
+          setLitchiPrepProgress({ current: completed, total: selectedIndexes.length });
+          return {
+            name: buildLitchiMissionName({
+              projectTitle,
+              batteryIndex,
+              totalBatteries: batteryCount,
+              batchDate,
+            }),
+            csv: csvText,
+          };
+        })
+      );
+
+      setLitchiPrepProgress(null);
+      appendLitchiLog(`Queueing upload to the hosted Litchi browser as ${missions.map(mission => mission.name).join(', ')}.`);
+      const result = await uploadLitchiMissions(missions, {
+        idempotencyKey: `${batchId}-${selectedIndexes.join('-')}`,
+      });
+      if (!result) {
+        setLitchiSendError('Upload failed');
+        appendLitchiLog('Upload request failed. Check your connection and try again.');
+        return;
+      }
+      setLitchiBatchDate(new Date());
+      appendLitchiLog('Controller upload queued. You can close this window while it completes.');
+    } catch (e: any) {
+      const message = e?.message || 'Upload failed';
+      setLitchiSendError(message);
+      appendLitchiLog(`Upload failed: ${message}`);
+    } finally {
+      setLitchiSending(false);
+      setLitchiPrepProgress(null);
+    }
+  }, [
+    API_ENHANCED_BASE,
+    batteryCount,
+    ensureOptimizedParams,
+    appendLitchiLog,
+    litchiApiConfigured,
+    litchiBatchDate,
+    litchiSelectedIndexes,
+    projectTitle,
+    uploadLitchiMissions,
+  ]);
+
   const downloadBatteryCsv = useCallback(async (batteryIndex1: number) => {
     // Check if already downloading this battery
     if (downloadingBatteries.has(batteryIndex1)) {
@@ -757,10 +990,11 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         ));
       }
       const csvText = await res.text();
-      const safeTitle = (projectTitle && projectTitle !== 'Untitled')
-        ? projectTitle.replace(/[^a-zA-Z0-9-_]/g, '_').substring(0, 50)
-        : 'Untitled';
-      const filename = `${safeTitle}-${batteryIndex1}.csv`;
+      const filename = `${buildLitchiMissionName({
+        projectTitle,
+        batteryIndex: batteryIndex1,
+        totalBatteries: batteryCount || batteryIndex1,
+      })}.csv`;
       const blob = new Blob([csvText], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -791,7 +1025,7 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
         return newSet;
       });
     }
-  }, [API_ENHANCED_BASE, projectTitle, downloadingBatteries]);
+  }, [API_ENHANCED_BASE, batteryCount, projectTitle, downloadingBatteries]);
 
   // SIMPLE, ROBUST save function with rate limiting
   const saveProject = useCallback(async () => {
@@ -1238,9 +1472,90 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
     }
   }, [API_UPLOAD, CHUNK_SIZE, MAX_FILE_SIZE, propertyTitle, contactEmail, listingDescription, selectedFile, validateUpload]);
 
+  const litchiSelectedCount = litchiSelectedIndexes.length;
+  const litchiMissionNamePreview = useMemo(() => {
+    if (!batteryCount || litchiSelectedCount === 0) return [];
+    return litchiSelectedIndexes
+      .slice(0, 4)
+      .map(batteryIndex => buildLitchiMissionName({
+        projectTitle,
+        batteryIndex,
+        totalBatteries: batteryCount,
+        batchDate: litchiBatchDate,
+      }));
+  }, [batteryCount, litchiBatchDate, litchiSelectedCount, litchiSelectedIndexes, projectTitle]);
+  const litchiMissionNameOverflow = Math.max(0, litchiSelectedCount - litchiMissionNamePreview.length);
+
   if (!open) return null;
 
-  const batteryCount = Math.max(0, Math.min(12, parseInt(numBatteries || '0') || 0));
+  const litchiInlineOpen = litchiConnectOpen || Boolean(litchiStatus?.needsTwoFactor);
+  const litchiStatusState = litchiStatus?.status ?? 'unknown';
+  const litchiIsConnecting = litchiConnecting || litchiStatusState === 'connecting';
+  const litchiIsRateLimited = litchiStatusState === 'rate_limited';
+  const litchiIndicator = litchiStatusState !== 'error' && litchiStatusState !== 'expired'
+    ? litchiProgress?.current && litchiProgress?.total
+      ? `Uploading ${litchiProgress.current}/${litchiProgress.total}...`
+      : litchiPrepProgress
+        ? `Preparing ${litchiPrepProgress.current}/${litchiPrepProgress.total}...`
+        : ''
+    : '';
+  const litchiSectionError = litchiSendError || litchiError;
+  const litchiLogs = litchiStatus?.logs ?? [];
+  const litchiAllLogs = [...litchiLogs, ...litchiLocalLogs].slice(-50);
+  const litchiVisibleLogs = litchiShowAllLogs ? litchiAllLogs : litchiAllLogs.slice(-5);
+  const litchiSelectionLabel = batteryCount
+    ? `${litchiSelectedCount}/${batteryCount} flight files selected`
+    : 'No flight files selected';
+  const litchiStatusLabels: Record<string, string> = {
+    not_connected: 'Not connected',
+    connecting: 'Connecting',
+    active: 'Connected',
+    pending_2fa: 'Needs 2FA',
+    expired: 'Expired',
+    uploading: 'Uploading',
+    testing: 'Testing connection',
+    rate_limited: 'Rate limited (retrying)',
+    error: 'Error',
+  };
+  const litchiStatusLabel = litchiStatus ? (litchiStatusLabels[litchiStatusState] || litchiStatusState) : 'Unknown';
+  const litchiNeedsReconnect = litchiStatus?.status === 'error' || litchiStatus?.status === 'expired';
+  const litchiHasLoginFailure = litchiLogs.some(entry => /login failed/i.test(entry));
+  const litchiEmailUnverified = /email is not verified/i.test(
+    `${litchiStatus?.message ?? ''} ${litchiError ?? ''} ${litchiConnectMessage ?? ''}`.trim(),
+  );
+  const litchiGuidance = (() => {
+    if (litchiNeedsReconnect) {
+      return 'Login failed or expired. Re-enter your Litchi credentials to continue sending to the controller.';
+    }
+    if (litchiHasLoginFailure) {
+      return 'We could not verify these credentials. Please retry or re-enter your password.';
+    }
+    if (litchiEmailUnverified) {
+      return 'Verify your Litchi email to enable mission saving. Check your inbox (and spam) for the verification link.';
+    }
+    if (litchiIsRateLimited) {
+      return 'Litchi is rate limiting uploads. We will retry automatically in a minute or two.';
+    }
+    if (litchiStatus?.needsTwoFactor) {
+      return 'Enter your 2FA code once; the hosted browser session will be cached for future sends when Litchi allows it.';
+    }
+    if (litchiStatus?.sessionCached) {
+      return 'Your hosted Litchi browser session is cached. Send generated battery files to make them appear in your controller account.';
+    }
+    if (litchiStatus?.status === 'connecting') {
+      return 'Verifying your Litchi login. This can take up to a minute.';
+    }
+    if (!litchiConnected) {
+      return 'Connect your Litchi account once. We cache the hosted browser session so later sends avoid repeated 2FA when Litchi allows it.';
+    }
+    if (litchiSelectedCount === 0) {
+      return 'Select the battery segments you want to send below.';
+    }
+    return 'Controller uploads run in the background. You can close this window and return later.';
+  })();
+  const litchiConnectStatusMessage = (litchiNeedsReconnect || litchiHasLoginFailure)
+    ? 'Login failed. Please re-enter your credentials.'
+    : litchiConnectMessage;
 
   return (
     <div id="newProjectPopup" role="dialog" aria-modal="true" className="popup-overlay" style={{ display: 'block' }}>
@@ -1447,86 +1762,240 @@ export default function NewProjectModal({ open, onClose, project, onSaved }: New
               </div>
             </div>
 
-            {/* Individual Battery Segments (legacy-correct UI) */}
+            {/* Delivery & Automation */}
             <div className="category-outline">
               <div className="popup-section">
                 <h4 className="text-fade-right" style={{ marginLeft: '6%', marginRight: '6%', width: 'auto' }}>
-                  {optimizationLoading || downloadingBatteries.size > 0 ? processingMessage : "Individual Battery Segments:"}
+                  Delivery & Automation
                 </h4>
-                <div id="batteryButtons" className="flight-path-grid">
-                {Array.from({ length: batteryCount }).map((_, idx) => (
-                  <button
-                    key={idx}
-                    className={`flight-path-download-btn${downloadingBatteries.has(idx + 1) ? ' loading' : ''}`}
-                    onClick={async () => {
-                      console.log(`🔍 Battery ${idx + 1} clicked:`, {
-                        optimizedParams: optimizedParams ? 'EXISTS' : 'NULL',
-                        optimizedParamsRef: optimizedParamsRef.current ? 'EXISTS' : 'NULL',
-                        canOptimize,
-                        batteryMinutes,
-                        numBatteries,
-                        selectedCoords: selectedCoordsRef.current ? 'EXISTS' : 'NULL'
-                      });
-                      
-                      // Auto-run optimization on first click if needed
-                      if (!optimizedParams) {
-                        if (!canOptimize) {
-                          // Set specific error messages for missing fields
-                          if (!selectedCoordsRef.current) {
-                            showSystemNotification('error', 'Please select a location on the map first');
-                          } else if (!batteryMinutes || !numBatteries) {
-                            showSystemNotification('error', 'Please enter battery duration and quantity first');
-                          } else {
-                            showSystemNotification('error', 'Please set location and battery params first');
-                          }
-                          return;
-                        }
-                        
-                        // Run optimization first
-                        try {
-                          await handleOptimize();
-                          // Poll optimizedParams until set (max ~30s) with improved checking
-                          let checkCount = 0;
-                          const maxChecks = 60; // 30 seconds with 500ms intervals
-                          
-                          while (checkCount < maxChecks) {
-                            await new Promise(r => setTimeout(r, 500));
-                            checkCount++;
-                            
-                            // Use ref to get current optimizedParams (not stale closure)
-                            const currentOptimizedParams = optimizedParamsRef.current;
-                            if (currentOptimizedParams && Object.keys(currentOptimizedParams).length > 0) {
-                              console.log('Optimization completed successfully after', (checkCount * 500), 'ms');
-                              break;
-                            }
-                            
-                            // Log progress every 5 seconds
-                            if (checkCount % 10 === 0) {
-                              console.log(`Still waiting for optimization... ${checkCount * 500}ms elapsed`);
-                            }
-                          }
-                          
-                          // Final check after polling using ref
-                          const finalOptimizedParams = optimizedParamsRef.current;
-                          if (!finalOptimizedParams || Object.keys(finalOptimizedParams).length === 0) {
-                            showSystemNotification('error', 'Optimization timed out after 30 seconds. The server may be busy - please try again.');
-                            return;
-                          }
-                        } catch (e: any) {
-                          showSystemNotification('error', 'Failed to optimize flight path: ' + (e?.message || 'Unknown error'));
-                          return;
-                        }
-                      }
-                      
-                      // Add to download queue
-                      downloadBatteryCsv(idx + 1);
-                    }}
-                  >
-                    <span className={`download-icon${downloadingBatteries.has(idx + 1) ? ' loading' : ''}`}></span>
-                    Battery {idx + 1}
-                  </button>
-                ))}
+                {!litchiApiConfigured && (
+                  <p className="litchi-muted">Litchi automation API is not configured for this environment.</p>
+                )}
+                <div className="litchi-card-header">
+                  <div>
+                    {litchiStatus?.message && <p className="litchi-status-message">{litchiStatus.message}</p>}
+                    <p className="litchi-muted">{litchiGuidance}</p>
+                  </div>
+                  <span className={`litchi-status-pill litchi-status-${litchiStatus?.status || 'unknown'}`}>{litchiStatusLabel}</span>
                 </div>
+                {litchiSectionError && <p className="litchi-error" role="status">{litchiSectionError}</p>}
+                <div className="litchi-actions">
+                  {litchiConnected ? (
+                    <button
+                      className="litchi-primary"
+                      type="button"
+                      onClick={handleSendToLitchi}
+                      disabled={!litchiApiConfigured || litchiSending || litchiUploading || litchiStatusState === 'uploading' || litchiIsRateLimited || litchiSelectedCount === 0}
+                    >
+                      {litchiSending
+                        ? 'Preparing missions...'
+                        : litchiUploading
+                          ? 'Queueing upload...'
+                          : litchiSelectedCount && litchiSelectedCount < batteryCount
+                            ? `Send ${litchiSelectedCount} files to Controller`
+                            : 'Send to Controller'}
+                    </button>
+                  ) : (
+                    <button
+                      className="litchi-primary"
+                      type="button"
+                      onClick={() => setLitchiConnectOpen(v => !v)}
+                      disabled={!litchiApiConfigured || litchiIsConnecting}
+                    >
+                      {litchiStatus?.needsTwoFactor
+                        ? 'Enter 2FA Code'
+                        : litchiIsConnecting
+                          ? 'Connecting...'
+                          : 'Connect Controller Account'}
+                    </button>
+                  )}
+                  <button className="litchi-secondary" type="button" onClick={() => setShowManualDownloads(v => !v)}>
+                    {showManualDownloads ? 'Hide manual downloads' : 'Download manually'}
+                  </button>
+                </div>
+                {batteryCount > 0 && (
+                  <div className="litchi-selection">
+                    <div className="litchi-selection-header">
+                      <span className="litchi-muted">Choose flight files</span>
+                      <div className="litchi-actions">
+                        <button className="litchi-secondary" type="button" onClick={selectAllLitchiBatteries}>
+                          Select all
+                        </button>
+                        <button className="litchi-secondary" type="button" onClick={clearLitchiBatterySelection}>
+                          Clear
+                        </button>
+                      </div>
+                    </div>
+                    <div className="litchi-select-grid">
+                      {Array.from({ length: batteryCount }, (_, idx) => {
+                        const batteryIndex = idx + 1;
+                        const selected = litchiSelectedBatteries.has(batteryIndex);
+                        return (
+                          <button
+                            key={batteryIndex}
+                            type="button"
+                            className={`litchi-select-btn${selected ? ' selected' : ''}`}
+                            onClick={() => toggleLitchiBattery(batteryIndex)}
+                            aria-pressed={selected}
+                          >
+                            Battery {batteryIndex}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <p className="litchi-muted">{litchiSelectionLabel}</p>
+                    {litchiMissionNamePreview.length > 0 && (
+                      <div className="litchi-name-preview" aria-label="Controller mission names">
+                        {litchiMissionNamePreview.map(name => (
+                          <span key={name}>{name}</span>
+                        ))}
+                        {litchiMissionNameOverflow > 0 && <span>+{litchiMissionNameOverflow} more</span>}
+                      </div>
+                    )}
+                  </div>
+                )}
+                {litchiIndicator && <p className="litchi-muted">{litchiIndicator}</p>}
+                {litchiInlineOpen && !litchiConnected && (
+                  <form className="litchi-form" onSubmit={handleLitchiConnect}>
+                    <label htmlFor="litchi-inline-email">Email</label>
+                    <input
+                      id="litchi-inline-email"
+                      type="email"
+                      value={litchiEmail}
+                      onChange={(event) => setLitchiEmail(event.target.value)}
+                      placeholder="you@example.com"
+                    />
+                    <label htmlFor="litchi-inline-password">Password</label>
+                    <input
+                      id="litchi-inline-password"
+                      type="password"
+                      value={litchiPassword}
+                      onChange={(event) => setLitchiPassword(event.target.value)}
+                    />
+                    {litchiStatus?.needsTwoFactor && (
+                      <>
+                        <label htmlFor="litchi-inline-2fa">Two-factor code</label>
+                        <input
+                          id="litchi-inline-2fa"
+                          type="text"
+                          value={litchiTwoFactor}
+                          onChange={(event) => setLitchiTwoFactor(event.target.value)}
+                          placeholder="123456"
+                        />
+                      </>
+                    )}
+                    {litchiConnectStatusMessage && <p className="litchi-muted" role="status">{litchiConnectStatusMessage}</p>}
+                    <div className="litchi-modal-actions">
+                      <button type="button" className="litchi-secondary" onClick={() => setLitchiConnectOpen(false)}>
+                        Cancel
+                      </button>
+                      <button type="submit" className="litchi-primary" disabled={litchiConnecting}>
+                        {litchiConnecting ? 'Connecting...' : 'Connect'}
+                      </button>
+                    </div>
+                  </form>
+                )}
+                <div className="litchi-log-panel" aria-live="polite">
+                  <h5>Activity</h5>
+                  <div className="litchi-logs">
+                    {litchiVisibleLogs.length === 0 && <span className="litchi-muted">No activity yet.</span>}
+                    {litchiVisibleLogs.map((entry, index) => (
+                      <div key={`${entry}-${index}`} className="litchi-log-entry">
+                        {entry}
+                      </div>
+                    ))}
+                  </div>
+                  {litchiAllLogs.length > 5 && (
+                    <button
+                      type="button"
+                      className="litchi-secondary"
+                      onClick={() => setLitchiShowAllLogs(v => !v)}
+                    >
+                      {litchiShowAllLogs ? 'Show recent activity' : 'Show full activity'}
+                    </button>
+                  )}
+                </div>
+                {showManualDownloads && (
+                  <>
+                    <h5 className="text-fade-right" style={{ marginLeft: '6%', marginRight: '6%', width: 'auto' }}>
+                      {optimizationLoading || downloadingBatteries.size > 0 ? processingMessage : 'Individual Battery Segments:'}
+                    </h5>
+                    <div id="batteryButtons" className="flight-path-grid">
+                    {Array.from({ length: batteryCount }).map((_, idx) => (
+                      <button
+                        key={idx}
+                        className={`flight-path-download-btn${downloadingBatteries.has(idx + 1) ? ' loading' : ''}`}
+                        onClick={async () => {
+                          console.log(`🔍 Battery ${idx + 1} clicked:`, {
+                            optimizedParams: optimizedParams ? 'EXISTS' : 'NULL',
+                            optimizedParamsRef: optimizedParamsRef.current ? 'EXISTS' : 'NULL',
+                            canOptimize,
+                            batteryMinutes,
+                            numBatteries,
+                            selectedCoords: selectedCoordsRef.current ? 'EXISTS' : 'NULL'
+                          });
+                          
+                          // Auto-run optimization on first click if needed
+                          if (!optimizedParams) {
+                            if (!canOptimize) {
+                              // Set specific error messages for missing fields
+                              if (!selectedCoordsRef.current) {
+                                showSystemNotification('error', 'Please select a location on the map first');
+                              } else if (!batteryMinutes || !numBatteries) {
+                                showSystemNotification('error', 'Please enter battery duration and quantity first');
+                              } else {
+                                showSystemNotification('error', 'Please set location and battery params first');
+                              }
+                              return;
+                            }
+                            
+                            // Run optimization first
+                            try {
+                              await handleOptimize();
+                              // Poll optimizedParams until set (max ~30s) with improved checking
+                              let checkCount = 0;
+                              const maxChecks = 60; // 30 seconds with 500ms intervals
+                              
+                              while (checkCount < maxChecks) {
+                                await new Promise(r => setTimeout(r, 500));
+                                checkCount++;
+                                
+                                // Use ref to get current optimizedParams (not stale closure)
+                                const currentOptimizedParams = optimizedParamsRef.current;
+                                if (currentOptimizedParams && Object.keys(currentOptimizedParams).length > 0) {
+                                  console.log('Optimization completed successfully after', (checkCount * 500), 'ms');
+                                  break;
+                                }
+                                
+                                // Log progress every 5 seconds
+                                if (checkCount % 10 === 0) {
+                                  console.log(`Still waiting for optimization... ${checkCount * 500}ms elapsed`);
+                                }
+                              }
+                              
+                              // Final check after polling using ref
+                              const finalOptimizedParams = optimizedParamsRef.current;
+                              if (!finalOptimizedParams || Object.keys(finalOptimizedParams).length === 0) {
+                                showSystemNotification('error', 'Optimization timed out after 30 seconds. The server may be busy - please try again.');
+                                return;
+                              }
+                            } catch (e: any) {
+                              showSystemNotification('error', 'Failed to optimize flight path: ' + (e?.message || 'Unknown error'));
+                              return;
+                            }
+                          }
+                          
+                          // Add to download queue
+                          downloadBatteryCsv(idx + 1);
+                        }}
+                      >
+                        <span className={`download-icon${downloadingBatteries.has(idx + 1) ? ' loading' : ''}`}></span>
+                        Battery {idx + 1}
+                      </button>
+                    ))}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>

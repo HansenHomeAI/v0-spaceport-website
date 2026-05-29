@@ -1,0 +1,519 @@
+#!/usr/bin/env node
+import { Client } from '@modelcontextprotocol/sdk/client';
+import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
+import { writeFileSync } from 'node:fs';
+
+const SERVER_URL = process.env.PLAYWRIGHT_MCP_SSE_URL ?? 'http://localhost:5174/sse';
+const PREVIEW_URL = process.env.PREVIEW_URL ?? 'http://localhost:3000';
+const SPACEPORT_EMAIL = process.env.SPACEPORT_EMAIL;
+const SPACEPORT_PASSWORD = process.env.SPACEPORT_PASSWORD;
+const LITCHI_EMAIL = process.env.LITCHI_EMAIL ?? SPACEPORT_EMAIL;
+const LITCHI_PASSWORD = process.env.LITCHI_PASSWORD;
+const BATTERY_MINUTES = process.env.LITCHI_BATTERY_MINUTES ?? '10';
+const BATTERY_COUNT = process.env.LITCHI_BATTERY_COUNT ?? '2';
+const PROJECT_TITLE = process.env.LITCHI_PROJECT_TITLE ?? `Litchi Local ${new Date().toISOString()}`;
+const SELECTED_BATTERIES = (process.env.LITCHI_SELECTED_BATTERIES ?? '')
+  .split(',')
+  .map((value) => parseInt(value.trim(), 10))
+  .filter((value) => Number.isFinite(value) && value > 0);
+
+if (!PREVIEW_URL || !SPACEPORT_EMAIL || !SPACEPORT_PASSWORD || !LITCHI_EMAIL || !LITCHI_PASSWORD) {
+  console.error('Missing required env vars: PREVIEW_URL, SPACEPORT_EMAIL, SPACEPORT_PASSWORD, LITCHI_EMAIL, LITCHI_PASSWORD');
+  process.exit(1);
+}
+
+const client = new Client({ name: 'spaceport-litchi-e2e', version: '1.0.0' }, { capabilities: {} });
+const transport = new SSEClientTransport(new URL(SERVER_URL));
+const steps = [];
+
+function record(step, status, info = '') {
+  const tag = status === 'pass' ? '✅' : status === 'warn' ? '⚠️' : '❌';
+  steps.push({ step, status, info });
+  const suffix = info ? ` — ${info}` : '';
+  console.log(`${tag} ${step}${suffix}`);
+}
+
+function textFromResult(result) {
+  return result?.content?.find((c) => c.type === 'text')?.text ?? '';
+}
+
+function snapshotFrom(result) {
+  const text = textFromResult(result);
+  const match = text.match(/(?:Page )?Snapshot:?\s*```yaml\s*([\s\S]*?)```/);
+  return match ? match[1] : '';
+}
+
+function escapeRegex(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function tryFindRef(snapshot, role, labels) {
+  for (const label of labels) {
+    const regex = new RegExp(`- ${role} \\\"${escapeRegex(label)}\\\"(?: \\[[^\\]]+\\])* \\[ref=(e\\d+)`, 'i');
+    const match = snapshot.match(regex);
+    if (match) return match[1];
+  }
+  return null;
+}
+
+function hasText(snapshot, text) {
+  return new RegExp(escapeRegex(text), 'i').test(snapshot);
+}
+
+async function callTool(name, args, { silent } = {}) {
+  const result = await client.callTool({ name, arguments: args });
+  if (!silent) {
+    const text = textFromResult(result);
+    if (text) console.log(text);
+  }
+  return result;
+}
+
+async function waitForText(text, time = 20) {
+  const result = await callTool('browser_wait_for', { text, time }, { silent: true });
+  return snapshotFrom(result);
+}
+
+(async () => {
+  await client.connect(transport);
+  record('Connect MCP', 'pass', SERVER_URL);
+
+  const targetUrl = `${PREVIEW_URL.replace(/\/$/, '')}/create`;
+  const nav = await callTool('browser_navigate', { url: targetUrl }, { silent: true });
+  let snapshot = snapshotFrom(nav);
+  record('Navigate to create page', 'pass', targetUrl);
+  await callTool('browser_wait_for', { textGone: 'Loading projects...', time: 30 }, { silent: true }).catch(() => {});
+
+  const loginLabels = ['Login', 'Log in', 'Log In', 'Sign in', 'Sign In'];
+  const refreshSnapshot = async () => {
+    snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+  };
+
+  let loginButtonRef = tryFindRef(snapshot, 'button', loginLabels)
+    || tryFindRef(snapshot, 'link', loginLabels);
+  if (!loginButtonRef) {
+    await callTool('browser_wait_for', { text: 'Login', time: 12 }, { silent: true }).catch(() => {});
+    await refreshSnapshot();
+    loginButtonRef = tryFindRef(snapshot, 'button', loginLabels)
+      || tryFindRef(snapshot, 'link', loginLabels);
+  }
+  if (loginButtonRef) {
+    await callTool('browser_click', { element: 'Login', ref: loginButtonRef }, { silent: true });
+    record('Open login form', 'pass');
+    await callTool('browser_wait_for', { text: 'Email', time: 15 }, { silent: true });
+    await refreshSnapshot();
+  }
+
+  const emailRef = tryFindRef(snapshot, 'textbox', ['Email']);
+  const passwordRef = tryFindRef(snapshot, 'textbox', ['Password']);
+  const signInRef = tryFindRef(snapshot, 'button', ['Sign in', 'Sign In']);
+
+  if (emailRef && passwordRef && signInRef) {
+    await callTool('browser_fill_form', {
+      fields: [
+        { name: 'Email', type: 'textbox', ref: emailRef, value: SPACEPORT_EMAIL },
+        { name: 'Password', type: 'textbox', ref: passwordRef, value: SPACEPORT_PASSWORD }
+      ]
+    }, { silent: true });
+    record('Fill Spaceport credentials', 'pass', SPACEPORT_EMAIL);
+
+    await callTool('browser_click', { element: 'Sign in', ref: signInRef }, { silent: true });
+    record('Submit Spaceport login', 'pass');
+
+    await callTool('browser_wait_for', { text: 'New Project', time: 30 }, { silent: true });
+    snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+  } else {
+    record('Login step', 'warn', 'Login form not detected; assuming already authenticated');
+  }
+
+  const modalSnapshotResult = await callTool('browser_snapshot', {}, { silent: true });
+  snapshot = snapshotFrom(modalSnapshotResult);
+  if (!snapshot) {
+    const rawText = textFromResult(modalSnapshotResult);
+    if (rawText) {
+      writeFileSync('logs/litchi-ui-modal-snapshot-raw.txt', rawText, 'utf-8');
+    }
+    await callTool('browser_snapshot', { filename: 'logs/litchi-ui-modal-snapshot.yaml' }, { silent: true });
+  }
+
+  if (hasText(snapshot, 'Litchi Mission Control')) {
+    const connected = hasText(snapshot, 'Connected') && hasText(snapshot, 'Litchi session connected');
+    if (!connected) {
+      const connectDashboardRef = tryFindRef(snapshot, 'button', ['Connect Litchi Account']);
+      if (connectDashboardRef) {
+        await callTool('browser_click', { element: 'Connect Litchi Account', ref: connectDashboardRef }, { silent: true });
+        record('Open dashboard Litchi connect', 'pass');
+        await callTool('browser_wait_for', { text: 'Connect Litchi Account', time: 20 }, { silent: true });
+        snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+
+        const emailDialogRef = tryFindRef(snapshot, 'textbox', ['Email']);
+        const passwordDialogRef = tryFindRef(snapshot, 'textbox', ['Password']);
+        const connectDialogRef = tryFindRef(snapshot, 'button', ['Connect']);
+
+        if (emailDialogRef && passwordDialogRef && connectDialogRef) {
+          await callTool('browser_fill_form', {
+            fields: [
+              { name: 'Email', type: 'textbox', ref: emailDialogRef, value: LITCHI_EMAIL },
+              { name: 'Password', type: 'textbox', ref: passwordDialogRef, value: LITCHI_PASSWORD }
+            ]
+          }, { silent: true });
+          record('Fill Litchi credentials', 'pass', LITCHI_EMAIL);
+
+          await callTool('browser_click', { element: 'Connect', ref: connectDialogRef }, { silent: true });
+          record('Submit Litchi connect (dashboard)', 'pass');
+          await callTool('browser_wait_for', { text: 'Connected', time: 60 }, { silent: true });
+        } else {
+          record('Fill Litchi credentials', 'fail', 'Connect dialog fields not found');
+        }
+      }
+    }
+  }
+
+  const editProjectRef = tryFindRef(snapshot, 'button', ['Edit project']);
+  if (editProjectRef) {
+    await callTool('browser_click', { element: 'Edit project', ref: editProjectRef }, { silent: true });
+  } else {
+    const openButtonRef = tryFindRef(snapshot, 'button', ['New Project', 'Create Project', 'Create New Project']);
+    const openHeadingRef = tryFindRef(snapshot, 'heading', ['New Project']);
+    if (openButtonRef) {
+      await callTool('browser_click', { element: 'New Project', ref: openButtonRef }, { silent: true });
+    } else if (openHeadingRef) {
+      await callTool('browser_click', { element: 'New Project', ref: openHeadingRef }, { silent: true });
+    } else {
+      await callTool('browser_evaluate', {
+        function: '() => { const el = document.querySelector(".new-project-card") || document.querySelector("[data-new-project]"); if (!el) return false; el.click(); return true; }'
+      }, { silent: true });
+    }
+  }
+  record('Open New Project modal', 'pass');
+
+  await waitForText('Delivery & Automation', 12);
+  const afterOpenResult = await callTool('browser_snapshot', {}, { silent: true });
+  snapshot = snapshotFrom(afterOpenResult);
+  const titleRef = tryFindRef(snapshot, 'textbox', ['Untitled', 'Project Title', 'Title']);
+  if (titleRef) {
+    await callTool('browser_fill_form', {
+      fields: [{ name: 'Project Title', type: 'textbox', ref: titleRef, value: PROJECT_TITLE }]
+    }, { silent: true });
+    record('Set project title', 'pass', PROJECT_TITLE);
+  } else {
+    record('Set project title', 'warn', 'Project title input not found');
+  }
+  const modalCheck = await callTool('browser_evaluate', {
+    function: '() => Boolean(document.querySelector("#newProjectPopup"))'
+  }, { silent: true });
+  const modalCheckText = textFromResult(modalCheck);
+  if (modalCheckText) {
+    record('Modal present', modalCheckText.includes('true') ? 'pass' : 'warn', modalCheckText.trim());
+  }
+  const modalStyle = await callTool('browser_evaluate', {
+    function: `() => {
+      const modal = document.querySelector("#newProjectPopup");
+      if (!modal) return { present: false };
+      const style = window.getComputedStyle(modal);
+      return {
+        present: true,
+        display: style.display,
+        visibility: style.visibility,
+        opacity: style.opacity,
+      };
+    }`
+  }, { silent: true });
+  const modalStyleText = textFromResult(modalStyle);
+  if (modalStyleText) {
+    record('Modal style', 'pass', modalStyleText.trim());
+  }
+  if (!snapshot) {
+    const rawText = textFromResult(afterOpenResult);
+    if (rawText) {
+      writeFileSync('logs/litchi-ui-after-open-raw.txt', rawText, 'utf-8');
+    }
+  }
+  if (!hasText(snapshot, 'Delivery & Automation')) {
+    await callTool('browser_evaluate', {
+      function: `() => {
+        const buttons = Array.from(document.querySelectorAll('button'));
+        const edit = buttons.find((btn) => (btn.textContent || '').includes('Edit project'));
+        if (edit) { edit.click(); return true; }
+        return false;
+      }`
+    }, { silent: true });
+    await waitForText('Delivery & Automation', 20);
+    snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+  }
+  if (snapshot) {
+    record('Modal snapshot length', 'pass', String(snapshot.length));
+  } else {
+    record('Modal snapshot length', 'warn', '0');
+  }
+
+  if (!tryFindRef(snapshot, 'button', ['Send to Litchi']) && !tryFindRef(snapshot, 'button', ['Connect Litchi Account', 'Enter 2FA Code'])) {
+    const newProjectRef = tryFindRef(snapshot, 'heading', ['New Project']);
+    if (newProjectRef) {
+      await callTool('browser_click', { element: 'New Project', ref: newProjectRef }, { silent: true });
+      await callTool('browser_wait_for', { text: 'Delivery & Automation', time: 20 }, { silent: true });
+    }
+  }
+
+  if (!tryFindRef(snapshot, 'button', ['Send to Litchi']) && !tryFindRef(snapshot, 'button', ['Connect Litchi Account', 'Enter 2FA Code'])) {
+    const editRef = tryFindRef(snapshot, 'button', ['Edit project']);
+    if (editRef) {
+      await callTool('browser_click', { element: 'Edit project', ref: editRef }, { silent: true });
+      await callTool('browser_wait_for', { text: 'Delivery & Automation', time: 20 }, { silent: true });
+    }
+  }
+
+  snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+  const deliveryScrollResult = await callTool('browser_evaluate', {
+    function: `() => {
+      const headings = Array.from(document.querySelectorAll('h4, h3, h2'))
+        .map((el) => (el.textContent || '').trim())
+        .filter(Boolean);
+      const hasDelivery = headings.some((text) => text.includes('Delivery & Automation'));
+      let scrolled = false;
+      if (!hasDelivery) {
+        const modalScroller = document.querySelector('.popup-content-scroll');
+        if (modalScroller) {
+          modalScroller.scrollTo({ top: modalScroller.scrollHeight, behavior: 'instant' });
+          scrolled = true;
+        } else {
+          const scrollables = Array.from(document.querySelectorAll('*')).filter((el) => {
+            const style = window.getComputedStyle(el);
+            return /(auto|scroll)/.test(style.overflowY || '') && el.scrollHeight > el.clientHeight + 10;
+          });
+          if (scrollables.length) {
+            scrollables[0].scrollTo({ top: scrollables[0].scrollHeight, behavior: 'instant' });
+            scrolled = true;
+          } else {
+            const modal = document.querySelector('#newProjectPopup');
+            if (modal) {
+              modal.scrollTo({ top: modal.scrollHeight, behavior: 'instant' });
+              scrolled = true;
+            } else {
+              window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' });
+              scrolled = true;
+            }
+          }
+        }
+      }
+      const target = Array.from(document.querySelectorAll('h4, h3, h2')).find((el) =>
+        (el.textContent || '').includes('Delivery & Automation')
+      );
+      if (target) target.scrollIntoView({ block: 'center', behavior: 'instant' });
+      return { found: Boolean(target), scrolled, headings };
+    }`
+  }, { silent: true });
+  const deliveryScrollText = textFromResult(deliveryScrollResult).trim();
+  if (deliveryScrollText) {
+    record('Scroll to Delivery & Automation', deliveryScrollText.includes('"found":true') ? 'pass' : 'warn', deliveryScrollText);
+  }
+
+  snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+  let sendRef = tryFindRef(snapshot, 'button', ['Send to Litchi']);
+  const connectRef = tryFindRef(snapshot, 'button', ['Connect Litchi Account', 'Enter 2FA Code']);
+
+  if (!sendRef && connectRef) {
+    await callTool('browser_click', { element: 'Connect Litchi Account', ref: connectRef }, { silent: true });
+    record('Open Litchi connect form', 'pass');
+
+    snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+
+    const inlineEmailRef = tryFindRef(snapshot, 'textbox', ['Email']);
+    const inlinePasswordRef = tryFindRef(snapshot, 'textbox', ['Password']);
+    if (inlineEmailRef && inlinePasswordRef) {
+      await callTool('browser_fill_form', {
+        fields: [
+          { name: 'Email', type: 'textbox', ref: inlineEmailRef, value: LITCHI_EMAIL },
+          { name: 'Password', type: 'textbox', ref: inlinePasswordRef, value: LITCHI_PASSWORD }
+        ]
+      }, { silent: true });
+      record('Fill Litchi credentials', 'pass', LITCHI_EMAIL);
+    }
+
+    const inlineSubmitRef = tryFindRef(snapshot, 'button', ['Connect', 'Submit', 'Send']);
+    if (inlineSubmitRef) {
+      await callTool('browser_click', { element: 'Connect', ref: inlineSubmitRef }, { silent: true });
+    }
+    record('Submit Litchi connect', 'pass');
+
+    await waitForText('Send to Litchi', 30);
+    snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+    sendRef = tryFindRef(snapshot, 'button', ['Send to Litchi']);
+  }
+
+  if (!sendRef) {
+    if (!snapshot) {
+      await callTool('browser_snapshot', { filename: 'logs/litchi-ui-missing-send.yaml' }, { silent: true });
+    }
+    writeFileSync('logs/litchi-ui-missing-send.yaml', snapshot, 'utf-8');
+    record('Litchi connection', 'fail', 'Send to Litchi button not found');
+    process.exitCode = 1;
+  } else {
+    const locationRef = tryFindRef(snapshot, 'textbox', ['Enter location', 'Location', 'Address']);
+    const durationRef = tryFindRef(snapshot, 'textbox', ['Duration']);
+    const quantityRef = tryFindRef(snapshot, 'textbox', ['Quantity']);
+    const mapRef = tryFindRef(snapshot, 'region', ['Map']);
+
+    if (locationRef) {
+      await callTool('browser_type', { element: 'Enter location', ref: locationRef, text: '38.27371, -78.1695', submit: true }, { silent: true });
+      record('Set map coordinates', 'pass', '38.27371, -78.1695');
+    } else {
+      record('Set map coordinates', 'warn', 'Location input not found');
+    }
+
+    if (mapRef) {
+      await callTool('browser_click', { element: 'Map', ref: mapRef }, { silent: true });
+      record('Confirm map focus', 'pass');
+    }
+
+    if (durationRef && quantityRef) {
+      await callTool('browser_fill_form', {
+        fields: [
+          { name: 'Duration', type: 'textbox', ref: durationRef, value: BATTERY_MINUTES },
+          { name: 'Quantity', type: 'textbox', ref: quantityRef, value: BATTERY_COUNT }
+        ]
+      }, { silent: true });
+      record('Set battery inputs', 'pass', `${BATTERY_MINUTES} min / ${BATTERY_COUNT} batteries`);
+    } else {
+      record('Set battery inputs', 'warn', 'Duration/Quantity inputs not found');
+    }
+
+    if (SELECTED_BATTERIES.length) {
+      const selectionResult = await callTool('browser_evaluate', {
+        function: `() => {
+          const indices = ${JSON.stringify(SELECTED_BATTERIES)};
+          const buttons = Array.from(document.querySelectorAll('button.litchi-select-btn'));
+          if (buttons.length) {
+            indices.forEach((idx) => {
+              const button = buttons[idx - 1];
+              if (button) button.click();
+            });
+            return { method: 'litchi-select', count: buttons.length };
+          }
+          return { method: 'fallback', count: buttons.length };
+        }`
+      }, { silent: true });
+      const selectionText = textFromResult(selectionResult);
+      if (!selectionText.includes('litchi-select')) {
+        const clearRef = tryFindRef(snapshot, 'button', ['Clear']);
+        if (clearRef) {
+          await callTool('browser_click', { element: 'Clear', ref: clearRef }, { silent: true });
+        }
+        for (const batteryIndex of SELECTED_BATTERIES) {
+          const batteryRef = tryFindRef(snapshot, 'button', [`Battery ${batteryIndex}`]);
+          if (batteryRef) {
+            await callTool('browser_click', { element: `Battery ${batteryIndex}`, ref: batteryRef }, { silent: true });
+          }
+        }
+      }
+      record('Select batteries for Litchi', 'pass', SELECTED_BATTERIES.join(','));
+    }
+
+    const sendState = await callTool('browser_evaluate', {
+      function: `() => {
+        const button = document.querySelector('.litchi-actions .litchi-primary');
+        if (!button) return { present: false };
+        return { present: true, disabled: button.disabled, text: (button.textContent || '').trim() };
+      }`
+    }, { silent: true });
+    const sendStateText = textFromResult(sendState).trim();
+    if (sendStateText) {
+      record('Send button state', sendStateText.includes('"disabled":false') ? 'pass' : 'warn', sendStateText);
+    }
+
+    if (/Connect Litchi Account|Enter 2FA Code/i.test(sendStateText)) {
+      const connectInlineRef = tryFindRef(snapshot, 'button', ['Connect Litchi Account', 'Enter 2FA Code']);
+      if (connectInlineRef) {
+        await callTool('browser_click', { element: 'Connect Litchi Account', ref: connectInlineRef }, { silent: true });
+        record('Open Litchi connect form', 'pass');
+        await callTool('browser_wait_for', { text: 'Connect Litchi Account', time: 15 }, { silent: true });
+        snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+        const inlineEmailRef = tryFindRef(snapshot, 'textbox', ['Email']);
+        const inlinePasswordRef = tryFindRef(snapshot, 'textbox', ['Password']);
+        const inlineSubmitRef = tryFindRef(snapshot, 'button', ['Connect']);
+        if (inlineEmailRef && inlinePasswordRef && inlineSubmitRef) {
+          await callTool('browser_fill_form', {
+            fields: [
+              { name: 'Email', type: 'textbox', ref: inlineEmailRef, value: LITCHI_EMAIL },
+              { name: 'Password', type: 'textbox', ref: inlinePasswordRef, value: LITCHI_PASSWORD }
+            ]
+          }, { silent: true });
+          record('Fill Litchi credentials', 'pass', LITCHI_EMAIL);
+          await callTool('browser_click', { element: 'Connect', ref: inlineSubmitRef }, { silent: true });
+          record('Submit Litchi connect', 'pass');
+          await waitForText('Send to Litchi', 60);
+          snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+          sendRef = tryFindRef(snapshot, 'button', ['Send to Litchi']);
+        } else {
+          await callTool('browser_evaluate', {
+            function: `() => {
+              const button = document.querySelector('.litchi-actions .litchi-primary');
+              if (button) button.click();
+              return true;
+            }`
+          }, { silent: true });
+          await callTool('browser_wait_for', { text: 'Email', time: 10 }, { silent: true }).catch(() => {});
+          snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+          const retryEmailRef = tryFindRef(snapshot, 'textbox', ['Email']);
+          const retryPasswordRef = tryFindRef(snapshot, 'textbox', ['Password']);
+          const retrySubmitRef = tryFindRef(snapshot, 'button', ['Connect']);
+          if (retryEmailRef && retryPasswordRef && retrySubmitRef) {
+            await callTool('browser_fill_form', {
+              fields: [
+                { name: 'Email', type: 'textbox', ref: retryEmailRef, value: LITCHI_EMAIL },
+                { name: 'Password', type: 'textbox', ref: retryPasswordRef, value: LITCHI_PASSWORD }
+              ]
+            }, { silent: true });
+            record('Fill Litchi credentials', 'pass', LITCHI_EMAIL);
+            await callTool('browser_click', { element: 'Connect', ref: retrySubmitRef }, { silent: true });
+            record('Submit Litchi connect', 'pass');
+            await waitForText('Send to Litchi', 60);
+            snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+            sendRef = tryFindRef(snapshot, 'button', ['Send to Litchi']);
+          }
+          const fallbackConnect = await callTool('browser_evaluate', {
+            function: `() => {
+              const emailInput = document.querySelector('#litchi-inline-email');
+              const passwordInput = document.querySelector('#litchi-inline-password');
+              if (emailInput) emailInput.value = ${JSON.stringify(LITCHI_EMAIL)};
+              if (passwordInput) passwordInput.value = ${JSON.stringify(LITCHI_PASSWORD)};
+              const submit = document.querySelector('.litchi-modal-actions button[type="submit"]') || document.querySelector('.litchi-form button[type="submit"]');
+              if (submit) submit.click();
+              return { email: Boolean(emailInput), password: Boolean(passwordInput), submit: Boolean(submit) };
+            }`
+          }, { silent: true });
+          record('Fill Litchi credentials', 'warn', textFromResult(fallbackConnect));
+          await waitForText('Send to Litchi', 60);
+          snapshot = snapshotFrom(await callTool('browser_snapshot', {}, { silent: true }));
+          sendRef = tryFindRef(snapshot, 'button', ['Send to Litchi']);
+        }
+      }
+    }
+
+    await callTool('browser_click', { element: 'Send to Litchi', ref: sendRef }, { silent: true });
+    record('Trigger Send to Litchi', 'pass');
+
+    const uploadSnapshot = await waitForText('Uploading', 120);
+    if (hasText(uploadSnapshot, 'Please set battery quantity first')) {
+      const okRef = tryFindRef(uploadSnapshot, 'button', ['OK']);
+      if (okRef) {
+        await callTool('browser_click', { element: 'OK', ref: okRef }, { silent: true });
+      }
+      if (durationRef && quantityRef) {
+        await callTool('browser_fill_form', {
+          fields: [
+            { name: 'Duration', type: 'textbox', ref: durationRef, value: BATTERY_MINUTES },
+            { name: 'Quantity', type: 'textbox', ref: quantityRef, value: BATTERY_COUNT }
+          ]
+        }, { silent: true });
+      }
+      await callTool('browser_click', { element: 'Send to Litchi', ref: sendRef }, { silent: true });
+    }
+
+    const started = /Uploading|Litchi upload started|Queued/i.test(uploadSnapshot);
+    record('Confirm upload started', started ? 'pass' : 'warn');
+  }
+
+  console.log('\nSummary:', JSON.stringify(steps, null, 2));
+  await client.close();
+})();

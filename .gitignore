@@ -65,6 +65,7 @@ web/.vercel/
 *.swo
 
 tests/pipeline/*.log
+logs/local-dev-server.pid
 
 # Test logs
 *.log

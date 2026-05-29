@@ -281,6 +281,12 @@ jobs:
           echo "Auth-backed explore files changed - will deploy shared auth stack for this branch"
         fi
 
+        if [ "${DEPLOYMENT_CLASS}" = "branch-preview" ] && [ -f "../../.spaceport/deploy-auth-preview" ]; then
+          STACK_DEPLOY_REQUIRED="true"
+          AUTH_STACK_CHANGED="true"
+          echo "Preview auth opt-in marker exists - will deploy shared auth stack for this branch"
+        fi
+
         if [ "${DEPLOYMENT_CLASS}" = "branch-preview" ]; then
           CURRENT_EXPLORE_API_URL=$(aws cloudformation describe-stacks \
             --stack-name "${AUTH_STACK_NAME}" \
@@ -290,6 +296,16 @@ jobs:
             EXPLORE_API_MISSING="true"
             AUTH_STACK_CHANGED="true"
             echo "Shared auth stack is missing ExplorePublicApiUrl - forcing auth redeploy"
+          fi
+
+          CURRENT_LITCHI_API_URL=$(aws cloudformation describe-stacks \
+            --stack-name "${AUTH_STACK_NAME}" \
+            --query "Stacks[0].Outputs[?OutputKey=='LitchiApiUrl'].OutputValue" \
+            --output text 2>/dev/null || true)
+          if [ -z "${CURRENT_LITCHI_API_URL}" ] || [ "${CURRENT_LITCHI_API_URL}" = "None" ]; then
+            STACK_DEPLOY_REQUIRED="true"
+            AUTH_STACK_CHANGED="true"
+            echo "Shared auth stack is missing LitchiApiUrl - forcing auth redeploy"
           fi
         fi
 

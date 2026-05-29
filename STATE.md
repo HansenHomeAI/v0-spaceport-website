@@ -1,5 +1,5 @@
-reason: executing phase 2 branch sync by merging origin/development into codex/agent-72759001-sync-development-into-ml and validating the integrated branch
-last_step: completed the phase 2 baseline checks, merged origin/development into the phase 2 branch, and started resolving the expected workflow and web content conflicts
-next_unblocked_step: finish conflict resolution, audit the auto-merged infra files for branch-aware naming and R2/payment settings, push the branch, and monitor Pages/CDK/container checks to green
+reason: building the development-based Send to Controller feature branch for hosted Litchi browser/controller delivery
+last_step: code head f3b8dee7 passed exact-head CDK run 26602867286 and Pages run 26603250249; preview alias and hash health probes passed
+next_unblocked_step: use preview alias https://agent-38642091-litchi-contro.v0-spaceport-website-preview2.pages.dev for authenticated browser validation, then open a development PR when ready
 owner_action_needed: none
-updated: 2026-03-06T02:16:00Z
+updated: 2026-05-28T15:30:55-06:00

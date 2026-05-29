@@ -30,7 +30,6 @@ def _load_environments_context():
         return json.load(handle)["context"]["environments"]
 explicit_branch_name = app.node.try_get_context("branch_name") or os.environ.get("GITHUB_REF_NAME")
 explicit_environment = app.node.try_get_context("environment")
-
 if explicit_branch_name:
     deployment_context = resolve_deployment_context(explicit_branch_name)
 elif explicit_environment == "production":
