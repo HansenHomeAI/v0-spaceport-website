@@ -1,0 +1,606 @@
+{
+    "events": [
+        {
+            "timestamp": 1780057268904,
+            "message": "2026-05-29 12:21:08,820 - INFO -    Images: 240 selected from 1702 source records; sparse points retained: 81440",
+            "ingestionTime": 1780057274440
+        },
+        {
+            "timestamp": 1780057268904,
+            "message": "2026-05-29 12:21:08,820 - INFO -    Subset input: /tmp/no_retrain_quality_pass/work/preconversion_selected_input",
+            "ingestionTime": 1780057274440
+        },
+        {
+            "timestamp": 1780057268904,
+            "message": "2026-05-29 12:21:08,820 - INFO - 🔄 Converting COLMAP TXT to BIN (required by ns-process-data)...",
+            "ingestionTime": 1780057274440
+        },
+        {
+            "timestamp": 1780057268904,
+            "message": "2026-05-29 12:21:08,820 - INFO -    TXT input: /tmp/no_retrain_quality_pass/work/preconversion_selected_input/sparse/0",
+            "ingestionTime": 1780057274440
+        },
+        {
+            "timestamp": 1780057268904,
+            "message": "2026-05-29 12:21:08,820 - INFO -    BIN output: /tmp/no_retrain_quality_pass/work/colmap_bin/0",
+            "ingestionTime": 1780057274440
+        },
+        {
+            "timestamp": 1780057268904,
+            "message": "2026-05-29 12:21:08,820 - INFO - 🚀 Converting text to binary: colmap model_converter --input_path /tmp/no_retrain_quality_pass/work/preconversion_selected_input/sparse/0 --output_path /tmp/no_retrain_quality_pass/work/colmap_bin/0 --output_type BIN",
+            "ingestionTime": 1780057274440
+        },
+        {
+            "timestamp": 1780057271911,
+            "message": "2026-05-29 12:21:11,429 - INFO - 📊 COLMAP model_converter STDOUT:",
+            "ingestionTime": 1780057274440
+        },
+        {
+            "timestamp": 1780057271911,
+            "message": "2026-05-29 12:21:11,429 - INFO -    STDOUT: (empty)",
+            "ingestionTime": 1780057274440
+        },
+        {
+            "timestamp": 1780057271911,
+            "message": "2026-05-29 12:21:11,430 - INFO - 📊 COLMAP model_converter STDERR:",
+            "ingestionTime": 1780057274440
+        },
+        {
+            "timestamp": 1780057271911,
+            "message": "2026-05-29 12:21:11,430 - INFO -    STDERR: (empty)",
+            "ingestionTime": 1780057274440
+        },
+        {
+            "timestamp": 1780057271911,
+            "message": "2026-05-29 12:21:11,430 - INFO - 📊 BINARY FILE VERIFICATION:",
+            "ingestionTime": 1780057274440
+        },
+        {
+            "timestamp": 1780057271911,
+            "message": "2026-05-29 12:21:11,430 - INFO -    ✅ cameras.bin: 512 bytes",
+            "ingestionTime": 1780057274440
+        },
+        {
+            "timestamp": 1780057271911,
+            "message": "2026-05-29 12:21:11,430 - INFO -    ✅ images.bin: 56523128 bytes",
+            "ingestionTime": 1780057274440
+        },
+        {
+            "timestamp": 1780057271912,
+            "message": "2026-05-29 12:21:11,430 - INFO -    ✅ points3D.bin: 8022864 bytes",
+            "ingestionTime": 1780057274440
+        },
+        {
+            "timestamp": 1780057271912,
+            "message": "2026-05-29 12:21:11,430 - INFO - ✅ COLMAP TXT→BIN conversion completed successfully",
+            "ingestionTime": 1780057274440
+        },
+        {
+            "timestamp": 1780057271912,
+            "message": "2026-05-29 12:21:11,430 - INFO - 🚀 Executing COLMAP conversion command:",
+            "ingestionTime": 1780057274440
+        },
+        {
+            "timestamp": 1780057271912,
+            "message": "2026-05-29 12:21:11,431 - INFO -    ns-process-data images --data /tmp/no_retrain_quality_pass/work/preconversion_selected_input/images --output-dir /tmp/no_retrain_quality_pass/work/converted_data --skip-colmap --colmap-model-path /tmp/no_retrain_quality_pass/work/colmap_bin/0",
+            "ingestionTime": 1780057274440
+        },
+        {
+            "timestamp": 1780057271912,
+            "message": "2026-05-29 12:21:11,431 - INFO -    Timeout: 1200s",
+            "ingestionTime": 1780057274440
+        },
+        {
+            "timestamp": 1780057354935,
+            "message": "2026-05-29 12:22:34,687 - INFO - 📊 ns-process-data STDOUT:",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354935,
+            "message": "2026-05-29 12:22:34,687 - INFO -    STDOUT: ✅ sitecustomize: filtered deprecated CUDA arch flags (TORCH_CUDA_ARCH_LIST=7.0;8.0;8.6+PTX)",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354935,
+            "message": "2026-05-29 12:22:34,687 - INFO -    STDOUT: ✅ sitecustomize: patched nerfstudio PIL conversion",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354935,
+            "message": "2026-05-29 12:22:34,687 - INFO -    STDOUT: [12:22:23] 🎉 Done copying images with prefix 'frame_'.                                        process_data_utils.py:348",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354935,
+            "message": "2026-05-29 12:22:34,687 - INFO -    STDOUT: Warning: More than one camera is found in /tmp/no_retrain_quality_pass/work/colmap_bin/0",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354935,
+            "message": "2026-05-29 12:22:34,687 - INFO -    STDOUT: {9: Camera(id=9, model='SIMPLE_RADIAL', width=4000, height=2250, params=array([ 3.03622626e+03,  2.00000000e+03,  1.12500000e+03, -9.08829820e-04])), 8: Camera(id=8, model='SIMPLE_RADIAL', width=4000, height=2250, params=array([ 3.03483238e+03,  2.00000000e+03,  1.12500000e+03, -1.35580089e-03])), 7: Camera(id=7, model='SIMPLE_RADIAL', width=4000, height=2250, params=array([ 3.03444350e+03,  2.00000000e+03,  1.12500000e+03, -9.02905841e-04])), 6: Camera(id=6, model='SIMPLE_RADIAL', width=4000, height=2250, params=array([3.03848448e+03, 2.00000000e+03, 1.12500000e+03, 1.28136038e-04])), 5: Camera(id=5, model='SIMPLE_RADIAL', width=4000, height=2250, params=array([3.03589558e+03, 2.00000000e+03, 1.12500000e+03, 1.37500830e-04])), 4: Camera(id=4, model='SIMPLE_RADIAL', width=4000, height=2250, params=array([ 3.03558568e+03,  2.00000000e+03,  1.12500000e+03, -4.62808790e-04])), 3: Camera(id=3, model='SIMPLE_RADIAL', width=4000, height=2250, params=array([ 3.03547228e+03,  2.00000000e+03,  1.12500000e+03, -1.04326906e-03])), 2: Camera(id=2, model='SIMPLE_RADIAL', width=4000, height=2250, params=array([ 3.03561167e+03,  2.00000000e+03,  1.12500000e+03, -8.14188635e-04])), 1: Camera(id=1, model='SIMPLE_RADIAL', width=4000, height=2250, params=array([ 3.03577644e+03,  2.00000000e+03,  1.12500000e+03, -9.59684074e-04]))}",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354936,
+            "message": "2026-05-29 12:22:34,687 - INFO -    STDOUT: [12:22:33] 🎉 🎉 🎉 All DONE 🎉 🎉 🎉                                                images_to_nerfstudio_dataset.py:135",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354936,
+            "message": "2026-05-29 12:22:34,687 - INFO -    STDOUT:            Starting with 240 images                                                  images_to_nerfstudio_dataset.py:138",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354936,
+            "message": "2026-05-29 12:22:34,687 - INFO -    STDOUT:            Colmap matched 240 images                                                 images_to_nerfstudio_dataset.py:138",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354936,
+            "message": "2026-05-29 12:22:34,687 - INFO -    STDOUT:            COLMAP found poses for all images, CONGRATS!                              images_to_nerfstudio_dataset.py:138",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354936,
+            "message": "2026-05-29 12:22:34,687 - INFO - 📊 ns-process-data STDERR:",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354936,
+            "message": "2026-05-29 12:22:34,687 - INFO -    STDERR: (empty)",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354936,
+            "message": "2026-05-29 12:22:34,687 - INFO - 📁 Updated input directory for validation: /tmp/no_retrain_quality_pass/work/converted_data",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354936,
+            "message": "2026-05-29 12:22:34,687 - INFO - 🔍 COMPREHENSIVE transforms.json validation...",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354936,
+            "message": "2026-05-29 12:22:34,692 - INFO - 📄 transforms.json file size: 290829 bytes",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354936,
+            "message": "2026-05-29 12:22:34,692 - INFO - 📊 TOP-LEVEL STRUCTURE:",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354936,
+            "message": "2026-05-29 12:22:34,692 - INFO -    ✅ frames: present",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354936,
+            "message": "2026-05-29 12:22:34,692 - INFO -    ⚠️  camera_angle_x: not present (optional)",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354936,
+            "message": "2026-05-29 12:22:34,692 - INFO -    ⚠️  fl_x: not present (optional)",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354936,
+            "message": "2026-05-29 12:22:34,692 - INFO -    ⚠️  fl_y: not present (optional)",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354936,
+            "message": "2026-05-29 12:22:34,692 - INFO -    ⚠️  cx: not present (optional)",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354936,
+            "message": "2026-05-29 12:22:34,692 - INFO -    ⚠️  cy: not present (optional)",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354936,
+            "message": "2026-05-29 12:22:34,693 - INFO -    ⚠️  w: not present (optional)",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354936,
+            "message": "2026-05-29 12:22:34,693 - INFO -    ⚠️  h: not present (optional)",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057354936,
+            "message": "2026-05-29 12:22:34,693 - INFO -    ⚠️  k1: not present (optional)",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355011,
+            "message": "2026-05-29 12:22:34,693 - INFO -    ⚠️  k2: not present (optional)",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355011,
+            "message": "2026-05-29 12:22:34,693 - INFO -    ⚠️  p1: not present (optional)",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355011,
+            "message": "2026-05-29 12:22:34,693 - INFO -    ⚠️  p2: not present (optional)",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355011,
+            "message": "2026-05-29 12:22:34,693 - INFO - 📊 FRAMES ANALYSIS:",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355011,
+            "message": "2026-05-29 12:22:34,693 - INFO -    Total frames: 240",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355011,
+            "message": "2026-05-29 12:22:34,693 - INFO -    ✅ 240 frames available",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,693 - INFO -    📋 FRAME 0:",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,693 - INFO -       file_path: images/frame_00207.JPG",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,693 - INFO -       ✅ Image file exists: frame_00207.JPG",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,693 - INFO -       ✅ transform_matrix: 4x4 matrix present",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,693 - INFO -       ✅ transform_matrix has non-zero values",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,693 - INFO -    📋 FRAME 1:",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,693 - INFO -       file_path: images/frame_00187.JPG",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,693 - INFO -       ✅ Image file exists: frame_00187.JPG",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,693 - INFO -       ✅ transform_matrix: 4x4 matrix present",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,693 - INFO -       ✅ transform_matrix has non-zero values",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,693 - INFO -    📋 FRAME 2:",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,693 - INFO -       file_path: images/frame_00185.JPG",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,693 - INFO -       ✅ Image file exists: frame_00185.JPG",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,693 - INFO -       ✅ transform_matrix: 4x4 matrix present",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,694 - INFO -       ✅ transform_matrix has non-zero values",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,694 - INFO -    📋 FRAME 3:",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,694 - INFO -       file_path: images/frame_00182.JPG",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,694 - INFO -       ✅ Image file exists: frame_00182.JPG",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,694 - INFO -       ✅ transform_matrix: 4x4 matrix present",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,694 - INFO -       ✅ transform_matrix has non-zero values",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,694 - INFO -    📋 FRAME 4:",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,694 - INFO -       file_path: images/frame_00181.JPG",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,694 - INFO -       ✅ Image file exists: frame_00181.JPG",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,694 - INFO -       ✅ transform_matrix: 4x4 matrix present",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,694 - INFO -       ✅ transform_matrix has non-zero values",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,694 - INFO - 📊 VALIDATION SUMMARY:",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,694 - INFO -    Total frames: 240",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355012,
+            "message": "2026-05-29 12:22:34,694 - INFO -    Valid frames: 5",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355013,
+            "message": "2026-05-29 12:22:34,694 - INFO -    Success rate: 2.1%",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057355013,
+            "message": "2026-05-29 12:22:34,694 - INFO - ✅ transforms.json validation passed",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057356035,
+            "message": "2026-05-29 12:22:35,138 - INFO - 🗺️ Saved converted image name map with 240 entries",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057357112,
+            "message": "2026-05-29 12:22:36,213 - INFO - ☁️ Saved sparse point cloud PLY: /tmp/no_retrain_quality_pass/work/converted_data/sparse_pc.ply",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057357112,
+            "message": "2026-05-29 12:22:36,213 - INFO - ✅ COLMAP data converted successfully",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057357112,
+            "message": "2026-05-29 12:22:36,214 - INFO - 📁 Final input directory: /tmp/no_retrain_quality_pass/work/converted_data",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057357112,
+            "message": "2026-05-29 12:22:36,217 - INFO - 📄 No config.yml found; running direct exported-PLY prune/package pass",
+            "ingestionTime": 1780057362348
+        },
+        {
+            "timestamp": 1780057373266,
+            "message": "2026-05-29 12:22:52,801 - INFO - 🧹 Floater pruning summary:",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373266,
+            "message": "2026-05-29 12:22:52,801 - INFO -    Evaluated gaussians: 250552",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373266,
+            "message": "2026-05-29 12:22:52,801 - INFO -    Low-opacity candidates: 250552",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373266,
+            "message": "2026-05-29 12:22:52,801 - INFO -    Removed gaussians: 70636",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373266,
+            "message": "2026-05-29 12:22:52,801 - INFO -    Remaining gaussians: 179916",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373266,
+            "message": "2026-05-29 12:22:52,804 - INFO - 📋 Training metadata generated:",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373266,
+            "message": "2026-05-29 12:22:52,804 - INFO -    training_methodology: Spaceport splatfacto-w-light skybox export",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373266,
+            "message": "2026-05-29 12:22:52,804 - INFO -    framework: NerfStudio",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373266,
+            "message": "2026-05-29 12:22:52,804 - INFO -    model_variant: splatfacto-w-light",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,804 - INFO -    training_mode: leaf_tile",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,804 - INFO -    bilateral_guided_processing: False",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,804 - INFO -    bilateral_guided_processing_requested: False",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,804 - INFO -    sh_degree: 3",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,804 - INFO -    ssim_lambda: 0.2",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,804 - INFO -    enable_bg_model: True",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,804 - INFO -    enable_alpha_loss: True",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,804 - INFO -    enable_robust_mask: True",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,804 - INFO -    max_iterations: 30000",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,805 - INFO -    downscale_factor: 2",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,805 - INFO -    commercial_license: Apache 2.0",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,805 - INFO -    sogs_compatible: True",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,805 - INFO -    playcanvas_ready: True",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,805 - INFO -    training_completed: True",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,805 - INFO -    timestamp: 1780057372.8028226",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,805 - INFO -    version: 1.0.0",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,805 - INFO -    output_file: splat.ply",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,805 - INFO -    file_size_mb: 42.55361461639404",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,805 - INFO -    background_skybox: background_skybox.webp",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,805 - INFO -    background_skybox_size_mb: 0.04879188537597656",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,805 - INFO -    floater_pruning: {'enabled': True, 'evaluated_gaussians': 250552, 'candidate_gaussians': 250552, 'removed_gaussians': 70636, 'remaining_gaussians': 179916, 'sampled_views': 25, 'min_views': 4, 'top_region_ratio': 0.35, 'top_view_fraction': 0.9, 'min_sky_views': 1, 'sky_min_luminance': 0.3, 'sky_min_saturation': 0.08, 'sky_blue_dominance_margin': 0.02, 'max_opacity': 1.01, 'max_color_distance': 0.65, 'min_edge_support': 3, 'patch_size': 9, 'diagnostics': {'visible_min_views_count': 174431, 'meets_top_region_count': 13386, 'meets_sky_support_count': 108344, 'meets_top_or_sky_count': 110648, 'low_sky_edge_support_count': 240845, 'color_distance_pass_count': 193206, 'legacy_removal_candidate_count': 68117, 'gaussian_sky_color_count': 117410, 'sky_color_distance_pass_count': 67187, 'sky_color_removal_candidate_count': 29530, 'removal_candidate_count': 70636, 'priority_frame_name_count': 2, 'priority_frame_match_count': 1, 'candidate_opacity_p50': 0.617513507604599, 'candidate_opacity_p95': 0.9981794118881225, 'top_fraction_p50': 0.0, 'top_fraction_p95': 0.9090909361839294, 'sky_support_count_p50': 0.0, 'sky_support_count_p95': 3.0, 'sky_edge_support_count_p95': 2.0, 'median_color_distance_p50': 0.37914466857910156, 'median_color_distance_p95': 0.9000652223825455}, 'sky_color_pruning_enabled': True, 'sky_color_min_sky_views': 1, 'sky_color_max_color_distance': 0.5, 'sky_color_removed_gaussians': 29530}",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,805 - INFO -    export_manifest: {'ply': 'splat.ply', 'skybox': 'background_skybox.webp', 'camera_idx': 120, 'background_appearance_mode': 'camera', 'background_skipped': False, 'foreground_coordinate_frame': 'planner', 'foreground_transform': {'coordinate_frame': 'planner', 'dataparser_transform_source': 'train_dataparser_outputs', 'dataparser_scale': 0.003975893717643841, 'applied': True, 'position_transform_applied': True, 'scale_transform_applied': True, 'rotation_transform_applied': True, 'dataparser_transform': [[0.9294877648353577, -0.2432301789522171, 0.27729329466819763, -6.075395584106445], [0.27729329466819763, 0.9565162658691406, -0.09047138690948486, 73.36851501464844], [-0.2432301789522171, 0.16098356246948242, 0.9565162658691406, -0.9788427352905273]], 'model_to_output_linear': [[233.78083994746194, 69.74363616830266, -61.17622662057159], [69.74363616830264, -22.754967337856097, 240.57893178576435], [61.17622662057159, -240.57893178576438, -40.48991996979331]], 'planner_transform_applied': True, 'planner_transform_source': '/tmp/nerfstudio_training/converted_data/transforms.json', 'planner_scale': 1.0, 'planner_offset': [0.0, 0.0, 0.0], 'planner_transform': [[1.0, 0.0, 0.0, 0.0], [0.0, 0.0, 1.0, 0.0], [-0.0, -1.0, -0.0, -0.0]], 'appearance': {'requested_camera_idx': 120, 'appearance_camera_idx': 120, 'appearance_num_embeddings': 225, 'appearance_camera_clamped': False}, 'planner_scale_transform_applied': True, 'model_to_output_rotation': [[0.9294877688439858, 0.27729328977769485, -0.24323017702105157], [0.27729328977769474, -0.09047135929662879, 0.9565162646768134], [0.24323017702105162, -0.9565162646768134, -0.16098359045264285]]}, 'background_selection': None, 'floater_pruning': {'enabled': True, 'evaluated_gaussians': 250552, 'candidate_gaussians': 250552, 'removed_gaussians': 70636, 'remaining_gaussians': 179916, 'sampled_views': 25, 'min_views': 4, 'top_region_ratio': 0.35, 'top_view_fraction': 0.9, 'min_sky_views': 1, 'sky_min_luminance': 0.3, 'sky_min_saturation': 0.08, 'sky_blue_dominance_margin': 0.02, 'max_opacity': 1.01, 'max_color_distance': 0.65, 'min_edge_support': 3, 'patch_size': 9, 'diagnostics': {'visible_min_views_count': 174431, 'meets_top_region_count': 13386, 'meets_sky_support_count': 108344, 'meets_top_or_sky_count': 110648, 'low_sky_edge_support_count': 240845, 'color_distance_pass_count': 193206, 'legacy_removal_candidate_count': 68117, 'gaussian_sky_color_count': 117410, 'sky_color_distance_pass_count': 67187, 'sky_color_removal_candidate_count': 29530, 'removal_candidate_count': 70636, 'priority_frame_name_count': 2, 'priority_frame_match_count': 1, 'candidate_opacity_p50': 0.617513507604599, 'candidate_opacity_p95': 0.9981794118881225, 'top_fraction_p50': 0.0, 'top_fraction_p95': 0.9090909361839294, 'sky_support_count_p50': 0.0, 'sky_support_count_p95': 3.0, 'sky_edge_support_count_p95': 2.0, 'median_color_distance_p50': 0.37914466857910156, 'median_color_distance_p95': 0.9000652223825455}, 'sky_color_pruning_enabled': True, 'sky_color_min_sky_views': 1, 'sky_color_max_color_distance': 0.5, 'sky_color_removed_gaussians': 29530}, 'density_cap': None, 'scale_pruning': None}",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,805 - INFO -    preconversion_selection: {'enabled': True, 'subset_input_dir': '/tmp/no_retrain_quality_pass/work/preconversion_selected_input', 'requested_image_count': 240, 'selected_image_count': 240, 'linked_image_count': 240, 'source_image_count': 1702, 'retained_sparse_point_count': 81440, 'missing_image_count': 0, 'missing_images': []}",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:52,805 - INFO -    tile_manifest_resolution: {'source_mode': 'native_3dgs_manifests', 'chunk_planner_available': False, 'native_tile_manifest_available': True, 'native_view_buckets_available': True, 'ownership_bounds_available': True, 'sfm_authority_available': True, 'sfm_authority_status': 'pass', 'tile_count': 9, 'scaffold_count': 240}",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057373267,
+            "message": "2026-05-29 12:22:53,035 - INFO - 🧹 Temporary training files cleaned up",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057377346,
+            "message": "2026-05-29 12:22:57,166 - INFO - 📦 Packaged no-retrain model artifact: /opt/ml/processing/output/model.tar.gz",
+            "ingestionTime": 1780057378587
+        },
+        {
+            "timestamp": 1780057377346,
+            "message": "2026-05-29 12:22:57,166 - INFO - ✅ No-retrain export quality pass complete: /opt/ml/processing/output/export_quality_pass_summary.json",
+            "ingestionTime": 1780057378587
+        }
+    ],
+    "nextForwardToken": "f/39696606010957823124341123352562658755534982351611887651/s",
+    "nextBackwardToken": "b/39696603592620412305283288512239920576856519378413027329/s"
+}

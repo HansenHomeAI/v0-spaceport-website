@@ -57,6 +57,7 @@ class RunExportQualityPassTest(unittest.TestCase):
                 self.input_dir = None
                 self.output_dir = None
                 self.temp_dir = None
+                self.calls = []
 
             def validate_input_data(self):
                 self.input_dir = self.temp_dir / "converted_data"
@@ -64,22 +65,36 @@ class RunExportQualityPassTest(unittest.TestCase):
                 return True
 
             def prune_exported_foreground(self):
+                self.calls.append("floater")
                 (self.output_dir / "floater_pruning_summary.json").write_text(
                     json.dumps({"enabled": True, "removed_gaussians": 3}),
                     encoding="utf-8",
                 )
 
+            def prune_exported_foreground_scale_outliers(self):
+                self.calls.append("scale")
+                (self.output_dir / "scale_pruning_summary.json").write_text(
+                    json.dumps({"enabled": True, "removed_gaussians": 2}),
+                    encoding="utf-8",
+                )
+
             def cap_exported_foreground_density(self):
+                self.calls.append("density")
                 return None
 
             def patch_export_manifests(self):
                 (self.output_dir / "export_manifest.json").write_text(
-                    json.dumps({"floater_pruning": {"removed_gaussians": 3}}),
+                    json.dumps(
+                        {
+                            "floater_pruning": {"removed_gaussians": 3},
+                            "scale_pruning": {"removed_gaussians": 2},
+                        }
+                    ),
                     encoding="utf-8",
                 )
 
             def generate_training_metadata(self):
-                return {"training_completed": True}
+                return {"training_completed": True, "calls": self.calls}
 
             def cleanup_temp_files(self):
                 return None
@@ -113,10 +128,12 @@ class RunExportQualityPassTest(unittest.TestCase):
             summary = json.loads((output_dir / "export_quality_pass_summary.json").read_text(encoding="utf-8"))
             self.assertEqual(summary["mode"], "direct_ply_prune")
             self.assertIsNone(summary["patched_config"])
+            self.assertEqual(summary["training_metadata"]["calls"], ["floater", "scale", "density"])
             with tarfile.open(output_dir / "model.tar.gz", "r:gz") as archive:
                 names = sorted(archive.getnames())
             self.assertIn("splat.ply", names)
             self.assertIn("floater_pruning_summary.json", names)
+            self.assertIn("scale_pruning_summary.json", names)
             self.assertNotIn("model.tar.gz", names)
 
 

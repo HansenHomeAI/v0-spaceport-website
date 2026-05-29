@@ -143,6 +143,7 @@ def main() -> None:
         if not (output_dir / "splat.ply").exists():
             raise FileNotFoundError(f"No splat.ply found in exported artifact {model_tarball}")
         trainer.prune_exported_foreground()
+        trainer.prune_exported_foreground_scale_outliers()
         trainer.cap_exported_foreground_density()
         trainer.patch_export_manifests()
 
