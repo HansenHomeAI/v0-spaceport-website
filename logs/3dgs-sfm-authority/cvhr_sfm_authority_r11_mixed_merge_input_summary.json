@@ -1,0 +1,57 @@
+{
+  "baseline_review_manifest_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r4-quality-seam-20260526/review/output",
+  "branch": "agent-52689431-3dgs-sfm-authority",
+  "chunk_planner_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r1-two-tile-00-07-input-20260526/colmap/chunk_planner_manifest.json",
+  "cost_estimate": {
+    "estimated_usd": 0.0,
+    "notes": "cached leaf artifacts only; next spend is CPU merge processing and optional review processing after preflight",
+    "train_stage_count": 0,
+    "worst_case_usd": 0.0
+  },
+  "experiment_id": "cvhr-sfm-auth-r11-hires-tile00-mixed-merge-20260528",
+  "image_uri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:49564aff9fc6791585f2ce5de4845586173232258deb5ca82f0dffd96a4d58e5",
+  "input_colmap_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r1-two-tile-00-07-input-20260526/colmap",
+  "manual_mixed_merge_guardrails": {
+    "leaf_preflight_required": "leaf_preflight_passed_cache_candidate",
+    "promotion_allowed": false,
+    "promotion_blocker": "mixed leaf settings; this is a bounded diagnostic merge only unless frozen-camera review and hard visual QA pass and owner accepts a full R11 retrain plan",
+    "purpose": "no-training quality isolation: test whether full-resolution R11 tile_00 improves horizon when merged with preflight-passed R10 tile_07",
+    "r10_tile_07_preflight_json": "logs/3dgs-sfm-authority/cvhr_sfm_authority_r10_tile_07_leaf_preflight.json",
+    "r11_tile_00_preflight_json": "logs/3dgs-sfm-authority/cvhr_sfm_authority_r11_tile_00_leaf_preflight.json",
+    "review_required_after_merge_preflight": true,
+    "train_stage_count_required": 0
+  },
+  "merge_mode": "strict_core",
+  "stages": [
+    {
+      "cache_status": "r11_leaf_preflight_passed",
+      "downscale_factor": 1,
+      "leaf_preflight_json": "logs/3dgs-sfm-authority/cvhr_sfm_authority_r11_tile_00_leaf_preflight.json",
+      "priority_frame_match_count": null,
+      "quality_gate_status": "passed",
+      "removed_gaussians": null,
+      "selected_image_count": null,
+      "source_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r11-hires-tile00-20260528/tiles/tile_00/cvhr-sfm-auth-r11-hires-1780011216-tile-00/output/model.tar.gz",
+      "splat_vertex_count": 262561,
+      "stage_name": "R11_tile_00_fullres_cache",
+      "stage_type": "cached_tile",
+      "tile_id": "tile_00",
+      "training_mode": "leaf_tile"
+    },
+    {
+      "cache_status": "r10_leaf_preflight_passed",
+      "leaf_preflight_json": "logs/3dgs-sfm-authority/cvhr_sfm_authority_r10_tile_07_leaf_preflight.json",
+      "priority_frame_match_count": 0,
+      "priority_frame_match_note": "Non-blocking for tile_07: selected_image_names does not include DJI_00801.JPG or DJI_00809.JPG.",
+      "quality_gate_status": "passed",
+      "removed_gaussians": 84661,
+      "source_artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r10-aggressive-prune-20260528/tiles/tile_07/cvhr-sfm-auth-r10-aggr-1780006446-tile-07/output/model.tar.gz",
+      "splat_vertex_count": 225216,
+      "stage_name": "R10_tile_07_aggressive_prune_cache",
+      "stage_type": "cached_tile",
+      "tile_id": "tile_07",
+      "training_mode": "leaf_tile"
+    }
+  ],
+  "tile_selection_input_s3_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r11-hires-tile00-20260528/inputs/tile-selection"
+}

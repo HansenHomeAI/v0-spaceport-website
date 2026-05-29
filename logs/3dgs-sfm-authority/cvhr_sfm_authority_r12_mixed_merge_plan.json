@@ -1,0 +1,43 @@
+{
+  "artifact_inputs": [
+    {
+      "artifact_input_name": "artifact-00",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r12-maskupper-20260528/tiles/tile_00/cvhr-sfm-auth-r12-mask-1780015543-tile-00/output/model.tar.gz"
+    },
+    {
+      "artifact_input_name": "artifact-01",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r10-aggressive-prune-20260528/tiles/tile_07/cvhr-sfm-auth-r10-aggr-1780006446-tile-07/output/model.tar.gz"
+    }
+  ],
+  "selected_tile_ids": [
+    "tile_00",
+    "tile_07"
+  ],
+  "source_summary_json": "logs/3dgs-sfm-authority/cvhr_sfm_authority_r12_mixed_merge_input_summary.json",
+  "tiles": [
+    {
+      "artifact_input_name": "artifact-00",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r12-maskupper-20260528/tiles/tile_00/cvhr-sfm-auth-r12-mask-1780015543-tile-00/output/model.tar.gz",
+      "cache_status": "r12_leaf_preflight_passed",
+      "candidate_members": [
+        "splat.ply"
+      ],
+      "quality_gate_status": "passed",
+      "stage_name": "R12_tile_00_maskupper_cache",
+      "stage_type": "cached_tile",
+      "tile_id": "tile_00"
+    },
+    {
+      "artifact_input_name": "artifact-01",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r10-aggressive-prune-20260528/tiles/tile_07/cvhr-sfm-auth-r10-aggr-1780006446-tile-07/output/model.tar.gz",
+      "cache_status": "r10_leaf_preflight_passed",
+      "candidate_members": [
+        "splat.ply"
+      ],
+      "quality_gate_status": "passed",
+      "stage_name": "R10_tile_07_aggressive_prune_cache",
+      "stage_type": "cached_tile",
+      "tile_id": "tile_07"
+    }
+  ]
+}

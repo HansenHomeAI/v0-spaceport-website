@@ -57,6 +57,23 @@ def patch_config_data_path(source_config: Path, data_dir: Path, patched_config_p
     return patched_config_path
 
 
+def build_model_tarball(source_dir: Path, tarball_path: Path) -> Path:
+    """Package export-quality-pass output so downstream cached tile merge can reuse it."""
+    if tarball_path.exists():
+        tarball_path.unlink()
+
+    source_root = source_dir.resolve()
+    with tarfile.open(tarball_path, "w:gz") as archive:
+        for path in sorted(source_dir.rglob("*")):
+            resolved_path = path.resolve()
+            if resolved_path == tarball_path.resolve() or not path.is_file():
+                continue
+            if not str(resolved_path).startswith(str(source_root)):
+                raise RuntimeError(f"Refusing to package path outside output dir: {path}")
+            archive.add(path, arcname=path.relative_to(source_dir))
+    return tarball_path
+
+
 def main() -> None:
     model_input_dir = Path(os.environ.get("MODEL_INPUT_DIR", "/opt/ml/processing/input/model"))
     colmap_input_dir = Path(os.environ.get("COLMAP_INPUT_DIR", "/opt/ml/processing/input/colmap"))
@@ -99,8 +116,10 @@ def main() -> None:
     metadata = trainer.generate_training_metadata()
     trainer.cleanup_temp_files()
 
+    packaged_model_artifact = output_dir / "model.tar.gz"
     summary = {
         "model_artifact": str(model_tarball),
+        "packaged_model_artifact": str(packaged_model_artifact),
         "patched_config": str(patched_config_path),
         "training_metadata": metadata,
     }
@@ -108,6 +127,8 @@ def main() -> None:
     with open(summary_path, "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2)
 
+    build_model_tarball(output_dir, packaged_model_artifact)
+    logger.info(f"📦 Packaged no-retrain model artifact: {packaged_model_artifact}")
     logger.info(f"✅ No-retrain export quality pass complete: {summary_path}")
 
 
