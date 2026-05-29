@@ -2383,6 +2383,10 @@ def merge_tile_outputs(
             "fallback_used": used_fallback,
             "fallback_reason": fallback_reason or None,
             "ownership_bounds_available": bool(tile_entry.get("ownership_bounds_available", True)),
+            "bounds_strategy": tile_entry.get("bounds_strategy"),
+            "core_bounds": tile_entry.get("core_bounds"),
+            "overlap_bounds": tile_entry.get("overlap_bounds"),
+            "merge_sidecar_bounds": tile_entry.get("merge_sidecar_bounds"),
         }
         if support_weighted_stats is not None:
             tile_report["support_weighted_overlap"] = support_weighted_stats

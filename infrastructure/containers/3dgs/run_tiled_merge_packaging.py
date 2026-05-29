@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from tile_pipeline import load_json, merge_tile_outputs
+from tile_pipeline import bounds_available, load_json, merge_tile_outputs
 
 
 TILE_SIDECAR_CANDIDATES = {
@@ -22,6 +22,14 @@ TILE_SIDECAR_CANDIDATES = {
     "background_skybox.webp": ("background_skybox.webp",),
     "background_manifest.json": ("background_manifest.json",),
     "floater_pruning_summary.json": ("floater_pruning_summary.json",),
+}
+
+SIDECAR_BOUNDS_DISABLED_VALUES = {"", "0", "false", "no", "off"}
+SIDECAR_BOUNDS_CORE_MODE = "scaffold_filter_as_core"
+SIDECAR_BOUNDS_CORE_AND_OVERLAP_MODE = "scaffold_filter_as_core_and_overlap"
+SUPPORTED_SIDECAR_BOUNDS_MODES = {
+    SIDECAR_BOUNDS_CORE_MODE,
+    SIDECAR_BOUNDS_CORE_AND_OVERLAP_MODE,
 }
 
 
@@ -48,6 +56,131 @@ def find_tarball(input_dir: Path) -> Path:
     if not candidates:
         raise FileNotFoundError(f"No .tar.gz artifact found under {input_dir}")
     return candidates[0]
+
+
+def load_json_if_present(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {}
+    try:
+        return load_json(path)
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def sidecar_scaffold_filter_bounds(tile_dir: Path) -> tuple[dict[str, float] | None, dict[str, Any]]:
+    """Return resolved SfM-authority bounds recorded by the leaf, if trustworthy."""
+
+    selection = load_json_if_present(tile_dir / "training_selection.json")
+    scaffold = selection.get("scaffold_initialization")
+    if not isinstance(scaffold, dict):
+        return None, {"status": "not_available", "reason": "missing_scaffold_initialization"}
+
+    bounds = scaffold.get("scaffold_filter_bounds")
+    if not bounds_available(bounds):
+        return None, {"status": "not_available", "reason": "missing_or_degenerate_scaffold_filter_bounds"}
+
+    resolution = selection.get("tile_manifest_resolution")
+    refresh = resolution.get("ownership_bounds_refresh") if isinstance(resolution, dict) else None
+    refresh_status = str((refresh or {}).get("status", "")).strip().lower() if isinstance(refresh, dict) else ""
+    if refresh_status != "refreshed":
+        return None, {
+            "status": "not_available",
+            "reason": "tile_manifest_bounds_not_refreshed",
+            "ownership_bounds_refresh": refresh or None,
+        }
+
+    return (
+        {key: float(bounds[key]) for key in ("min_x", "max_x", "min_y", "max_y", "min_z", "max_z")},
+        {
+            "status": "available",
+            "source": "training_selection.scaffold_initialization.scaffold_filter_bounds",
+            "ownership_bounds_refresh": refresh,
+            "source_filter_retention_ratio": scaffold.get("source_filter_retention_ratio"),
+            "source_filtered_gaussian_count": scaffold.get("source_filtered_gaussian_count"),
+            "source_gaussian_count": scaffold.get("source_gaussian_count"),
+        },
+    )
+
+
+def apply_sidecar_merge_bounds(
+    tile_manifest: dict[str, Any],
+    tile_output_dirs: dict[str, Path],
+    *,
+    enabled: bool = True,
+    mode: str = SIDECAR_BOUNDS_CORE_MODE,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Align merge ownership bounds with the bounds a leaf actually used for SfM-authority init."""
+
+    normalized_mode = (mode or SIDECAR_BOUNDS_CORE_MODE).strip().lower()
+    if normalized_mode not in SUPPORTED_SIDECAR_BOUNDS_MODES:
+        raise ValueError(
+            f"Unsupported MERGE_SIDECAR_BOUNDS_MODE={mode}; "
+            f"expected one of {', '.join(sorted(SUPPORTED_SIDECAR_BOUNDS_MODES))}"
+        )
+
+    manifest = {**tile_manifest}
+    updated_tiles: list[dict[str, Any]] = []
+    tile_reports: list[dict[str, Any]] = []
+    applied_count = 0
+
+    for tile in tile_manifest.get("tiles", []):
+        tile_entry = dict(tile)
+        tile_id = str(tile_entry.get("tile_id", "")).strip()
+        tile_dir = tile_output_dirs.get(tile_id)
+        report: dict[str, Any] = {
+            "tile_id": tile_id,
+            "enabled": enabled,
+            "applied": False,
+            "mode": normalized_mode,
+        }
+        if enabled and tile_id and tile_dir is not None:
+            sidecar_bounds, sidecar_report = sidecar_scaffold_filter_bounds(tile_dir)
+            report.update(sidecar_report)
+            if sidecar_bounds is not None:
+                original_core_bounds = tile_entry.get("core_bounds")
+                original_overlap_bounds = tile_entry.get("overlap_bounds")
+                tile_entry["core_bounds"] = sidecar_bounds
+                if normalized_mode == SIDECAR_BOUNDS_CORE_AND_OVERLAP_MODE:
+                    tile_entry["overlap_bounds"] = sidecar_bounds
+                strategies = (
+                    dict(tile_entry.get("bounds_strategy", {}))
+                    if isinstance(tile_entry.get("bounds_strategy"), dict)
+                    else {}
+                )
+                strategies["core"] = "resolved_scaffold_filter_bounds"
+                if normalized_mode == SIDECAR_BOUNDS_CORE_AND_OVERLAP_MODE:
+                    strategies["overlap"] = "resolved_scaffold_filter_bounds"
+                tile_entry["bounds_strategy"] = strategies
+                tile_entry["ownership_bounds_available"] = True
+                tile_entry["merge_sidecar_bounds"] = {
+                    "source": report["source"],
+                    "mode": normalized_mode,
+                    "original_core_bounds": original_core_bounds,
+                    "original_overlap_bounds": original_overlap_bounds,
+                    "applied_core_bounds": sidecar_bounds,
+                }
+                report["applied"] = True
+                report["applied_core_bounds"] = sidecar_bounds
+                applied_count += 1
+        elif not enabled:
+            report["status"] = "disabled"
+        else:
+            report["status"] = "not_available"
+            report["reason"] = "missing_tile_output_dir"
+
+        updated_tiles.append(tile_entry)
+        tile_reports.append(report)
+
+    summary = {
+        "enabled": enabled,
+        "mode": normalized_mode,
+        "applied_tile_count": applied_count,
+        "tile_count": len(updated_tiles),
+        "tiles": tile_reports,
+    }
+    manifest["tiles"] = updated_tiles
+    manifest["merge_sidecar_bounds"] = summary
+    return manifest, summary
 
 
 def extract_tile_from_artifact(tile_plan: dict[str, Any], artifact_root: Path, output_tile_dir: Path) -> dict[str, Any]:
@@ -247,10 +380,20 @@ def main() -> int:
         record = extract_tile_from_artifact(tile_plan, artifact_root, output_tile_dir)
         extraction_records.append(record)
         extracted_tiles[tile_id] = output_tile_dir
+
+    sidecar_bounds_enabled = os.environ.get("MERGE_APPLY_SIDECAR_BOUNDS", "true").strip().lower()
+    selected_manifest, sidecar_bounds_summary = apply_sidecar_merge_bounds(
+        selected_manifest,
+        extracted_tiles,
+        enabled=sidecar_bounds_enabled not in SIDECAR_BOUNDS_DISABLED_VALUES,
+        mode=os.environ.get("MERGE_SIDECAR_BOUNDS_MODE", SIDECAR_BOUNDS_CORE_MODE),
+    )
+
+    for tile_plan in merge_plan.get("tiles", []):
         write_required_tile_inputs(
             output_root=output_root,
             tile_plan=tile_plan,
-            tile_manifest=tile_manifest,
+            tile_manifest=selected_manifest,
             view_buckets=view_buckets,
         )
 
@@ -279,6 +422,7 @@ def main() -> int:
         "background_source_tile_id": background_source_tile_id or None,
         "protected_overlap_tile_ids": protected_overlap_tile_ids,
         "protected_overlap_mode": protected_overlap_mode or None,
+        "merge_sidecar_bounds": sidecar_bounds_summary,
         "merge_plan": merge_plan,
         "extracted_tiles": extraction_records,
         "merge_report": merge_report,
