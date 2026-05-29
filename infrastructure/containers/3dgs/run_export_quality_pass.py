@@ -57,6 +57,31 @@ def patch_config_data_path(source_config: Path, data_dir: Path, patched_config_p
     return patched_config_path
 
 
+def copy_artifact_contents(source_dir: Path, output_dir: Path) -> None:
+    """Copy an exported model bundle into the processing output for direct PLY pruning."""
+    source_root = source_dir.resolve()
+    output_root = output_dir.resolve()
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    for path in sorted(source_dir.rglob("*")):
+        resolved_path = path.resolve()
+        if not str(resolved_path).startswith(str(source_root)):
+            raise RuntimeError(f"Refusing to copy path outside artifact dir: {path}")
+
+        relative_path = path.relative_to(source_dir)
+        if relative_path == Path("model.tar.gz"):
+            continue
+        target_path = (output_dir / relative_path).resolve()
+        if not str(target_path).startswith(str(output_root)):
+            raise RuntimeError(f"Refusing to write path outside output dir: {target_path}")
+
+        if path.is_dir():
+            target_path.mkdir(parents=True, exist_ok=True)
+        elif path.is_file():
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(path, target_path)
+
+
 def build_model_tarball(source_dir: Path, tarball_path: Path) -> Path:
     """Package export-quality-pass output so downstream cached tile merge can reuse it."""
     if tarball_path.exists():
@@ -89,9 +114,6 @@ def main() -> None:
     model_tarball = find_model_artifact(model_input_dir)
     extracted_model_dir = extract_model_artifact(model_tarball, temp_dir / "model")
     source_configs = sorted(extracted_model_dir.rglob("config.yml"))
-    if not source_configs:
-        raise FileNotFoundError(f"No config.yml found in extracted model artifact {model_tarball}")
-    source_config = source_configs[0]
 
     trainer = NerfStudioTrainer(str(config_path))
     trainer.input_dir = colmap_input_dir
@@ -103,15 +125,26 @@ def main() -> None:
     if not trainer.validate_input_data():
         raise RuntimeError("COLMAP validation/conversion failed for export-only quality pass")
 
-    patched_config_path = patch_config_data_path(
-        source_config=source_config,
-        data_dir=trainer.input_dir,
-        patched_config_path=temp_dir / "patched" / "config.yml",
-    )
-    logger.info(f"📄 Patched config for export: {patched_config_path}")
+    patched_config_path = None
+    if source_configs:
+        source_config = source_configs[0]
+        patched_config_path = patch_config_data_path(
+            source_config=source_config,
+            data_dir=trainer.input_dir,
+            patched_config_path=temp_dir / "patched" / "config.yml",
+        )
+        logger.info(f"📄 Patched config for export: {patched_config_path}")
 
-    if not trainer.export_trained_model(source_config=patched_config_path):
-        raise RuntimeError("Model export failed during no-retrain quality pass")
+        if not trainer.export_trained_model(source_config=patched_config_path):
+            raise RuntimeError("Model export failed during no-retrain quality pass")
+    else:
+        logger.info("📄 No config.yml found; running direct exported-PLY prune/package pass")
+        copy_artifact_contents(extracted_model_dir, output_dir)
+        if not (output_dir / "splat.ply").exists():
+            raise FileNotFoundError(f"No splat.ply found in exported artifact {model_tarball}")
+        trainer.prune_exported_foreground()
+        trainer.cap_exported_foreground_density()
+        trainer.patch_export_manifests()
 
     metadata = trainer.generate_training_metadata()
     trainer.cleanup_temp_files()
@@ -120,7 +153,8 @@ def main() -> None:
     summary = {
         "model_artifact": str(model_tarball),
         "packaged_model_artifact": str(packaged_model_artifact),
-        "patched_config": str(patched_config_path),
+        "patched_config": str(patched_config_path) if patched_config_path else None,
+        "mode": "config_reexport" if patched_config_path else "direct_ply_prune",
         "training_metadata": metadata,
     }
     summary_path = output_dir / "export_quality_pass_summary.json"
