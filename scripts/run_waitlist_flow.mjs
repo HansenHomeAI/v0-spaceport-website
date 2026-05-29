@@ -25,7 +25,7 @@ function extractText(result) {
 }
 
 function extractSnapshot(result) {
-  const match = extractText(result).match(/Page Snapshot:\n```yaml\n([\s\S]*?)```/);
+  const match = extractText(result).match(/(?:Page Snapshot:|### Snapshot)\n```yaml\n([\s\S]*?)```/);
   return match ? match[1] : '';
 }
 
@@ -56,8 +56,11 @@ async function main() {
     await client.connect(transport);
     record('Connect to MCP server', 'pass', `via ${SERVER_URL}`);
 
-    const navigate = await callTool('browser_navigate', { url: WAITLIST_URL }, { expectSnapshot: true });
-    const navSnapshot = extractSnapshot(navigate);
+    await callTool('browser_navigate', { url: WAITLIST_URL });
+    const navSnapshot = extractSnapshot(await callTool('browser_snapshot', {}));
+    if (!navSnapshot) {
+      throw new Error('browser_snapshot did not return a snapshot after navigation');
+    }
     record('Navigate to waitlist page', 'pass', WAITLIST_URL);
 
     const nameRef = findRef(navSnapshot, 'textbox', 'Name');
@@ -79,8 +82,8 @@ async function main() {
     await callTool('browser_handle_dialog', { accept: true });
     record('Acknowledge confirmation dialog', 'pass');
 
-    const wait = await callTool('browser_wait_for', { text: 'Join Waitlist', time: 2 }, { expectSnapshot: true });
-    const waitSnapshot = extractSnapshot(wait);
+    await callTool('browser_wait_for', { text: 'Join Waitlist', time: 2 });
+    const waitSnapshot = extractSnapshot(await callTool('browser_snapshot', {}));
     const buttonRestored = /button "Join Waitlist" \[ref=/.test(waitSnapshot);
     record('Wait for button reset', buttonRestored ? 'pass' : 'warn');
 
