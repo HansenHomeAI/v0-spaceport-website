@@ -1,0 +1,76 @@
+[
+  {
+    "at": "2026-05-29T00:01:58.217Z",
+    "step": "opened-create-page",
+    "url": "https://agent-38642091-litchi-contro.v0-spaceport-website-preview2.pages.dev/create"
+  },
+  {
+    "at": "2026-05-29T00:02:00.415Z",
+    "step": "submitted-spaceport-login",
+    "email": "co***@spcprt.dev"
+  },
+  {
+    "at": "2026-05-29T00:02:01.236Z",
+    "step": "spaceport-signed-in"
+  },
+  {
+    "at": "2026-05-29T00:02:01.633Z",
+    "step": "litchi-session-connected",
+    "status": "active",
+    "sessionCached": true,
+    "message": "Uploaded litchi-e2e-20260528235932_flight-01-of-01_20260528-175942"
+  },
+  {
+    "at": "2026-05-29T00:02:01.755Z",
+    "step": "opened-flight-plan-modal",
+    "projectTitle": "litchi-e2e-20260529000156"
+  },
+  {
+    "at": "2026-05-29T00:02:05.739Z",
+    "step": "configured-flight-plan",
+    "location": "38.27371, -78.16950",
+    "batteries": "1",
+    "minutes": "10",
+    "altitude": "120-160"
+  },
+  {
+    "at": "2026-05-29T00:02:06.383Z",
+    "step": "captured-controller-mission-names",
+    "names": [
+      "litchi-e2e-20260529000156_flight-01-of-01_20260528-180205"
+    ]
+  },
+  {
+    "at": "2026-05-29T00:02:06.486Z",
+    "step": "clicked-send-to-controller"
+  },
+  {
+    "at": "2026-05-29T00:02:08.802Z",
+    "step": "spaceport-status-after-click",
+    "status": "uploading",
+    "message": "Uploading litchi-e2e-20260529000156_flight-01-of-01_20260528-180205",
+    "progress": {
+      "current": 1,
+      "total": 1,
+      "label": "Uploading 1/1"
+    }
+  },
+  {
+    "at": "2026-05-29T00:03:21.206Z",
+    "step": "spaceport-confirmed-uploaded",
+    "status": "active",
+    "message": "Uploaded litchi-e2e-20260529000156_flight-01-of-01_20260528-180205",
+    "progress": {
+      "current": 1,
+      "total": 1,
+      "label": "Uploaded 1/1"
+    }
+  },
+  {
+    "at": "2026-05-29T00:03:32.827Z",
+    "step": "mobile-responsive-check",
+    "innerWidth": 390,
+    "documentScrollWidth": 390,
+    "overflowingElements": []
+  }
+]

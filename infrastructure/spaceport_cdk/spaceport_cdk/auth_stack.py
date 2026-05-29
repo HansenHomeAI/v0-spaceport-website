@@ -886,6 +886,21 @@ class AuthStack(Stack):
             )
         litchi_credentials_table.grant_read_write_data(litchi_execution_role)
         litchi_kms_key.grant_encrypt_decrypt(litchi_execution_role)
+        litchi_legacy_kms_key_ids = [
+            "f6a7ba1a-29ea-425a-8aca-472cbd342804",
+            "342c9766-61a9-49f1-bb75-5963895ace5a",
+            "f6062b76-645b-499c-ad3c-7dafbbaec792",
+            "e6d96c72-b2cb-4b24-a49f-2c0eff816aab",
+        ]
+        litchi_execution_role.add_to_policy(
+            iam.PolicyStatement(
+                actions=["kms:Decrypt"],
+                resources=[
+                    f"arn:{Aws.PARTITION}:kms:{region}:{Aws.ACCOUNT_ID}:key/{key_id}"
+                    for key_id in litchi_legacy_kms_key_ids
+                ],
+            )
+        )
         litchi_worker_function_name = f"Spaceport-LitchiWorkerContainerFunction-{suffix}"
         litchi_state_machine_name = f"Spaceport-LitchiUpload-{suffix}"
         litchi_worker_function_arn = (

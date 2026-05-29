@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "status": 200,
+  "body": {
+    "status": "active",
+    "connected": true,
+    "sessionCached": true,
+    "storageStateCached": true,
+    "credentialsCached": true,
+    "requiresReconnect": false,
+    "message": "Uploaded litchi-e2e-20260529000156_flight-01-of-01_20260528-180205",
+    "progress": {
+      "current": 1,
+      "total": 1,
+      "label": "Uploaded 1/1"
+    },
+    "needsTwoFactor": false
+  }
+}
