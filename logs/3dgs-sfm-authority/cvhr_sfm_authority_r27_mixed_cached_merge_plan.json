@@ -1,0 +1,43 @@
+{
+  "artifact_inputs": [
+    {
+      "artifact_input_name": "artifact-00",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r15-weighted-20260528/tiles/tile_00/cvhr-sfm-auth-r15-weighted-1780028843-tile-00/output/model.tar.gz"
+    },
+    {
+      "artifact_input_name": "artifact-01",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r27-tile07-scale35-20260529/tiles/tile_07/output/model.tar.gz"
+    }
+  ],
+  "selected_tile_ids": [
+    "tile_00",
+    "tile_07"
+  ],
+  "source_summary_json": "logs/3dgs-sfm-authority/cvhr_sfm_authority_r27_mixed_cached_merge_input_summary.json",
+  "tiles": [
+    {
+      "artifact_input_name": "artifact-00",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r15-weighted-20260528/tiles/tile_00/cvhr-sfm-auth-r15-weighted-1780028843-tile-00/output/model.tar.gz",
+      "cache_status": "r15_leaf_preflight_and_gate_passed",
+      "candidate_members": [
+        "splat.ply"
+      ],
+      "quality_gate_status": "passed",
+      "stage_name": "R15_tile_00_weighted_frozen_camera_cache",
+      "stage_type": "cached_tile",
+      "tile_id": "tile_00"
+    },
+    {
+      "artifact_input_name": "artifact-01",
+      "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r27-tile07-scale35-20260529/tiles/tile_07/output/model.tar.gz",
+      "cache_status": "r27_leaf_preflight_and_gate_passed",
+      "candidate_members": [
+        "splat.ply"
+      ],
+      "quality_gate_status": "passed",
+      "stage_name": "R27_tile_07_edge3_scale35_sfm_context_cache",
+      "stage_type": "cached_tile",
+      "tile_id": "tile_07"
+    }
+  ]
+}

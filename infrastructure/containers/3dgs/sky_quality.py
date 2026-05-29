@@ -64,6 +64,12 @@ class FloaterPruningResult:
     sky_color_min_sky_views: int = 1
     sky_color_max_color_distance: float = 0.35
     sky_color_removed_gaussians: int = 0
+    horizon_coverage_pruning_enabled: bool = False
+    horizon_coverage_min_priority_views: int = 1
+    horizon_coverage_min_sky_views: int = 1
+    horizon_coverage_min_top_fraction: float = 0.5
+    horizon_coverage_max_color_distance: float = 1.25
+    horizon_coverage_removed_gaussians: int = 0
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -621,6 +627,11 @@ def prune_foreground_floaters(
     sky_color_pruning_enabled: bool = False,
     sky_color_min_sky_views: int = 1,
     sky_color_max_color_distance: float = 0.35,
+    horizon_coverage_pruning_enabled: bool = False,
+    horizon_coverage_min_priority_views: int = 1,
+    horizon_coverage_min_sky_views: int = 1,
+    horizon_coverage_min_top_fraction: float = 0.5,
+    horizon_coverage_max_color_distance: float = 1.25,
 ) -> FloaterPruningResult:
     cv2_mod = _ensure_cv2()
     transforms = _load_transforms(data_dir)
@@ -654,6 +665,11 @@ def prune_foreground_floaters(
             sky_color_pruning_enabled=sky_color_pruning_enabled,
             sky_color_min_sky_views=sky_color_min_sky_views,
             sky_color_max_color_distance=sky_color_max_color_distance,
+            horizon_coverage_pruning_enabled=horizon_coverage_pruning_enabled,
+            horizon_coverage_min_priority_views=horizon_coverage_min_priority_views,
+            horizon_coverage_min_sky_views=horizon_coverage_min_sky_views,
+            horizon_coverage_min_top_fraction=horizon_coverage_min_top_fraction,
+            horizon_coverage_max_color_distance=horizon_coverage_max_color_distance,
         )
 
     positions = np.stack([vertex["x"], vertex["y"], vertex["z"]], axis=1).astype(np.float32)
@@ -682,6 +698,11 @@ def prune_foreground_floaters(
             sky_color_pruning_enabled=sky_color_pruning_enabled,
             sky_color_min_sky_views=sky_color_min_sky_views,
             sky_color_max_color_distance=sky_color_max_color_distance,
+            horizon_coverage_pruning_enabled=horizon_coverage_pruning_enabled,
+            horizon_coverage_min_priority_views=horizon_coverage_min_priority_views,
+            horizon_coverage_min_sky_views=horizon_coverage_min_sky_views,
+            horizon_coverage_min_top_fraction=horizon_coverage_min_top_fraction,
+            horizon_coverage_max_color_distance=horizon_coverage_max_color_distance,
         )
 
     candidate_positions = positions[candidate_indices]
@@ -698,11 +719,29 @@ def prune_foreground_floaters(
     sky_support_counts = np.zeros(candidate_indices.shape[0], dtype=np.int32)
     edge_support_counts = np.zeros(candidate_indices.shape[0], dtype=np.int32)
     sky_edge_support_counts = np.zeros(candidate_indices.shape[0], dtype=np.int32)
+    priority_visible_counts = np.zeros(candidate_indices.shape[0], dtype=np.int32)
+    priority_top_counts = np.zeros(candidate_indices.shape[0], dtype=np.int32)
+    priority_sky_support_counts = np.zeros(candidate_indices.shape[0], dtype=np.int32)
+    priority_sky_edge_support_counts = np.zeros(candidate_indices.shape[0], dtype=np.int32)
     color_distances_all = np.full((candidate_indices.shape[0], sampled_frame_indices.shape[0]), np.nan, dtype=np.float32)
     color_distances_sky = np.full((candidate_indices.shape[0], sampled_frame_indices.shape[0]), np.nan, dtype=np.float32)
+    color_distances_priority_sky = np.full(
+        (candidate_indices.shape[0], sampled_frame_indices.shape[0]),
+        np.nan,
+        dtype=np.float32,
+    )
+    priority_names = {
+        Path(str(name).strip()).name
+        for name in (priority_frame_names or [])
+        if str(name).strip()
+    }
+    priority_sample_count = 0
 
     for sample_slot, frame_idx in enumerate(sampled_frame_indices):
         frame = frames[int(frame_idx)]
+        is_priority_frame = bool(priority_names and (_frame_image_aliases(frame, image_name_map) & priority_names))
+        if is_priority_frame:
+            priority_sample_count += 1
         image_path = _resolve_image_path(data_dir, frame["file_path"])
         image = _load_image_rgb(image_path)
         fx, fy, cx, cy, width, height = _frame_intrinsics(frame, transforms)
@@ -711,11 +750,15 @@ def prune_foreground_floaters(
 
         xs, ys, visible = _project_points(candidate_positions, c2w, intrinsics)
         visible_counts += visible.astype(np.int32)
+        if is_priority_frame:
+            priority_visible_counts += visible.astype(np.int32)
         if not visible.any():
             continue
 
         top_visible = visible & (ys < (height * top_region_ratio))
         top_counts += top_visible.astype(np.int32)
+        if is_priority_frame:
+            priority_top_counts += top_visible.astype(np.int32)
         active_visible = np.flatnonzero(visible)
         if active_visible.size == 0:
             continue
@@ -743,6 +786,9 @@ def prune_foreground_floaters(
         edge_support_counts[active_visible] += patch_edges.astype(np.int32)
         sky_support_counts[active_visible] += patch_sky.astype(np.int32)
         sky_edge_support_counts[active_visible] += (patch_edges & patch_sky).astype(np.int32)
+        if is_priority_frame:
+            priority_sky_support_counts[active_visible] += patch_sky.astype(np.int32)
+            priority_sky_edge_support_counts[active_visible] += (patch_edges & patch_sky).astype(np.int32)
 
         rgb_delta = candidate_colors[active_visible] - patch_means
         distances = np.linalg.norm(rgb_delta, axis=1)
@@ -750,6 +796,8 @@ def prune_foreground_floaters(
         sky_active = active_visible[patch_sky]
         if sky_active.size > 0:
             color_distances_sky[sky_active, sample_slot] = distances[patch_sky]
+            if is_priority_frame:
+                color_distances_priority_sky[sky_active, sample_slot] = distances[patch_sky]
 
     top_fraction = np.divide(
         top_counts,
@@ -788,7 +836,22 @@ def prune_foreground_floaters(
         & gaussian_sky_color
         & (sky_color_median_distance <= sky_color_max_color_distance)
     )
-    removal_local_mask = legacy_removal_local_mask | sky_color_local_mask
+    priority_top_fraction = np.divide(
+        priority_top_counts,
+        np.maximum(priority_visible_counts, 1),
+        out=np.zeros_like(priority_top_counts, dtype=np.float32),
+        where=priority_visible_counts > 0,
+    )
+    priority_sky_median_distance = _nanmedian_rows(color_distances_priority_sky)
+    horizon_coverage_local_mask = (
+        bool(horizon_coverage_pruning_enabled)
+        & (priority_visible_counts >= max(1, int(horizon_coverage_min_priority_views)))
+        & (priority_sky_support_counts >= max(1, int(horizon_coverage_min_sky_views)))
+        & (priority_sky_edge_support_counts < max(1, int(min_edge_support)))
+        & (priority_top_fraction >= float(horizon_coverage_min_top_fraction))
+        & (priority_sky_median_distance <= float(horizon_coverage_max_color_distance))
+    )
+    removal_local_mask = legacy_removal_local_mask | sky_color_local_mask | horizon_coverage_local_mask
     removal_global_mask = np.zeros(total_gaussians, dtype=bool)
     removal_global_mask[candidate_indices[removal_local_mask]] = True
     finite_color_distances = median_color_distance[np.isfinite(median_color_distance)]
@@ -803,6 +866,23 @@ def prune_foreground_floaters(
         "gaussian_sky_color_count": int(np.count_nonzero(gaussian_sky_color)),
         "sky_color_distance_pass_count": int(np.count_nonzero(sky_color_median_distance <= sky_color_max_color_distance)),
         "sky_color_removal_candidate_count": int(np.count_nonzero(sky_color_local_mask)),
+        "horizon_coverage_priority_sample_count": int(priority_sample_count),
+        "horizon_coverage_visible_count": int(
+            np.count_nonzero(priority_visible_counts >= max(1, int(horizon_coverage_min_priority_views)))
+        ),
+        "horizon_coverage_sky_support_count": int(
+            np.count_nonzero(priority_sky_support_counts >= max(1, int(horizon_coverage_min_sky_views)))
+        ),
+        "horizon_coverage_low_edge_support_count": int(
+            np.count_nonzero(priority_sky_edge_support_counts < max(1, int(min_edge_support)))
+        ),
+        "horizon_coverage_top_fraction_pass_count": int(
+            np.count_nonzero(priority_top_fraction >= float(horizon_coverage_min_top_fraction))
+        ),
+        "horizon_coverage_color_distance_pass_count": int(
+            np.count_nonzero(priority_sky_median_distance <= float(horizon_coverage_max_color_distance))
+        ),
+        "horizon_coverage_removal_candidate_count": int(np.count_nonzero(horizon_coverage_local_mask)),
         "removal_candidate_count": int(np.count_nonzero(removal_local_mask)),
         "priority_frame_name_count": len(
             {
@@ -857,4 +937,10 @@ def prune_foreground_floaters(
         sky_color_min_sky_views=sky_color_min_sky_views,
         sky_color_max_color_distance=sky_color_max_color_distance,
         sky_color_removed_gaussians=int(np.count_nonzero(sky_color_local_mask)),
+        horizon_coverage_pruning_enabled=horizon_coverage_pruning_enabled,
+        horizon_coverage_min_priority_views=horizon_coverage_min_priority_views,
+        horizon_coverage_min_sky_views=horizon_coverage_min_sky_views,
+        horizon_coverage_min_top_fraction=horizon_coverage_min_top_fraction,
+        horizon_coverage_max_color_distance=horizon_coverage_max_color_distance,
+        horizon_coverage_removed_gaussians=int(np.count_nonzero(horizon_coverage_local_mask)),
     )

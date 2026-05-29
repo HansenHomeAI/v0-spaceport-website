@@ -240,6 +240,41 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             self.assertEqual(scale_pruning["max_scale"], 3.5)
             self.assertEqual(scale_pruning["max_volume"], 8.0)
 
+    def test_trainer_applies_horizon_coverage_pruning_overrides(self):
+        module = load_module_with_stubs()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config_path = root / "config.yml"
+            output_dir = root / "model"
+            config_path.write_text("{}", encoding="utf-8")
+
+            original_environ = module.os.environ.copy()
+            try:
+                module.os.environ.clear()
+                module.os.environ.update(
+                    {
+                        "SM_MODEL_DIR": str(output_dir),
+                        "FLOATER_PRUNING_INCLUDE_PRIORITY_CONTEXT": "true",
+                        "FLOATER_PRUNING_HORIZON_COVERAGE_ENABLED": "true",
+                        "FLOATER_PRUNING_HORIZON_COVERAGE_MIN_PRIORITY_VIEWS": "1",
+                        "FLOATER_PRUNING_HORIZON_COVERAGE_MIN_SKY_VIEWS": "2",
+                        "FLOATER_PRUNING_HORIZON_COVERAGE_MIN_TOP_FRACTION": "0.45",
+                        "FLOATER_PRUNING_HORIZON_COVERAGE_MAX_COLOR_DISTANCE": "1.1",
+                    }
+                )
+                trainer = module.NerfStudioTrainer(str(config_path))
+            finally:
+                module.os.environ.clear()
+                module.os.environ.update(original_environ)
+
+            floater_pruning = trainer.config["output"]["floater_pruning"]
+            self.assertTrue(floater_pruning["include_priority_context_images"])
+            self.assertTrue(floater_pruning["horizon_coverage_pruning_enabled"])
+            self.assertEqual(floater_pruning["horizon_coverage_min_priority_views"], 1)
+            self.assertEqual(floater_pruning["horizon_coverage_min_sky_views"], 2)
+            self.assertEqual(floater_pruning["horizon_coverage_min_top_fraction"], 0.45)
+            self.assertEqual(floater_pruning["horizon_coverage_max_color_distance"], 1.1)
+
     def test_trainer_stages_compact_checkpoint_for_sync(self):
         module = load_module_with_stubs()
         with tempfile.TemporaryDirectory() as tmp:
@@ -506,6 +541,61 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
 
         self.assertEqual(limited[:2], ["frame_00009.JPG", "frame_00002.JPG"])
         self.assertEqual(len(limited), 4)
+
+    def test_preconversion_selection_can_add_priority_context_for_export_pruning(self):
+        module = load_module_with_stubs()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            input_dir = root / "input"
+            input_dir.mkdir()
+            (input_dir / "3dgs_tile_manifest.json").write_text(
+                json.dumps(
+                    {
+                        "all_image_names": ["tile_frame.JPG", "horizon_context.JPG"],
+                        "tiles": [
+                            {
+                                "tile_id": "tile_07",
+                                "base_camera_ids": ["tile_frame.JPG"],
+                                "image_names": ["tile_frame.JPG"],
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (input_dir / "3dgs_view_buckets.json").write_text("{}", encoding="utf-8")
+
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.input_dir = input_dir
+            trainer.tile_manifest_resolution = None
+            trainer.config = {
+                "tiling": {
+                    "training_mode": "leaf_tile",
+                    "tile_manifest_path": "3dgs_tile_manifest.json",
+                    "view_bucket_manifest_path": "3dgs_view_buckets.json",
+                    "tile_id": "tile_07",
+                },
+                "training": {
+                    "horizon_frozen_cameras": ["horizon_context.JPG"],
+                    "max_selected_images": 2,
+                    "selection_stride": 1,
+                },
+                "output": {
+                    "floater_pruning": {
+                        "include_priority_context_images": True,
+                    }
+                },
+            }
+
+            original_select = module.select_training_image_names
+            try:
+                module.select_training_image_names = lambda **_kwargs: ["tile_frame.JPG"]
+                selected = trainer.resolve_preconversion_selected_image_names()
+            finally:
+                module.select_training_image_names = original_select
+
+            self.assertEqual(selected, ["horizon_context.JPG", "tile_frame.JPG"])
 
     def test_run_tiled_training_pipeline_writes_root_summary(self):
         module = load_module_with_stubs()
@@ -1884,6 +1974,11 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
                         "sky_color_pruning_enabled": True,
                         "sky_color_min_sky_views": 2,
                         "sky_color_max_color_distance": 0.18,
+                        "horizon_coverage_pruning_enabled": True,
+                        "horizon_coverage_min_priority_views": 1,
+                        "horizon_coverage_min_sky_views": 1,
+                        "horizon_coverage_min_top_fraction": 0.5,
+                        "horizon_coverage_max_color_distance": 1.25,
                     }
                 }
             }
@@ -1919,6 +2014,11 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             self.assertTrue(calls[0]["sky_color_pruning_enabled"])
             self.assertEqual(calls[0]["sky_color_min_sky_views"], 2)
             self.assertEqual(calls[0]["sky_color_max_color_distance"], 0.18)
+            self.assertTrue(calls[0]["horizon_coverage_pruning_enabled"])
+            self.assertEqual(calls[0]["horizon_coverage_min_priority_views"], 1)
+            self.assertEqual(calls[0]["horizon_coverage_min_sky_views"], 1)
+            self.assertEqual(calls[0]["horizon_coverage_min_top_fraction"], 0.5)
+            self.assertEqual(calls[0]["horizon_coverage_max_color_distance"], 1.25)
             summary = json.loads((trainer.output_dir / "floater_pruning_summary.json").read_text(encoding="utf-8"))
             self.assertEqual(summary["removed_gaussians"], 2)
 

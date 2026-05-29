@@ -89,6 +89,23 @@ class Tiled3DGSBenchmarkLauncherTests(unittest.TestCase):
 
         self.assertNotEqual(disabled.input_hash, enabled.input_hash)
 
+    def test_tile_input_hash_changes_for_horizon_coverage_pruning_settings(self):
+        disabled = self._single_leaf_stages(
+            extra_env={"FLOATER_PRUNING_HORIZON_COVERAGE_ENABLED": "false"}
+        )[0]
+        enabled = self._single_leaf_stages(
+            extra_env={
+                "FLOATER_PRUNING_HORIZON_COVERAGE_ENABLED": "true",
+                "FLOATER_PRUNING_INCLUDE_PRIORITY_CONTEXT": "true",
+                "FLOATER_PRUNING_HORIZON_COVERAGE_MIN_PRIORITY_VIEWS": "1",
+                "FLOATER_PRUNING_HORIZON_COVERAGE_MIN_SKY_VIEWS": "1",
+                "FLOATER_PRUNING_HORIZON_COVERAGE_MIN_TOP_FRACTION": "0.5",
+                "FLOATER_PRUNING_HORIZON_COVERAGE_MAX_COLOR_DISTANCE": "1.25",
+            }
+        )[0]
+
+        self.assertNotEqual(disabled.input_hash, enabled.input_hash)
+
     def test_tile_input_hash_changes_for_scale_pruning_settings(self):
         disabled = self._single_leaf_stages(
             extra_env={"GAUSSIAN_SCALE_PRUNING_ENABLED": "false"}

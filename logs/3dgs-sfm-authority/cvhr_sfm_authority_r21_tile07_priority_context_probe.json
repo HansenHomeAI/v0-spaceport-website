@@ -1,0 +1,77 @@
+{
+  "source_manifest": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r21-tile07-context-20260529/inputs/tile-selection/3dgs_tile_manifest.json",
+  "tile_id": "tile_07",
+  "images": {
+    "DJI_00801.JPG": {
+      "occurrences": [
+        {
+          "tile_id": "tile_00",
+          "roles": [
+            "base_camera_ids",
+            "image_names",
+            "selected:base"
+          ]
+        },
+        {
+          "tile_id": "tile_01",
+          "roles": [
+            "border_camera_ids",
+            "image_names",
+            "selected:border"
+          ]
+        },
+        {
+          "tile_id": "tile_04",
+          "roles": [
+            "border_camera_ids",
+            "image_names",
+            "selected:border"
+          ]
+        },
+        {
+          "tile_id": "tile_07",
+          "roles": [
+            "context_camera_ids",
+            "selected:context"
+          ]
+        }
+      ]
+    },
+    "DJI_00809.JPG": {
+      "occurrences": [
+        {
+          "tile_id": "tile_00",
+          "roles": [
+            "border_camera_ids",
+            "image_names",
+            "selected:border"
+          ]
+        },
+        {
+          "tile_id": "tile_01",
+          "roles": [
+            "border_camera_ids",
+            "image_names",
+            "selected:border"
+          ]
+        },
+        {
+          "tile_id": "tile_04",
+          "roles": [
+            "base_camera_ids",
+            "image_names",
+            "selected:base"
+          ]
+        },
+        {
+          "tile_id": "tile_05",
+          "roles": [
+            "border_camera_ids",
+            "image_names",
+            "selected:border"
+          ]
+        }
+      ]
+    }
+  }
+}

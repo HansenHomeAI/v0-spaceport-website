@@ -1,0 +1,326 @@
+{
+  "checked_at": "2026-05-29T12:47:42.634458+00:00",
+  "artifact_uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r27-tile07-scale35-20260529/tiles/tile_07/output/model.tar.gz",
+  "artifact_head_object": {
+    "AcceptRanges": "bytes",
+    "LastModified": "2026-05-29T12:45:12+00:00",
+    "ContentLength": 39637219,
+    "ETag": "\"fd2761db1274ea738d7818bc83a26745-8\"",
+    "VersionId": "H2Q4vUyuRBmpB9UpBuUWt3Yespms2j1R",
+    "ContentType": "binary/octet-stream",
+    "ServerSideEncryption": "aws:kms",
+    "Metadata": {},
+    "SSEKMSKeyId": "arn:aws:kms:us-west-2:975050048887:key/e498a88e-6b23-44e3-90bd-f35b25d6e420"
+  },
+  "local_size_bytes": 39637219,
+  "sha256": "047b697be21fe313d2e5e5805dc6311153423ae06899c3b5c2ea6d6967391083",
+  "job_name": "cvhr-r27-t07-scale35-1780044317",
+  "tile_id": "tile_07",
+  "preflight_type": "leaf_tile_artifact",
+  "inventory": [
+    {
+      "name": "background_manifest.json",
+      "size": 2850,
+      "type": "file"
+    },
+    {
+      "name": "background_skybox.webp",
+      "size": 51162,
+      "type": "file"
+    },
+    {
+      "name": "export_manifest.json",
+      "size": 4619,
+      "type": "file"
+    },
+    {
+      "name": "export_quality_pass_summary.json",
+      "size": 9570,
+      "type": "file"
+    },
+    {
+      "name": "floater_pruning_summary.json",
+      "size": 1540,
+      "type": "file"
+    },
+    {
+      "name": "ns_export.log",
+      "size": 461,
+      "type": "file"
+    },
+    {
+      "name": "ns_train.log",
+      "size": 110852,
+      "type": "file"
+    },
+    {
+      "name": "scale_pruning_summary.json",
+      "size": 538,
+      "type": "file"
+    },
+    {
+      "name": "splat.ply",
+      "size": 43538179,
+      "type": "file"
+    },
+    {
+      "name": "training_metadata.json",
+      "size": 8773,
+      "type": "file"
+    },
+    {
+      "name": "training_selection.json",
+      "size": 9113,
+      "type": "file"
+    }
+  ],
+  "required_paths": {
+    "present": [
+      "background_manifest.json",
+      "background_skybox.webp",
+      "export_manifest.json",
+      "floater_pruning_summary.json",
+      "splat.ply",
+      "training_metadata.json",
+      "training_selection.json"
+    ],
+    "missing": []
+  },
+  "training_metadata": {
+    "training_completed": true,
+    "training_mode": "leaf_tile",
+    "model_variant": "splatfacto-w-light",
+    "max_iterations": 30000,
+    "sh_degree": 3,
+    "downscale_factor": 2,
+    "enable_bg_model": true,
+    "enable_alpha_loss": true,
+    "enable_robust_mask": true
+  },
+  "training_selection": {
+    "tile_id": "tile_07",
+    "selected_image_count": 240,
+    "max_selected_images": 240,
+    "view_bucket_counts": {
+      "near_detail": 240,
+      "boundary": 49,
+      "horizon": 7
+    },
+    "scaffold_initialization": {
+      "scaffold_source_artifact": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/splat.ply",
+      "filtered_point_cloud": "/tmp/nerfstudio_training/converted_data/scaffold_init.ply",
+      "scaffold_filter_bounds": {
+        "min_x": -311.3838,
+        "max_x": 223.81380000000001,
+        "min_y": -76.63470000000001,
+        "max_y": 48.2577,
+        "min_z": -200.753,
+        "max_z": 347.803
+      },
+      "source_gaussian_count": 74138,
+      "source_filtered_gaussian_count": 23942,
+      "source_rejected_gaussian_count": 50196,
+      "source_filter_retention_ratio": 0.3229383042434379,
+      "source_filter_rejection_ratio": 0.677061695756562,
+      "inherited_gaussian_count": 23942,
+      "inherited_gaussian_cap": null,
+      "inherited_attributes": [
+        "positions",
+        "rgb_from_gaussian_dc"
+      ],
+      "reinitialized_attributes": [
+        "scale",
+        "opacity",
+        "rotation",
+        "sh_rest",
+        "appearance_embeddings"
+      ],
+      "scaffold_inheritance_mode": "global_scaffold_ply_filtered_point_cloud",
+      "scaffold_init_downsample_strategy": null,
+      "scaffold_filter_selective": true,
+      "fallback_reason": null,
+      "fallback_used": false,
+      "external_scaffold": {
+        "stage_name": "scaffold",
+        "training_mode": "global_scaffold",
+        "status": "reused_external_scaffold",
+        "source_dir": "/opt/ml/input/data/scaffold",
+        "source_kind": "directory_tar_artifact",
+        "source_artifact": "/opt/ml/input/data/scaffold/model.tar.gz",
+        "output_dir": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold",
+        "splat_ply": "/tmp/nerfstudio_training/leaf_tile_scaffold/external_scaffold/splat.ply"
+      }
+    }
+  },
+  "export_manifest": {
+    "ply": "splat.ply",
+    "planner_transform_applied": null,
+    "foreground_coordinate_frame": "planner"
+  },
+  "floater_pruning_summary": {
+    "enabled": true,
+    "evaluated_gaussians": 250552,
+    "candidate_gaussians": 250552,
+    "removed_gaussians": 70636,
+    "remaining_gaussians": 179916,
+    "sampled_views": 25,
+    "min_views": 4,
+    "top_region_ratio": 0.35,
+    "top_view_fraction": 0.9,
+    "min_sky_views": 1,
+    "sky_min_luminance": 0.3,
+    "sky_min_saturation": 0.08,
+    "sky_blue_dominance_margin": 0.02,
+    "max_opacity": 1.01,
+    "max_color_distance": 0.65,
+    "min_edge_support": 3,
+    "patch_size": 9,
+    "diagnostics": {
+      "visible_min_views_count": 174431,
+      "meets_top_region_count": 13386,
+      "meets_sky_support_count": 108344,
+      "meets_top_or_sky_count": 110648,
+      "low_sky_edge_support_count": 240845,
+      "color_distance_pass_count": 193206,
+      "legacy_removal_candidate_count": 68117,
+      "gaussian_sky_color_count": 117410,
+      "sky_color_distance_pass_count": 67187,
+      "sky_color_removal_candidate_count": 29530,
+      "removal_candidate_count": 70636,
+      "priority_frame_name_count": 2,
+      "priority_frame_match_count": 1,
+      "candidate_opacity_p50": 0.617513507604599,
+      "candidate_opacity_p95": 0.9981794118881225,
+      "top_fraction_p50": 0.0,
+      "top_fraction_p95": 0.9090909361839294,
+      "sky_support_count_p50": 0.0,
+      "sky_support_count_p95": 3.0,
+      "sky_edge_support_count_p95": 2.0,
+      "median_color_distance_p50": 0.37914466857910156,
+      "median_color_distance_p95": 0.9000652223825455
+    },
+    "sky_color_pruning_enabled": true,
+    "sky_color_min_sky_views": 1,
+    "sky_color_max_color_distance": 0.5,
+    "sky_color_removed_gaussians": 29530
+  },
+  "scale_pruning_summary": {
+    "enabled": true,
+    "max_scale": 3.5,
+    "max_volume": 0.0,
+    "original_gaussians": 179916,
+    "kept_gaussians": 175551,
+    "removed_gaussians": 4365,
+    "removed_by_scale": 4365,
+    "removed_by_volume": 0,
+    "scale_activation": "exp",
+    "diagnostics": {
+      "scale_max_p50": 1.2445040345191956,
+      "scale_max_p95": 2.747131645679474,
+      "scale_max_p99": 5.018363142013556,
+      "scale_max_max": 77.12945556640625,
+      "scale_volume_p95": 1.5533438324928284,
+      "scale_volume_p99": 8.917602300643992,
+      "scale_volume_max": 76768.5
+    }
+  },
+  "density_cap_summary": {},
+  "background_manifest_keys": [
+    "appearance_camera_clamped",
+    "appearance_camera_idx",
+    "appearance_mode",
+    "appearance_num_embeddings",
+    "asset",
+    "bg_sh_degree",
+    "camera_idx",
+    "floater_pruning",
+    "height",
+    "requested_camera_idx",
+    "scale_pruning",
+    "selection",
+    "version",
+    "width"
+  ],
+  "splat_reference_guard": {
+    "enabled": true,
+    "status": "ok",
+    "reference_splat_count": 250552,
+    "max_reference_splat_ratio": 1.0,
+    "min_reference_splat_ratio": 0.7,
+    "splat_vertex_count": 175551,
+    "observed_reference_ratio": 0.7006569494556021,
+    "block_reason": null
+  },
+  "splat_ply_size_bytes": 43538179,
+  "splat_ply_header": [
+    "ply",
+    "format binary_little_endian 1.0",
+    "element vertex 175551",
+    "property float x",
+    "property float y",
+    "property float z",
+    "property float nx",
+    "property float ny",
+    "property float nz",
+    "property float f_dc_0",
+    "property float f_dc_1",
+    "property float f_dc_2",
+    "property float f_rest_0",
+    "property float f_rest_1",
+    "property float f_rest_2",
+    "property float f_rest_3",
+    "property float f_rest_4",
+    "property float f_rest_5",
+    "property float f_rest_6",
+    "property float f_rest_7",
+    "property float f_rest_8",
+    "property float f_rest_9",
+    "property float f_rest_10",
+    "property float f_rest_11",
+    "property float f_rest_12",
+    "property float f_rest_13",
+    "property float f_rest_14",
+    "property float f_rest_15",
+    "property float f_rest_16",
+    "property float f_rest_17",
+    "property float f_rest_18",
+    "property float f_rest_19",
+    "property float f_rest_20",
+    "property float f_rest_21",
+    "property float f_rest_22",
+    "property float f_rest_23",
+    "property float f_rest_24",
+    "property float f_rest_25",
+    "property float f_rest_26",
+    "property float f_rest_27",
+    "property float f_rest_28",
+    "property float f_rest_29",
+    "property float f_rest_30",
+    "property float f_rest_31",
+    "property float f_rest_32",
+    "property float f_rest_33",
+    "property float f_rest_34",
+    "property float f_rest_35",
+    "property float f_rest_36",
+    "property float f_rest_37",
+    "property float f_rest_38",
+    "property float f_rest_39",
+    "property float f_rest_40",
+    "property float f_rest_41",
+    "property float f_rest_42",
+    "property float f_rest_43",
+    "property float f_rest_44",
+    "property float opacity",
+    "property float scale_0",
+    "property float scale_1",
+    "property float scale_2",
+    "property float rot_0",
+    "property float rot_1",
+    "property float rot_2",
+    "property float rot_3",
+    "end_header"
+  ],
+  "splat_vertex_count": 175551,
+  "block_reasons": [],
+  "decision": "leaf_preflight_passed_cache_candidate"
+}

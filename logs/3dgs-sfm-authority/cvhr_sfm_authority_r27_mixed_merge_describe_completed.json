@@ -1,0 +1,94 @@
+{
+    "ProcessingInputs": [
+        {
+            "InputName": "merge-plan",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r27-mixed-20260529/merge/merge_plan.json",
+                "LocalPath": "/opt/ml/processing/input/merge-plan",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated"
+            }
+        },
+        {
+            "InputName": "tile-selection",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r21-tile07-context-20260529/inputs/tile-selection",
+                "LocalPath": "/opt/ml/processing/input/tile-selection",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated"
+            }
+        },
+        {
+            "InputName": "artifact-00",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r15-weighted-20260528/tiles/tile_00/cvhr-sfm-auth-r15-weighted-1780028843-tile-00/output/model.tar.gz",
+                "LocalPath": "/opt/ml/processing/input/artifacts/artifact-00",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated"
+            }
+        },
+        {
+            "InputName": "artifact-01",
+            "AppManaged": false,
+            "S3Input": {
+                "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r27-tile07-scale35-20260529/tiles/tile_07/output/model.tar.gz",
+                "LocalPath": "/opt/ml/processing/input/artifacts/artifact-01",
+                "S3DataType": "S3Prefix",
+                "S3InputMode": "File",
+                "S3DataDistributionType": "FullyReplicated"
+            }
+        }
+    ],
+    "ProcessingOutputConfig": {
+        "Outputs": [
+            {
+                "OutputName": "artifact",
+                "S3Output": {
+                    "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r27-mixed-20260529/merge/output",
+                    "LocalPath": "/opt/ml/processing/output/artifact",
+                    "S3UploadMode": "EndOfJob"
+                },
+                "AppManaged": false
+            }
+        ]
+    },
+    "ProcessingJobName": "cvhr-sfm-auth-r27-mixed-1780044317-merge",
+    "ProcessingResources": {
+        "ClusterConfig": {
+            "InstanceCount": 1,
+            "InstanceType": "ml.m5.xlarge",
+            "VolumeSizeInGB": 120
+        }
+    },
+    "StoppingCondition": {
+        "MaxRuntimeInSeconds": 3600
+    },
+    "AppSpecification": {
+        "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:21bb18a8553e445c2e7f702a2e0f823191f7ea8670d141922b3bd152ac192e5c",
+        "ContainerEntrypoint": [
+            "python3",
+            "/opt/ml/code/run_tiled_merge_packaging.py"
+        ]
+    },
+    "Environment": {
+        "BACKGROUND_SOURCE_TILE_ID": "tile_00",
+        "MERGE_MODE": "strict_core",
+        "MERGE_PLAN_PATH": "/opt/ml/processing/input/merge-plan/merge_plan.json",
+        "OUTPUT_DIR": "/opt/ml/processing/output/artifact",
+        "TILE_MANIFEST_PATH": "/opt/ml/processing/input/tile-selection/3dgs_tile_manifest.json",
+        "VIEW_BUCKET_MANIFEST_PATH": "/opt/ml/processing/input/tile-selection/3dgs_view_buckets.json"
+    },
+    "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+    "ProcessingJobArn": "arn:aws:sagemaker:us-west-2:975050048887:processing-job/cvhr-sfm-auth-r27-mixed-1780044317-merge",
+    "ProcessingJobStatus": "Completed",
+    "ProcessingEndTime": "2026-05-29T06:54:33.546000-06:00",
+    "ProcessingStartTime": "2026-05-29T06:49:58.289000-06:00",
+    "LastModifiedTime": "2026-05-29T06:56:53.307000-06:00",
+    "CreationTime": "2026-05-29T06:49:21.415000-06:00"
+}

@@ -1,0 +1,107 @@
+{
+  "ProcessingJobName": "cvhr-r27-t07-scale35-1780044317",
+  "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+  "AppSpecification": {
+    "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:21bb18a8553e445c2e7f702a2e0f823191f7ea8670d141922b3bd152ac192e5c",
+    "ContainerEntrypoint": [
+      "python3",
+      "/opt/ml/code/run_export_quality_pass.py"
+    ]
+  },
+  "ProcessingInputs": [
+    {
+      "InputName": "model",
+      "S3Input": {
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r21-tile07-context-20260529/tiles/tile_07/cvhr-sfm-auth-r21-tile07-context-1780044317-tile-07/output/model.tar.gz",
+        "LocalPath": "/opt/ml/processing/input/model",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File"
+      }
+    },
+    {
+      "InputName": "colmap",
+      "S3Input": {
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r1-two-tile-00-07-input-20260526/colmap",
+        "LocalPath": "/opt/ml/processing/input/colmap",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File"
+      }
+    },
+    {
+      "InputName": "tile-selection",
+      "S3Input": {
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r21-tile07-context-20260529/inputs/tile-selection",
+        "LocalPath": "/opt/ml/processing/input/tile-selection",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File"
+      }
+    }
+  ],
+  "ProcessingOutputConfig": {
+    "Outputs": [
+      {
+        "OutputName": "artifact",
+        "S3Output": {
+          "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r27-tile07-scale35-20260529/tiles/tile_07/output",
+          "LocalPath": "/opt/ml/processing/output",
+          "S3UploadMode": "EndOfJob"
+        }
+      }
+    ]
+  },
+  "ProcessingResources": {
+    "ClusterConfig": {
+      "InstanceCount": 1,
+      "InstanceType": "ml.g4dn.xlarge",
+      "VolumeSizeInGB": 120
+    }
+  },
+  "StoppingCondition": {
+    "MaxRuntimeInSeconds": 1800
+  },
+  "Environment": {
+    "AWS_DEFAULT_REGION": "us-west-2",
+    "PYTHONUNBUFFERED": "1",
+    "MODEL_INPUT_DIR": "/opt/ml/processing/input/model",
+    "COLMAP_INPUT_DIR": "/opt/ml/processing/input/colmap",
+    "OUTPUT_DIR": "/opt/ml/processing/output",
+    "TRAINING_MODE": "leaf_tile",
+    "TILE_ID": "tile_07",
+    "TILE_MANIFEST_PATH": "/opt/ml/processing/input/tile-selection/3dgs_tile_manifest.json",
+    "VIEW_BUCKET_MANIFEST_PATH": "/opt/ml/processing/input/tile-selection/3dgs_view_buckets.json",
+    "REQUIRE_SFM_AUTHORITY": "true",
+    "TRAINING_DOWNSCALE_FACTOR": "2",
+    "TRAINING_MAX_SELECTED_IMAGES": "240",
+    "BOUNDARY_FROZEN_CAMERAS": "DJI_00814.JPG,DJI_00815.JPG",
+    "HORIZON_FROZEN_CAMERAS": "DJI_00801.JPG,DJI_00809.JPG",
+    "FLOATER_PRUNING_ENABLED": "true",
+    "FLOATER_PRUNING_MAX_OPACITY": "1.01",
+    "FLOATER_PRUNING_MAX_COLOR_DISTANCE": "0.65",
+    "FLOATER_PRUNING_MIN_VIEWS": "4",
+    "FLOATER_PRUNING_MIN_SKY_VIEWS": "1",
+    "FLOATER_PRUNING_TOP_VIEW_FRACTION": "0.9",
+    "FLOATER_PRUNING_TOP_REGION_RATIO": "0.35",
+    "FLOATER_PRUNING_MIN_EDGE_SUPPORT": "3",
+    "FLOATER_PRUNING_SKY_COLOR_ENABLED": "true",
+    "FLOATER_PRUNING_SKY_COLOR_MIN_SKY_VIEWS": "1",
+    "FLOATER_PRUNING_SKY_COLOR_MAX_COLOR_DISTANCE": "0.50",
+    "IMAGE_DIGEST_PROOF": "sha256:21bb18a8553e445c2e7f702a2e0f823191f7ea8670d141922b3bd152ac192e5c",
+    "GAUSSIAN_SCALE_PRUNING_ENABLED": "true",
+    "GAUSSIAN_SCALE_PRUNING_MAX_SCALE": "3.5",
+    "GAUSSIAN_SCALE_PRUNING_MAX_VOLUME": "0.0"
+  },
+  "Tags": [
+    {
+      "Key": "Project",
+      "Value": "Spaceport"
+    },
+    {
+      "Key": "Branch",
+      "Value": "agent-52689431-3dgs-sfm-authority"
+    },
+    {
+      "Key": "Experiment",
+      "Value": "cvhr-sfm-auth-r26-tile07-scale35"
+    }
+  ]
+}

@@ -176,6 +176,60 @@ class SkyQualityPruningTests(unittest.TestCase):
             retained = PlyData.read(str(ply_path))["vertex"].data
             self.assertEqual(len(retained), 2)
 
+    def test_horizon_coverage_pruning_removes_priority_sky_projection(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            data_dir = self._write_fixture_data(root)
+            ply_path = root / "splat.ply"
+            dtype = [
+                ("x", "f4"),
+                ("y", "f4"),
+                ("z", "f4"),
+                ("opacity", "f4"),
+                ("f_dc_0", "f4"),
+                ("f_dc_1", "f4"),
+                ("f_dc_2", "f4"),
+            ]
+            vertices = np.zeros(2, dtype=dtype)
+            vertices["x"] = [0.0, 1.0]
+            vertices["y"] = [-0.8, 0.8]
+            vertices["z"] = [-1.0, -1.0]
+            vertices["opacity"] = math.log(0.8 / 0.2)
+            colors = np.asarray([[1.0, 1.0, 1.0], [1.0, 0.0, 0.0]], dtype=np.float32)
+            sh = (colors - 0.5) / sky_quality.SH_C0
+            vertices["f_dc_0"] = sh[:, 0]
+            vertices["f_dc_1"] = sh[:, 1]
+            vertices["f_dc_2"] = sh[:, 2]
+            PlyData([PlyElement.describe(vertices, "vertex")], text=False).write(str(ply_path))
+
+            result = sky_quality.prune_foreground_floaters(
+                ply_path=ply_path,
+                data_dir=data_dir,
+                sampled_views=1,
+                priority_frame_names=["sky.png"],
+                min_views=1,
+                min_sky_views=1,
+                max_opacity=1.01,
+                max_color_distance=0.0,
+                min_edge_support=1,
+                patch_size=3,
+                sky_color_pruning_enabled=False,
+                horizon_coverage_pruning_enabled=True,
+                horizon_coverage_min_priority_views=1,
+                horizon_coverage_min_sky_views=1,
+                horizon_coverage_min_top_fraction=0.5,
+                horizon_coverage_max_color_distance=1.25,
+            )
+
+            self.assertEqual(result.removed_gaussians, 1)
+            self.assertEqual(result.sky_color_removed_gaussians, 0)
+            self.assertEqual(result.horizon_coverage_removed_gaussians, 1)
+            self.assertEqual(result.diagnostics["horizon_coverage_priority_sample_count"], 1)
+            self.assertEqual(result.diagnostics["horizon_coverage_removal_candidate_count"], 1)
+            retained = PlyData.read(str(ply_path))["vertex"].data
+            self.assertEqual(len(retained), 1)
+            self.assertIn(1.0, set(float(value) for value in retained["x"]))
+
     def test_scale_pruning_removes_large_exported_gaussians(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

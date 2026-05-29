@@ -848,6 +848,12 @@ class NerfStudioTrainer:
             'FLOATER_PRUNING_SKY_COLOR_ENABLED': 'output.floater_pruning.sky_color_pruning_enabled',
             'FLOATER_PRUNING_SKY_COLOR_MIN_SKY_VIEWS': 'output.floater_pruning.sky_color_min_sky_views',
             'FLOATER_PRUNING_SKY_COLOR_MAX_COLOR_DISTANCE': 'output.floater_pruning.sky_color_max_color_distance',
+            'FLOATER_PRUNING_INCLUDE_PRIORITY_CONTEXT': 'output.floater_pruning.include_priority_context_images',
+            'FLOATER_PRUNING_HORIZON_COVERAGE_ENABLED': 'output.floater_pruning.horizon_coverage_pruning_enabled',
+            'FLOATER_PRUNING_HORIZON_COVERAGE_MIN_PRIORITY_VIEWS': 'output.floater_pruning.horizon_coverage_min_priority_views',
+            'FLOATER_PRUNING_HORIZON_COVERAGE_MIN_SKY_VIEWS': 'output.floater_pruning.horizon_coverage_min_sky_views',
+            'FLOATER_PRUNING_HORIZON_COVERAGE_MIN_TOP_FRACTION': 'output.floater_pruning.horizon_coverage_min_top_fraction',
+            'FLOATER_PRUNING_HORIZON_COVERAGE_MAX_COLOR_DISTANCE': 'output.floater_pruning.horizon_coverage_max_color_distance',
             'GAUSSIAN_SCALE_PRUNING_ENABLED': 'output.scale_pruning.enabled',
             'GAUSSIAN_SCALE_PRUNING_MAX_SCALE': 'output.scale_pruning.max_scale',
             'GAUSSIAN_SCALE_PRUNING_MAX_VOLUME': 'output.scale_pruning.max_volume',
@@ -879,11 +885,11 @@ class NerfStudioTrainer:
             value = os.environ.get(env_var)
             if value is not None:
                 # Convert string values to appropriate types
-                if env_var in ['BILATERAL_PROCESSING', 'USE_SCALE_REGULARIZATION', 'ENABLE_BG_MODEL', 'ENABLE_ALPHA_LOSS', 'ENABLE_ROBUST_MASK', 'FLOATER_PRUNING_ENABLED', 'FLOATER_PRUNING_SKY_COLOR_ENABLED', 'GAUSSIAN_SCALE_PRUNING_ENABLED', 'TRAINING_DENSITY_CAP_ENABLED', 'TILED_INCLUDE_SCAFFOLD', 'TILED_INCLUDE_MERGE', 'TILED_RESUME_EXISTING', 'VIEWER_QUIT_ON_TRAIN_COMPLETION', 'REQUIRE_SFM_AUTHORITY']:
+                if env_var in ['BILATERAL_PROCESSING', 'USE_SCALE_REGULARIZATION', 'ENABLE_BG_MODEL', 'ENABLE_ALPHA_LOSS', 'ENABLE_ROBUST_MASK', 'FLOATER_PRUNING_ENABLED', 'FLOATER_PRUNING_SKY_COLOR_ENABLED', 'FLOATER_PRUNING_INCLUDE_PRIORITY_CONTEXT', 'FLOATER_PRUNING_HORIZON_COVERAGE_ENABLED', 'GAUSSIAN_SCALE_PRUNING_ENABLED', 'TRAINING_DENSITY_CAP_ENABLED', 'TILED_INCLUDE_SCAFFOLD', 'TILED_INCLUDE_MERGE', 'TILED_RESUME_EXISTING', 'VIEWER_QUIT_ON_TRAIN_COMPLETION', 'REQUIRE_SFM_AUTHORITY']:
                     value = value.lower() in ('true', '1', 'yes', 'on')
-                elif env_var in ['MAX_ITERATIONS', 'LOG_INTERVAL', 'TRAINING_DATALOADER_NUM_WORKERS', 'TRAINING_MAX_SELECTED_IMAGES', 'TRAINING_SELECTION_STRIDE', 'BOUNDARY_CAMERA_REPEAT_FACTOR', 'TRAINING_REVIEW_IMAGES_PER_BUCKET', 'TRAINING_STEPS_PER_EVAL_IMAGE', 'TRAINING_STEPS_PER_EVAL_ALL_IMAGES', 'TRAINING_STEPS_PER_SAVE', 'TRAINING_STOP_SPLIT_AT', 'SH_DEGREE', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'TRAINING_DOWNSCALE_FACTOR', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT', 'FLOATER_PRUNING_SKY_COLOR_MIN_SKY_VIEWS', 'TRAINING_MAX_OUTPUT_GAUSSIANS', 'GLOBAL_SCAFFOLD_MAX_IMAGES', 'GLOBAL_SCAFFOLD_FRAME_STRIDE', 'GLOBAL_SCAFFOLD_MAX_ITERATIONS', 'GLOBAL_SCAFFOLD_SH_DEGREE', 'GLOBAL_SCAFFOLD_INIT_MAX_POINTS', 'TILED_MAX_TILES']:
+                elif env_var in ['MAX_ITERATIONS', 'LOG_INTERVAL', 'TRAINING_DATALOADER_NUM_WORKERS', 'TRAINING_MAX_SELECTED_IMAGES', 'TRAINING_SELECTION_STRIDE', 'BOUNDARY_CAMERA_REPEAT_FACTOR', 'TRAINING_REVIEW_IMAGES_PER_BUCKET', 'TRAINING_STEPS_PER_EVAL_IMAGE', 'TRAINING_STEPS_PER_EVAL_ALL_IMAGES', 'TRAINING_STEPS_PER_SAVE', 'TRAINING_STOP_SPLIT_AT', 'SH_DEGREE', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'TRAINING_DOWNSCALE_FACTOR', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT', 'FLOATER_PRUNING_SKY_COLOR_MIN_SKY_VIEWS', 'FLOATER_PRUNING_HORIZON_COVERAGE_MIN_PRIORITY_VIEWS', 'FLOATER_PRUNING_HORIZON_COVERAGE_MIN_SKY_VIEWS', 'TRAINING_MAX_OUTPUT_GAUSSIANS', 'GLOBAL_SCAFFOLD_MAX_IMAGES', 'GLOBAL_SCAFFOLD_FRAME_STRIDE', 'GLOBAL_SCAFFOLD_MAX_ITERATIONS', 'GLOBAL_SCAFFOLD_SH_DEGREE', 'GLOBAL_SCAFFOLD_INIT_MAX_POINTS', 'TILED_MAX_TILES']:
                     value = int(value)
-                elif env_var in ['TARGET_PSNR', 'SSIM_LAMBDA', 'CULL_ALPHA_THRESH', 'CULL_SCALE_THRESH', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_SKY_MIN_LUMINANCE', 'FLOATER_PRUNING_SKY_MIN_SATURATION', 'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE', 'FLOATER_PRUNING_SKY_COLOR_MAX_COLOR_DISTANCE', 'GAUSSIAN_SCALE_PRUNING_MAX_SCALE', 'GAUSSIAN_SCALE_PRUNING_MAX_VOLUME', 'GLOBAL_SCAFFOLD_MAX_GAUSS_RATIO', 'GLOBAL_SCAFFOLD_MAX_FILTER_RETENTION_RATIO']:
+                elif env_var in ['TARGET_PSNR', 'SSIM_LAMBDA', 'CULL_ALPHA_THRESH', 'CULL_SCALE_THRESH', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_SKY_MIN_LUMINANCE', 'FLOATER_PRUNING_SKY_MIN_SATURATION', 'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE', 'FLOATER_PRUNING_SKY_COLOR_MAX_COLOR_DISTANCE', 'FLOATER_PRUNING_HORIZON_COVERAGE_MIN_TOP_FRACTION', 'FLOATER_PRUNING_HORIZON_COVERAGE_MAX_COLOR_DISTANCE', 'GAUSSIAN_SCALE_PRUNING_MAX_SCALE', 'GAUSSIAN_SCALE_PRUNING_MAX_VOLUME', 'GLOBAL_SCAFFOLD_MAX_GAUSS_RATIO', 'GLOBAL_SCAFFOLD_MAX_FILTER_RETENTION_RATIO']:
                     value = float(value)
                 
                 # Set nested config values
@@ -1046,10 +1052,33 @@ class NerfStudioTrainer:
             max_images=max_images,
             stride=frame_stride,
         )
+        priority_image_names = resolve_explicit_frozen_camera_names(training_config)
+        pruning_config = self.config.get('output', {}).get('floater_pruning', {})
+        if bool(pruning_config.get('include_priority_context_images', False)):
+            manifest_image_names = parse_image_name_list(tile_manifest.get('all_image_names') or [])
+            if not manifest_image_names:
+                for tile in tile_manifest.get('tiles') or []:
+                    if isinstance(tile, dict):
+                        manifest_image_names.extend(parse_image_name_list(tile.get('image_names') or []))
+            manifest_image_set = set(manifest_image_names)
+            selected_set = set(parse_image_name_list(selected_image_names))
+            priority_context_names = [
+                image_name
+                for image_name in priority_image_names
+                if image_name in manifest_image_set and image_name not in selected_set
+            ]
+            if priority_context_names:
+                logger.info(
+                    "🧩 Adding %s priority context image(s) for export pruning: %s",
+                    len(priority_context_names),
+                    priority_context_names[:10],
+                )
+                selected_image_names = unique_preserving_order([*priority_context_names, *selected_image_names])
+
         return limit_selected_image_names(
             selected_image_names,
             view_buckets=view_buckets,
-            priority_image_names=resolve_explicit_frozen_camera_names(training_config),
+            priority_image_names=priority_image_names,
             max_images=proof_max_images,
             selection_stride=proof_selection_stride,
         )
@@ -2902,6 +2931,21 @@ class NerfStudioTrainer:
                 sky_color_pruning_enabled=bool(pruning_config.get('sky_color_pruning_enabled', False)),
                 sky_color_min_sky_views=int(pruning_config.get('sky_color_min_sky_views', 1)),
                 sky_color_max_color_distance=float(pruning_config.get('sky_color_max_color_distance', 0.35)),
+                horizon_coverage_pruning_enabled=bool(
+                    pruning_config.get('horizon_coverage_pruning_enabled', False)
+                ),
+                horizon_coverage_min_priority_views=int(
+                    pruning_config.get('horizon_coverage_min_priority_views', 1)
+                ),
+                horizon_coverage_min_sky_views=int(
+                    pruning_config.get('horizon_coverage_min_sky_views', 1)
+                ),
+                horizon_coverage_min_top_fraction=float(
+                    pruning_config.get('horizon_coverage_min_top_fraction', 0.5)
+                ),
+                horizon_coverage_max_color_distance=float(
+                    pruning_config.get('horizon_coverage_max_color_distance', 1.25)
+                ),
             )
             return self.floater_pruning_result
 
@@ -2933,6 +2977,21 @@ class NerfStudioTrainer:
             sky_color_pruning_enabled=bool(pruning_config.get('sky_color_pruning_enabled', False)),
             sky_color_min_sky_views=int(pruning_config.get('sky_color_min_sky_views', 1)),
             sky_color_max_color_distance=float(pruning_config.get('sky_color_max_color_distance', 0.35)),
+            horizon_coverage_pruning_enabled=bool(
+                pruning_config.get('horizon_coverage_pruning_enabled', False)
+            ),
+            horizon_coverage_min_priority_views=int(
+                pruning_config.get('horizon_coverage_min_priority_views', 1)
+            ),
+            horizon_coverage_min_sky_views=int(
+                pruning_config.get('horizon_coverage_min_sky_views', 1)
+            ),
+            horizon_coverage_min_top_fraction=float(
+                pruning_config.get('horizon_coverage_min_top_fraction', 0.5)
+            ),
+            horizon_coverage_max_color_distance=float(
+                pruning_config.get('horizon_coverage_max_color_distance', 1.25)
+            ),
         )
         self.floater_pruning_result = result
 
