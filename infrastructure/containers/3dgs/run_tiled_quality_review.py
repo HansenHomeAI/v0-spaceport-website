@@ -46,11 +46,13 @@ logger = logging.getLogger(__name__)
 
 CONFIG_PATH = Path("/opt/ml/code/nerfstudio_config.yaml")
 DEFAULT_BUCKET_ORDER = list(REVIEW_BUCKETS)
+SUPPORTED_REVIEW_BUCKET_LABELS = {bucket_label for _, bucket_label in DEFAULT_BUCKET_ORDER}
 MAX_HORIZON_FOREGROUND_ALPHA_MEAN = 0.98
 MAX_HORIZON_FOREGROUND_ALPHA_COVERAGE = 0.995
 MIN_HORIZON_FOREGROUND_LUMINANCE = 0.60
 MIN_HORIZON_FOREGROUND_BLUE_DOMINANCE = 0.35
 MIN_HORIZON_FOREGROUND_SATURATION = 0.12
+DEFAULT_TILE_RENDER_BUCKETS = {"boundary"}
 
 
 @dataclass(frozen=True)
@@ -86,6 +88,22 @@ def load_render_settings_from_env() -> RenderSettings:
         cull_margin=parse_float_env("QUALITY_REVIEW_CULL_MARGIN", 0.25, minimum=0.0, maximum=2.0),
         min_gaussians_on_oom=parse_int_env("QUALITY_REVIEW_MIN_GAUSSIANS_ON_OOM", 75_000, minimum=1),
     )
+
+
+def parse_tile_render_buckets(raw_value: str | None) -> set[str]:
+    value = (raw_value or "").strip().lower()
+    if not value:
+        return set(DEFAULT_TILE_RENDER_BUCKETS)
+    tokens = {token.strip() for token in value.replace(";", ",").split(",") if token.strip()}
+    if "*" in tokens or "all" in tokens:
+        return set(SUPPORTED_REVIEW_BUCKET_LABELS)
+    invalid = sorted(tokens - SUPPORTED_REVIEW_BUCKET_LABELS)
+    if invalid:
+        raise ValueError(
+            "Unsupported QUALITY_REVIEW_TILE_RENDER_BUCKETS value(s) "
+            f"{', '.join(invalid)}; expected one of {', '.join(sorted(SUPPORTED_REVIEW_BUCKET_LABELS))}, all"
+        )
+    return tokens
 
 
 def find_model_artifact(model_input_dir: Path) -> Path:
@@ -1311,11 +1329,32 @@ def build_visual_qa_manifest(
                 "bucket": bucket,
                 "image_name": view.get("image_name"),
                 "assets": {key: value for key, value in assets.items() if value is not None},
+                "tile_assets": {
+                    "renders": [
+                        record
+                        for record in (
+                            visual_asset_record(path, output_dir=output_dir)
+                            for path in view.get("tile_renders", [])
+                        )
+                        if record is not None
+                    ],
+                    "no_background_renders": [
+                        record
+                        for record in (
+                            visual_asset_record(path, output_dir=output_dir)
+                            for path in view.get("tile_no_background_renders", [])
+                        )
+                        if record is not None
+                    ],
+                },
                 "metrics": view.get("metrics", {}),
                 "metrics_no_background": view.get("metrics_no_background", {}),
                 "sky_metrics": view.get("sky_metrics", {}),
                 "sky_metrics_no_background": view.get("sky_metrics_no_background", {}),
                 "difference_stats": view.get("difference_stats", {}),
+                "tile_context_ids": view.get("tile_context_ids", view.get("boundary_context_tile_ids", [])),
+                "tile_alpha_stats": view.get("tile_alpha_stats", {}),
+                "tile_sky_metrics_no_background": view.get("tile_sky_metrics_no_background", {}),
                 "boundary_context_tile_ids": view.get("boundary_context_tile_ids", []),
                 "review_focus": [
                     "geometry_alignment",
@@ -1424,6 +1463,24 @@ def resolve_boundary_tile_ids(
     return matching_tile_ids[:2]
 
 
+def resolve_tile_render_ids(
+    tile_manifest: Mapping[str, Any],
+    selected_tile_ids: Sequence[str],
+    image_name: str,
+    bucket_label: str,
+    max_tile_count: int,
+) -> list[str]:
+    if max_tile_count == 0:
+        return []
+    if bucket_label == "boundary":
+        tile_ids = resolve_boundary_tile_ids(tile_manifest, selected_tile_ids, image_name)
+    else:
+        tile_ids = ordered_unique(selected_tile_ids)
+    if max_tile_count > 0:
+        tile_ids = tile_ids[:max_tile_count]
+    return tile_ids
+
+
 def build_boundary_composite(images: Sequence[np.ndarray], output_path: Path) -> str:
     composite = np.concatenate([np.clip(image * 255.0, 0, 255).astype(np.uint8) for image in images], axis=1)
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1442,6 +1499,8 @@ def main() -> None:
         if tile_id.strip()
     ]
     max_images_per_bucket = max(1, int(os.environ.get("QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET", "4") or 4))
+    tile_render_buckets = parse_tile_render_buckets(os.environ.get("QUALITY_REVIEW_TILE_RENDER_BUCKETS", ""))
+    max_tile_renders_per_view = parse_int_env("QUALITY_REVIEW_MAX_TILE_RENDERS_PER_VIEW", 2, minimum=0)
     review_camera_set = os.environ.get("QUALITY_REVIEW_CAMERA_SET", "auto")
     frozen_review_camera_manifest_path = resolve_optional_input_path(
         os.environ.get("FROZEN_REVIEW_CAMERA_MANIFEST", "") or os.environ.get("QUALITY_REVIEW_CAMERA_MANIFEST", ""),
@@ -1460,6 +1519,11 @@ def main() -> None:
     logger.info("📁 COLMAP input: %s", colmap_input_dir)
     logger.info("📁 Output dir: %s", output_dir)
     logger.info("🖼️ Render settings: %s", render_settings.__dict__)
+    logger.info(
+        "🧩 Per-tile review renders: buckets=%s max_per_view=%s",
+        ",".join(sorted(tile_render_buckets)) or "<none>",
+        max_tile_renders_per_view,
+    )
     if frozen_review_camera_manifest_path is not None:
         logger.info("📷 Frozen camera manifest: %s", frozen_review_camera_manifest_path)
 
@@ -1627,13 +1691,22 @@ def main() -> None:
                     "merged_final_stats": image_summary_stats(merged_final),
                 }
 
-                boundary_tile_ids: list[str] = []
-                if bucket_label_value == "boundary":
-                    boundary_tile_ids = resolve_boundary_tile_ids(tile_manifest, selected_tile_ids, image_name)
-                    boundary_images = [reference_image, merged_final]
+                tile_context_ids: list[str] = []
+                if bucket_label_value in tile_render_buckets:
+                    tile_context_ids = resolve_tile_render_ids(
+                        tile_manifest,
+                        selected_tile_ids,
+                        image_name,
+                        bucket_label_value,
+                        max_tile_renders_per_view,
+                    )
+                    comparison_images = [reference_image, merged_final]
                     tile_render_paths: list[str] = []
+                    tile_no_background_paths: list[str] = []
                     tile_render_stats_by_id: dict[str, Any] = {}
-                    for tile_id in boundary_tile_ids:
+                    tile_alpha_stats_by_id: dict[str, Any] = {}
+                    tile_sky_metrics_by_id: dict[str, Any] = {}
+                    for tile_id in tile_context_ids:
                         tile_ply_path = extracted_model_dir / "tiles" / tile_id / "splat.ply"
                         if not tile_ply_path.exists():
                             continue
@@ -1656,21 +1729,41 @@ def main() -> None:
                         )
                         tile_final = composite_render(tile_foreground, tile_alpha, tile_background)
                         tile_render_path = tiles_root / tile_id / bucket_label_value / f"{Path(image_name).stem}.png"
+                        tile_no_background_path = (
+                            tiles_root / tile_id / f"{bucket_label_value}_no_background" / f"{Path(image_name).stem}.png"
+                        )
                         tile_render_paths.append(save_rgb_image(tile_final, tile_render_path))
+                        tile_no_background_paths.append(save_rgb_image(tile_foreground, tile_no_background_path))
                         tile_render_stats_by_id[tile_id] = tile_render_stats
-                        boundary_images.append(tile_final)
-                    composite_path = composites_root / f"{Path(image_name).stem}.png"
-                    view_entry["boundary_context_tile_ids"] = boundary_tile_ids
-                    view_entry["boundary_tile_renders"] = tile_render_paths
-                    view_entry["boundary_tile_render_stats"] = tile_render_stats_by_id
-                    view_entry["boundary_composite"] = build_boundary_composite(boundary_images, composite_path)
+                        tile_alpha_stats_by_id[tile_id] = alpha_summary_stats(tile_alpha)
+                        tile_sky_metrics_by_id[tile_id] = compute_sky_image_metrics(
+                            (tile_foreground * 255.0).astype(np.uint8)
+                        )
+                        comparison_images.append(tile_final)
+
+                    view_entry["tile_context_ids"] = tile_context_ids
+                    view_entry["tile_renders"] = tile_render_paths
+                    view_entry["tile_no_background_renders"] = tile_no_background_paths
+                    view_entry["tile_render_stats"] = tile_render_stats_by_id
+                    view_entry["tile_alpha_stats"] = tile_alpha_stats_by_id
+                    view_entry["tile_sky_metrics_no_background"] = tile_sky_metrics_by_id
+
+                    if bucket_label_value == "boundary":
+                        composite_path = composites_root / f"{Path(image_name).stem}.png"
+                        view_entry["boundary_context_tile_ids"] = tile_context_ids
+                        view_entry["boundary_tile_renders"] = tile_render_paths
+                        view_entry["boundary_tile_render_stats"] = tile_render_stats_by_id
+                        view_entry["boundary_composite"] = build_boundary_composite(comparison_images, composite_path)
 
                 camera_manifest_entries.append(
                     {
                         "bucket": bucket_label_value,
                         "image_name": image_name,
                         "frame_file_path": str(frame_record["file_path"]),
-                        "boundary_context_tile_ids": boundary_tile_ids,
+                        "tile_context_ids": tile_context_ids,
+                        "boundary_context_tile_ids": (
+                            tile_context_ids if bucket_label_value == "boundary" else []
+                        ),
                     }
                 )
                 review_views.append(view_entry)

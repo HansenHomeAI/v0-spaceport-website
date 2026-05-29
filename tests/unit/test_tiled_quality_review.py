@@ -111,6 +111,48 @@ def make_view(bucket: str, *, psnr: float = 30.0) -> dict:
 
 
 class TiledQualityReviewManifestTests(unittest.TestCase):
+    def test_parse_tile_render_buckets_supports_default_and_horizon(self):
+        module = load_module_with_stubs()
+
+        self.assertEqual(module.parse_tile_render_buckets(""), {"boundary"})
+        self.assertEqual(module.parse_tile_render_buckets("horizon,boundary"), {"boundary", "horizon"})
+        self.assertEqual(module.parse_tile_render_buckets("all"), {"near_detail", "boundary", "horizon"})
+        with self.assertRaises(ValueError):
+            module.parse_tile_render_buckets("bad_bucket")
+
+    def test_resolve_tile_render_ids_uses_all_selected_for_horizon(self):
+        module = load_module_with_stubs()
+
+        manifest = {
+            "tiles": [
+                {
+                    "tile_id": "tile_00",
+                    "base_camera_ids": ["a.JPG"],
+                    "neighbor_tile_ids": ["tile_07"],
+                },
+                {
+                    "tile_id": "tile_07",
+                    "base_camera_ids": ["b.JPG"],
+                    "neighbor_tile_ids": ["tile_00"],
+                },
+            ]
+        }
+
+        self.assertEqual(
+            module.resolve_tile_render_ids(
+                manifest,
+                ["tile_00", "tile_07"],
+                "DJI_00809.JPG",
+                "horizon",
+                2,
+            ),
+            ["tile_00", "tile_07"],
+        )
+        self.assertEqual(
+            module.resolve_tile_render_ids(manifest, ["tile_00", "tile_07"], "a.JPG", "boundary", 2),
+            ["tile_00", "tile_07"],
+        )
+
     def test_decode_ply_sh_rest_converts_channel_major_to_basis_major_rgb(self):
         module = load_module_with_stubs()
 
