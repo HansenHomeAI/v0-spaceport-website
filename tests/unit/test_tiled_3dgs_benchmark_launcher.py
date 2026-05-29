@@ -75,6 +75,20 @@ class Tiled3DGSBenchmarkLauncherTests(unittest.TestCase):
 
         self.assertNotEqual(conservative.input_hash, aggressive.input_hash)
 
+    def test_tile_input_hash_changes_for_sky_color_pruning_settings(self):
+        disabled = self._single_leaf_stages(
+            extra_env={"FLOATER_PRUNING_SKY_COLOR_ENABLED": "false"}
+        )[0]
+        enabled = self._single_leaf_stages(
+            extra_env={
+                "FLOATER_PRUNING_SKY_COLOR_ENABLED": "true",
+                "FLOATER_PRUNING_SKY_COLOR_MIN_SKY_VIEWS": "1",
+                "FLOATER_PRUNING_SKY_COLOR_MAX_COLOR_DISTANCE": "0.18",
+            }
+        )[0]
+
+        self.assertNotEqual(disabled.input_hash, enabled.input_hash)
+
     def test_tile_input_hash_uses_effective_default_training_environment(self):
         stage = self._single_leaf_stages()[0]
         fingerprint = benchmark.tile_input_hash_env_fingerprint(stage.environment)

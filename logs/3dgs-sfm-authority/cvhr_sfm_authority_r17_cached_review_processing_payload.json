@@ -1,0 +1,108 @@
+{
+  "AppSpecification": {
+    "ContainerEntrypoint": [
+      "python3",
+      "/opt/ml/code/run_tiled_quality_review.py"
+    ],
+    "ImageUri": "975050048887.dkr.ecr.us-west-2.amazonaws.com/spaceport/3dgs@sha256:f4eead0e117e1abe9b3215393ab418e0e6ff0c87902aff3b1af2a574e448e17a"
+  },
+  "Environment": {
+    "BASELINE_REVIEW_MANIFEST": "/opt/ml/processing/input/baseline-review/quality_review_manifest.json",
+    "FROZEN_REVIEW_CAMERA_MANIFEST": "/opt/ml/processing/input/review/review_camera_manifest.json",
+    "IMAGE_DIGEST_PROOF": "sha256:f4eead0e117e1abe9b3215393ab418e0e6ff0c87902aff3b1af2a574e448e17a",
+    "QUALITY_REVIEW_CAMERA_SET": "smoke",
+    "QUALITY_REVIEW_MAX_GAUSSIANS_PER_VIEW": "0",
+    "QUALITY_REVIEW_MAX_IMAGES_PER_BUCKET": "2",
+    "QUALITY_REVIEW_RENDER_SCALE": "0.5",
+    "QUALITY_REVIEW_TILE_IDS": "tile_00,tile_07",
+    "REQUIRE_SFM_AUTHORITY": "true"
+  },
+  "ProcessingInputs": [
+    {
+      "InputName": "model",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/model",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r17-resume-20260529/merge/output/model.tar.gz"
+      }
+    },
+    {
+      "InputName": "colmap",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/colmap",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r1-two-tile-00-07-input-20260526/colmap"
+      }
+    },
+    {
+      "InputName": "review-manifest",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/review",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r1-seam-1779838097/3dgs/review/frozen-camera-manifest"
+      }
+    },
+    {
+      "InputName": "baseline-review",
+      "S3Input": {
+        "LocalPath": "/opt/ml/processing/input/baseline-review",
+        "S3DataType": "S3Prefix",
+        "S3InputMode": "File",
+        "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r4-quality-seam-20260526/review/output"
+      }
+    }
+  ],
+  "ProcessingJobName": "cvhr-sfm-auth-r17-resume-1780034470-review",
+  "ProcessingOutputConfig": {
+    "Outputs": [
+      {
+        "OutputName": "quality-review",
+        "S3Output": {
+          "LocalPath": "/opt/ml/processing/output",
+          "S3UploadMode": "EndOfJob",
+          "S3Uri": "s3://spaceport-ml-processing-staging/manual-validations/cvhr-sfm-auth-r17-resume-20260529/review/output"
+        }
+      }
+    ]
+  },
+  "ProcessingResources": {
+    "ClusterConfig": {
+      "InstanceCount": 1,
+      "InstanceType": "ml.g4dn.xlarge",
+      "VolumeSizeInGB": 120
+    }
+  },
+  "RoleArn": "arn:aws:iam::975050048887:role/Spaceport-SageMaker-Role-staging",
+  "StoppingCondition": {
+    "MaxRuntimeInSeconds": 7200
+  },
+  "Tags": [
+    {
+      "Key": "Project",
+      "Value": "Spaceport"
+    },
+    {
+      "Key": "Component",
+      "Value": "3DGS"
+    },
+    {
+      "Key": "Benchmark",
+      "Value": "true"
+    },
+    {
+      "Key": "Branch",
+      "Value": "agent-52689431-3dgs-sfm-authority"
+    },
+    {
+      "Key": "Stage",
+      "Value": "quality-review"
+    },
+    {
+      "Key": "Experiment",
+      "Value": "cvhr-sfm-auth-r14-norobust-cached-review"
+    }
+  ]
+}

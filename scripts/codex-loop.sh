@@ -16,7 +16,7 @@ while :; do
 - Run Playwright MCP against PREVIEW_URL. If failing, plan next smallest fix and continue.
 - Write long logs to logs/ and keep output within 120 lines. Do not pause unless BLOCKED (then write STATE.md).'
 
-  codex exec --ask-for-approval never --sandbox danger-full-access --cd "$(pwd)" "$prompt"
+  codex exec -c approval_policy=\"never\" --sandbox danger-full-access --cd "$(pwd)" "$prompt"
 
   # Small delay to avoid hammering if the model returns super fast.
   sleep 2

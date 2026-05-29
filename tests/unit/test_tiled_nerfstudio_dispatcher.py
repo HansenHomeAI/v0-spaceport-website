@@ -1779,6 +1779,9 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
                         "max_color_distance": 0.24,
                         "min_edge_support": 1,
                         "patch_size": 9,
+                        "sky_color_pruning_enabled": True,
+                        "sky_color_min_sky_views": 2,
+                        "sky_color_max_color_distance": 0.18,
                     }
                 }
             }
@@ -1811,6 +1814,9 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             self.assertIs(result, trainer.floater_pruning_result)
             self.assertEqual(calls[0]["priority_frame_names"], ["DJI_00801.JPG", "DJI_00809.JPG"])
             self.assertEqual(calls[0]["sampled_views"], 24)
+            self.assertTrue(calls[0]["sky_color_pruning_enabled"])
+            self.assertEqual(calls[0]["sky_color_min_sky_views"], 2)
+            self.assertEqual(calls[0]["sky_color_max_color_distance"], 0.18)
             summary = json.loads((trainer.output_dir / "floater_pruning_summary.json").read_text(encoding="utf-8"))
             self.assertEqual(summary["removed_gaussians"], 2)
 

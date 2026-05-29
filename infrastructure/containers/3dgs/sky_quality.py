@@ -60,6 +60,10 @@ class FloaterPruningResult:
     min_edge_support: int
     patch_size: int
     diagnostics: Optional[dict[str, Any]] = None
+    sky_color_pruning_enabled: bool = False
+    sky_color_min_sky_views: int = 1
+    sky_color_max_color_distance: float = 0.35
+    sky_color_removed_gaussians: int = 0
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -398,6 +402,21 @@ def _patch_sky_presence(
     return blue_dominant & (luminance >= min_luminance) & (saturation >= min_saturation)
 
 
+def _rgb_sky_presence(
+    rgb_values: np.ndarray,
+    min_luminance: float,
+    min_saturation: float,
+    blue_dominance_margin: float,
+) -> np.ndarray:
+    r = rgb_values[:, 0]
+    g = rgb_values[:, 1]
+    b = rgb_values[:, 2]
+    luminance = (0.2126 * r) + (0.7152 * g) + (0.0722 * b)
+    saturation = rgb_values.max(axis=1) - rgb_values.min(axis=1)
+    blue_dominant = (b > (r + blue_dominance_margin)) & (b > (g + blue_dominance_margin))
+    return blue_dominant & (luminance >= min_luminance) & (saturation >= min_saturation)
+
+
 def _nanmedian_rows(values: np.ndarray) -> np.ndarray:
     medians = np.full(values.shape[0], np.inf, dtype=np.float32)
     finite_mask = np.isfinite(values).any(axis=1)
@@ -498,6 +517,9 @@ def prune_foreground_floaters(
     max_color_distance: float = 0.12,
     min_edge_support: int = 2,
     patch_size: int = 9,
+    sky_color_pruning_enabled: bool = False,
+    sky_color_min_sky_views: int = 1,
+    sky_color_max_color_distance: float = 0.35,
 ) -> FloaterPruningResult:
     cv2_mod = _ensure_cv2()
     transforms = _load_transforms(data_dir)
@@ -528,6 +550,9 @@ def prune_foreground_floaters(
             max_color_distance=max_color_distance,
             min_edge_support=min_edge_support,
             patch_size=patch_size,
+            sky_color_pruning_enabled=sky_color_pruning_enabled,
+            sky_color_min_sky_views=sky_color_min_sky_views,
+            sky_color_max_color_distance=sky_color_max_color_distance,
         )
 
     positions = np.stack([vertex["x"], vertex["y"], vertex["z"]], axis=1).astype(np.float32)
@@ -553,6 +578,9 @@ def prune_foreground_floaters(
             max_color_distance=max_color_distance,
             min_edge_support=min_edge_support,
             patch_size=patch_size,
+            sky_color_pruning_enabled=sky_color_pruning_enabled,
+            sky_color_min_sky_views=sky_color_min_sky_views,
+            sky_color_max_color_distance=sky_color_max_color_distance,
         )
 
     candidate_positions = positions[candidate_indices]
@@ -639,12 +667,27 @@ def prune_foreground_floaters(
         sky_view_distances=color_distances_sky,
         prefer_sky_mask=meets_sky_support,
     )
-    removal_local_mask = (
+    legacy_removal_local_mask = (
         (visible_counts >= min_views)
         & (meets_top_region | meets_sky_support)
         & (sky_edge_support_counts < min_edge_support)
         & (median_color_distance <= max_color_distance)
     )
+    sky_color_median_distance = _nanmedian_rows(color_distances_sky)
+    gaussian_sky_color = _rgb_sky_presence(
+        candidate_colors,
+        min_luminance=sky_min_luminance,
+        min_saturation=sky_min_saturation,
+        blue_dominance_margin=sky_blue_dominance_margin,
+    )
+    sky_color_local_mask = (
+        bool(sky_color_pruning_enabled)
+        & (visible_counts >= min_views)
+        & (sky_support_counts >= max(1, sky_color_min_sky_views))
+        & gaussian_sky_color
+        & (sky_color_median_distance <= sky_color_max_color_distance)
+    )
+    removal_local_mask = legacy_removal_local_mask | sky_color_local_mask
     removal_global_mask = np.zeros(total_gaussians, dtype=bool)
     removal_global_mask[candidate_indices[removal_local_mask]] = True
     finite_color_distances = median_color_distance[np.isfinite(median_color_distance)]
@@ -655,6 +698,10 @@ def prune_foreground_floaters(
         "meets_top_or_sky_count": int(np.count_nonzero(meets_top_region | meets_sky_support)),
         "low_sky_edge_support_count": int(np.count_nonzero(sky_edge_support_counts < min_edge_support)),
         "color_distance_pass_count": int(np.count_nonzero(median_color_distance <= max_color_distance)),
+        "legacy_removal_candidate_count": int(np.count_nonzero(legacy_removal_local_mask)),
+        "gaussian_sky_color_count": int(np.count_nonzero(gaussian_sky_color)),
+        "sky_color_distance_pass_count": int(np.count_nonzero(sky_color_median_distance <= sky_color_max_color_distance)),
+        "sky_color_removal_candidate_count": int(np.count_nonzero(sky_color_local_mask)),
         "removal_candidate_count": int(np.count_nonzero(removal_local_mask)),
         "priority_frame_name_count": len(
             {
@@ -705,4 +752,8 @@ def prune_foreground_floaters(
         min_edge_support=min_edge_support,
         patch_size=patch_size,
         diagnostics=diagnostics,
+        sky_color_pruning_enabled=sky_color_pruning_enabled,
+        sky_color_min_sky_views=sky_color_min_sky_views,
+        sky_color_max_color_distance=sky_color_max_color_distance,
+        sky_color_removed_gaussians=int(np.count_nonzero(sky_color_local_mask)),
     )

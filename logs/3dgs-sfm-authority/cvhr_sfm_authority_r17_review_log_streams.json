@@ -1,0 +1,14 @@
+{
+    "logStreams": [
+        {
+            "logStreamName": "cvhr-sfm-auth-r17-resume-1780034470-review/algo-1-1780037207",
+            "creationTime": 1780037461873,
+            "firstEventTimestamp": 1780037456380,
+            "lastEventTimestamp": 1780037456380,
+            "lastIngestionTime": 1780037461888,
+            "uploadSequenceToken": "49039859673784071354921934943759455455567245371237586583",
+            "arn": "arn:aws:logs:us-west-2:975050048887:log-group:/aws/sagemaker/ProcessingJobs:log-stream:cvhr-sfm-auth-r17-resume-1780034470-review/algo-1-1780037207",
+            "storedBytes": 0
+        }
+    ]
+}
