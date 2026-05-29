@@ -77,7 +77,9 @@ from sky_quality import (
     BackgroundSelectionResult,
     FloaterPruningResult,
     GaussianCountCapResult,
+    GaussianScalePruningResult,
     cap_gaussian_count_by_importance,
+    prune_gaussian_scale_outliers,
     prune_foreground_floaters,
     select_background_camera,
 )
@@ -770,6 +772,7 @@ class NerfStudioTrainer:
         self.training_output_dir.mkdir(exist_ok=True, parents=True)
         self.background_selection_result: Optional[BackgroundSelectionResult] = None
         self.floater_pruning_result: Optional[FloaterPruningResult] = None
+        self.scale_pruning_result: Optional[GaussianScalePruningResult] = None
         self.density_cap_result: Optional[GaussianCountCapResult] = None
         self.training_selection_result: Optional[Dict[str, Any]] = None
         self.preconversion_selection_result: Optional[Dict[str, Any]] = None
@@ -845,6 +848,9 @@ class NerfStudioTrainer:
             'FLOATER_PRUNING_SKY_COLOR_ENABLED': 'output.floater_pruning.sky_color_pruning_enabled',
             'FLOATER_PRUNING_SKY_COLOR_MIN_SKY_VIEWS': 'output.floater_pruning.sky_color_min_sky_views',
             'FLOATER_PRUNING_SKY_COLOR_MAX_COLOR_DISTANCE': 'output.floater_pruning.sky_color_max_color_distance',
+            'GAUSSIAN_SCALE_PRUNING_ENABLED': 'output.scale_pruning.enabled',
+            'GAUSSIAN_SCALE_PRUNING_MAX_SCALE': 'output.scale_pruning.max_scale',
+            'GAUSSIAN_SCALE_PRUNING_MAX_VOLUME': 'output.scale_pruning.max_volume',
             'TRAINING_DENSITY_CAP_ENABLED': 'output.density_cap.enabled',
             'TRAINING_MAX_OUTPUT_GAUSSIANS': 'output.density_cap.max_gaussians',
             'TRAINING_DENSITY_CAP_POLICY': 'output.density_cap.policy',
@@ -873,11 +879,11 @@ class NerfStudioTrainer:
             value = os.environ.get(env_var)
             if value is not None:
                 # Convert string values to appropriate types
-                if env_var in ['BILATERAL_PROCESSING', 'USE_SCALE_REGULARIZATION', 'ENABLE_BG_MODEL', 'ENABLE_ALPHA_LOSS', 'ENABLE_ROBUST_MASK', 'FLOATER_PRUNING_ENABLED', 'FLOATER_PRUNING_SKY_COLOR_ENABLED', 'TRAINING_DENSITY_CAP_ENABLED', 'TILED_INCLUDE_SCAFFOLD', 'TILED_INCLUDE_MERGE', 'TILED_RESUME_EXISTING', 'VIEWER_QUIT_ON_TRAIN_COMPLETION', 'REQUIRE_SFM_AUTHORITY']:
+                if env_var in ['BILATERAL_PROCESSING', 'USE_SCALE_REGULARIZATION', 'ENABLE_BG_MODEL', 'ENABLE_ALPHA_LOSS', 'ENABLE_ROBUST_MASK', 'FLOATER_PRUNING_ENABLED', 'FLOATER_PRUNING_SKY_COLOR_ENABLED', 'GAUSSIAN_SCALE_PRUNING_ENABLED', 'TRAINING_DENSITY_CAP_ENABLED', 'TILED_INCLUDE_SCAFFOLD', 'TILED_INCLUDE_MERGE', 'TILED_RESUME_EXISTING', 'VIEWER_QUIT_ON_TRAIN_COMPLETION', 'REQUIRE_SFM_AUTHORITY']:
                     value = value.lower() in ('true', '1', 'yes', 'on')
                 elif env_var in ['MAX_ITERATIONS', 'LOG_INTERVAL', 'TRAINING_DATALOADER_NUM_WORKERS', 'TRAINING_MAX_SELECTED_IMAGES', 'TRAINING_SELECTION_STRIDE', 'BOUNDARY_CAMERA_REPEAT_FACTOR', 'TRAINING_REVIEW_IMAGES_PER_BUCKET', 'TRAINING_STEPS_PER_EVAL_IMAGE', 'TRAINING_STEPS_PER_EVAL_ALL_IMAGES', 'TRAINING_STEPS_PER_SAVE', 'TRAINING_STOP_SPLIT_AT', 'SH_DEGREE', 'BG_SH_DEGREE', 'APPEARANCE_EMBED_DIM', 'TRAINING_DOWNSCALE_FACTOR', 'BACKGROUND_SKYBOX_WIDTH', 'BACKGROUND_SKYBOX_HEIGHT', 'BACKGROUND_SKYBOX_QUALITY', 'BACKGROUND_SELECTION_STRIDE', 'BACKGROUND_SELECTION_MAX_FRAMES', 'FLOATER_PRUNING_MIN_VIEWS', 'FLOATER_PRUNING_MIN_SKY_VIEWS', 'FLOATER_PRUNING_MIN_EDGE_SUPPORT', 'FLOATER_PRUNING_SKY_COLOR_MIN_SKY_VIEWS', 'TRAINING_MAX_OUTPUT_GAUSSIANS', 'GLOBAL_SCAFFOLD_MAX_IMAGES', 'GLOBAL_SCAFFOLD_FRAME_STRIDE', 'GLOBAL_SCAFFOLD_MAX_ITERATIONS', 'GLOBAL_SCAFFOLD_SH_DEGREE', 'GLOBAL_SCAFFOLD_INIT_MAX_POINTS', 'TILED_MAX_TILES']:
                     value = int(value)
-                elif env_var in ['TARGET_PSNR', 'SSIM_LAMBDA', 'CULL_ALPHA_THRESH', 'CULL_SCALE_THRESH', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_SKY_MIN_LUMINANCE', 'FLOATER_PRUNING_SKY_MIN_SATURATION', 'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE', 'FLOATER_PRUNING_SKY_COLOR_MAX_COLOR_DISTANCE', 'GLOBAL_SCAFFOLD_MAX_GAUSS_RATIO', 'GLOBAL_SCAFFOLD_MAX_FILTER_RETENTION_RATIO']:
+                elif env_var in ['TARGET_PSNR', 'SSIM_LAMBDA', 'CULL_ALPHA_THRESH', 'CULL_SCALE_THRESH', 'NEVER_MASK_UPPER', 'FLOATER_PRUNING_TOP_REGION_RATIO', 'FLOATER_PRUNING_TOP_VIEW_FRACTION', 'FLOATER_PRUNING_SKY_MIN_LUMINANCE', 'FLOATER_PRUNING_SKY_MIN_SATURATION', 'FLOATER_PRUNING_SKY_BLUE_DOMINANCE_MARGIN', 'FLOATER_PRUNING_MAX_OPACITY', 'FLOATER_PRUNING_MAX_COLOR_DISTANCE', 'FLOATER_PRUNING_SKY_COLOR_MAX_COLOR_DISTANCE', 'GAUSSIAN_SCALE_PRUNING_MAX_SCALE', 'GAUSSIAN_SCALE_PRUNING_MAX_VOLUME', 'GLOBAL_SCAFFOLD_MAX_GAUSS_RATIO', 'GLOBAL_SCAFFOLD_MAX_FILTER_RETENTION_RATIO']:
                     value = float(value)
                 
                 # Set nested config values
@@ -1966,6 +1972,7 @@ class NerfStudioTrainer:
             tiling_config['tile_id'] = tile_id or ""
             self.background_selection_result = None
             self.floater_pruning_result = None
+            self.scale_pruning_result = None
             self.training_selection_result = None
 
             if not self.apply_training_selection():
@@ -2007,6 +2014,7 @@ class NerfStudioTrainer:
                 self.training_output_dir = original_training_output_dir
                 self.background_selection_result = None
                 self.floater_pruning_result = None
+                self.scale_pruning_result = None
                 self.training_selection_result = None
                 self.tile_manifest_resolution = None
                 tiling_config['training_mode'] = original_training_mode
@@ -2939,6 +2947,40 @@ class NerfStudioTrainer:
         logger.info(f"   Remaining gaussians: {result.remaining_gaussians}")
         return result
 
+    def prune_exported_foreground_scale_outliers(self) -> Optional[GaussianScalePruningResult]:
+        """Apply an opt-in hard prune for pathological exported Gaussian scales."""
+        scale_config = self.config.get('output', {}).get('scale_pruning', {})
+        max_scale = float(scale_config.get('max_scale') or 0.0)
+        max_volume = float(scale_config.get('max_volume') or 0.0)
+        enabled = bool(scale_config.get('enabled', max_scale > 0 or max_volume > 0))
+        if not enabled or (max_scale <= 0 and max_volume <= 0):
+            self.scale_pruning_result = None
+            return None
+
+        ply_path = self.output_dir / "splat.ply"
+        if not ply_path.exists():
+            logger.warning("⚠️ Scale pruning skipped because splat.ply was not found")
+            return None
+
+        result = prune_gaussian_scale_outliers(
+            ply_path=ply_path,
+            max_scale=max_scale,
+            max_volume=max_volume,
+        )
+        self.scale_pruning_result = result
+
+        summary_path = self.output_dir / "scale_pruning_summary.json"
+        with open(summary_path, 'w') as f:
+            json.dump(result.to_dict(), f, indent=2)
+
+        logger.info("📏 Gaussian scale pruning summary:")
+        logger.info(f"   Max scale: {result.max_scale}")
+        logger.info(f"   Max volume: {result.max_volume}")
+        logger.info(f"   Original gaussians: {result.original_gaussians}")
+        logger.info(f"   Kept gaussians: {result.kept_gaussians}")
+        logger.info(f"   Removed gaussians: {result.removed_gaussians}")
+        return result
+
     def cap_exported_foreground_density(self) -> Optional[GaussianCountCapResult]:
         """Apply a hard exported-Gaussian cap after sky-floater pruning."""
         density_config = self.config.get('output', {}).get('density_cap', {})
@@ -2979,6 +3021,7 @@ class NerfStudioTrainer:
 
         selection_dict = self.background_selection_result.to_dict() if self.background_selection_result else None
         pruning_dict = self.floater_pruning_result.to_dict() if self.floater_pruning_result else None
+        scale_pruning_dict = self.scale_pruning_result.to_dict() if self.scale_pruning_result else None
         density_cap_dict = self.density_cap_result.to_dict() if self.density_cap_result else None
 
         if export_manifest_path.exists():
@@ -2986,6 +3029,7 @@ class NerfStudioTrainer:
                 export_manifest = json.load(f)
             export_manifest['background_selection'] = selection_dict
             export_manifest['floater_pruning'] = pruning_dict
+            export_manifest['scale_pruning'] = scale_pruning_dict
             export_manifest['density_cap'] = density_cap_dict
             with open(export_manifest_path, 'w', encoding='utf-8') as f:
                 json.dump(export_manifest, f, indent=2)
@@ -2997,6 +3041,8 @@ class NerfStudioTrainer:
                 background_manifest['selection'] = selection_dict
             if pruning_dict:
                 background_manifest['floater_pruning'] = pruning_dict
+            if scale_pruning_dict:
+                background_manifest['scale_pruning'] = scale_pruning_dict
             if density_cap_dict:
                 background_manifest['density_cap'] = density_cap_dict
             with open(background_manifest_path, 'w', encoding='utf-8') as f:
@@ -3083,6 +3129,7 @@ class NerfStudioTrainer:
 
             if training_mode != 'global_scaffold':
                 self.prune_exported_foreground()
+                self.prune_exported_foreground_scale_outliers()
                 self.cap_exported_foreground_density()
                 self.patch_export_manifests()
             
@@ -3216,6 +3263,8 @@ class NerfStudioTrainer:
             metadata['background_selection'] = self.background_selection_result.to_dict()
         if self.floater_pruning_result is not None:
             metadata['floater_pruning'] = self.floater_pruning_result.to_dict()
+        if getattr(self, 'scale_pruning_result', None) is not None:
+            metadata['scale_pruning'] = self.scale_pruning_result.to_dict()
         if getattr(self, 'density_cap_result', None) is not None:
             metadata['density_cap'] = self.density_cap_result.to_dict()
         export_manifest_path = self.output_dir / "export_manifest.json"

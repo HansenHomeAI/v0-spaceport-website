@@ -101,6 +101,10 @@ output:
     sky_color_pruning_enabled: false
     sky_color_min_sky_views: 1
     sky_color_max_color_distance: 0.35
+  scale_pruning:
+    enabled: false
+    max_scale: 0.0
+    max_volume: 0.0
   
   # Metadata inclusion
   include_training_metadata: true

@@ -89,6 +89,19 @@ class Tiled3DGSBenchmarkLauncherTests(unittest.TestCase):
 
         self.assertNotEqual(disabled.input_hash, enabled.input_hash)
 
+    def test_tile_input_hash_changes_for_scale_pruning_settings(self):
+        disabled = self._single_leaf_stages(
+            extra_env={"GAUSSIAN_SCALE_PRUNING_ENABLED": "false"}
+        )[0]
+        enabled = self._single_leaf_stages(
+            extra_env={
+                "GAUSSIAN_SCALE_PRUNING_ENABLED": "true",
+                "GAUSSIAN_SCALE_PRUNING_MAX_SCALE": "3.5",
+            }
+        )[0]
+
+        self.assertNotEqual(disabled.input_hash, enabled.input_hash)
+
     def test_tile_input_hash_uses_effective_default_training_environment(self):
         stage = self._single_leaf_stages()[0]
         fingerprint = benchmark.tile_input_hash_env_fingerprint(stage.environment)

@@ -65,4 +65,4 @@
 2026-03-30T13:07:44Z rerun preview auth opt-in with serialized non-production auth API endpoint migrations
 2026-04-17T00:00:00Z validate shared preview backend/role reuse for IAM quota-safe branch deploys
 
-agent-52689431-3dgs-sfm-authority 2026-05-26T16:37:27.803Z
+agent-52689431-3dgs-sfm-authority 2026-05-29T11:58:34Z

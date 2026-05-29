@@ -57,7 +57,9 @@ def load_module_with_stubs():
         BackgroundSelectionResult=object,
         FloaterPruningResult=object,
         GaussianCountCapResult=object,
+        GaussianScalePruningResult=object,
         cap_gaussian_count_by_importance=lambda *args, **kwargs: None,
+        prune_gaussian_scale_outliers=lambda *args, **kwargs: None,
         prune_foreground_floaters=lambda *args, **kwargs: None,
         select_background_camera=lambda *args, **kwargs: None,
     )
@@ -208,6 +210,35 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             self.assertTrue(density_cap["enabled"])
             self.assertEqual(density_cap["max_gaussians"], 1_290_973)
             self.assertEqual(density_cap["policy"], "opacity_topk")
+
+    def test_trainer_applies_scale_pruning_overrides(self):
+        module = load_module_with_stubs()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config_path = root / "config.yml"
+            output_dir = root / "model"
+            config_path.write_text("{}", encoding="utf-8")
+
+            original_environ = module.os.environ.copy()
+            try:
+                module.os.environ.clear()
+                module.os.environ.update(
+                    {
+                        "SM_MODEL_DIR": str(output_dir),
+                        "GAUSSIAN_SCALE_PRUNING_ENABLED": "true",
+                        "GAUSSIAN_SCALE_PRUNING_MAX_SCALE": "3.5",
+                        "GAUSSIAN_SCALE_PRUNING_MAX_VOLUME": "8.0",
+                    }
+                )
+                trainer = module.NerfStudioTrainer(str(config_path))
+            finally:
+                module.os.environ.clear()
+                module.os.environ.update(original_environ)
+
+            scale_pruning = trainer.config["output"]["scale_pruning"]
+            self.assertTrue(scale_pruning["enabled"])
+            self.assertEqual(scale_pruning["max_scale"], 3.5)
+            self.assertEqual(scale_pruning["max_volume"], 8.0)
 
     def test_trainer_stages_compact_checkpoint_for_sync(self):
         module = load_module_with_stubs()
@@ -1766,6 +1797,52 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
             self.assertEqual(calls[0]["max_gaussians"], 12)
             summary = json.loads((trainer.output_dir / "density_cap_summary.json").read_text(encoding="utf-8"))
             self.assertEqual(summary["kept_gaussians"], 12)
+
+    def test_prune_exported_foreground_scale_outliers_writes_summary(self):
+        module = load_module_with_stubs()
+
+        class FakeScalePruningResult:
+            max_scale = 3.5
+            max_volume = 0.0
+            original_gaussians = 20
+            kept_gaussians = 18
+            removed_gaussians = 2
+
+            def to_dict(self):
+                return {
+                    "enabled": True,
+                    "max_scale": self.max_scale,
+                    "max_volume": self.max_volume,
+                    "original_gaussians": self.original_gaussians,
+                    "kept_gaussians": self.kept_gaussians,
+                    "removed_gaussians": self.removed_gaussians,
+                }
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            trainer = module.NerfStudioTrainer.__new__(module.NerfStudioTrainer)
+            trainer.config = {"output": {"scale_pruning": {"enabled": True, "max_scale": 3.5}}}
+            trainer.output_dir = root / "output"
+            trainer.output_dir.mkdir()
+            (trainer.output_dir / "splat.ply").write_text("ply\n", encoding="utf-8")
+
+            calls = []
+
+            def fake_prune(**kwargs):
+                calls.append(kwargs)
+                return FakeScalePruningResult()
+
+            original_prune = module.prune_gaussian_scale_outliers
+            module.prune_gaussian_scale_outliers = fake_prune
+            try:
+                result = trainer.prune_exported_foreground_scale_outliers()
+            finally:
+                module.prune_gaussian_scale_outliers = original_prune
+
+            self.assertIs(result, trainer.scale_pruning_result)
+            self.assertEqual(calls[0]["max_scale"], 3.5)
+            summary = json.loads((trainer.output_dir / "scale_pruning_summary.json").read_text(encoding="utf-8"))
+            self.assertEqual(summary["removed_gaussians"], 2)
 
     def test_prune_exported_foreground_prioritizes_horizon_cameras(self):
         module = load_module_with_stubs()

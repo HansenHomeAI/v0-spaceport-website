@@ -85,6 +85,23 @@ class GaussianCountCapResult:
         return asdict(self)
 
 
+@dataclass
+class GaussianScalePruningResult:
+    enabled: bool
+    max_scale: float
+    max_volume: float
+    original_gaussians: int
+    kept_gaussians: int
+    removed_gaussians: int
+    removed_by_scale: int
+    removed_by_volume: int
+    scale_activation: Optional[str]
+    diagnostics: Optional[dict[str, Any]] = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
 def _load_transforms(data_dir: Path) -> dict[str, Any]:
     transforms_path = data_dir / "transforms.json"
     with open(transforms_path, "r", encoding="utf-8") as f:
@@ -229,6 +246,18 @@ def _scale_metric(vertex_data: np.ndarray) -> Optional[np.ndarray]:
     return np.mean(np.exp(np.clip(scales, -20.0, 20.0)), axis=1)
 
 
+def _activated_scale_values(vertex_data: np.ndarray) -> tuple[Optional[np.ndarray], Optional[str]]:
+    names = vertex_data.dtype.names or ()
+    scale_names = [name for name in ("scale_0", "scale_1", "scale_2") if name in names]
+    if not scale_names:
+        return None, None
+    raw_scales = np.stack([np.asarray(vertex_data[name], dtype=np.float32) for name in scale_names], axis=1)
+    activation = "exp" if bool(np.any(raw_scales <= 0.0)) else "identity"
+    if activation == "exp":
+        return np.exp(np.clip(raw_scales, -20.0, 20.0)), activation
+    return raw_scales, activation
+
+
 def _gaussian_rgb_from_vertex_data(vertex_data: np.ndarray) -> np.ndarray:
     sh0 = np.stack(
         [
@@ -239,6 +268,78 @@ def _gaussian_rgb_from_vertex_data(vertex_data: np.ndarray) -> np.ndarray:
         axis=1,
     )
     return np.clip((sh0 * SH_C0) + 0.5, 0.0, 1.0)
+
+
+def prune_gaussian_scale_outliers(
+    ply_path: Path,
+    max_scale: float = 0.0,
+    max_volume: float = 0.0,
+) -> GaussianScalePruningResult:
+    """Remove exported splats with pathological size.
+
+    The CV-HR tiled renders can be dominated by a small number of very large,
+    high-opacity splats that pass color/edge pruning and behave like translucent
+    sheets in horizon views. This pass is deliberately opt-in and deterministic:
+    it only removes splats whose activated scale or scale volume exceeds an
+    explicit threshold.
+    """
+    bounded_max_scale = float(max_scale or 0.0)
+    bounded_max_volume = float(max_volume or 0.0)
+
+    ply = PlyData.read(str(ply_path))
+    vertex = ply["vertex"].data
+    original_count = int(len(vertex))
+    scales, activation = _activated_scale_values(vertex)
+
+    if scales is None or original_count == 0 or (bounded_max_scale <= 0 and bounded_max_volume <= 0):
+        return GaussianScalePruningResult(
+            enabled=False,
+            max_scale=bounded_max_scale,
+            max_volume=bounded_max_volume,
+            original_gaussians=original_count,
+            kept_gaussians=original_count,
+            removed_gaussians=0,
+            removed_by_scale=0,
+            removed_by_volume=0,
+            scale_activation=activation,
+            diagnostics=None,
+        )
+
+    max_scale_values = np.max(scales, axis=1)
+    volume_values = np.prod(scales, axis=1)
+    scale_mask = (max_scale_values > bounded_max_scale) if bounded_max_scale > 0 else np.zeros(original_count, dtype=bool)
+    volume_mask = (volume_values > bounded_max_volume) if bounded_max_volume > 0 else np.zeros(original_count, dtype=bool)
+    removal_mask = scale_mask | volume_mask
+
+    removed_count = int(np.count_nonzero(removal_mask))
+    if removed_count:
+        kept_vertex = vertex[~removal_mask]
+        PlyData([PlyElement.describe(kept_vertex, "vertex")], text=False).write(str(ply_path))
+    else:
+        kept_vertex = vertex
+
+    diagnostics = {
+        "scale_max_p50": float(np.percentile(max_scale_values, 50)),
+        "scale_max_p95": float(np.percentile(max_scale_values, 95)),
+        "scale_max_p99": float(np.percentile(max_scale_values, 99)),
+        "scale_max_max": float(np.max(max_scale_values)),
+        "scale_volume_p95": float(np.percentile(volume_values, 95)),
+        "scale_volume_p99": float(np.percentile(volume_values, 99)),
+        "scale_volume_max": float(np.max(volume_values)),
+    }
+
+    return GaussianScalePruningResult(
+        enabled=True,
+        max_scale=bounded_max_scale,
+        max_volume=bounded_max_volume,
+        original_gaussians=original_count,
+        kept_gaussians=int(len(kept_vertex)),
+        removed_gaussians=removed_count,
+        removed_by_scale=int(np.count_nonzero(scale_mask)),
+        removed_by_volume=int(np.count_nonzero(volume_mask)),
+        scale_activation=activation,
+        diagnostics=diagnostics,
+    )
 
 
 def cap_gaussian_count_by_importance(

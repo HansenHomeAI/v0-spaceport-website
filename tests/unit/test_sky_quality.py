@@ -90,6 +90,36 @@ class SkyQualityPruningTests(unittest.TestCase):
         vertices["f_dc_2"] = sh[:, 2]
         PlyData([PlyElement.describe(vertices, "vertex")], text=False).write(str(path))
 
+    def _write_scale_splat(self, path: Path) -> None:
+        dtype = [
+            ("x", "f4"),
+            ("y", "f4"),
+            ("z", "f4"),
+            ("opacity", "f4"),
+            ("scale_0", "f4"),
+            ("scale_1", "f4"),
+            ("scale_2", "f4"),
+            ("f_dc_0", "f4"),
+            ("f_dc_1", "f4"),
+            ("f_dc_2", "f4"),
+        ]
+        vertices = np.zeros(3, dtype=dtype)
+        vertices["x"] = [0.0, 1.0, 2.0]
+        vertices["opacity"] = math.log(0.8 / 0.2)
+        activated_scales = np.asarray(
+            [
+                [1.0, 1.0, 1.0],
+                [4.0, 1.0, 1.0],
+                [1.5, 1.5, 1.5],
+            ],
+            dtype=np.float32,
+        )
+        raw_scales = np.log(activated_scales)
+        vertices["scale_0"] = raw_scales[:, 0]
+        vertices["scale_1"] = raw_scales[:, 1]
+        vertices["scale_2"] = raw_scales[:, 2]
+        PlyData([PlyElement.describe(vertices, "vertex")], text=False).write(str(path))
+
     def test_sky_color_pruning_removes_sky_colored_splat_when_edge_rule_blocks_legacy_prune(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -145,6 +175,25 @@ class SkyQualityPruningTests(unittest.TestCase):
             self.assertEqual(result.sky_color_removed_gaussians, 0)
             retained = PlyData.read(str(ply_path))["vertex"].data
             self.assertEqual(len(retained), 2)
+
+    def test_scale_pruning_removes_large_exported_gaussians(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            ply_path = root / "splat.ply"
+            self._write_scale_splat(ply_path)
+
+            result = sky_quality.prune_gaussian_scale_outliers(
+                ply_path=ply_path,
+                max_scale=3.5,
+                max_volume=0.0,
+            )
+
+            self.assertEqual(result.original_gaussians, 3)
+            self.assertEqual(result.removed_gaussians, 1)
+            self.assertEqual(result.removed_by_scale, 1)
+            retained = PlyData.read(str(ply_path))["vertex"].data
+            self.assertEqual(len(retained), 2)
+            self.assertNotIn(1.0, set(float(value) for value in retained["x"]))
 
 
 if __name__ == "__main__":
