@@ -585,19 +585,36 @@ def limit_selected_image_names(
     selected_image_names: Sequence[str],
     *,
     view_buckets: dict | None = None,
+    priority_image_names: Sequence[str] | None = None,
     max_images: int = 0,
     selection_stride: int = 1,
 ) -> list[str]:
-    working_names = ordered_unique(selected_image_names)
+    all_names = ordered_unique(selected_image_names)
+    selected_by_basename = {Path(image_name).name: image_name for image_name in all_names}
+    priority_names = ordered_unique(
+        selected_by_basename[Path(str(image_name)).name]
+        for image_name in (priority_image_names or [])
+        if Path(str(image_name)).name in selected_by_basename
+    )
+    working_names = all_names
     stride = max(1, int(selection_stride or 1))
     if stride > 1:
         working_names = working_names[::stride]
+    working_names = ordered_unique([*priority_names, *working_names])
     if max_images <= 0 or len(working_names) <= max_images:
         return working_names
 
     buckets = view_buckets or {}
     chosen: list[str] = []
     chosen_set: set[str] = set()
+    for image_name in priority_names:
+        if image_name in chosen_set:
+            continue
+        chosen.append(image_name)
+        chosen_set.add(image_name)
+        if len(chosen) >= max_images:
+            return chosen[:max_images]
+
     for bucket_name, target in (
         ("boundary_camera_ids", 2),
         ("horizon_camera_ids", 1),
@@ -652,6 +669,10 @@ def selected_image_names_for_stage(tile_manifest: dict, view_buckets: dict, stag
     return limit_selected_image_names(
         selected,
         view_buckets=view_buckets,
+        priority_image_names=[
+            *split_stage_csv((stage.environment or {}).get("BOUNDARY_FROZEN_CAMERAS")),
+            *split_stage_csv((stage.environment or {}).get("HORIZON_FROZEN_CAMERAS")),
+        ],
         max_images=_stage_env_int(stage, "TRAINING_MAX_SELECTED_IMAGES", int(stage.max_selected_images or 0)),
         selection_stride=_stage_env_int(stage, "TRAINING_SELECTION_STRIDE", 1),
     )

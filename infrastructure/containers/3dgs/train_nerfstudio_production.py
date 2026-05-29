@@ -365,19 +365,37 @@ def limit_selected_image_names(
     selected_image_names: Sequence[str],
     *,
     view_buckets: Optional[Dict[str, Sequence[str]]] = None,
+    priority_image_names: Optional[Sequence[str]] = None,
     max_images: int = 0,
     selection_stride: int = 1,
 ) -> list[str]:
     """Cap proof runs deterministically while preserving boundary/horizon coverage."""
-    working_names = unique_preserving_order(selected_image_names)
+    all_names = unique_preserving_order(selected_image_names)
+    selected_name_set = set(all_names)
+    priority_names = [
+        image_name
+        for image_name in parse_image_name_list(list(priority_image_names or []))
+        if image_name in selected_name_set
+    ]
+    working_names = all_names
     if selection_stride > 1:
         working_names = working_names[::selection_stride]
+    working_names = unique_preserving_order([*priority_names, *working_names])
     if max_images <= 0 or len(working_names) <= max_images:
         return working_names
 
     resolved_view_buckets = view_buckets or {}
     chosen: list[str] = []
     chosen_set: set[str] = set()
+
+    for image_name in priority_names:
+        if image_name in chosen_set:
+            continue
+        chosen.append(image_name)
+        chosen_set.add(image_name)
+        if len(chosen) >= max_images:
+            return chosen[:max_images]
+
     coverage_targets = (
         ("boundary_camera_ids", 2),
         ("horizon_camera_ids", 1),
@@ -415,6 +433,23 @@ def parse_image_name_list(value: Any) -> list[str]:
     else:
         raw_values = []
     return unique_preserving_order(Path(str(item).strip()).name for item in raw_values if str(item).strip())
+
+
+def resolve_explicit_frozen_camera_names(training_config: Dict[str, Any]) -> list[str]:
+    return unique_preserving_order(
+        [
+            *parse_image_name_list(
+                os.environ.get("BOUNDARY_FROZEN_CAMERAS")
+                or training_config.get("boundary_frozen_cameras")
+                or []
+            ),
+            *parse_image_name_list(
+                os.environ.get("HORIZON_FROZEN_CAMERAS")
+                or training_config.get("horizon_frozen_cameras")
+                or []
+            ),
+        ]
+    )
 
 
 def frame_original_aliases(frame: Dict[str, Any], image_name_map: Optional[Dict[str, Any]]) -> set[str]:
@@ -1008,6 +1043,7 @@ class NerfStudioTrainer:
         return limit_selected_image_names(
             selected_image_names,
             view_buckets=view_buckets,
+            priority_image_names=resolve_explicit_frozen_camera_names(training_config),
             max_images=proof_max_images,
             selection_stride=proof_selection_stride,
         )
@@ -2278,6 +2314,7 @@ class NerfStudioTrainer:
         selected_image_names = limit_selected_image_names(
             selected_image_names,
             view_buckets=view_buckets,
+            priority_image_names=resolve_explicit_frozen_camera_names(training_config),
             max_images=proof_max_images,
             selection_stride=proof_selection_stride,
         )

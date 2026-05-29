@@ -451,6 +451,31 @@ class TiledNerfStudioDispatcherTests(unittest.TestCase):
         self.assertEqual(len(limited), 4)
         self.assertIn(limited[3], {"frame_00001.JPG", "frame_00003.JPG"})
 
+    def test_limit_selected_image_names_prioritizes_explicit_frozen_cameras(self):
+        module = load_module_with_stubs()
+
+        selected_names = [f"frame_{idx:05d}.JPG" for idx in range(1, 12)]
+        limited = module.limit_selected_image_names(
+            selected_names,
+            view_buckets={
+                "boundary_camera_ids": ["frame_00002.JPG", "frame_00004.JPG"],
+                "horizon_camera_ids": [
+                    "frame_00001.JPG",
+                    "frame_00003.JPG",
+                    "frame_00005.JPG",
+                    "frame_00007.JPG",
+                    "frame_00009.JPG",
+                ],
+                "near_detail_camera_ids": ["frame_00006.JPG"],
+            },
+            priority_image_names=["frame_00009.JPG", "images/frame_00002.JPG"],
+            max_images=4,
+            selection_stride=2,
+        )
+
+        self.assertEqual(limited[:2], ["frame_00009.JPG", "frame_00002.JPG"])
+        self.assertEqual(len(limited), 4)
+
     def test_run_tiled_training_pipeline_writes_root_summary(self):
         module = load_module_with_stubs()
 
