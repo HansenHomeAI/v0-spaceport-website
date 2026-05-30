@@ -4989,6 +4989,103 @@ body.popup-open {
   margin-top: 16px;
 }
 
+.upload-mode-switcher {
+  --upload-mode-gap: 4px;
+  --upload-mode-padding: 0px;
+  display: flex;
+  align-items: center;
+  gap: var(--upload-mode-gap);
+  width: 100%;
+  min-height: 46px;
+  padding: var(--upload-mode-padding);
+  border-radius: 999px;
+  background: transparent;
+  box-sizing: border-box;
+  position: relative;
+  isolation: isolate;
+}
+
+.upload-mode-switcher::before {
+  content: "";
+  position: absolute;
+  top: var(--upload-mode-padding);
+  bottom: var(--upload-mode-padding);
+  left: var(--upload-mode-padding);
+  width: calc((100% - var(--upload-mode-gap) - (var(--upload-mode-padding) * 2)) / 2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  transform: translateX(0);
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: 0;
+}
+
+.upload-mode-switcher--static::before {
+  transform: translateX(calc(100% + var(--upload-mode-gap)));
+}
+
+.upload-mode-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.48);
+  font: inherit;
+  font-size: 1.08rem;
+  font-weight: 500;
+  line-height: 1.15;
+  white-space: nowrap;
+  padding: 0 18px;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  transition: none;
+}
+
+.upload-mode-option.active {
+  background: transparent;
+  color: #fff;
+}
+
+.upload-mode-option:focus {
+  outline: none;
+}
+
+.upload-mode-option:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+}
+
+.upload-mode-label {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: clip;
+  text-align: center;
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
+}
+
+@media (max-width: 430px) {
+  .upload-mode-switcher {
+    gap: 2px;
+    --upload-mode-gap: 2px;
+  }
+
+  .upload-mode-option {
+    font-size: 0.98rem;
+    padding: 0 14px;
+  }
+}
+
 .category-outline h4 {
   color: #fff;
   font-size: 1.2rem;

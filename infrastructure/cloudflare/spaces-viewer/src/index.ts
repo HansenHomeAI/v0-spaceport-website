@@ -1,6 +1,7 @@
 const DEFAULT_CACHE_CONTROL = 'public, max-age=300';
 const MAX_UPLOAD_BYTES = 2 * 1024 * 1024;
 const DISALLOWED_PATH_SEGMENTS = new Set(['..', '.']);
+const MEDIA_PATH_PREFIX = '/media';
 
 interface Env {
   SPACES_BUCKET: R2Bucket;
@@ -322,6 +323,39 @@ function resolveViewerKey(pathname: string): { slug: string; key: string } | nul
   return { slug, key };
 }
 
+function resolveMediaKey(pathname: string): string | null {
+  if (pathname !== MEDIA_PATH_PREFIX && !pathname.startsWith(`${MEDIA_PATH_PREFIX}/`)) {
+    return null;
+  }
+  const key = pathname.slice(MEDIA_PATH_PREFIX.length).replace(/^\/+/, '');
+  const parts = key.split('/').filter(Boolean);
+  if (!parts.length) return null;
+  if (parts.some((segment) => DISALLOWED_PATH_SEGMENTS.has(segment) || segment.startsWith('.'))) {
+    return null;
+  }
+  return parts.join('/');
+}
+
+async function handleMedia(request: Request, env: Env, pathname: string): Promise<Response> {
+  const key = resolveMediaKey(pathname);
+  if (!key) {
+    return new Response('Not found', { status: 404, headers: corsHeaders });
+  }
+
+  const object = await env.SPACES_BUCKET.get(key);
+  if (!object) {
+    return new Response('Not found', { status: 404, headers: corsHeaders });
+  }
+
+  const headers = new Headers(corsHeaders);
+  object.writeHttpMetadata(headers);
+  headers.set('Cache-Control', object.httpMetadata?.cacheControl || DEFAULT_CACHE_CONTROL);
+  headers.set('Content-Type', object.httpMetadata?.contentType || 'application/octet-stream');
+  headers.set('ETag', object.httpEtag);
+
+  return new Response(request.method === 'HEAD' ? null : object.body, { status: 200, headers });
+}
+
 async function handleViewer(request: Request, env: Env, pathname: string): Promise<Response> {
   const resolved = resolveViewerKey(pathname);
   const slug = resolved?.slug;
@@ -383,6 +417,9 @@ export default {
     }
 
     if (request.method === 'GET' || request.method === 'HEAD') {
+      if (pathname === MEDIA_PATH_PREFIX || pathname.startsWith(`${MEDIA_PATH_PREFIX}/`)) {
+        return handleMedia(request, env, pathname);
+      }
       return handleViewer(request, env, pathname);
     }
 
