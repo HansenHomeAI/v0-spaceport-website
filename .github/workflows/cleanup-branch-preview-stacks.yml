@@ -15,6 +15,11 @@ on:
         required: false
         type: boolean
         default: false
+      dry_run:
+        description: Report cleanup targets without deleting them.
+        required: false
+        type: boolean
+        default: true
   schedule:
     - cron: '23 7 * * *'
 
@@ -45,11 +50,13 @@ jobs:
           DELETE_REF: ${{ github.event.ref }}
           INPUT_BRANCH_NAME: ${{ inputs.branch_name }}
           INPUT_SWEEP: ${{ inputs.sweep }}
+          INPUT_DRY_RUN: ${{ inputs.dry_run }}
         run: |
           set -euo pipefail
 
           MODE=""
           BRANCH_NAME=""
+          DRY_RUN="false"
 
           if [ "${GITHUB_EVENT_NAME}" = "delete" ]; then
             MODE="single"
@@ -58,6 +65,7 @@ jobs:
             MODE="single"
             BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
           elif [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            DRY_RUN="${INPUT_DRY_RUN:-true}"
             if [ "${INPUT_SWEEP}" = "true" ]; then
               MODE="sweep"
             elif [ -n "${INPUT_BRANCH_NAME}" ]; then
@@ -73,11 +81,13 @@ jobs:
 
           echo "mode=${MODE}" >> "$GITHUB_OUTPUT"
           echo "branch_name=${BRANCH_NAME}" >> "$GITHUB_OUTPUT"
+          echo "dry_run=${DRY_RUN}" >> "$GITHUB_OUTPUT"
 
       - name: Delete one branch preview stack pair
         if: steps.mode.outputs.mode == 'single'
         env:
           TARGET_BRANCH: ${{ steps.mode.outputs.branch_name }}
+          DRY_RUN: ${{ steps.mode.outputs.dry_run }}
         run: |
           set -euo pipefail
 
@@ -99,6 +109,10 @@ jobs:
 
           for stack in "$SPACEPORT_STACK_NAME" "$ML_STACK_NAME"; do
             if aws cloudformation describe-stacks --stack-name "$stack" >/dev/null 2>&1; then
+              if [ "${DRY_RUN}" = "true" ]; then
+                echo "Dry run: would delete $stack"
+                continue
+              fi
               echo "Deleting $stack"
               aws cloudformation delete-stack --stack-name "$stack"
               aws cloudformation wait stack-delete-complete --stack-name "$stack"
@@ -111,6 +125,7 @@ jobs:
         if: steps.mode.outputs.mode == 'sweep'
         env:
           GH_TOKEN: ${{ github.token }}
+          DRY_RUN: ${{ steps.mode.outputs.dry_run }}
         run: |
           set -euo pipefail
 
@@ -159,8 +174,10 @@ jobs:
               age = now - datetime.fromisoformat(last_seen.replace("Z", "+00:00"))
 
               is_active = branch_name in branch_state
-              is_protected = branch_state.get(branch_name, False)
-              should_delete = (not is_active) or (age > timedelta(days=14) and not is_protected)
+              # Sweeps must only touch deleted branches. Active, unprotected PR
+              # branches can be old but still in review; single cleanup handles
+              # explicit pull_request.closed/delete events.
+              should_delete = not is_active
 
               if should_delete:
                   print(stack_name)
@@ -172,9 +189,39 @@ jobs:
           fi
 
           cat /tmp/stacks-to-delete.txt
+          if [ "${DRY_RUN}" = "true" ]; then
+            echo "Dry run: would delete the stale stacks listed above"
+            {
+              echo "### Branch preview cleanup dry run"
+              echo
+              echo "Would delete these stale stacks:"
+              sed 's/^/- `/' /tmp/stacks-to-delete.txt | sed 's/$/`/'
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          failures=0
+          : > /tmp/stacks-delete-failed.txt
           while IFS= read -r stack_name; do
             [ -n "$stack_name" ] || continue
             echo "Deleting stale stack $stack_name"
-            aws cloudformation delete-stack --stack-name "$stack_name"
-            aws cloudformation wait stack-delete-complete --stack-name "$stack_name"
+            if ! aws cloudformation delete-stack --stack-name "$stack_name"; then
+              echo "$stack_name delete-stack failed" | tee -a /tmp/stacks-delete-failed.txt
+              failures=$((failures + 1))
+              continue
+            fi
+            if ! aws cloudformation wait stack-delete-complete --stack-name "$stack_name"; then
+              echo "$stack_name wait stack-delete-complete failed" | tee -a /tmp/stacks-delete-failed.txt
+              failures=$((failures + 1))
+              continue
+            fi
           done < /tmp/stacks-to-delete.txt
+
+          if [ "$failures" -gt 0 ]; then
+            {
+              echo "### Branch preview cleanup warnings"
+              echo
+              echo "$failures stack delete operations need manual follow-up:"
+              sed 's/^/- `/' /tmp/stacks-delete-failed.txt | sed 's/$/`/'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
